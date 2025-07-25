@@ -1,0 +1,169 @@
+<wxs module="util" src="../../utils/util.wxs"></wxs>
+
+<!-- 自定义导航栏 -->
+<navigation-bar 
+  id="navbar"
+  title="心理咨询"
+  showBack="{{true}}"
+  background="#ffffff"
+  color="#333333"
+  fixed="{{true}}"
+  titleAlign="center"
+>
+  <!-- 使用插槽自定义标题 -->
+  <view slot="title" class="custom-title">
+    <text class="title-text">咨询师详情</text>
+  </view>
+</navigation-bar>
+
+<view class="appointments-container">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <text class="page-title">预约管理</text>
+  </view>
+  
+  <!-- 状态筛选选项卡 -->
+  <view class="status-tabs">
+    <view 
+      wx:for="{{statusTabs}}" 
+      wx:key="status"
+      class="tab-item {{currentTab === index ? 'active' : ''}}"
+      bindtap="switchTab"
+      data-index="{{index}}"
+    >
+      <text class="tab-text">{{item.text}}</text>
+      <text class="tab-count" wx:if="{{item.count > 0}}">{{item.count}}</text>
+    </view>
+  </view>
+  
+  <!-- 视图切换 -->
+  <view class="view-toggle">
+    <view 
+      class="toggle-item {{viewMode === 'list' ? 'active' : ''}}"
+      bindtap="switchView"
+      data-mode="list"
+    >
+      <text class="toggle-icon list"></text>
+      <text class="toggle-text">列表视图</text>
+    </view>
+    <view 
+      class="toggle-item {{viewMode === 'calendar' ? 'active' : ''}}"
+      bindtap="switchView"
+      data-mode="calendar"
+    >
+      <text class="toggle-icon calendar"></text>
+      <text class="toggle-text">日历视图</text>
+    </view>
+  </view>
+  
+  <!-- 列表视图 -->
+  <view class="list-view" wx:if="{{viewMode === 'list' && currentAppointments.length > 0}}">
+    <view 
+      wx:for="{{currentAppointments}}" 
+      wx:key="id"
+      class="appointment-card {{item.status}}"
+    >
+      <view class="appointment-header">
+        <view class="appointment-time">
+          <text class="day">{{item.dayText}}</text>
+          <text class="date">{{item.dateText}}</text>
+          <text class="time">{{item.timeSlot}}</text>
+        </view>
+        <view class="appointment-status-tag {{item.status}}">
+          {{item.statusText}}
+        </view>
+      </view>
+      
+      <view class="appointment-body">
+        <view class="client-info">
+          <view class="client-name">{{item.clientName}}</view>
+          <view class="service-type">{{item.serviceType}}</view>
+        </view>
+        
+        <view class="appointment-note" wx:if="{{item.note}}">
+          <text class="note-label">备注：</text>
+          <text class="note-content">{{item.note}}</text>
+        </view>
+      </view>
+      
+      <view class="appointment-actions">
+        <view class="action-button" wx:if="{{item.status === 'pending'}}" bindtap="confirmAppointment" data-id="{{item.id}}">
+          确认
+        </view>
+        <view class="action-button" wx:if="{{item.status === 'pending'}}" bindtap="rejectAppointment" data-id="{{item.id}}">
+          婉拒
+        </view>
+        <view class="action-button" wx:if="{{item.status === 'confirmed'}}" bindtap="completeAppointment" data-id="{{item.id}}">
+          完成
+        </view>
+        <view class="action-button" wx:if="{{['pending', 'confirmed'].includes(item.status)}}" bindtap="rescheduleAppointment" data-id="{{item.id}}">
+          改期
+        </view>
+        <view class="action-button view" bindtap="viewAppointmentDetail" data-id="{{item.id}}">
+          详情
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 日历视图 -->
+  <view class="calendar-view" wx:if="{{viewMode === 'calendar'}}">
+    <view class="calendar-header">
+      <view class="calendar-nav prev" bindtap="changeMonth" data-offset="-1">
+        <text class="nav-icon">《</text>
+      </view>
+      <view class="current-month">{{currentYear}}年{{currentMonth}}月</view>
+      <view class="calendar-nav next" bindtap="changeMonth" data-offset="1">
+        <text class="nav-icon">》</text>
+      </view>
+    </view>
+    
+    <view class="weekdays">
+      <view class="weekday" wx:for="{{weekDays}}" wx:key="*this">{{item}}</view>
+    </view>
+    
+    <view class="calendar-days">
+      <view 
+        wx:for="{{calendarDays}}" 
+        wx:key="index"
+        class="calendar-day {{item.isCurrentMonth ? '' : 'other-month'}} {{item.isToday ? 'today' : ''}} {{item.appointments.length > 0 ? 'has-appointments' : ''}}"
+        bindtap="selectDay"
+        data-day="{{item}}"
+      >
+        <text class="day-number">{{item.day}}</text>
+        <view class="day-indicator" wx:if="{{item.appointments.length > 0}}">
+          <text class="indicator-text">{{item.appointments.length}}</text>
+        </view>
+      </view>
+    </view>
+    
+    <view class="day-appointments" wx:if="{{selectedDay && selectedDay.appointments.length > 0}}">
+      <view class="selected-day-header">
+        <text class="selected-day-text">{{selectedDayText}}</text>
+        <text class="appointment-count">{{selectedDay.appointments.length}}个预约</text>
+      </view>
+      
+      <view 
+        wx:for="{{selectedDay.appointments}}" 
+        wx:key="id"
+        class="day-appointment-item {{item.status}}"
+        bindtap="viewAppointmentDetail"
+        data-id="{{item.id}}"
+      >
+        <text class="appointment-time">{{item.timeSlot}}</text>
+        <text class="appointment-client">{{item.clientName}}</text>
+        <text class="appointment-status {{item.status}}">{{item.statusText}}</text>
+      </view>
+    </view>
+    
+    <view class="empty-day-message" wx:elif="{{selectedDay}}">
+      <text>{{selectedDayText}} 没有预约</text>
+    </view>
+  </view>
+  
+  <!-- 空状态提示 -->
+  <view class="empty-state" wx:if="{{viewMode === 'list' && currentAppointments.length === 0}}">
+    <image class="empty-icon" src="{{util.getResource('images/empty-appointments.png')}}" mode="aspectFit"></image>
+    <text class="empty-text">暂无{{statusTabs[currentTab].text}}的预约</text>
+  </view>
+</view>

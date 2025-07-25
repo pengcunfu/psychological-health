@@ -1,0 +1,121 @@
+<!-- 咨询师个人资料页面 -->
+<view class="profile-container">
+  <!-- 顶部个人信息 -->
+  <view class="profile-header">
+    <view class="user-info">
+      <view class="avatar-container">
+        <image class="avatar" src="{{counselorInfo.avatar}}" mode="aspectFill"></image>
+        <view class="edit-avatar" bindtap="changeAvatar">
+          <view class="edit-icon"></view>
+        </view>
+      </view>
+      <view class="basic-info">
+        <view class="name-container">
+          <text class="name">{{counselorInfo.name}}</text>
+          <view class="verified-badge" wx:if="{{counselorInfo.isVerified}}">已认证</view>
+        </view>
+        <view class="title">{{counselorInfo.title}}</view>
+        <view class="specialties">
+          <text class="specialty-tag" wx:for="{{counselorInfo.specialties}}" wx:key="index">{{item}}</text>
+        </view>
+      </view>
+    </view>
+    
+    <view class="profile-stats">
+      <view class="stat-item">
+        <text class="stat-value">{{counselorInfo.sessionsCount}}</text>
+        <text class="stat-label">咨询总数</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value">{{counselorInfo.clientCount}}</text>
+        <text class="stat-label">服务客户</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value">{{counselorInfo.rating}}</text>
+        <text class="stat-label">平均评分</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 个人简介 -->
+  <view class="section profile-bio">
+    <view class="section-header">
+      <text class="section-title">个人简介</text>
+      <view class="edit-button" bindtap="editSection" data-section="bio">编辑</view>
+    </view>
+    <view class="section-content bio-content">
+      <text>{{counselorInfo.bio}}</text>
+    </view>
+  </view>
+
+  <!-- 专业资质 -->
+  <view class="section qualifications">
+    <view class="section-header">
+      <text class="section-title">专业资质</text>
+      <view class="edit-button" bindtap="editSection" data-section="qualifications">编辑</view>
+    </view>
+    <view class="section-content">
+      <view class="qualification-item" wx:for="{{counselorInfo.qualifications}}" wx:key="index">
+        <view class="qualification-icon {{getQualificationIcon(item.type)}}"></view>
+        <view class="qualification-details">
+          <text class="qualification-title">{{item.title}}</text>
+          <text class="qualification-org">{{item.organization}}</text>
+          <text class="qualification-date">{{item.date}}</text>
+        </view>
+        <view class="verification-status {{item.verified ? 'verified' : ''}}">
+          {{item.verified ? '已验证' : '待验证'}}
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 收费标准 -->
+  <view class="section pricing">
+    <view class="section-header">
+      <text class="section-title">收费标准</text>
+      <view class="edit-button" bindtap="editSection" data-section="pricing">编辑</view>
+    </view>
+    <view class="section-content">
+      <view class="pricing-item" wx:for="{{counselorInfo.pricing}}" wx:key="index">
+        <view class="service-type">{{item.serviceType}}</view>
+        <view class="service-duration">{{item.duration}}分钟</view>
+        <view class="service-price">¥{{item.price}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 账户设置 -->
+  <view class="settings-section">
+    <view class="setting-item" bindtap="navigateTo" data-url="/pages/counselor/settings/personal">
+      <view class="setting-icon personal"></view>
+      <view class="setting-text">个人资料设置</view>
+      <view class="arrow-icon"></view>
+    </view>
+    <view class="setting-item" bindtap="navigateTo" data-url="/pages/counselor/settings/account">
+      <view class="setting-icon account"></view>
+      <view class="setting-text">账户与安全</view>
+      <view class="arrow-icon"></view>
+    </view>
+    <view class="setting-item" bindtap="navigateTo" data-url="/pages/counselor/settings/payment">
+      <view class="setting-icon payment"></view>
+      <view class="setting-text">收款设置</view>
+      <view class="arrow-icon"></view>
+    </view>
+    <view class="setting-item" bindtap="navigateTo" data-url="/pages/counselor/settings/notification">
+      <view class="setting-icon notification"></view>
+      <view class="setting-text">通知设置</view>
+      <view class="arrow-icon"></view>
+    </view>
+    <view class="setting-item" bindtap="navigateTo" data-url="/pages/counselor/settings/privacy">
+      <view class="setting-icon privacy"></view>
+      <view class="setting-text">隐私设置</view>
+      <view class="arrow-icon"></view>
+    </view>
+  </view>
+
+  <!-- 底部按钮 -->
+  <view class="bottom-buttons">
+    <button class="preview-button" bindtap="previewPublicProfile">预览公开主页</button>
+    <button class="logout-button" bindtap="logout">退出登录</button>
+  </view>
+</view> 

@@ -1,0 +1,86 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/account/add",
+    "pages/appointment/index",
+    "pages/appointment/add",
+    "pages/appointment/list",
+    "pages/client/index",
+    "pages/contact/contact-us",
+    "pages/contact/customer-service",
+    "pages/counselor/become-counselor",
+    "pages/counselor/index",
+    "pages/counselor/detail",
+    "pages/counselor/workspace",
+    "pages/workspace/index",
+    "pages/course/list",
+    "pages/course/detail",
+    "pages/course/play",
+    "pages/favorite/index",
+    "pages/logs/logs",
+    "pages/login/login",
+    "pages/login/phone-login",
+    "pages/message/index",
+    "pages/message/chat",
+    "pages/order/index",
+    "pages/order/detail",
+    "pages/order/list",
+    "pages/pay/pay-pedding",
+    "pages/pay/pay-success",
+    "pages/pay/pay-fail",
+    "pages/profile/user",
+    "pages/profile/counselor",
+    "pages/policy/become-counselor-policy",
+    "pages/policy/privacy-policy",
+    "pages/policy/user-policy",
+    "pages/time-slots/index",
+    "pages/search/index"
+  ],
+  "useExtendedLib": {
+    "weui": true
+  },
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationStyle": "custom"
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#999999",
+    "selectedColor": "#4080FF",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/workspace/index",
+        "text": "工作台"
+      },
+      {
+        "pagePath": "pages/message/index",
+        "text": "消息"
+      },
+      {
+        "pagePath": "pages/profile/user",
+        "text": "我的"
+      }
+    ]
+  },
+  "style": "v2",
+  "renderer": "skyline",
+  "rendererOptions": {
+    "skyline": {
+      "defaultDisplayBlock": true,
+      "defaultContentBox": true,
+      "tagNameStyleIsolation": "legacy",
+      "disableABTest": true,
+      "sdkVersionBegin": "3.0.0",
+      "sdkVersionEnd": "15.255.255"
+    }
+  },
+  "componentFramework": "glass-easel",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

@@ -1,0 +1,118 @@
+.counselor-list {
+  min-height: 100vh;
+  background-color: #f5f6f7;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* 分类标签 */
+.category-tabs {
+  position: fixed;
+  top: 88rpx;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  background: #fff;
+  white-space: nowrap;
+  padding: 20rpx 30rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.tab-item {
+  display: inline-block;
+  padding: 12rpx 32rpx;
+  margin-right: 20rpx;
+  font-size: 28rpx;
+  color: #666;
+  background: #f5f6f7;
+  border-radius: 28rpx;
+  transition: all 0.3s;
+}
+
+.tab-item.active {
+  color: #4080FF;
+  background: rgba(64, 128, 255, 0.1);
+}
+
+/* 咨询师列表 */
+.counselor-scroll {
+  height: calc(100vh - 180rpx);
+  margin-top: 180rpx;
+  padding: 0 30rpx;
+  box-sizing: border-box;
+}
+
+.counselor-item {
+  margin-bottom: 20rpx;
+  padding: 30rpx;
+  background: #fff;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: flex-start;
+}
+
+.counselor-avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 12rpx;
+  margin-right: 24rpx;
+}
+
+.counselor-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.counselor-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.counselor-name {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #333;
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 16rpx;
+  gap: 12rpx;
+}
+
+.tag {
+  font-size: 24rpx;
+  color: #4080FF;
+  padding: 4rpx 16rpx;
+  background: rgba(64, 128, 255, 0.1);
+  border-radius: 4rpx;
+}
+
+.consult-type {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.book-btn {
+  width: 160rpx;
+  height: 72rpx;
+  line-height: 72rpx;
+  background: #4080FF;
+  color: #fff;
+  font-size: 28rpx;
+  border-radius: 36rpx;
+  text-align: center;
+  margin-left: 24rpx;
+}
+
+/* 加载状态 */
+.loading-status {
+  text-align: center;
+  padding: 30rpx 0;
+}
+
+.loading-status text {
+  font-size: 26rpx;
+  color: #999;
+} 

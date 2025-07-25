@@ -1,0 +1,256 @@
+.order-detail-page {
+    min-height: 100vh;
+    background-color: #f5f5f5;
+    padding-bottom: 120rpx;
+}
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 100rpx 0;
+}
+
+.loading-text {
+    margin-top: 20rpx;
+    font-size: 28rpx;
+    color: #999;
+}
+
+.page-header {
+    padding: 30rpx;
+    background-color: #fff;
+}
+
+.title {
+    font-size: 36rpx;
+    font-weight: bold;
+    color: #333;
+}
+
+.order-card {
+    margin: 30rpx;
+    background-color: #fff;
+    border-radius: 12rpx;
+    box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.status-bar {
+    padding: 20rpx 30rpx;
+}
+
+.status-text {
+    color: #fff;
+    font-size: 32rpx;
+    font-weight: 500;
+}
+
+.order-info {
+    padding: 30rpx;
+}
+
+.order-no,
+.order-time {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10rpx;
+    font-size: 28rpx;
+}
+
+.label {
+    color: #666;
+    min-width: 140rpx;
+}
+
+.value {
+    color: #333;
+    flex: 1;
+}
+
+.copy-btn {
+    color: #576b95;
+    padding: 0 10rpx;
+}
+
+.divider {
+    height: 1rpx;
+    background-color: #f0f0f0;
+    margin: 0 30rpx;
+}
+
+.service-info {
+    padding: 30rpx;
+    display: flex;
+}
+
+.service-icon {
+    width: 80rpx;
+    height: 80rpx;
+    margin-right: 20rpx;
+}
+
+.service-details {
+    flex: 1;
+}
+
+.service-title {
+    font-size: 32rpx;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 10rpx;
+}
+
+.provider-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10rpx;
+}
+
+.provider-avatar {
+    width: 50rpx;
+    height: 50rpx;
+    border-radius: 50%;
+    margin-right: 10rpx;
+}
+
+.provider-text {
+    display: flex;
+    align-items: center;
+}
+
+.provider-name {
+    font-size: 28rpx;
+    color: #333;
+}
+
+.provider-title {
+    font-size: 24rpx;
+    color: #999;
+    margin-left: 10rpx;
+}
+
+.service-desc {
+    font-size: 28rpx;
+    color: #666;
+    margin-bottom: 10rpx;
+}
+
+.appointment-time,
+.expiry-date {
+    font-size: 28rpx;
+    margin-top: 10rpx;
+}
+
+.appointment-time .label,
+.expiry-date .label {
+    color: #666;
+}
+
+.appointment-time .value,
+.expiry-date .value {
+    color: #333;
+}
+
+.appointment-time .value.highlight {
+    color: #576b95;
+    font-weight: 500;
+}
+
+.price-info {
+    padding: 30rpx;
+}
+
+.price-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10rpx;
+    font-size: 28rpx;
+}
+
+.price-row .label {
+    color: #666;
+    min-width: auto;
+}
+
+.price-row .value {
+    color: #333;
+    flex: none;
+}
+
+.price-row.total {
+    margin-top: 20rpx;
+}
+
+.price-row.total .label {
+    font-weight: 500;
+}
+
+.price-row.total .value {
+    font-weight: bold;
+    font-size: 32rpx;
+}
+
+.payment-info {
+    padding: 30rpx;
+}
+
+.payment-method,
+.payment-time {
+    display: flex;
+    margin-bottom: 10rpx;
+    font-size: 28rpx;
+}
+
+.note-section {
+    padding: 30rpx;
+}
+
+.note-label {
+    font-size: 28rpx;
+    color: #666;
+    margin-bottom: 10rpx;
+    display: block;
+}
+
+.note-content {
+    font-size: 28rpx;
+    color: #333;
+    background-color: #f9f9f9;
+    padding: 20rpx;
+    border-radius: 8rpx;
+    display: block;
+}
+
+.bottom-actions {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    padding: 20rpx 30rpx;
+    background-color: #fff;
+    box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.action-button {
+    flex: 1;
+    height: 80rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30rpx;
+    border-radius: 8rpx;
+}
+
+.action-button.cancel-button {
+    background-color: #f5f5f5;
+    color: #666;
+    margin-right: 20rpx;
+}
+
+.action-button.primary-button,
+.action-button.full-button {
+    color: #fff;
+} 

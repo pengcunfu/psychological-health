@@ -1,0 +1,4 @@
+DEBUG: false
+SECRET_KEY: prod-secret-key
+DATABASE_URI: sqlite:///prod.db
+CORS_ORIGINS: 'https://yourdomain.com' 

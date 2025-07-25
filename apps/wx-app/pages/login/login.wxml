@@ -1,0 +1,50 @@
+<!--pages/login/login.wxml-->
+<view class="weui-container login-container">
+  <!-- Logo -->
+  <view class="logo-area">
+    <view class="logo">
+      <text class="logo-text">Y</text>
+    </view>
+  </view>
+
+  <!-- Title Area -->
+  <view class="weui-article__h1 title-area">
+    <text class="weui-article__title main-title">心理咨询预约</text>
+    <text class="weui-article__desc sub-title">关注心理健康，放松身心</text>
+  </view>
+
+  <!-- Welcome Message -->
+  <view class="weui-msg__text-area welcome-area">
+    <view class="weui-msg__title welcome-text">欢迎使用心理咨询预约小程序</view>
+    <view class="weui-msg__desc auth-text">请使用微信授权登录</view>
+  </view>
+
+  <!-- Login Buttons -->
+  <view class="weui-btn-area">
+    <button class="weui-btn weui-btn_primary" bindtap="wechatLogin">
+      <mp-icon icon="wechat" color="white" size="{{20}}"></mp-icon>
+      微信一键登录
+    </button>
+    
+    <view class="weui-cells__title weui-flex weui-divider">
+      <view class="weui-flex__item"><view class="weui-divider-line"></view></view>
+      <view class="weui-flex__item weui-divider-text">其他登录方式</view>
+      <view class="weui-flex__item"><view class="weui-divider-line"></view></view>
+    </view>
+    
+    <button class="weui-btn weui-btn_default" bindtap="phoneLogin">
+      <mp-icon icon="mobile" color="#576b95" size="{{20}}"></mp-icon>
+      手机号登录
+    </button>
+  </view>
+
+  <!-- Agreement Text -->
+  <view class="weui-footer agreement-area">
+    <view class="weui-footer__text agreement-text">
+      登录即表示您已阅读并同意
+      <text class="weui-link agreement-link" bindtap="openUserAgreement">《用户协议》</text>
+      和
+      <text class="weui-link agreement-link" bindtap="openPrivacyPolicy">《隐私政策》</text>
+    </view>
+  </view>
+</view>

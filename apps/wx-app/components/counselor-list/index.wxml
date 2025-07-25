@@ -1,0 +1,47 @@
+<view class="counselor-list">
+  <!-- 咨询师列表 -->
+  <view wx:if="{{counselors && counselors.length > 0}}" class="counselor-list__container counselor-list__container--{{mode}}">
+    <!-- 列表模式 -->
+    <block wx:if="{{mode === 'list'}}">
+      <counselor-card wx:for="{{counselors}}" wx:key="id" counselor="{{item}}" mode="list" show-favorite="{{showFavorite}}" show-online-status="{{showOnlineStatus}}" show-price="{{showPrice}}" show-rating="{{showRating}}" show-tags="{{showTags}}" bind:cardclick="onCounselorCardClick" bind:favoritechange="onFavoriteChange" bind:consultclick="onConsultClick" />
+    </block>
+
+    <!-- 网格模式 -->
+    <block wx:if="{{mode === 'grid'}}">
+      <view class="counselor-list__grid" style="grid-template-columns: repeat({{columns}}, 1fr);">
+        <counselor-card wx:for="{{counselors}}" wx:key="id" counselor="{{item}}" mode="grid" show-favorite="{{showFavorite}}" show-online-status="{{showOnlineStatus}}" show-price="{{showPrice}}" show-rating="{{showRating}}" show-tags="{{showTags}}" bind:cardclick="onCounselorCardClick" bind:favoritechange="onFavoriteChange" bind:consultclick="onConsultClick" />
+      </view>
+    </block>
+  </view>
+
+  <!-- 空状态 -->
+  <view wx:else class="counselor-list__empty">
+    <view class="counselor-list__empty-icon">
+      <text class="counselor-list__empty-icon-text">👥</text>
+    </view>
+    <text class="counselor-list__empty-text">{{emptyText}}</text>
+    <view class="counselor-list__empty-tips">
+      <text class="counselor-list__empty-tips-text">暂时没有找到合适的咨询师</text>
+      <text class="counselor-list__empty-tips-text">请尝试调整筛选条件</text>
+    </view>
+  </view>
+
+  <!-- 加载更多 -->
+  <view wx:if="{{showLoadMore && counselors && counselors.length > 0}}" class="counselor-list__load-more">
+    <!-- 加载中 -->
+    <view wx:if="{{loading}}" class="counselor-list__loading">
+      <view class="counselor-list__loading-spinner"></view>
+      <text class="counselor-list__loading-text">加载中...</text>
+    </view>
+
+    <!-- 加载更多按钮 -->
+    <view wx:elif="{{!finished}}" class="counselor-list__load-more-btn" bindtap="onLoadMore">
+      <text class="counselor-list__load-more-text">加载更多</text>
+    </view>
+
+    <!-- 已加载完毕 -->
+    <view wx:else class="counselor-list__finished">
+      <text class="counselor-list__finished-text">已加载全部咨询师</text>
+    </view>
+  </view>
+</view>

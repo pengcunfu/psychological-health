@@ -1,0 +1,95 @@
+<wxs module="util" src="../../utils/util.wxs"></wxs>
+
+<container 
+  showNavBar="{{true}}" 
+  showTabBar="{{true}}" 
+  navBarTitle="预约订单"
+  showBack="{{false}}"
+>
+<view class="order-container">
+  <!-- 订单状态切换 -->
+  <view class="status-tabs">
+    <view 
+      wx:for="{{statusList}}" 
+      wx:key="value"
+      class="tab-item {{currentStatus === item.value ? 'active' : ''}}"
+      data-status="{{item.value}}"
+      bindtap="onTabChange"
+    >
+      <text>{{item.label}}</text>
+      <view class="tab-line" wx:if="{{currentStatus === item.value}}"></view>
+    </view>
+  </view>
+
+  <!-- 订单列表 -->
+  <scroll-view 
+    type="list"
+    class="order-list"
+    scroll-y
+    bindscrolltolower="onLoadMore"
+    refresher-enabled="{{true}}"
+    refresher-triggered="{{refreshing}}"
+    bindrefresherrefresh="onRefresh"
+  >
+    <view class="order-item" wx:for="{{orderList}}" wx:key="orderId">
+      <view class="order-header">
+        <text class="order-id">订单号：{{item.orderId}}</text>
+        <text class="order-status {{item.status}}">{{item.statusText}}</text>
+      </view>
+
+      <view class="order-info">
+        <view class="info-row">
+          <text class="label">用户：</text>
+          <text class="value">{{item.userName}}</text>
+        </view>
+        <view class="info-row">
+          <text class="label">下单时间：</text>
+          <text class="value">{{item.createTime}}</text>
+        </view>
+        <view class="info-row">
+          <text class="label">预约类型：</text>
+          <text class="value">{{item.type}}</text>
+        </view>
+        <view class="info-row">
+          <text class="label">预约时间：</text>
+          <text class="value">{{item.appointmentDate}} {{item.appointmentTime}}</text>
+        </view>
+        <view class="info-row">
+          <text class="label">支付金额：</text>
+          <text class="value">¥{{item.amount}} ({{item.paymentMethod}})</text>
+        </view>
+      </view>
+
+      <view class="order-actions">
+        <button 
+          class="action-btn plain"
+          data-id="{{item.orderId}}"
+          bindtap="onViewDetail"
+        >详情</button>
+        <button 
+          class="action-btn plain"
+          data-id="{{item.orderId}}"
+          bindtap="onViewAppointment"
+        >预约信息</button>
+        <button 
+          class="action-btn primary"
+          data-id="{{item.orderId}}"
+          data-type="{{item.type}}"
+          bindtap="onStartConsultation"
+        >{{item.type === '电话' ? '拨打电话' : '进入咨询'}}</button>
+      </view>
+    </view>
+
+    <!-- 加载状态 -->
+    <view class="loading-status" wx:if="{{loading}}">
+      <text>加载中...</text>
+    </view>
+    
+    <!-- 无数据状态 -->
+    <view class="empty-state" wx:if="{{!loading && orderList.length === 0}}">
+      <image src="{{util.getResource('images/test.png')}}" mode="aspectFit" />
+      <text>暂无订单</text>
+    </view>
+  </scroll-view>
+</view>
+</container>

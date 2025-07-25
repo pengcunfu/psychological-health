@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "workspace-card": "../workspace-card/index"
+  }
+}

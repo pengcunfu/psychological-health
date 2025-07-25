@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.ur.mapper.OrderMapper">
+
+    <resultMap type="com.ruoyi.ur.domain.dto.OrderDetailDto" id="OrderDetailResult">
+        <id property="id" column="id"/>
+        <result property="orderNo" column="order_no"/>
+        <result property="type" column="type"/>
+        <result property="title" column="title"/>
+        <result property="price" column="price"/>
+        <result property="discount" column="discount"/>
+        <result property="actualPaid" column="actual_paid"/>
+        <result property="paymentMethod" column="payment_method"/>
+        <result property="paymentTime" column="payment_time"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="providerName" column="provider_name"/>
+        <result property="providerTitle" column="provider_title"/>
+        <result property="providerAvatar" column="provider_avatar"/>
+        <result property="serviceInfo" column="service_info"/>
+        <result property="appointmentTime" column="appointment_time"/>
+        <result property="note" column="note"/>
+    </resultMap>
+
+    <select id="selectOrderDetailById" resultMap="OrderDetailResult">
+        SELECT 
+            o.id,
+            o.order_no,
+            o.type,
+            o.title,
+            o.price,
+            o.discount,
+            o.actual_paid,
+            o.payment_method,
+            o.payment_time,
+            o.status,
+            o.create_time,
+            c.name AS provider_name,
+            c.title AS provider_title,
+            c.avatar AS provider_avatar,
+            s.name AS service_info,
+            CONCAT(a.date, ' ', a.time_slot) AS appointment_time,
+            a.note
+        FROM ur_orders o
+        LEFT JOIN ur_appointments a ON o.appointment_id = a.id
+        LEFT JOIN ur_counselor c ON a.counselor_id = c.id
+        LEFT JOIN ur_service s ON a.service_id = s.id
+        WHERE o.id = #{id}
+    </select>
+
+    <select id="selectUserAppointments" resultType="com.ruoyi.ur.domain.dto.UserAppointmentDto">
+        SELECT 
+            o.id,
+            o.order_no as orderNo,
+            o.type,
+            o.title,
+            c.name as providerName,
+            c.title as providerTitle,
+            CONCAT(a.date, ' ', a.time_slot) as appointmentTime,
+            o.payment_time as paymentTime,
+            o.price,
+            o.status,
+            o.create_time as createTime
+        FROM ur_orders o
+        LEFT JOIN ur_appointments a ON o.appointment_id = a.id
+        LEFT JOIN ur_counselor c ON a.counselor_id = c.id
+        WHERE a.user_id = #{userId}
+        <if test="status != null and status != 'all'">
+            AND o.status = #{status}
+        </if>
+        ORDER BY o.create_time DESC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="countUserAppointments" resultType="int">
+        SELECT COUNT(*)
+        FROM ur_orders o
+        LEFT JOIN ur_appointments a ON o.appointment_id = a.id
+        WHERE a.user_id = #{userId}
+        <if test="status != null and status != 'all'">
+            AND o.status = #{status}
+        </if>
+    </select>
+</mapper>

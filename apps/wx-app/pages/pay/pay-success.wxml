@@ -1,0 +1,87 @@
+<view class="pay-success-page">
+  <!-- 成功提示区域 -->
+  <view class="success-header">
+    <view class="success-icon">
+      <view class="icon-circle">
+        <text class="iconfont">✓</text>
+      </view>
+    </view>
+    <text class="success-title">支付成功</text>
+    <text class="success-subtitle">咨询预约已确认</text>
+  </view>
+  
+  <!-- 订单信息区域 -->
+  <view class="order-info-card">
+    <view class="card-title">订单信息</view>
+    
+    <view class="info-item">
+      <text class="info-label">订单编号</text>
+      <text class="info-value">{{orderInfo.orderNo}}</text>
+    </view>
+    
+    <view class="info-item">
+      <text class="info-label">支付方式</text>
+      <text class="info-value">{{orderInfo.paymentMethod}}</text>
+    </view>
+    
+    <view class="info-item">
+      <text class="info-label">支付金额</text>
+      <text class="info-value price">¥{{orderInfo.price}}</text>
+    </view>
+    
+    <view class="info-item">
+      <text class="info-label">咨询师</text>
+      <text class="info-value">{{orderInfo.counselorName}}</text>
+    </view>
+    
+    <view class="info-item">
+      <text class="info-label">咨询时间</text>
+      <text class="info-value">{{orderInfo.appointmentTime}}</text>
+    </view>
+  </view>
+  
+  <!-- 提醒区域 -->
+  <view class="reminder-card">
+    <view class="reminder-header">
+      <text class="iconfont">⚠</text>
+      <text class="reminder-title">提醒</text>
+    </view>
+    
+    <text class="reminder-content">
+      咨询开始前15分钟，我们会发送提醒消息，请确保在咨询开始前做好准备，保持网络畅通。
+    </text>
+  </view>
+  
+  <!-- 咨询须知 -->
+  <view class="notice-section">
+    <text class="section-title">咨询须知</text>
+    
+    <view class="notice-list">
+      <view class="notice-item">
+        <text class="dot"></text>
+        <text class="notice-text">咨询开始前24小时内取消，将收取50%的咨询费用作为违约金</text>
+      </view>
+      
+      <view class="notice-item">
+        <text class="dot"></text>
+        <text class="notice-text">如需调整咨询时间，请至少提前24小时与咨询师联系</text>
+      </view>
+      
+      <view class="notice-item">
+        <text class="dot"></text>
+        <text class="notice-text">咨询过程中请保持网络稳定，确保有良好的咨询体验</text>
+      </view>
+      
+      <view class="notice-item">
+        <text class="dot"></text>
+        <text class="notice-text">如有任何问题，可随时联系客服获取帮助</text>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 底部按钮 -->
+  <view class="button-group">
+    <button class="btn btn-outline" bindtap="viewOrder">查看订单</button>
+    <button class="btn btn-primary" bindtap="goHome">返回首页</button>
+  </view>
+</view> 

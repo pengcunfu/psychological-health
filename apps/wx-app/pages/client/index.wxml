@@ -1,0 +1,102 @@
+<wxs module="util" src="../../utils/util.wxs"></wxs>
+
+<view class="clients-container">
+  <!-- 搜索和筛选区 -->
+  <view class="search-filter-container">
+    <view class="search-box">
+      <input type="text" placeholder="搜索客户姓名/手机号" model:value="{{searchQuery}}" class="search-input" />
+      <view class="search-icon">
+        <view class="icon-search"></view>
+      </view>
+    </view>
+
+    <view class="filter-options">
+      <view class="filter-item {{activeFilter === 'all' ? 'active' : ''}}" 
+        bindtap="setFilter" data-filter="all">
+        全部
+      </view>
+      <view class="filter-item {{activeFilter === 'recent' ? 'active' : ''}}" 
+        bindtap="setFilter" data-filter="recent">
+        最近咨询
+      </view>
+      <view class="filter-item {{activeFilter === 'frequent' ? 'active' : ''}}" 
+        bindtap="setFilter" data-filter="frequent">
+        咨询频繁
+      </view>
+      <view class="filter-item {{activeFilter === 'followup' ? 'active' : ''}}" 
+        bindtap="setFilter" data-filter="followup">
+        待跟进
+      </view>
+    </view>
+  </view>
+
+  <!-- 客户列表 -->
+  <scroll-view class="client-list-scroll" scroll-y bindscrolltolower="loadMore" wx:if="{{filteredClients.length > 0}}">
+    <view class="client-list">
+      <view class="client-card" wx:for="{{displayClients}}" wx:key="id"
+        bindtap="viewClientDetail" data-id="{{item.id}}">
+        <view class="client-info">
+          <view class="client-avatar" style="background-color: {{item.avatarColor}}">
+            <text>{{item.name[0]}}</text>
+          </view>
+
+          <view class="client-details">
+            <view class="client-name-row">
+              <text class="client-name">{{item.name}}</text>
+              <text class="client-gender">{{item.gender === 'male' ? '男' : '女'}}</text>
+              <text class="client-age" wx:if="{{item.age}}">{{item.age}}岁</text>
+            </view>
+
+            <view class="client-contact">
+              <text class="client-phone">{{item.phone}}</text>
+            </view>
+
+            <view class="client-stats">
+              <text class="stat-item">咨询次数: <text class="stat-value">{{item.sessionCount}}</text></text>
+              <text class="stat-item">首次咨询: <text class="stat-value">{{item.firstSession}}</text></text>
+              <text class="stat-item">最近咨询: <text class="stat-value">{{item.lastSession}}</text></text>
+            </view>
+          </view>
+        </view>
+
+        <view class="client-tags" wx:if="{{item.tags && item.tags.length > 0}}">
+          <text class="tag" wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this">{{tag}}</text>
+        </view>
+
+        <view class="client-actions">
+          <view class="action-button call" catchtap="callClient" data-phone="{{item.phone}}">
+            <view class="icon-phone action-icon"></view>
+            <text class="action-text">电话</text>
+          </view>
+          <view class="action-button message" catchtap="messageClient" data-id="{{item.id}}">
+            <view class="icon-message action-icon"></view>
+            <text class="action-text">消息</text>
+          </view>
+          <view class="action-button appointment" catchtap="scheduleAppointment" data-id="{{item.id}}">
+            <view class="icon-calendar action-icon"></view>
+            <text class="action-text">预约</text>
+          </view>
+          <view class="action-button notes" catchtap="viewNotes" data-id="{{item.id}}">
+            <view class="icon-note action-icon"></view>
+            <text class="action-text">记录</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 加载更多 -->
+      <view class="load-more" wx:if="{{hasMoreClients}}">
+        <view class="load-more-btn" bindtap="loadMore">加载更多</view>
+      </view>
+      <view class="no-more" wx:else>
+        没有更多客户了
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:else>
+    <image class="empty-icon" src="{{util.getResource('images/empty-clients.png')}}" mode="aspectFit"></image>
+    <text class="empty-text">暂无客户记录</text>
+    <text class="empty-description">用户咨询后将自动创建客户记录</text>
+  </view>
+</view>

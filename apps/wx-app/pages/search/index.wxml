@@ -1,0 +1,52 @@
+<wxs module="util" src="../../utils/util.wxs"></wxs>
+
+<container showNavBar="{{true}}" showTabBar="{{false}}" navBarTitle="搜索咨询师" showBack="{{true}}">
+  <!-- 搜索框 -->
+  <view class="search-box">
+    <view class="search-input">
+      <image class="search-icon" src="{{util.getResource('images/search.png')}}"></image>
+      <input type="text" 
+        value="{{searchText}}"
+        placeholder="搜索咨询师" 
+        placeholder-class="placeholder" 
+        focus="{{true}}"
+        bindinput="onSearchInput"
+        bindconfirm="onSearchConfirm"/>
+      <view class="cancel-btn" bindtap="onCancel">取消</view>
+    </view>
+  </view>
+
+  <!-- 热门搜索 -->
+  <view class="hot-search" wx:if="{{!searchText}}">
+    <view class="section-title">热门搜索</view>
+    <view class="tag-list">
+      <view class="tag-item" 
+        wx:for="{{hotSearchTags}}" 
+        wx:key="*this"
+        bindtap="onTagTap"
+        data-tag="{{item}}">{{item}}</view>
+    </view>
+  </view>
+
+  <!-- 搜索结果 -->
+  <view class="search-result" wx:if="{{searchText && counselors.length > 0}}">
+    <view class="counselor-item" 
+      wx:for="{{counselors}}" 
+      wx:key="id"
+      bindtap="onCounselorTap"
+      data-id="{{item.id}}">
+      <image class="counselor-avatar" src="{{item.avatar}}" mode="aspectFill"></image>
+      <view class="counselor-info">
+        <view class="counselor-name">{{item.name}}</view>
+        <view class="counselor-tag">{{item.specialty}}</view>
+        <view class="counselor-type">咨询方式：{{item.consultType}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 无搜索结果 -->
+  <view class="no-result" wx:if="{{searchText && counselors.length === 0}}">
+    <image class="no-result-icon" src="{{util.getResource('images/no-result.png')}}"></image>
+    <text>暂无相关咨询师</text>
+  </view>
+</container>

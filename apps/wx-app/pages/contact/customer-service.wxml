@@ -1,0 +1,80 @@
+<!-- 自定义导航栏 -->
+<navigation-bar 
+  title="联系我们"
+  showBack="{{true}}"
+  background="#ffffff"
+  color="#333333"
+>
+</navigation-bar>
+
+<wxs module="util" src="../../utils/util.wxs"></wxs>
+
+<view class="container">
+  <!-- 联系方式列表 -->
+  <view class="contact-list">
+    <!-- 客服电话 -->
+    <view class="contact-item" bindtap="makePhoneCall">
+      <image class="contact-icon" src="{{util.getResource('images/phone.png')}}" mode="aspectFit"></image>
+      <view class="contact-info">
+        <text class="contact-label">客服电话</text>
+        <text class="contact-value">400-123-4567</text>
+      </view>
+      <image class="arrow-icon" src="{{util.getResource('images/arrow-right.png')}}" mode="aspectFit"></image>
+    </view>
+
+    <!-- 电子邮箱 -->
+    <view class="contact-item" bindtap="copyEmail">
+      <image class="contact-icon" src="{{util.getResource('images/email.png')}}" mode="aspectFit"></image>
+      <view class="contact-info">
+        <text class="contact-label">电子邮箱</text>
+        <text class="contact-value">support@meiguang.com</text>
+      </view>
+      <image class="arrow-icon" src="{{util.getResource('images/arrow-right.png')}}" mode="aspectFit"></image>
+     </view>
+ 
+     <!-- 微信公众号 -->
+     <view class="contact-item" bindtap="copyWechat">
+       <image class="contact-icon" src="{{util.getResource('images/wechat.png')}}" mode="aspectFit"></image>
+       <view class="contact-info">
+         <text class="contact-label">微信公众号</text>
+         <text class="contact-value">美广心理健康</text>
+       </view>
+       <image class="arrow-icon" src="{{util.getResource('images/arrow-right.png')}}" mode="aspectFit"></image>
+    </view>
+  </view>
+
+  <!-- 客服时间 -->
+  <view class="section">
+    <view class="section-title">客服时间</view>
+    <view class="time-list">
+      <view class="time-item">
+        <text class="time-label">周一至周五</text>
+        <text class="time-value">9:00 - 18:00</text>
+      </view>
+      <view class="time-item">
+        <text class="time-label">周六至周日</text>
+        <text class="time-value">10:00 - 17:00</text>
+      </view>
+      <view class="time-item">
+        <text class="time-label">节假日</text>
+        <text class="time-value">10:00 - 16:00</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 在线咨询按钮 -->
+  <view class="action-section">
+    <button class="action-btn" bindtap="navigateToService">
+      <image class="btn-icon" src="{{util.getResource('images/service.png')}}" mode="aspectFit"></image>
+      <text>在线咨询</text>
+    </button>
+  </view>
+
+  <!-- 公司信息 -->
+  <view class="company-info">
+    <image class="company-logo" src="{{util.getResource('images/logo.png')}}" mode="aspectFit"></image>
+    <text class="company-name">美广心理健康</text>
+    <text class="company-slogan">专业心理咨询服务平台</text>
+    <text class="company-address">地址：北京市朝阳区建国路88号SOHO现代城B座1001室</text>
+  </view>
+</view>

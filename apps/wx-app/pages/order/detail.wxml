@@ -1,0 +1,122 @@
+<view class="order-detail-page">
+    <!-- 页面标题 -->
+    <view class="page-header">
+        <view class="title">订单详情</view>
+    </view>
+
+    <!-- 加载中 -->
+    <view wx:if="{{loading}}" class="loading-container">
+        <mp-loading type="circle" show="{{true}}" size="36"></mp-loading>
+        <text class="loading-text">加载中...</text>
+    </view>
+
+    <!-- 订单详情卡片 -->
+    <view wx:else class="order-card">
+        <!-- 订单状态 -->
+        <view class="status-bar" style="background-color: {{theme.mgPrimary}}">
+            <text class="status-text">{{statusText}}</text>
+        </view>
+
+        <!-- 订单基本信息 -->
+        <view class="order-info">
+            <view class="order-no">
+                <text class="label">订单编号：</text>
+                <text class="value">{{orderDetail.orderNo}}</text>
+                <text class="copy-btn" bindtap="copyOrderNo">复制</text>
+            </view>
+            <view class="order-time">
+                <text class="label">创建时间：</text>
+                <text class="value">{{orderDetail.createTime}}</text>
+            </view>
+        </view>
+
+        <!-- 分割线 -->
+        <view class="divider"></view>
+
+        <!-- 服务信息 -->
+        <view class="service-info">
+            <!-- 服务类型图标 -->
+            <image src="{{orderTypeIcon}}" class="service-icon"></image>
+
+            <!-- 服务详情 -->
+            <view class="service-details">
+                <view class="service-title">{{orderDetail.title}}</view>
+                <view class="provider-info">
+                    <image wx:if="{{orderDetail.providerAvatar}}" src="{{orderDetail.providerAvatar}}" class="provider-avatar"></image>
+                    <view class="provider-text">
+                        <text class="provider-name">{{orderDetail.providerName}}</text>
+                        <text wx:if="{{orderDetail.providerTitle}}" class="provider-title">{{orderDetail.providerTitle}}</text>
+                    </view>
+                </view>
+                <view class="service-desc">{{orderDetail.serviceInfo}}</view>
+
+                <!-- 预约时间或有效期 -->
+                <view wx:if="{{orderDetail.appointmentTime}}" class="appointment-time">
+                    <text class="label">预约时间：</text>
+                    <text class="value highlight">{{orderDetail.appointmentTime}}</text>
+                </view>
+                <view wx:if="{{orderDetail.expiryDate}}" class="expiry-date">
+                    <text class="label">有效期至：</text>
+                    <text class="value">{{orderDetail.expiryDate}}</text>
+                </view>
+            </view>
+        </view>
+
+        <!-- 分割线 -->
+        <view class="divider"></view>
+
+        <!-- 价格信息 -->
+        <view class="price-info">
+            <view class="price-row">
+                <text class="label">订单金额</text>
+                <text class="value">¥{{orderDetail.price}}</text>
+            </view>
+            <view wx:if="{{orderDetail.discount > 0}}" class="price-row">
+                <text class="label">优惠金额</text>
+                <text class="value">-¥{{orderDetail.discount}}</text>
+            </view>
+            <view class="price-row total">
+                <text class="label">实付金额</text>
+                <text class="value" style="color: {{theme.mgPrimary}}">¥{{orderDetail.actualPaid}}</text>
+            </view>
+        </view>
+
+        <!-- 分割线 -->
+        <view class="divider"></view>
+
+        <!-- 支付信息 -->
+        <view class="payment-info">
+            <view class="payment-method">
+                <text class="label">支付方式：</text>
+                <text class="value">{{paymentMethodText}}</text>
+            </view>
+            <view wx:if="{{orderDetail.paymentTime}}" class="payment-time">
+                <text class="label">支付时间：</text>
+                <text class="value">{{orderDetail.paymentTime}}</text>
+            </view>
+        </view>
+
+        <!-- 备注信息 -->
+        <view wx:if="{{orderDetail.note}}" class="note-section">
+            <text class="note-label">备注信息</text>
+            <text class="note-content">{{orderDetail.note}}</text>
+        </view>
+    </view>
+
+    <!-- 底部操作按钮 -->
+    <view wx:if="{{!loading}}" class="bottom-actions">
+        <block wx:if="{{orderDetail.status === 'pending'}}">
+            <view class="action-button cancel-button" bindtap="cancelOrder">取消订单</view>
+            <view class="action-button primary-button" style="background-color: {{theme.mgPrimary}}" bindtap="payOrder">立即支付</view>
+        </block>
+
+        <block wx:elif="{{orderDetail.status === 'paid' && orderDetail.type === 'course'}}">
+            <view class="action-button full-button" style="background-color: {{theme.mgPrimary}}" bindtap="studyCourse">立即学习</view>
+        </block>
+
+        <block wx:elif="{{orderDetail.status === 'paid' && orderDetail.type === 'counseling'}}">
+            <view class="action-button cancel-button" bindtap="contactCustomerService">联系客服</view>
+            <view class="action-button primary-button" style="background-color: {{theme.mgPrimary}}" bindtap="enterCounseling">进入咨询</view>
+        </block>
+    </view>
+</view> 

@@ -1,0 +1,284 @@
+.container {
+  padding-bottom: 120rpx;
+}
+
+/* 咨询师基本信息 */
+.counselor-header {
+  background: #fff;
+  padding: 20rpx 30rpx;
+  margin-bottom: 20rpx;
+}
+
+.insurance-tag {
+  display: flex;
+  align-items: center;
+  background: #F8F9FA;
+  padding: 16rpx 24rpx;
+  border-radius: 8rpx;
+  margin-bottom: 24rpx;
+}
+
+.insurance-icon {
+  width: 32rpx;
+  height: 32rpx;
+  margin-right: 12rpx;
+}
+
+.insurance-tag text {
+  font-size: 24rpx;
+  color: #666;
+  flex: 1;
+}
+
+.arrow {
+  color: #999;
+  font-size: 24rpx;
+}
+
+.counselor-basic {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16rpx;
+}
+
+.counselor-left .name {
+  font-size: 40rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12rpx;
+  display: block;
+}
+
+.counselor-left .tag {
+  display: flex;
+  align-items: center;
+  background: #F0F7FF;
+  padding: 6rpx 12rpx;
+  border-radius: 6rpx;
+  display: inline-flex;
+}
+
+.verified-icon {
+  width: 28rpx;
+  height: 28rpx;
+  margin-right: 8rpx;
+}
+
+.tag text {
+  font-size: 24rpx;
+  color: #4080FF;
+}
+
+.price {
+  text-align: right;
+}
+
+.price .amount {
+  font-size: 48rpx;
+  font-weight: 600;
+  color: #FF6B6B;
+}
+
+.price .unit {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.location {
+  display: flex;
+  align-items: center;
+  margin-top: 24rpx;
+}
+
+.location-icon {
+  width: 28rpx;
+  height: 28rpx;
+  margin-right: 8rpx;
+}
+
+.location text {
+  font-size: 28rpx;
+  color: #666;
+}
+
+/* 咨询经验 */
+.experience-section {
+  background: #fff;
+  padding: 30rpx;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+
+.experience-item {
+  text-align: center;
+  flex: 1;
+}
+
+.experience-item .number {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #333;
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.experience-item .label {
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 个人简介 */
+.intro-section {
+  background: #fff;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 24rpx;
+}
+
+.qualification-list {
+  margin-bottom: 24rpx;
+}
+
+.qualification-item {
+  font-size: 28rpx;
+  color: #666;
+  line-height: 1.6;
+}
+
+.intro-content {
+  font-size: 28rpx;
+  color: #666;
+  line-height: 1.6;
+  max-height: 180rpx;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.intro-content.expanded {
+  max-height: none;
+}
+
+.expand-btn {
+  text-align: center;
+  margin-top: 16rpx;
+}
+
+.expand-btn text {
+  font-size: 28rpx;
+  color: #4080FF;
+}
+
+/* 咨询方向 */
+.direction-section {
+  background: #fff;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+}
+
+.direction-list {
+  
+}
+
+.direction-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 24rpx;
+}
+
+.direction-icon {
+  width: 48rpx;
+  height: 48rpx;
+  margin-right: 16rpx;
+}
+
+.direction-content {
+  flex: 1;
+}
+
+.direction-title {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 8rpx;
+  display: block;
+}
+
+.direction-desc {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.4;
+}
+
+/* 咨询群体 */
+.target-section {
+  background: #fff;
+  padding: 30rpx;
+}
+
+.target-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.target-item {
+  background: #F8F9FA;
+  padding: 12rpx 24rpx;
+  border-radius: 8rpx;
+}
+
+.target-item text {
+  font-size: 26rpx;
+  color: #666;
+}
+
+/* 底部操作栏 */
+.bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  padding: 20rpx 30rpx;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.favorite-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 24rpx;
+}
+
+.favorite-icon {
+  width: 48rpx;
+  height: 48rpx;
+  margin-bottom: 4rpx;
+}
+
+.favorite-btn text {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.book-btn {
+  flex: 1;
+  height: 88rpx;
+  background: linear-gradient(90deg, #4080FF, #3A66CC);
+  border-radius: 44rpx;
+  color: #fff;
+  font-size: 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+} 

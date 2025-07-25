@@ -1,0 +1,57 @@
+<!-- 导航栏 -->
+<navigation-bar 
+  title="咨询师列表"
+  showBack="{{true}}"
+  background="#ffffff"
+  color="#333333"
+  fixed="{{true}}"
+/>
+
+<view class="counselor-list">
+  <!-- 分类标签 -->
+  <scroll-view scroll-x class="category-tabs" enhanced show-scrollbar="{{false}}">
+    <view class="tab-item {{currentTab === 'all' ? 'active' : ''}}" bindtap="switchTab" data-tab="all">全部</view>
+    <view class="tab-item {{currentTab === 'adaptation' ? 'active' : ''}}" bindtap="switchTab" data-tab="adaptation">适应困扰</view>
+    <view class="tab-item {{currentTab === 'parenting' ? 'active' : ''}}" bindtap="switchTab" data-tab="parenting">亲子教育</view>
+    <view class="tab-item {{currentTab === 'mental' ? 'active' : ''}}" bindtap="switchTab" data-tab="mental">心理健康</view>
+    <view class="tab-item {{currentTab === 'growth' ? 'active' : ''}}" bindtap="switchTab" data-tab="growth">个人成长</view>
+  </scroll-view>
+
+  <!-- 咨询师列表 -->
+  <scroll-view 
+    scroll-y 
+    class="counselor-scroll"
+    refresher-enabled="{{true}}"
+    refresher-triggered="{{isRefreshing}}"
+    bindrefresherrefresh="onRefresh"
+    bindscrolltolower="onLoadMore"
+  >
+    <view class="counselor-item" wx:for="{{counselors}}" wx:key="id" bindtap="onCounselorTap" data-id="{{item.id}}">
+      <image class="counselor-avatar" src="{{item.avatar}}" mode="aspectFill"></image>
+      <view class="counselor-info">
+        <view class="counselor-header">
+          <text class="counselor-name">{{item.name}}</text>
+        </view>
+        <view class="tag-list">
+          <text class="tag" wx:for="{{item.tags}}" wx:key="*this" wx:for-item="tag">{{tag}}</text>
+        </view>
+        <view class="consult-type">
+          <text>咨询方式：</text>
+          <text>{{item.consultType}}</text>
+        </view>
+      </view>
+      <view class="book-btn">立即预约</view>
+    </view>
+
+    <!-- 加载状态 -->
+    <view class="loading-status" wx:if="{{loadingMore}}">
+      <text>加载中...</text>
+    </view>
+    <view class="loading-status" wx:if="{{noMoreData}}">
+      <text>没有更多了</text>
+    </view>
+  </scroll-view>
+</view>
+
+<!-- 底部标签栏 -->
+<tab-bar active="1" /> 

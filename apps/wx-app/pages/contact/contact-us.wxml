@@ -1,0 +1,143 @@
+<!-- 自定义导航栏 -->
+<navigation-bar 
+  title="联系客服"
+  showBack="{{true}}"
+  background="#E6A23C"
+  color="#ffffff"
+>
+</navigation-bar>
+
+<wxs module="util" src="../../utils/util.wxs"></wxs>
+
+<view class="container">
+  <!-- 联系方式 -->
+  <view class="section">
+    <view class="section-title">联系方式</view>
+    <view class="contact-list">
+      <!-- 客服电话 -->
+      <view class="contact-item">
+        <image class="contact-icon" src="{{util.getResource('images/phone.png')}}" mode="aspectFit"></image>
+        <view class="contact-info">
+          <text class="contact-label">客服电话</text>
+          <text class="contact-value">400-123-4567</text>
+        </view>
+        <view class="contact-action" bindtap="makePhoneCall">
+          <text class="action-btn">拨打</text>
+        </view>
+      </view>
+
+      <!-- 电子邮箱 -->
+      <view class="contact-item">
+        <image class="contact-icon" src="{{util.getResource('images/email.png')}}" mode="aspectFit"></image>
+        <view class="contact-info">
+          <text class="contact-label">电子邮箱</text>
+          <text class="contact-value">support@meiguang.com</text>
+        </view>
+        <view class="contact-action" bindtap="copyEmail">
+          <text class="action-btn">复制</text>
+        </view>
+      </view>
+
+      <!-- 微信公众号 -->
+      <view class="contact-item">
+        <image class="contact-icon" src="{{util.getResource('images/wechat.png')}}" mode="aspectFit"></image>
+        <view class="contact-info">
+          <text class="contact-label">微信公众号</text>
+          <text class="contact-value">美广心理健康</text>
+        </view>
+        <view class="contact-action" bindtap="copyWechat">
+          <text class="action-btn">复制</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 客服时间 -->
+  <view class="section">
+    <view class="section-title">客服时间</view>
+    <view class="time-list">
+      <view class="time-item">
+        <text class="time-label">周一至周五</text>
+        <text class="time-value">9:00 - 18:00</text>
+      </view>
+      <view class="time-item">
+        <text class="time-label">周六至周日</text>
+        <text class="time-value">10:00 - 17:00</text>
+      </view>
+      <view class="time-item">
+        <text class="time-label">节假日</text>
+        <text class="time-value">10:00 - 16:00</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 在线咨询 -->
+  <view class="section">
+    <view class="section-title">在线咨询</view>
+    <form bindsubmit="onSubmit">
+      <!-- 问题类型 -->
+      <view class="form-item">
+        <text class="form-label required">问题类型</text>
+        <picker mode="selector" range="{{problemTypes}}" value="{{problemTypeIndex}}" bindchange="onProblemTypeChange">
+          <view class="picker">
+            <text>{{problemTypes[problemTypeIndex] || '请选择问题类型'}}</text>
+            <image class="arrow-icon" src="{{util.getResource('images/arrow-right.png')}}" mode="aspectFit"></image>
+          </view>
+        </picker>
+      </view>
+
+      <!-- 留言内容 -->
+      <view class="form-item">
+        <text class="form-label required">留言内容</text>
+        <textarea 
+          class="textarea" 
+          name="content" 
+          placeholder="请详细描述您遇到的问题，以便我们更好地为您解决" 
+          maxlength="500"
+          bindinput="onContentInput"
+        ></textarea>
+        <view class="word-count">{{contentLength}}/500</view>
+      </view>
+
+      <!-- 联系方式 -->
+      <view class="form-item">
+        <text class="form-label required">联系方式</text>
+        <input 
+          class="input" 
+          name="contact" 
+          placeholder="请留下您的手机号或微信，方便我们回复您"
+          type="text"
+        />
+      </view>
+
+      <!-- 提交按钮 -->
+      <button class="submit-btn" form-type="submit">提交留言</button>
+    </form>
+  </view>
+
+  <!-- 常见问题 -->
+  <view class="section">
+    <view class="section-title">常见问题</view>
+    <view class="faq-list">
+      <view 
+        class="faq-item {{item.expanded ? 'expanded' : ''}}" 
+        wx:for="{{faqList}}" 
+        wx:key="title"
+        bindtap="toggleFaq"
+        data-index="{{index}}"
+      >
+        <view class="faq-header">
+          <text class="faq-title">{{item.title}}</text>
+          <image 
+            class="arrow-icon {{item.expanded ? 'expanded' : ''}}" 
+            src="{{util.getResource('images/arrow-down.png')}}" 
+            mode="aspectFit"
+          ></image>
+        </view>
+        <view class="faq-content" wx:if="{{item.expanded}}">
+          <text>{{item.content}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

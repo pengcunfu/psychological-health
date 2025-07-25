@@ -1,0 +1,348 @@
+/* 咨询师卡片组件样式 */
+.counselor-card {
+  background: #fff;
+  border-radius: 16rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.counselor-card:active {
+  transform: scale(0.98);
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.12);
+}
+
+/* 列表模式 */
+.counselor-card--list {
+  display: flex;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.counselor-card--list .counselor-card__avatar {
+  width: 120rpx;
+  height: 120rpx;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+}
+
+.counselor-card--list .counselor-card__info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.counselor-card--list .counselor-card__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16rpx;
+}
+
+/* 网格模式 */
+.counselor-card--grid {
+  padding: 24rpx;
+  text-align: center;
+}
+
+.counselor-card--grid .counselor-card__avatar {
+  width: 100rpx;
+  height: 100rpx;
+  margin: 0 auto 16rpx;
+}
+
+.counselor-card--grid .counselor-card__info {
+  margin-bottom: 20rpx;
+}
+
+.counselor-card--grid .counselor-card__footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12rpx;
+}
+
+/* 头像容器 */
+.counselor-card__avatar {
+  position: relative;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.counselor-card__avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+/* 在线状态 */
+.counselor-card__status {
+  position: absolute;
+  bottom: -4rpx;
+  right: -4rpx;
+  padding: 4rpx 8rpx;
+  border-radius: 12rpx;
+  font-size: 20rpx;
+  color: #fff;
+  border: 2rpx solid #fff;
+}
+
+.counselor-card__status--online {
+  background: #52c41a;
+}
+
+.counselor-card__status--offline {
+  background: #999;
+}
+
+.counselor-card__status-text {
+  font-size: 20rpx;
+  font-weight: 500;
+}
+
+/* 收藏按钮 */
+.counselor-card__favorite {
+  position: absolute;
+  top: -4rpx;
+  right: -4rpx;
+  width: 48rpx;
+  height: 48rpx;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.counselor-card__favorite:active {
+  transform: scale(0.9);
+}
+
+.counselor-card__favorite-icon {
+  font-size: 28rpx;
+  color: #ccc;
+  transition: color 0.3s ease;
+}
+
+.counselor-card__favorite--active .counselor-card__favorite-icon {
+  color: #ff4757;
+}
+
+/* 信息区域 */
+.counselor-card__info {
+  min-height: 0;
+}
+
+/* 头部信息 */
+.counselor-card__header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8rpx;
+  flex-wrap: wrap;
+  gap: 8rpx;
+}
+
+.counselor-card__name {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.2;
+}
+
+.counselor-card__title {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 4rpx 12rpx;
+  border-radius: 12rpx;
+  flex-shrink: 0;
+}
+
+.counselor-card__title-text {
+  font-size: 20rpx;
+  color: #fff;
+  font-weight: 500;
+}
+
+/* 专业资质 */
+.counselor-card__qualification {
+  margin-bottom: 12rpx;
+}
+
+.counselor-card__qualification-text {
+  font-size: 24rpx;
+  color: #666;
+  line-height: 1.3;
+}
+
+/* 专长标签 */
+.counselor-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+  margin-bottom: 12rpx;
+}
+
+.counselor-card__tag {
+  background: #f0f9ff;
+  color: #0369a1;
+  padding: 4rpx 12rpx;
+  border-radius: 12rpx;
+  font-size: 22rpx;
+  border: 1rpx solid #e0f2fe;
+}
+
+/* 经验信息 */
+.counselor-card__experience {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 12rpx;
+  flex-wrap: wrap;
+}
+
+.counselor-card__experience-text,
+.counselor-card__consult-count {
+  font-size: 24rpx;
+  color: #666;
+}
+
+/* 评分 */
+.counselor-card__rating {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-bottom: 8rpx;
+}
+
+.counselor-card__stars {
+  display: flex;
+  gap: 2rpx;
+}
+
+.counselor-card__star {
+  font-size: 24rpx;
+  color: #ddd;
+  transition: color 0.3s ease;
+}
+
+.counselor-card__star--filled {
+  color: #ffd700;
+}
+
+.counselor-card__rating-text {
+  font-size: 24rpx;
+  color: #666;
+  margin-left: 8rpx;
+}
+
+/* 底部区域 */
+.counselor-card__footer {
+  align-items: center;
+}
+
+/* 价格 */
+.counselor-card__price {
+  flex: 1;
+}
+
+.counselor-card__price-text {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #ff4757;
+}
+
+/* 操作按钮 */
+.counselor-card__actions {
+  flex-shrink: 0;
+}
+
+.counselor-card__consult-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border: none;
+  border-radius: 24rpx;
+  padding: 16rpx 32rpx;
+  font-size: 26rpx;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.3);
+}
+
+.counselor-card__consult-btn:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 2rpx 8rpx rgba(102, 126, 234, 0.4);
+}
+
+.counselor-card__consult-btn--disabled {
+  background: #ccc !important;
+  color: #999 !important;
+  box-shadow: none !important;
+}
+
+.counselor-card__consult-btn--disabled:active {
+  transform: none !important;
+}
+
+/* 网格模式特殊样式 */
+.counselor-card--grid .counselor-card__header {
+  justify-content: center;
+}
+
+.counselor-card--grid .counselor-card__tags {
+  justify-content: center;
+}
+
+.counselor-card--grid .counselor-card__experience {
+  justify-content: center;
+}
+
+.counselor-card--grid .counselor-card__rating {
+  justify-content: center;
+}
+
+.counselor-card--grid .counselor-card__consult-btn {
+  width: 100%;
+  padding: 12rpx 24rpx;
+  font-size: 24rpx;
+}
+
+/* 响应式设计 */
+@media (max-width: 750rpx) {
+  .counselor-card--list {
+    padding: 20rpx;
+  }
+
+  .counselor-card--list .counselor-card__avatar {
+    width: 100rpx;
+    height: 100rpx;
+    margin-right: 20rpx;
+  }
+
+  .counselor-card__name {
+    font-size: 28rpx;
+  }
+
+  .counselor-card__consult-btn {
+    padding: 12rpx 24rpx;
+    font-size: 24rpx;
+  }
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20rpx);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.counselor-card {
+  animation: fadeIn 0.3s ease-out;
+}

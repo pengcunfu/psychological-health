@@ -1,0 +1,346 @@
+/* 
+ * 美光心理 全局样式
+ */
+
+// 全局样式
+page {
+  background-color: $mg-bg-primary;
+  color: $mg-text-primary;
+  font-size: 28rpx;
+  box-sizing: border-box;
+}
+
+// 文本样式
+.text-primary {
+  color: $mg-primary;
+}
+
+.text-accent {
+  color: $mg-accent;
+}
+
+.text-success {
+  color: $mg-success;
+}
+
+.text-warning {
+  color: $mg-warning;
+}
+
+.text-error {
+  color: $mg-error;
+}
+
+.text-info {
+  color: $mg-info;
+}
+
+// 背景样式
+.bg-primary {
+  background-color: $mg-primary;
+}
+
+.bg-primary-light {
+  background-color: $mg-primary-light;
+}
+
+.bg-accent {
+  background-color: $mg-accent;
+}
+
+.bg-light {
+  background-color: $mg-bg-primary;
+}
+
+.bg-secondary {
+  background-color: $mg-bg-secondary;
+}
+
+// 边框样式
+.border {
+  border: 1rpx solid $mg-border-light;
+}
+
+.border-bottom {
+  border-bottom: 1rpx solid $mg-border-light;
+}
+
+.border-top {
+  border-top: 1rpx solid $mg-border-light;
+}
+
+.border-primary {
+  border: 1rpx solid $mg-primary;
+}
+
+// 按钮样式
+.mg-btn {
+  padding: 20rpx 40rpx;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  line-height: 1.5;
+  text-align: center;
+  transition: all 0.3s;
+  
+  &.primary {
+    background-color: $mg-primary;
+    color: $mg-white;
+    
+    &:active {
+      background-color: $mg-primary-dark;
+    }
+  }
+  
+  &.outline {
+    background-color: transparent;
+    color: $mg-primary;
+    border: 1rpx solid $mg-primary;
+    
+    &:active {
+      background-color: rgba($mg-primary, 0.05);
+    }
+  }
+  
+  &.disabled {
+    background-color: $mg-gray-200;
+    color: $mg-gray-500;
+    pointer-events: none;
+  }
+  
+  &.block {
+    display: block;
+    width: 100%;
+  }
+  
+  &.round {
+    border-radius: 100rpx;
+  }
+  
+  &.small {
+    padding: 10rpx 30rpx;
+    font-size: 24rpx;
+  }
+  
+  &.large {
+    padding: 24rpx 48rpx;
+    font-size: 32rpx;
+  }
+}
+
+// 卡片样式
+.mg-card {
+  background-color: $mg-white;
+  border-radius: 12rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 10rpx $mg-shadow-color;
+}
+
+// 标签样式
+.mg-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4rpx 16rpx;
+  border-radius: 100rpx;
+  font-size: 22rpx;
+  
+  &.primary {
+    background-color: rgba($mg-primary, 0.1);
+    color: $mg-primary;
+  }
+  
+  &.accent {
+    background-color: rgba($mg-accent, 0.1);
+    color: $mg-accent;
+  }
+  
+  &.success {
+    background-color: rgba($mg-success, 0.1);
+    color: $mg-success;
+  }
+  
+  &.warning {
+    background-color: rgba($mg-warning, 0.1);
+    color: $mg-warning;
+  }
+  
+  &.error {
+    background-color: rgba($mg-error, 0.1);
+    color: $mg-error;
+  }
+}
+
+// 头像样式
+.mg-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background-color: $mg-gray-200;
+  overflow: hidden;
+  
+  &.small {
+    width: 60rpx;
+    height: 60rpx;
+  }
+  
+  &.large {
+    width: 120rpx;
+    height: 120rpx;
+  }
+  
+  image {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+// 布局工具类
+.flex {
+  display: flex;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.justify-around {
+  justify-content: space-around;
+}
+
+.align-center {
+  align-items: center;
+}
+
+.align-start {
+  align-items: flex-start;
+}
+
+.align-end {
+  align-items: flex-end;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+// 间距工具类
+.m-0 { margin: 0; }
+.m-1 { margin: 10rpx; }
+.m-2 { margin: 20rpx; }
+.m-3 { margin: 30rpx; }
+.m-4 { margin: 40rpx; }
+.m-5 { margin: 50rpx; }
+
+.mt-0 { margin-top: 0; }
+.mt-1 { margin-top: 10rpx; }
+.mt-2 { margin-top: 20rpx; }
+.mt-3 { margin-top: 30rpx; }
+.mt-4 { margin-top: 40rpx; }
+.mt-5 { margin-top: 50rpx; }
+
+.mb-0 { margin-bottom: 0; }
+.mb-1 { margin-bottom: 10rpx; }
+.mb-2 { margin-bottom: 20rpx; }
+.mb-3 { margin-bottom: 30rpx; }
+.mb-4 { margin-bottom: 40rpx; }
+.mb-5 { margin-bottom: 50rpx; }
+
+.ml-0 { margin-left: 0; }
+.ml-1 { margin-left: 10rpx; }
+.ml-2 { margin-left: 20rpx; }
+.ml-3 { margin-left: 30rpx; }
+.ml-4 { margin-left: 40rpx; }
+.ml-5 { margin-left: 50rpx; }
+
+.mr-0 { margin-right: 0; }
+.mr-1 { margin-right: 10rpx; }
+.mr-2 { margin-right: 20rpx; }
+.mr-3 { margin-right: 30rpx; }
+.mr-4 { margin-right: 40rpx; }
+.mr-5 { margin-right: 50rpx; }
+
+.p-0 { padding: 0; }
+.p-1 { padding: 10rpx; }
+.p-2 { padding: 20rpx; }
+.p-3 { padding: 30rpx; }
+.p-4 { padding: 40rpx; }
+.p-5 { padding: 50rpx; }
+
+.pt-0 { padding-top: 0; }
+.pt-1 { padding-top: 10rpx; }
+.pt-2 { padding-top: 20rpx; }
+.pt-3 { padding-top: 30rpx; }
+.pt-4 { padding-top: 40rpx; }
+.pt-5 { padding-top: 50rpx; }
+
+.pb-0 { padding-bottom: 0; }
+.pb-1 { padding-bottom: 10rpx; }
+.pb-2 { padding-bottom: 20rpx; }
+.pb-3 { padding-bottom: 30rpx; }
+.pb-4 { padding-bottom: 40rpx; }
+.pb-5 { padding-bottom: 50rpx; }
+
+.pl-0 { padding-left: 0; }
+.pl-1 { padding-left: 10rpx; }
+.pl-2 { padding-left: 20rpx; }
+.pl-3 { padding-left: 30rpx; }
+.pl-4 { padding-left: 40rpx; }
+.pl-5 { padding-left: 50rpx; }
+
+.pr-0 { padding-right: 0; }
+.pr-1 { padding-right: 10rpx; }
+.pr-2 { padding-right: 20rpx; }
+.pr-3 { padding-right: 30rpx; }
+.pr-4 { padding-right: 40rpx; }
+.pr-5 { padding-right: 50rpx; }
+
+// 文本工具类
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.font-bold {
+  font-weight: bold;
+}
+
+.font-normal {
+  font-weight: normal;
+}
+
+.text-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.text-small {
+  font-size: 24rpx;
+}
+
+.text-large {
+  font-size: 32rpx;
+}
+
+.text-xlarge {
+  font-size: 36rpx;
+} 

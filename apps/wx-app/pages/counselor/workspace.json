@@ -1,0 +1,10 @@
+{
+  "navigationBarTitleText": "咨询师工作台",
+  "navigationBarBackgroundColor": "#F9EFD6",
+  "navigationBarTextStyle": "black",
+  "enablePullDownRefresh": true,
+  "backgroundColor": "#f8f9fa",
+  "usingComponents": {
+    "mp-icon": "weui-miniprogram/icon/icon"
+  }
+} 

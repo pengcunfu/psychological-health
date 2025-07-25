@@ -1,0 +1,8 @@
+// 获取资源路径的 WXS 函数
+function getResource(uri) {
+  return 'http://127.0.0.1:5000/static/' + uri;
+}
+
+module.exports = {
+  getResource: getResource
+};

@@ -1,0 +1,27 @@
+<view class="custom-container">
+  <!-- 导航栏 -->
+  <block wx:if="{{showNavBar}}">
+    <navigation-bar showBack="{{showBack}}" custom-back="{{customBack}}" bind:back="onBack">
+      <text slot="title">{{navBarTitle}}</text>
+      <block wx:if="{{useSlotLeft}}" slot="left">
+        <slot name="nav-left"></slot>
+      </block>
+      <block wx:if="{{useSlotCenter}}" slot="center">
+        <slot name="nav-center"></slot>
+      </block>
+      <block wx:if="{{useSlotRight}}" slot="right">
+        <slot name="nav-right"></slot>
+      </block>
+    </navigation-bar>
+  </block>
+
+  <!-- 页面内容 -->
+  <view class="content-wrapper {{showNavBar ? 'has-nav' : ''}} {{showTabBar ? 'has-tab' : ''}}">
+    <slot></slot>
+  </view>
+
+  <!-- 底部标签栏 -->
+  <block wx:if="{{showTabBar}}">
+    <tab-bar active="{{activeTab}}" tabs="{{tabs}}" showBorder="{{true}}" safeArea="{{true}}"></tab-bar>
+  </block>
+</view>

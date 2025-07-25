@@ -1,0 +1,184 @@
+.profile-container {
+  min-height: 100vh;
+  background-color: #f5f6f7;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* 用户信息区域 */
+.user-info-section {
+  position: relative;
+  padding: 40rpx 30rpx;
+  background: linear-gradient(135deg, #4080FF 0%, #6AA1FF 100%);
+  display: flex;
+  align-items: center;
+}
+
+.user-avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 60rpx;
+  border: 4rpx solid rgba(255, 255, 255, 0.2);
+}
+
+.user-detail {
+  flex: 1;
+  margin-left: 24rpx;
+}
+
+.user-name {
+  font-size: 36rpx;
+  color: #fff;
+  font-weight: 500;
+  margin-bottom: 8rpx;
+  display: block;
+}
+
+.user-title {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.9);
+  display: block;
+}
+
+.qr-code {
+  width: 48rpx;
+  height: 48rpx;
+}
+
+.qr-code image {
+  width: 100%;
+  height: 100%;
+}
+
+/* 卡片通用样式 */
+.card-section {
+  margin: 20rpx 30rpx;
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30rpx;
+}
+
+.section-header .title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.view-all {
+  font-size: 26rpx;
+  color: #666;
+  display: flex;
+  align-items: center;
+}
+
+.arrow {
+  margin-left: 8rpx;
+  color: #999;
+}
+
+/* 预约状态列表 */
+.order-status-list {
+  display: flex;
+  justify-content: space-between;
+}
+
+.status-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.status-icon {
+  width: 56rpx;
+  height: 56rpx;
+  margin-bottom: 12rpx;
+}
+
+.status-item text {
+  font-size: 26rpx;
+  color: #333;
+}
+
+/* 咨询师服务列表 */
+.service-list {
+  display: flex;
+  margin: 0 -20rpx;
+}
+
+.service-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20rpx;
+  position: relative;
+}
+
+.service-icon {
+  width: 80rpx;
+  height: 80rpx;
+  margin-bottom: 16rpx;
+}
+
+.service-item text {
+  font-size: 28rpx;
+  color: #333;
+}
+
+/* 功能列表 */
+.function-list {
+  margin: 20rpx 30rpx;
+  background: #fff;
+  border-radius: 16rpx;
+}
+
+.function-item {
+  display: flex;
+  align-items: center;
+  padding: 30rpx;
+  border-bottom: 1rpx solid #f5f6f7;
+}
+
+.function-item:last-child {
+  border-bottom: none;
+}
+
+.function-icon {
+  width: 40rpx;
+  height: 40rpx;
+  margin-right: 20rpx;
+}
+
+.function-item text {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.function-item .arrow {
+  margin-left: auto;
+  color: #999;
+}
+
+/* 徽标 */
+.badge {
+  position: absolute;
+  top: -8rpx;
+  right: -8rpx;
+  min-width: 32rpx;
+  height: 32rpx;
+  line-height: 32rpx;
+  padding: 0 8rpx;
+  background: #FF4D4F;
+  border-radius: 16rpx;
+  font-size: 22rpx;
+  color: #fff;
+  text-align: center;
+} 

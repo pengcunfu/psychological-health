@@ -1,0 +1,218 @@
+<!-- 时间管理页面 -->
+<view class="time-slots-container">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <text class="page-title">时间管理</text>
+  </view>
+  
+  <!-- 日历控制 -->
+  <view class="calendar-controls">
+    <view class="calendar-header">
+      <view class="calendar-nav prev" bindtap="changeWeek" data-offset="-1">
+        <text class="nav-icon">《</text>
+      </view>
+      <view class="current-week">
+        {{startWeekDate}} - {{endWeekDate}}
+      </view>
+      <view class="calendar-nav next" bindtap="changeWeek" data-offset="1">
+        <text class="nav-icon">》</text>
+      </view>
+    </view>
+    
+    <view class="view-actions">
+      <view class="action-button" bindtap="goToToday">
+        <text class="action-text">今天</text>
+      </view>
+      <view class="action-button" bindtap="showBatchEditModal">
+        <text class="action-text">批量设置</text>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 周视图日历 -->
+  <view class="week-calendar">
+    <!-- 星期表头 -->
+    <view class="week-header">
+      <view class="day-header" wx:for="{{weekDays}}" wx:key="index">
+        <text class="weekday">{{item.weekday}}</text>
+        <text class="date {{item.isToday ? 'today' : ''}}">{{item.date}}</text>
+      </view>
+    </view>
+    
+    <!-- 时间段网格 -->
+    <scroll-view scroll-y class="time-grid-scroll">
+      <view class="time-grid">
+        <!-- 时间轴标记 -->
+        <view class="time-axis">
+          <view 
+            class="time-marker" 
+            wx:for="{{workHours}}" 
+            wx:key="*this"
+            style="top: {{(item - startHour) * 100}}rpx"
+          >
+            <text class="time-text">{{formatHour(item)}}</text>
+          </view>
+        </view>
+        
+        <!-- 每天的时间格子 -->
+        <view class="day-column" wx:for="{{weekDays}}" wx:key="index" wx:for-index="dayIndex">
+          <view class="hour-grid-container">
+            <!-- 时间段背景 -->
+            <view 
+              class="hour-cell" 
+              wx:for="{{workHours}}" 
+              wx:key="*this"
+              bindtap="toggleTimeSlot"
+              data-day-index="{{dayIndex}}"
+              data-hour="{{item}}"
+            ></view>
+            
+            <!-- 可预约时间段 -->
+            <view 
+              wx:for="{{getTimeSlots(item.date)}}" 
+              wx:key="id"
+              class="time-slot {{item.status}}"
+              style="top: {{calculateSlotPosition(item.startHour)}}; height: {{calculateSlotHeight(item.startHour, item.endHour)}}"
+              catchtap="editTimeSlot"
+              data-slot="{{item}}"
+            >
+              <view class="slot-time">{{formatTimeSlot(item)}}</view>
+              <view class="slot-status" wx:if="{{item.status === 'booked'}}">已预约</view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+  
+  <!-- 批量设置弹窗 -->
+  <view class="modal" wx:if="{{showBatchEdit}}">
+    <view class="modal-mask" bindtap="hideBatchEditModal"></view>
+    <view class="modal-content">
+      <view class="modal-header">
+        <text class="modal-title">批量设置可预约时间</text>
+        <text class="modal-close" bindtap="hideBatchEditModal">✕</text>
+      </view>
+      
+      <view class="batch-edit-form">
+        <view class="form-section">
+          <text class="section-title">选择日期范围</text>
+          <view class="date-range-picker">
+            <view class="date-picker" bindtap="showStartDatePicker">
+              <text class="date-label">开始日期：</text>
+              <text class="date-value">{{batchSettings.startDate || '请选择'}}</text>
+            </view>
+            <view class="date-picker" bindtap="showEndDatePicker">
+              <text class="date-label">结束日期：</text>
+              <text class="date-value">{{batchSettings.endDate || '请选择'}}</text>
+            </view>
+          </view>
+        </view>
+        
+        <view class="form-section">
+          <text class="section-title">选择生效星期</text>
+          <view class="weekday-selector">
+            <view 
+              wx:for="{{weekdayLabels}}" 
+              wx:key="index"
+              class="weekday-item {{batchSettings.weekdays.indexOf(index + 1) > -1 ? 'selected' : ''}}"
+              bindtap="toggleWeekday"
+              data-day="{{index + 1}}"
+            >
+              {{item}}
+            </view>
+          </view>
+        </view>
+        
+        <view class="form-section">
+          <text class="section-title">选择时间段</text>
+          <view class="time-range-picker">
+            <view class="time-picker" bindtap="showStartTimePicker">
+              <text class="time-label">开始时间：</text>
+              <text class="time-value">{{batchSettings.startTime || '请选择'}}</text>
+            </view>
+            <view class="time-picker" bindtap="showEndTimePicker">
+              <text class="time-label">结束时间：</text>
+              <text class="time-value">{{batchSettings.endTime || '请选择'}}</text>
+            </view>
+          </view>
+        </view>
+        
+        <view class="form-section">
+          <text class="section-title">选择重复方式</text>
+          <view class="repeat-selector">
+            <view 
+              wx:for="{{repeatTypes}}" 
+              wx:key="value"
+              class="repeat-item {{batchSettings.repeatType === item.value ? 'selected' : ''}}"
+              bindtap="setBatchRepeatType"
+              data-type="{{item.value}}"
+            >
+              {{item.text}}
+            </view>
+          </view>
+        </view>
+        
+        <view class="form-actions">
+          <view class="action-button cancel" bindtap="hideBatchEditModal">
+            取消
+          </view>
+          <view class="action-button confirm" bindtap="applyBatchSettings">
+            应用设置
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 时间段编辑弹窗 -->
+  <view class="modal" wx:if="{{currentEditingSlot}}">
+    <view class="modal-mask" bindtap="hideEditSlotModal"></view>
+    <view class="modal-content">
+      <view class="modal-header">
+        <text class="modal-title">编辑时间段</text>
+        <text class="modal-close" bindtap="hideEditSlotModal">✕</text>
+      </view>
+      
+      <view class="slot-edit-form">
+        <view class="slot-info">
+          <text class="slot-date">{{formatDate(currentEditingSlot.date)}}</text>
+          <text class="slot-time">{{formatTimeSlot(currentEditingSlot)}}</text>
+        </view>
+        
+        <view class="status-selector">
+          <view 
+            class="status-item {{currentEditingSlot.status === 'available' ? 'selected' : ''}}"
+            bindtap="updateSlotStatus"
+            data-status="available"
+          >
+            <text class="status-text">可预约</text>
+          </view>
+          <view 
+            class="status-item {{currentEditingSlot.status === 'unavailable' ? 'selected' : ''}}"
+            bindtap="updateSlotStatus"
+            data-status="unavailable"
+          >
+            <text class="status-text">不可预约</text>
+          </view>
+        </view>
+        
+        <view class="form-actions">
+          <view 
+            class="action-button delete" 
+            wx:if="{{currentEditingSlot.status !== 'booked'}}"
+            bindtap="deleteTimeSlot"
+          >
+            删除
+          </view>
+          <view class="action-button cancel" bindtap="hideEditSlotModal">
+            取消
+          </view>
+          <view class="action-button confirm" bindtap="saveTimeSlot">
+            保存
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view> 

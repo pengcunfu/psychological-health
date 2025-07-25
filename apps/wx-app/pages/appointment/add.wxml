@@ -1,0 +1,117 @@
+<wxs module="util" src="../../utils/util.wxs"></wxs>
+
+<!-- 自定义导航栏 -->
+<navigation-bar 
+  id="navbar"
+  title="请完善订单信息"
+  showBack="{{true}}"
+  background="#ffffff"
+  color="#333333"
+  fixed="{{true}}"
+  titleAlign="center"
+>
+</navigation-bar>
+
+<view class="container">
+  <!-- 咨询人信息 -->
+  <view class="section">
+    <view class="section-title">咨询人</view>
+    <block wx:if="{{accountInfo}}">
+      <view class="account-info">
+        <view class="account-main">
+          <text class="name">{{accountInfo.name}}</text>
+          <text class="phone">{{accountInfo.phone}}</text>
+        </view>
+        <view class="edit-btn" bindtap="onAddAccount">
+          <image src="{{util.getResource('images/edit.png')}}" mode="aspectFit" class="edit-icon"></image>
+          <text>修改</text>
+        </view>
+      </view>
+    </block>
+    <block wx:else>
+      <view class="add-account" bindtap="onAddAccount">
+        <image src="{{util.getResource('images/add.png')}}" mode="aspectFit" class="add-icon"></image>
+        <text>新增成人账户</text>
+      </view>
+    </block>
+  </view>
+
+  <!-- 咨询类型 -->
+  <view class="section">
+    <view class="section-title">咨询类型</view>
+    <view class="type-list">
+      <view 
+        class="type-item {{selectedType === item.id ? 'selected' : ''}}" 
+        wx:for="{{consultTypes}}" 
+        wx:key="id"
+        bindtap="onSelectType"
+        data-id="{{item.id}}"
+      >
+        <text>{{item.name}}</text>
+        <text class="price">¥{{item.price}}/次</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 咨询方式 -->
+  <view class="section">
+    <view class="section-title">咨询方式</view>
+    <view class="method-list">
+      <view 
+        class="method-item {{selectedMethod === item.id ? 'selected' : ''}}" 
+        wx:for="{{consultMethods}}" 
+        wx:key="id"
+        bindtap="onSelectMethod"
+        data-id="{{item.id}}"
+      >
+        <image src="{{item.icon}}" mode="aspectFit" class="method-icon"></image>
+        <text>{{item.name}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 可约时间 -->
+  <view class="section">
+    <view class="section-title">可约时间</view>
+    <view class="time-list">
+      <view class="time-item" wx:for="{{availableDates}}" wx:key="date">
+        <view class="date-info">
+          <text class="date">{{item.date}}</text>
+          <text class="week">{{item.week}}</text>
+        </view>
+        <view class="time-slots">
+          <block wx:if="{{item.isFull}}">
+            <text class="full">已满</text>
+          </block>
+          <block wx:elif="{{item.slots.length === 0}}">
+            <text class="empty">-</text>
+          </block>
+          <block wx:else>
+            <view 
+              class="time-slot {{slot.selected ? 'selected' : ''}} {{slot.disabled ? 'disabled' : ''}}"
+              wx:for="{{item.slots}}"
+              wx:for-item="slot"
+              wx:key="time"
+              bindtap="{{!slot.disabled ? 'onSelectTimeSlot' : ''}}"
+              data-date="{{item.date}}"
+              data-time="{{slot.time}}"
+            >
+              {{slot.time}}
+            </view>
+          </block>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 底部操作栏 -->
+<view class="bottom-bar">
+  <view class="price-info">
+    <text>共计：</text>
+    <text class="amount">¥{{totalPrice}}</text>
+  </view>
+  <button class="submit-btn {{canSubmit ? '' : 'disabled'}}" bindtap="onSubmit">
+    提交订单
+  </button>
+</view>

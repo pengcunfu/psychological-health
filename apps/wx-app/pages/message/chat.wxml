@@ -1,0 +1,149 @@
+<navigation-bar title="{{counselorName}}" back="{{true}}" />
+
+<view class="container">
+  <!-- 消息列表区域 -->
+  <scroll-view 
+    class="message-list" 
+    scroll-y 
+    scroll-into-view="{{scrollIntoView}}"
+    bindscrolltoupper="onScrollToUpper"
+    refresher-enabled="{{true}}"
+    refresher-triggered="{{refreshing}}"
+    bindrefresherrefresh="onRefresh"
+  >
+    <!-- 加载更多提示 -->
+    <view class="loading-more" wx:if="{{hasMore}}">
+      <text>加载更多...</text>
+    </view>
+
+    <!-- 消息列表 -->
+    <view class="message-wrapper" wx:for="{{messages}}" wx:key="id" id="msg-{{item.id}}">
+      <!-- 时间显示 -->
+      <view class="time-stamp" wx:if="{{item.showTime}}">
+        {{item.timeStr}}
+      </view>
+      
+      <!-- 消息气泡 -->
+      <view class="message {{item.fromId === userId ? 'message-right' : 'message-left'}}">
+        <!-- 头像 -->
+        <image 
+          class="avatar" 
+          src="{{item.fromId === userId ? userAvatar : counselorAvatar}}"
+          mode="aspectFill"
+        />
+        
+        <!-- 消息内容 -->
+        <view class="message-content">
+          <!-- 文本消息 -->
+          <view class="text-message" wx:if="{{item.type === 'text'}}">
+            {{item.content}}
+          </view>
+          
+          <!-- 图片消息 -->
+          <image 
+            class="image-message" 
+            wx:elif="{{item.type === 'image'}}" 
+            src="{{item.content}}" 
+            mode="widthFix" 
+            bindtap="previewImage" 
+            data-url="{{item.content}}"
+          />
+          
+          <!-- 语音消息 -->
+          <view 
+            class="voice-message" 
+            wx:elif="{{item.type === 'voice'}}"
+            bindtap="playVoice" 
+            data-url="{{item.content}}"
+          >
+            <image class="voice-icon" src="/assets/icons/voice.png" />
+            <text>{{item.duration}}″</text>
+          </view>
+        </view>
+
+        <!-- 发送状态 -->
+        <view class="message-status" wx:if="{{item.fromId === userId}}">
+          <text class="status-text" wx:if="{{item.status === 'sending'}}">发送中...</text>
+          <text class="status-text error" wx:elif="{{item.status === 'failed'}}">发送失败</text>
+          <image 
+            class="status-icon" 
+            wx:elif="{{item.status === 'failed'}}" 
+            src="/assets/icons/resend.png"
+            bindtap="resendMessage"
+            data-id="{{item.id}}"
+          />
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 输入区域 -->
+  <view class="input-area">
+    <!-- 语音/键盘切换按钮 -->
+    <image 
+      class="mode-switch" 
+      src="{{isVoiceMode ? '/assets/icons/keyboard.png' : '/assets/icons/voice.png'}}"
+      bindtap="switchInputMode"
+    />
+    
+    <!-- 文本输入框 -->
+    <input 
+      class="text-input"
+      wx:if="{{!isVoiceMode}}"
+      value="{{inputContent}}"
+      bindinput="onInput"
+      placeholder="请输入消息..."
+      cursor-spacing="20"
+    />
+    
+    <!-- 语音输入按钮 -->
+    <button 
+      class="voice-button"
+      wx:else
+      bindtouchstart="startRecording"
+      bindtouchend="stopRecording"
+      bindtouchmove="onTouchMove"
+    >
+      按住说话
+    </button>
+    
+    <!-- 更多功能按钮 -->
+    <image 
+      class="more-button" 
+      src="/assets/icons/more.png"
+      bindtap="showMoreActions"
+    />
+    
+    <!-- 发送按钮 -->
+    <button 
+      class="send-button {{inputContent ? 'active' : ''}}"
+      bindtap="sendMessage"
+      disabled="{{!inputContent}}"
+    >
+      发送
+    </button>
+  </view>
+
+  <!-- 更多功能面板 -->
+  <view class="more-panel" wx:if="{{showMore}}">
+    <view class="action-list">
+      <view class="action-item" bindtap="chooseImage">
+        <image class="action-icon" src="/assets/icons/image.png" />
+        <text>图片</text>
+      </view>
+      <view class="action-item" bindtap="startVideoCall">
+        <image class="action-icon" src="/assets/icons/video.png" />
+        <text>视频通话</text>
+      </view>
+      <view class="action-item" bindtap="makeAppointment">
+        <image class="action-icon" src="/assets/icons/calendar.png" />
+        <text>预约咨询</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 录音取消提示 -->
+  <view class="recording-cancel-tip {{showCancelTip ? 'show' : ''}}">
+    <text>松开手指，取消发送</text>
+  </view>
+</view> 

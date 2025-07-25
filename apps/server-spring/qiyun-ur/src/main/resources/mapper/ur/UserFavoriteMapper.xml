@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.ur.mapper.UserFavoriteMapper">
+    <resultMap id="BaseResultMap" type="com.ruoyi.ur.domain.entity.UserFavorite">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="user_id" property="userId" jdbcType="VARCHAR"/>
+        <result column="item_id" property="itemId" jdbcType="VARCHAR"/>
+        <result column="item_type" property="itemType" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.ruoyi.ur.domain.entity.UserFavorite">
+        INSERT INTO ur_user_favorite (id, user_id, item_id, item_type, create_time)
+        VALUES (#{id}, #{userId}, #{itemId}, #{itemType}, Now())
+    </insert>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+        DELETE FROM ur_user_favorite WHERE id = #{id}
+    </delete>
+
+    <select id="selectByUserId" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT * FROM ur_user_favorite WHERE user_id = #{userId}
+    </select>
+
+    <select id="selectByUserAndItem" resultMap="BaseResultMap">
+        SELECT * FROM ur_user_favorite
+        WHERE user_id = #{userId} AND item_id = #{itemId} AND item_type = #{itemType}
+    </select>
+
+    <!-- 分页查询收藏记录 -->
+    <select id="selectByUserIdAndType" resultMap="BaseResultMap">
+        SELECT * FROM ur_user_favorite
+        WHERE user_id = #{userId} AND item_type = #{type}
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <!-- 查询总数 -->
+    <select id="countByUserIdAndType" resultType="long">
+        SELECT COUNT(*) FROM ur_user_favorite
+        WHERE user_id = #{userId} AND item_type = #{type}
+    </select>
+
+    <!-- 查询咨询师详情 -->
+    <select id="selectCounselorsByIds" resultType="map">
+        SELECT 
+            id, 
+            name, 
+            avatar, 
+            title, 
+            is_verified as isVerified,
+            tags,
+            price
+        FROM ur_counselor
+        <where>
+            <if test="ids != null and ids.size() > 0">
+                id IN 
+                <foreach item="id" collection="ids" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="ids == null or ids.size() == 0">
+                1=0
+            </if>
+        </where>
+    </select>
+
+    <!-- 查询课程详情 -->
+    <select id="selectCoursesByIds" resultType="map">
+        SELECT 
+            id,
+            title,
+            cover_image as coverImage,
+            teacher,
+            tags,
+            price
+        FROM ur_course_info
+        <where>
+            <if test="ids != null and ids.size() > 0">
+                id IN 
+                <foreach item="id" collection="ids" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="ids == null or ids.size() == 0">
+                1=0
+            </if>
+        </where>
+    </select>
+</mapper>
