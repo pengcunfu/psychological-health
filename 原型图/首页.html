@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心理健康平台 - 首页</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 375px;
+            min-height: 100vh;
+            margin: 0 auto;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        .header {
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #fff;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background-color: #4A90E2;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        .logo-text {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+        .search-bar {
+            flex: 1;
+            height: 36px;
+            background-color: #f5f5f5;
+            border-radius: 18px;
+            margin: 0 10px;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            cursor: pointer;
+        }
+        .search-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+            opacity: 0.5;
+        }
+        .search-text {
+            font-size: 14px;
+            color: #999;
+        }
+        .message-icon {
+            position: relative;
+        }
+        .message-dot {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 8px;
+            height: 8px;
+            background-color: #ff4d4f;
+            border-radius: 50%;
+        }
+        .banner {
+            height: 160px;
+            position: relative;
+            overflow: hidden;
+        }
+        .banner-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .banner-pagination {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+        }
+        .banner-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: rgba(255,255,255,0.6);
+        }
+        .banner-dot.active {
+            background-color: #fff;
+            width: 16px;
+            border-radius: 3px;
+        }
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            padding: 20px 10px;
+            background-color: #fff;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            text-decoration: none;
+        }
+        .nav-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #f0f7ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+        .nav-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+        .nav-text {
+            font-size: 12px;
+            color: #333;
+        }
+        .section {
+            margin-top: 10px;
+            background-color: #fff;
+            padding: 15px;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            display: flex;
+            align-items: center;
+        }
+        .section-title-icon {
+            width: 4px;
+            height: 16px;
+            background-color: #4A90E2;
+            margin-right: 8px;
+            border-radius: 2px;
+        }
+        .section-more {
+            font-size: 12px;
+            color: #999;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        .section-more-icon {
+            margin-left: 4px;
+        }
+        
+        /* 咨询师卡片样式 */
+        .counselor-list {
+            display: flex;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            scrollbar-width: none; /* Firefox */
+        }
+        .counselor-list::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Edge */
+        }
+        .counselor-card {
+            flex: 0 0 auto;
+            width: 140px;
+            margin-right: 12px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            background-color: #fff;
+            text-decoration: none;
+        }
+        .counselor-img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+        }
+        .counselor-info {
+            padding: 8px;
+        }
+        .counselor-name {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .counselor-title {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .counselor-rating {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: #ff9800;
+        }
+        .rating-star {
+            margin-right: 4px;
+        }
+        .counselor-price {
+            font-size: 12px;
+            color: #ff4d4f;
+            margin-top: 4px;
+        }
+        .price-unit {
+            font-size: 10px;
+            color: #999;
+        }
+        
+        /* 课程卡片样式 */
+        .course-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .course-card {
+            display: flex;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            background-color: #fff;
+            text-decoration: none;
+        }
+        .course-img {
+            width: 120px;
+            height: 80px;
+            object-fit: cover;
+        }
+        .course-info {
+            flex: 1;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .course-name {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .course-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .course-rating {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: #ff9800;
+        }
+        .course-count {
+            font-size: 12px;
+            color: #999;
+        }
+        .course-price {
+            font-size: 14px;
+            color: #ff4d4f;
+            font-weight: bold;
+        }
+        .course-free {
+            font-size: 14px;
+            color: #52c41a;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部导航 -->
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">心</div>
+                <div class="logo-text">心理健康</div>
+            </div>
+            <div class="search-bar">
+                <svg class="search-icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#999" d="M909.6 854.5L649.9 594.8C690.2 542.7 712 479 712 412c0-80.2-31.3-155.4-87.9-212.1-56.6-56.7-132-87.9-212.1-87.9s-155.5 31.3-212.1 87.9C143.2 256.5 112 331.8 112 412c0 80.1 31.3 155.5 87.9 212.1C256.5 680.8 331.8 712 412 712c67 0 130.6-21.8 182.7-62l259.7 259.6c3.2 3.2 8.4 3.2 11.6 0l43.6-43.5c3.2-3.2 3.2-8.4 0-11.6zM570.4 570.4C528 612.7 471.8 636 412 636s-116-23.3-158.4-65.6C211.3 528 188 471.8 188 412s23.3-116.1 65.6-158.4C296 211.3 352.2 188 412 188s116.1 23.2 158.4 65.6S636 352.2 636 412s-23.3 116.1-65.6 158.4z"></path>
+                </svg>
+                <div class="search-text">搜索咨询师、课程</div>
+            </div>
+            <div class="message-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4Z" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M22 6L12 13L2 6" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <div class="message-dot"></div>
+            </div>
+        </div>
+        
+        <!-- 轮播图 -->
+        <div class="banner">
+            <img src="https://via.placeholder.com/375x160/4A90E2/FFFFFF/?text=心理健康服务" alt="心理健康服务" class="banner-img">
+            <div class="banner-pagination">
+                <div class="banner-dot active"></div>
+                <div class="banner-dot"></div>
+                <div class="banner-dot"></div>
+            </div>
+        </div>
+        
+        <!-- 功能导航 -->
+        <div class="nav-grid">
+            <a href="咨询预约.html" class="nav-item">
+                <div class="nav-icon" style="background-color: #e6f7ff;">
+                    <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+                        <path d="M832 64H192c-17.7 0-32 14.3-32 32v832c0 17.7 14.3 32 32 32h640c17.7 0 32-14.3 32-32V96c0-17.7-14.3-32-32-32z" fill="#1890ff" />
+                        <path d="M292 734h440c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H292c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zM292 472h440c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H292c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zM292 210h440c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H292c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8z" fill="#fff" />
+                    </svg>
+                </div>
+                <span class="nav-text">咨询预约</span>
+            </a>
+            <a href="课程学习.html" class="nav-item">
+                <div class="nav-icon" style="background-color: #fff0f6;">
+                    <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+                        <path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64z" fill="#eb2f96" />
+                        <path d="M719.4 499.1l-296.1-215A15.9 15.9 0 0 0 398 297v430c0 13.1 14.8 20.5 25.3 12.9l296.1-215a15.9 15.9 0 0 0 0-25.8z" fill="#fff" />
+                    </svg>
+                </div>
+                <span class="nav-text">课程学习</span>
+            </a>
+            <a href="心理测评.html" class="nav-item">
+                <div class="nav-icon" style="background-color: #f6ffed;">
+                    <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+                        <path d="M832 64H192c-17.7 0-32 14.3-32 32v832c0 17.7 14.3 32 32 32h640c17.7 0 32-14.3 32-32V96c0-17.7-14.3-32-32-32z" fill="#52c41a" />
+                        <path d="M699 353h-46.9c-10.2 0-19.9 4.9-25.9 13.3L469 584.3l-71.2-98.8c-6-8.3-15.6-13.3-25.9-13.3H325c-6.5 0-10.3 7.4-6.5 12.7l124.6 172.8c12.7 17.7 39 17.7 51.7 0l210.6-292c3.9-5.3.1-12.7-6.4-12.7z" fill="#fff" />
+                    </svg>
+                </div>
+                <span class="nav-text">心理测评</span>
+            </a>
+            <a href="互动社区.html" class="nav-item">
+                <div class="nav-icon" style="background-color: #fff7e6;">
+                    <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+                        <path d="M824.2 699.9a301.55 301.55 0 0 0-86.4-60.4C783.1 602.8 812 546.8 812 484c0-110.8-92.4-201.7-203.2-200-109.1 1.7-197 90.6-197 200 0 62.8 29 118.8 74.2 155.5a300.95 300.95 0 0 0-86.4 60.4C345 754.6 314 826.8 312 903.8a8 8 0 0 0 8 8.2h56c4.3 0 7.9-3.4 8-7.7 1.9-58 25.4-112.3 66.7-153.5A226.62 226.62 0 0 1 612 684c60.9 0 118.2 23.7 161.3 66.8C814.5 792 838 846.3 840 904.3c.1 4.3 3.7 7.7 8 7.7h56a8 8 0 0 0 8-8.2c-2-77-33-149.2-87.8-203.9zM612 612c-34.2 0-66.4-13.3-90.5-37.5a126.86 126.86 0 0 1-37.5-91.8c.3-32.8 13.4-64.5 36.3-88 24-24.6 56.1-38.3 90.4-38.7 33.9-.3 66.8 12.9 91 36.6 24.8 24.3 38.4 56.8 38.4 91.4 0 34.2-13.3 66.3-37.5 90.5A127.3 127.3 0 0 1 612 612z" fill="#fa8c16" />
+                    </svg>
+                </div>
+                <span class="nav-text">互动社区</span>
+            </a>
+        </div>
+        
+        <!-- 推荐咨询师 -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">
+                    <div class="section-title-icon"></div>
+                    推荐咨询师
+                </div>
+                <a href="咨询师列表.html" class="section-more">
+                    查看全部
+                    <svg class="section-more-icon" width="12" height="12" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="#999" d="M765.7 486.8L314.9 134.7c-5.3-4.1-12.9-0.4-12.9 6.3v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V883c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1c16.4-12.8 16.4-37.6 0-50.4z"></path>
+                    </svg>
+                </a>
+            </div>
+            
+            <div class="counselor-list">
+                <a href="咨询师详情.html?id=1" class="counselor-card">
+                    <img src="https://via.placeholder.com/140x140/4A90E2/FFFFFF/?text=张医生" alt="张医生" class="counselor-img">
+                    <div class="counselor-info">
+                        <div class="counselor-name">张医生</div>
+                        <div class="counselor-title">心理咨询师 · 婚恋情感</div>
+                        <div class="counselor-rating">
+                            <svg class="rating-star" width="12" height="12" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                                <path fill="#ff9800" d="M908.1 353.1l-253.9-36.9L540.7 86.1c-3.1-6.3-8.2-11.4-14.5-14.5-15.8-7.8-35-1.3-42.9 14.5L369.8 316.2l-253.9 36.9c-7 1-13.4 4.3-18.3 9.3-12.3 12.7-12.1 32.9 0.6 45.3l183.7 179.1-43.4 252.9c-1.2 6.9-0.1 14.1 3.2 20.3 8.2 15.6 27.6 21.7 43.2 13.4L512 754l227.1 119.4c6.2 3.3 13.4 4.4 20.3 3.2 17.4-3 29.1-19.5 26.1-36.9l-43.4-252.9 183.7-179.1c5-4.9 8.3-11.3 9.3-18.3 2.7-17.5-9.5-33.7-27-36.3z"></path>
+                            </svg>
+                            4.9 (128)
+                        </div>
+                        <div class="counselor-price">¥300<span class="price-unit">/次</span></div>
+                    </div>
+                </a>
+                
+                <a href="咨询师详情.html?id=2" class="counselor-card">
+                    <img src="https://via.placeholder.com/140x140/52C41A/FFFFFF/?text=李医生" alt="李医生" class="counselor-img">
+                    <div class="counselor-info">
+                        <div class="counselor-name">李医生</div>
+                        <div class="counselor-title">心理咨询师 · 青少年心理</div>
+                        <div class="counselor-rating">
+                            <svg class="rating-star" width="12" height="12" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                                <path fill="#ff9800" d="M908.1 353.1l-253.9-36.9L540.7 86.1c-3.1-6.3-8.2-11.4-14.5-14.5-15.8-7.8-35-1.3-42.9 14.5L369.8 316.2l-253.9 36.9c-7 1-13.4 4.3-18.3 9.3-12.3 12.7-12.1 32.9 0.6 45.3l183.7 179.1-43.4 252.9c-1.2 6.9-0.1 14.1 3.2 20.3 8.2 15.6 27.6 21.7 43.2 13.4L512 754l227.1 119.4c6.2 3.3 13.4 4.4 20.3 3.2 17.4-3 29.1-19.5 26.1-36.9l-43.4-252.9 183.7-179.1c5-4.9 8.3-11.3 9.3-18.3 2.7-17.5-9.5-33.7-27-36.3z"></path>
+                            </svg>
+                            4.8 (96)
+                        </div>
+                        <div class="counselor-price">¥280<span class="price-unit">/次</span></div>
+                    </div>
+                </a>
+                
+                <a href="咨询师详情.html?id=3" class="counselor-card">
+                    <img src="https://via.placeholder.com/140x140/FA8C16/FFFFFF/?text=王医生" alt="王医生" class="counselor-img">
+                    <div class="counselor-info">
+                        <div class="counselor-name">王医生</div>
+                        <div class="counselor-title">心理咨询师 · 职场压力</div>
+                        <div class="counselor-rating">
+                            <svg class="rating-star" width="12" height="12" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                                <path fill="#ff9800" d="M908.1 353.1l-253.9-36.9L540.7 86.1c-3.1-6.3-8.2-11.4-14.5-14.5-15.8-7.8-35-1.3-42.9 14.5L369.8 316.2l-253.9 36.9c-7 1-13.4 4.3-18.3 9.3-12.3 12.7-12.1 32.9 0.6 45.3l183.7 179.1-43.4 252.9c-1.2 6.9-0.1 14.1 3.2 20.3 8.2 15.6 27.6 21.7 43.2 13.4L512 754l227.1 119.4c6.2 3.3 13.4 4.4 20.3 3.2 17.4-3 29.1-19.5 26.1-36.9l-43.4-252.9 183.7-179.1c5-4.9 8.3-11.3 9.3-18.3 2.7-17.5-9.5-33.7-27-36.3z"></path>
+                            </svg>
+                            4.7 (85)
+                        </div>
+                        <div class="counselor-price">¥320<span class="price-unit">/次</span></div>
+                    </div>
+                </a>
+                
+                <a href="咨询师详情.html?id=4" class="counselor-card">
+                    <img src="https://via.placeholder.com/140x140/EB2F96/FFFFFF/?text=赵医生" alt="赵医生" class="counselor-img">
+                    <div class="counselor-info">
+                        <div class="counselor-name">赵医生</div>
+                        <div class="counselor-title">心理咨询师 · 抑郁焦虑</div>
+                        <div class="counselor-rating">
+                            <svg class="rating-star" width="12" height="12" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                                <path fill="#ff9800" d="M908.1 353.1l-253.9-36.9L540.7 86.1c-3.1-6.3-8.2-11.4-14.5-14.5-15.8-7.8-35-1.3-42.9 14.5L369.8 316.2l-253.9 36.9c-7 1-13.4 4.3-18.3 9.3-12.3 12.7-12.1 32.9 0.6 45.3l183.7 179.1-43.4 252.9c-1.2 6.9-0.1 14.1 3.2 20.3 8.2 15.6 27.6 21.7 43.2 13.4L512 754l227.1 119.4c6.2 3.3 13.4 4.4 20.3 3.2 17.4-3 29.1-19.5 26.1-36.9l-43.4-252.9 183.7-179.1c5-4.9 8.3-11.3 9.3-18.3 2.7-17.5-9.5-33.7-27-36.3z"></path>
+                            </svg>
+                            4.9 (142)
+                        </div>
+                        <div class="counselor-price">¥350<span class="price-unit">/次</span></div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        
+        <!-- 推荐课程 -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">
+                    <div class="section-title-icon"></div>
+                    推荐课程
+                </div>
+                <a href="课程列表.html" class="section-more">
+                    查看全部
+                    <svg class="section-more-icon" width="12" height="12" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="#999" d="M765.7 486.8L314.9 134.7c-5.3-4.1-12.9-0.4-12.9 6.3v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V883c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1c16.4-12.8 16.4-37.6 0-50.4z"></path>
+                    </svg>
+                </a>
+            </div>
+            
+            <div class="course-list">
+                <a href="课程详情.html?id=1" class="course-card">
+                    <img src="https://via.placeholder.com/120x80/4A90E2/FFFFFF/?text=情绪管理" alt="情绪管理" class="course-img">
+                    <div class="course-info">
+                        <div class="course-name">情绪管理：如何应对日常压力与焦虑</div>
+                        <div class="course-stats">
+                            <div class="course-rating">
+                                <svg class="rating-star" width="12" height="12" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill="#ff9800" d="M908.1 353.1l-253.9-36.9L540.7 86.1c-3.1-6.3-8.2-11.4-14.5-14.5-15.8-7.8-35-1.3-42.9 14.5L369.8 316.2l-253.9 36.9c-7 1-13.4 4.3-18.3 9.3-12.3 12.7-12.1 32.9 0.6 45.3l183.7 179.1-43.4 252.9c-1.2 6.9-0.1 14.1 3.2 20.3 8.2 15.6 27.6 21.7 43.2 13.4L512 754l227.1 119.4c6.2 3.3 13.4 4.4 20.3 3.2 17.4-3 29.1-19.5 26.1-36.9l-43.4-252.9 183.7-179.1c5-4.9 8.3-11.3 9.3-18.3 2.7-17.5-9.5-33.7-27-36.3z"></path>
+                                </svg>
+                                4.8
+                            </div>
+                            <div class="course-count">2,345人学习</div>
+                        </div>
+                        <div class="course-price">¥99</div>
+                    </div>
+                </a>
+                
+                <a href="课程详情.html?id=2" class="course-card">
+                    <img src="https://via.placeholder.com/120x80/52C41A/FFFFFF/?text=人际关系" alt="人际关系" class="course-img">
+                    <div class="course-info">
+                        <div class="course-name">人际关系：构建健康社交圈的技巧</div>
+                        <div class="course-stats">
+                            <div class="course-rating">
+                                <svg class="rating-star" width="12" height="12" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill="#ff9800" d="M908.1 353.1l-253.9-36.9L540.7 86.1c-3.1-6.3-8.2-11.4-14.5-14.5-15.8-7.8-35-1.3-42.9 14.5L369.8 316.2l-253.9 36.9c-7 1-13.4 4.3-18.3 9.3-12.3 12.7-12.1 32.9 0.6 45.3l183.7 179.1-43.4 252.9c-1.2 6.9-0.1 14.1 3.2 20.3 8.2 15.6 27.6 21.7 43.2 13.4L512 754l227.1 119.4c6.2 3.3 13.4 4.4 20.3 3.2 17.4-3 29.1-19.5 26.1-36.9l-43.4-252.9 183.7-179.1c5-4.9 8.3-11.3 9.3-18.3 2.7-17.5-9.5-33.7-27-36.3z"></path>
+                                </svg>
+                                4.7
+                            </div>
+                            <div class="course-count">1,876人学习</div>
+                        </div>
+                        <div class="course-price">¥89</div>
+                    </div>
+                </a>
+                
+                <a href="课程详情.html?id=3" class="course-card">
+                    <img src="https://via.placeholder.com/120x80/FA8C16/FFFFFF/?text=自我成长" alt="自我成长" class="course-img">
+                    <div class="course-info">
+                        <div class="course-name">自我成长：发现内在力量的旅程</div>
+                        <div class="course-stats">
+                            <div class="course-rating">
+                                <svg class="rating-star" width="12" height="12" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill="#ff9800" d="M908.1 353.1l-253.9-36.9L540.7 86.1c-3.1-6.3-8.2-11.4-14.5-14.5-15.8-7.8-35-1.3-42.9 14.5L369.8 316.2l-253.9 36.9c-7 1-13.4 4.3-18.3 9.3-12.3 12.7-12.1 32.9 0.6 45.3l183.7 179.1-43.4 252.9c-1.2 6.9-0.1 14.1 3.2 20.3 8.2 15.6 27.6 21.7 43.2 13.4L512 754l227.1 119.4c6.2 3.3 13.4 4.4 20.3 3.2 17.4-3 29.1-19.5 26.1-36.9l-43.4-252.9 183.7-179.1c5-4.9 8.3-11.3 9.3-18.3 2.7-17.5-9.5-33.7-27-36.3z"></path>
+                                </svg>
+                                4.9
+                            </div>
+                            <div class="course-count">2,103人学习</div>
+                        </div>
+                        <div class="course-price">¥129</div>
+                    </div>
+                </a>
+                
+                <a href="课程详情.html?id=4" class="course-card">
+                    <img src="https://via.placeholder.com/120x80/EB2F96/FFFFFF/?text=冥想入门" alt="冥想入门" class="course-img">
+                    <div class="course-info">
+                        <div class="course-name">冥想入门：21天正念练习指南</div>
+                        <div class="course-stats">
+                            <div class="course-rating">
+                                <svg class="rating-star" width="12" height="12" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill="#ff9800" d="M908.1 353.1l-253.9-36.9L540.7 86.1c-3.1-6.3-8.2-11.4-14.5-14.5-15.8-7.8-35-1.3-42.9 14.5L369.8 316.2l-253.9 36.9c-7 1-13.4 4.3-18.3 9.3-12.3 12.7-12.1 32.9 0.6 45.3l183.7 179.1-43.4 252.9c-1.2 6.9-0.1 14.1 3.2 20.3 8.2 15.6 27.6 21.7 43.2 13.4L512 754l227.1 119.4c6.2 3.3 13.4 4.4 20.3 3.2 17.4-3 29.1-19.5 26.1-36.9l-43.4-252.9 183.7-179.1c5-4.9 8.3-11.3 9.3-18.3 2.7-17.5-9.5-33.7-27-36.3z"></path>
+                                </svg>
+                                4.6
+                            </div>
+                            <div class="course-count">3,421人学习</div>
+                        </div>
+                        <div class="course-free">免费</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        
+        <!-- 心理测评推荐 -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">
+                    <div class="section-title-icon"></div>
+                    心理测评
+                </div>
+                <a href="测评列表.html" class="section-more">
+                    查看全部
+                    <svg class="section-more-icon" width="12" height="12" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="#999" d="M765.7 486.8L314.9 134.7c-5.3-4.1-12.9-0.4-12.9 6.3v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V883c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1c16.4-12.8 16.4-37.6 0-50.4z"></path>
+                    </svg>
+                </a>
+            </div>
+            
+            <div class="course-list">
+                <a href="测评详情.html?id=1" class="course-card">
+                    <img src="https://via.placeholder.com/120x80/4A90E2/FFFFFF/?text=抑郁测试" alt="抑郁测试" class="course-img">
+                    <div class="course-info">
+                        <div class="course-name">抑郁症筛查量表（PHQ-9）</div>
+                        <div class="course-stats">
+                            <div class="course-count">时长约5分钟</div>
+                        </div>
+                        <div class="course-free">免费</div>
+                    </div>
+                </a>
+                
+                <a href="测评详情.html?id=2" class="course-card">
+                    <img src="https://via.placeholder.com/120x80/52C41A/FFFFFF/?text=焦虑测试" alt="焦虑测试" class="course-img">
+                    <div class="course-info">
+                        <div class="course-name">广泛性焦虑障碍量表（GAD-7）</div>
+                        <div class="course-stats">
+                            <div class="course-count">时长约3分钟</div>
+                        </div>
+                        <div class="course-free">免费</div>
+                    </div>
+                </a>
+                
+                <a href="测评详情.html?id=3" class="course-card">
+                    <img src="https://via.placeholder.com/120x80/FA8C16/FFFFFF/?text=人格测试" alt="人格测试" class="course-img">
+                    <div class="course-info">
+                        <div class="course-name">大五人格测试（Big Five）</div>
+                        <div class="course-stats">
+                            <div class="course-count">时长约15分钟</div>
+                        </div>
+                        <div class="course-price">¥19</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        
+        <!-- 底部导航 -->
+        <div style="height: 60px;"></div>
+        <div style="position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background-color: #fff; border-top: 1px solid #f0f0f0; display: flex; justify-content: space-around; align-items: center; max-width: 375px; margin: 0 auto;">
+            <a href="首页.html" style="display: flex; flex-direction: column; align-items: center; text-decoration: none;">
+                <svg width="24" height="24" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#4A90E2" d="M946.5 505L560.1 118.8l-25.9-25.9c-12.3-12.2-32.1-12.2-44.4 0L77.5 505c-12.3 12.3-18.9 28.6-18.8 46 0.4 35.2 29.7 63.3 64.9 63.3h42.5V940h691.8V614.3h43.4c17.1 0 33.2-6.7 45.3-18.8 12.1-12.1 18.7-28.2 18.7-45.3 0-17-6.7-33.1-18.8-45.2zM568 868H456V664h112v204zm217.9-325.7V868H632V640c0-22.1-17.9-40-40-40H432c-22.1 0-40 17.9-40 40v228H238.1V542.3h-96l370-369.7 23.1 23.1L882 542.3h-96.1z"></path>
+                </svg>
+                <span style="font-size: 12px; color: #4A90E2; margin-top: 4px;">首页</span>
+            </a>
+            <a href="课程学习.html" style="display: flex; flex-direction: column; align-items: center; text-decoration: none;">
+                <svg width="24" height="24" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#999" d="M832 64H192c-17.7 0-32 14.3-32 32v832c0 17.7 14.3 32 32 32h640c17.7 0 32-14.3 32-32V96c0-17.7-14.3-32-32-32zm-260 72h96v209.9L621.5 312 572 347.4V136zm220 752H232V136h280v296.9c0 3.3 1 6.6 3 9.3 5.1 7.2 15.1 8.9 22.3 3.7l83.8-59.9 81.4 59.4c2.7 2 6 3.1 9.4 3.1 8.8 0 16-7.2 16-16V136h64v752z"></path>
+                </svg>
+                <span style="font-size: 12px; color: #999; margin-top: 4px;">课程</span>
+            </a>
+            <a href="咨询预约.html" style="display: flex; flex-direction: column; align-items: center; text-decoration: none;">
+                <svg width="24" height="24" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#999" d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z"></path>
+                    <path fill="#999" d="M686.7 638.6L544.1 535.5V288c0-4.4-3.6-8-8-8H488c-4.4 0-8 3.6-8 8v275.4c0 2.6 1.2 5 3.3 6.5l165.4 120.6c3.6 2.6 8.6 1.8 11.2-1.7l28.6-39c2.6-3.7 1.8-8.7-1.8-11.2z"></path>
+                </svg>
+                <span style="font-size: 12px; color: #999; margin-top: 4px;">咨询</span>
+            </a>
+            <a href="我的.html" style="display: flex; flex-direction: column; align-items: center; text-decoration: none;">
+                <svg width="24" height="24" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#999" d="M858.5 763.6c-18.9-44.8-46.1-85-80.6-119.5-34.5-34.5-74.7-61.6-119.5-80.6-0.4-0.2-0.8-0.3-1.2-0.5C719.5 518 760 444.7 760 362c0-137-111-248-248-248S264 225 264 362c0 82.7 40.5 156 102.8 201.1-0.4 0.2-0.8 0.3-1.2 0.5-44.8 18.9-85 46-119.5 80.6-34.5 34.5-61.6 74.7-80.6 119.5C146.9 807.5 137 854 136 901.8c-0.1 4.5 3.5 8.2 8 8.2h60c4.4 0 7.9-3.5 8-7.8 2-77.2 33-149.5 87.8-204.3 56.7-56.7 132-87.9 212.2-87.9s155.5 31.2 212.2 87.9C779 752.7 810 825 812 902.2c0.1 4.4 3.6 7.8 8 7.8h60c4.5 0 8.1-3.7 8-8.2-1-47.8-10.9-94.3-29.5-138.2zM512 534c-45.9 0-89.1-17.9-121.6-50.4S340 407.9 340 362c0-45.9 17.9-89.1 50.4-121.6S466.1 190 512 190s89.1 17.9 121.6 50.4S684 316.1 684 362c0 45.9-17.9 89.1-50.4 121.6S557.9 534 512 534z"></path>
+                </svg>
+                <span style="font-size: 12px; color: #999; margin-top: 4px;">我的</span>
+            </a>
+        </div>
+    </div>
+</body>
+</html> 

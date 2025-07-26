@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心理健康平台 - 忘记密码</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 375px;
+            min-height: 100vh;
+            margin: 0 auto;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        .header {
+            text-align: center;
+            padding: 30px 20px 20px;
+            position: relative;
+        }
+        .back-btn {
+            position: absolute;
+            left: 15px;
+            top: 30px;
+            font-size: 18px;
+            color: #666;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        .title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .subtitle {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 20px;
+        }
+        .steps {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 40px;
+            margin-bottom: 30px;
+        }
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .step-number {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #4A90E2;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        .step-inactive .step-number {
+            background-color: #ddd;
+        }
+        .step-text {
+            font-size: 12px;
+            color: #666;
+        }
+        .step-active .step-text {
+            color: #4A90E2;
+            font-weight: bold;
+        }
+        .step-line {
+            flex: 1;
+            height: 1px;
+            background-color: #ddd;
+            margin-top: 12px;
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+        .form {
+            padding: 0 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #666;
+        }
+        .form-input {
+            width: 100%;
+            height: 45px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 0 15px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        .form-input:focus {
+            border-color: #4A90E2;
+            outline: none;
+        }
+        .code-input-group {
+            display: flex;
+            gap: 10px;
+        }
+        .code-input {
+            flex: 1;
+        }
+        .code-btn {
+            width: 120px;
+            height: 45px;
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .code-btn:hover {
+            background-color: #eee;
+        }
+        .form-btn {
+            width: 100%;
+            height: 45px;
+            background-color: #4A90E2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+        .form-btn:hover {
+            background-color: #357ABD;
+        }
+        .form-footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        .form-link {
+            color: #4A90E2;
+            text-decoration: none;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #999;
+            margin-top: 40px;
+        }
+        .tips {
+            background-color: #f8f8f8;
+            border-radius: 5px;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #666;
+        }
+        .tips-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="登录.html" class="back-btn">
+                <svg width="20" height="20" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#666" d="M671.968 912c-12.288 0-24.576-4.672-33.952-14.048L286.048 545.984c-18.752-18.72-18.752-49.12 0-67.872l351.968-352c18.752-18.752 49.12-18.752 67.872 0 18.752 18.72 18.752 49.12 0 67.872l-318.016 318.048 318.016 318.016c18.752 18.752 18.752 49.12 0 67.872C696.544 907.328 684.256 912 671.968 912z"></path>
+                </svg>
+            </a>
+            <h1 class="title">忘记密码</h1>
+            <p class="subtitle">重置您的账号密码</p>
+        </div>
+        
+        <div class="steps">
+            <div class="step step-active">
+                <div class="step-number">1</div>
+                <div class="step-text">验证身份</div>
+            </div>
+            <div class="step-line"></div>
+            <div class="step step-inactive">
+                <div class="step-number">2</div>
+                <div class="step-text">重置密码</div>
+            </div>
+            <div class="step-line"></div>
+            <div class="step step-inactive">
+                <div class="step-number">3</div>
+                <div class="step-text">完成</div>
+            </div>
+        </div>
+        
+        <div class="form">
+            <div class="tips">
+                <div class="tips-title">温馨提示</div>
+                <p>请输入您注册时使用的手机号，我们将发送验证码到该手机进行身份验证。</p>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">手机号</label>
+                <input type="tel" class="form-input" placeholder="请输入手机号">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">验证码</label>
+                <div class="code-input-group">
+                    <input type="text" class="form-input code-input" placeholder="请输入验证码">
+                    <button class="code-btn">获取验证码</button>
+                </div>
+            </div>
+            
+            <button class="form-btn">下一步</button>
+            
+            <div class="form-footer">
+                <a href="登录.html" class="form-link">返回登录</a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>如需帮助，请联系客服：400-123-4567</p>
+        </div>
+    </div>
+</body>
+</html> 
