@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心理健康平台 - 我的收藏</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 375px;
+            min-height: 100vh;
+            margin: 0 auto;
+            background-color: #f5f7fa;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        .header {
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #fff;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .header-title {
+            font-size: 18px;
+            font-weight: bold;
+            flex: 1;
+            text-align: center;
+        }
+        .back-button {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .tabs {
+            display: flex;
+            background-color: #fff;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px 0;
+            font-size: 14px;
+            color: #666;
+            position: relative;
+        }
+        .tab.active {
+            color: #4A90E2;
+            font-weight: bold;
+        }
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 3px;
+            background-color: #4A90E2;
+            border-radius: 1.5px;
+        }
+        .collection-list {
+            padding: 15px;
+        }
+        .collection-card {
+            margin-bottom: 15px;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        .collection-content {
+            padding: 15px;
+            display: flex;
+        }
+        .collection-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 4px;
+            object-fit: cover;
+            margin-right: 12px;
+        }
+        .collection-info {
+            flex: 1;
+        }
+        .collection-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: #333;
+        }
+        .collection-description {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .collection-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 8px;
+        }
+        .collection-type {
+            display: inline-block;
+            padding: 2px 8px;
+            background-color: #f0f7ff;
+            color: #4A90E2;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        .collection-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 8px;
+            border-top: 1px solid #f0f0f0;
+            margin-top: 8px;
+        }
+        .collection-time {
+            font-size: 12px;
+            color: #999;
+        }
+        .action-button {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: #999;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        .action-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 4px;
+        }
+        .counselor-card {
+            display: flex;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+        }
+        .counselor-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-right: 12px;
+        }
+        .counselor-info {
+            flex: 1;
+        }
+        .counselor-name-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+        .counselor-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-right: 8px;
+        }
+        .counselor-title {
+            font-size: 12px;
+            color: #666;
+        }
+        .counselor-specialty {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        .counselor-tags {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+        .counselor-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            background-color: #f0f7ff;
+            color: #4A90E2;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-right: 8px;
+            margin-bottom: 4px;
+        }
+        .counselor-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .counselor-rating {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: #ff9800;
+        }
+        .counselor-count {
+            font-size: 12px;
+            color: #999;
+            margin-left: 4px;
+        }
+        .counselor-price {
+            font-size: 14px;
+            color: #ff4d4f;
+            font-weight: bold;
+        }
+        .price-unit {
+            font-size: 12px;
+            font-weight: normal;
+        }
+        .article-card {
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+        }
+        .article-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        .article-content {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .article-image {
+            width: 100%;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            max-height: 150px;
+            object-fit: cover;
+        }
+        .article-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #999;
+        }
+        .article-author {
+            display: flex;
+            align-items: center;
+        }
+        .author-avatar {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 4px;
+        }
+        .article-stats {
+            display: flex;
+            align-items: center;
+        }
+        .article-stat {
+            display: flex;
+            align-items: center;
+            margin-left: 8px;
+        }
+        .empty-state {
+            padding: 60px 20px;
+            text-align: center;
+        }
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background-color: #f5f5f5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .empty-text {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 20px;
+        }
+        .empty-button {
+            display: inline-block;
+            padding: 8px 20px;
+            background-color: #4A90E2;
+            color: #fff;
+            border-radius: 4px;
+            font-size: 14px;
+            text-decoration: none;
+        }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background-color: #fff;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            max-width: 375px;
+            margin: 0 auto;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+        }
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+        }
+        .nav-text {
+            font-size: 12px;
+            margin-top: 4px;
+        }
+        .active-nav {
+            color: #4A90E2;
+        }
+        .inactive-nav {
+            color: #999;
+        }
+        a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部导航 -->
+        <div class="header">
+            <div class="back-button">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 12H5" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 19L5 12L12 5" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <div class="header-title">我的收藏</div>
+            <div style="width: 24px;"></div>
+        </div>
+        
+        <!-- 标签栏 -->
+        <div class="tabs">
+            <div class="tab active">全部</div>
+            <div class="tab">课程</div>
+            <div class="tab">咨询师</div>
+            <div class="tab">文章</div>
+        </div>
+        
+        <!-- 收藏列表 -->
+        <div class="collection-list">
+            <!-- 课程收藏 -->
+            <a href="课程详情.html?id=1" class="collection-card">
+                <div class="collection-content">
+                    <img src="https://via.placeholder.com/80x80/4A90E2/FFFFFF/?text=情绪管理" alt="情绪管理" class="collection-image">
+                    <div class="collection-info">
+                        <div class="collection-name">情绪管理：如何应对日常压力与焦虑</div>
+                        <div class="collection-description">
+                            本课程将教你如何识别和管理日常生活中的压力和焦虑，掌握实用的情绪调节技巧，提升心理韧性。
+                        </div>
+                        <div class="collection-meta">
+                            <div class="collection-type">课程</div>
+                            <div>讲师：张医生</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="collection-actions">
+                    <div class="collection-time">收藏于 2023年6月15日</div>
+                    <button class="action-button">
+                        <svg class="action-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" fill="#ff4d4f" stroke="#ff4d4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        取消收藏
+                    </button>
+                </div>
+            </a>
+            
+            <!-- 咨询师收藏 -->
+            <a href="咨询师详情.html?id=1" class="counselor-card">
+                <img src="https://via.placeholder.com/60x60/4A90E2/FFFFFF/?text=张医生" alt="张医生" class="counselor-avatar">
+                <div class="counselor-info">
+                    <div class="counselor-name-row">
+                        <div class="counselor-name">张医生</div>
+                        <div class="counselor-title">心理咨询师</div>
+                    </div>
+                    <div class="counselor-specialty">擅长：婚恋情感、职场压力、情绪管理</div>
+                    <div class="counselor-tags">
+                        <span class="counselor-tag">婚恋情感</span>
+                        <span class="counselor-tag">职场压力</span>
+                        <span class="counselor-tag">情绪管理</span>
+                    </div>
+                    <div class="counselor-stats">
+                        <div>
+                            <div class="counselor-rating">
+                                <svg class="rating-star" width="12" height="12" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill="#ff9800" d="M908.1 353.1l-253.9-36.9L540.7 86.1c-3.1-6.3-8.2-11.4-14.5-14.5-15.8-7.8-35-1.3-42.9 14.5L369.8 316.2l-253.9 36.9c-7 1-13.4 4.3-18.3 9.3-12.3 12.7-12.1 32.9 0.6 45.3l183.7 179.1-43.4 252.9c-1.2 6.9-0.1 14.1 3.2 20.3 8.2 15.6 27.6 21.7 43.2 13.4L512 754l227.1 119.4c6.2 3.3 13.4 4.4 20.3 3.2 17.4-3 29.1-19.5 26.1-36.9l-43.4-252.9 183.7-179.1c5-4.9 8.3-11.3 9.3-18.3 2.7-17.5-9.5-33.7-27-36.3z"></path>
+                                </svg>
+                                4.9 <span class="counselor-count">(128)</span>
+                            </div>
+                        </div>
+                        <div class="counselor-price">¥300<span class="price-unit">/次</span></div>
+                    </div>
+                </div>
+            </a>
+            
+            <!-- 文章收藏 -->
+            <a href="文章详情.html?id=1" class="article-card">
+                <div class="article-title">如何培养良好的睡眠习惯？</div>
+                <div class="article-content">
+                    睡眠质量对我们的身心健康至关重要。良好的睡眠不仅能让我们精力充沛，还能增强免疫力，改善情绪，提高工作效率。然而，现代生活的快节奏和压力常常导致睡眠问题。本文将介绍一些科学有效的方法，帮助你培养良好的睡眠习惯，改善睡眠质量。
+                </div>
+                <img src="https://via.placeholder.com/335x150/52C41A/FFFFFF/?text=睡眠习惯" alt="睡眠习惯" class="article-image">
+                <div class="article-meta">
+                    <div class="article-author">
+                        <img src="https://via.placeholder.com/20x20/4A90E2/FFFFFF/?text=李" alt="李医生" class="author-avatar">
+                        <span>李医生</span>
+                    </div>
+                    <div class="article-stats">
+                        <div class="article-stat">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 4px;">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <circle cx="12" cy="12" r="3" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            1,234
+                        </div>
+                        <div class="article-stat">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 4px;">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            56
+                        </div>
+                    </div>
+                </div>
+            </a>
+            
+            <!-- 课程收藏2 -->
+            <a href="课程详情.html?id=2" class="collection-card">
+                <div class="collection-content">
+                    <img src="https://via.placeholder.com/80x80/52C41A/FFFFFF/?text=人际关系" alt="人际关系" class="collection-image">
+                    <div class="collection-info">
+                        <div class="collection-name">人际关系：构建健康社交圈的技巧</div>
+                        <div class="collection-description">
+                            本课程将帮助你了解人际关系的基本原理，学习有效的沟通技巧，建立健康的人际边界，拓展你的社交圈。
+                        </div>
+                        <div class="collection-meta">
+                            <div class="collection-type">课程</div>
+                            <div>讲师：李医生</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="collection-actions">
+                    <div class="collection-time">收藏于 2023年6月10日</div>
+                    <button class="action-button">
+                        <svg class="action-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" fill="#ff4d4f" stroke="#ff4d4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        取消收藏
+                    </button>
+                </div>
+            </a>
+        </div>
+        
+        <!-- 空状态 -->
+        <div class="empty-state" style="display: none;">
+            <div class="empty-icon">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <div class="empty-text">您还没有收藏内容</div>
+            <a href="首页.html" class="empty-button">去浏览</a>
+        </div>
+        
+        <!-- 底部占位，防止内容被底部导航遮挡 -->
+        <div style="height: 60px;"></div>
+        
+        <!-- 底部导航 -->
+        <div class="bottom-nav">
+            <a href="首页.html" class="nav-item">
+                <svg class="nav-icon" width="24" height="24" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#999" d="M946.5 505L560.1 118.8l-25.9-25.9c-12.3-12.2-32.1-12.2-44.4 0L77.5 505c-12.3 12.3-18.9 28.6-18.8 46 0.4 35.2 29.7 63.3 64.9 63.3h42.5V940h691.8V614.3h43.4c17.1 0 33.2-6.7 45.3-18.8 12.1-12.1 18.7-28.2 18.7-45.3 0-17-6.7-33.1-18.8-45.2zM568 868H456V664h112v204zm217.9-325.7V868H632V640c0-22.1-17.9-40-40-40H432c-22.1 0-40 17.9-40 40v228H238.1V542.3h-96l370-369.7 23.1 23.1L882 542.3h-96.1z"></path>
+                </svg>
+                <span class="nav-text inactive-nav">首页</span>
+            </a>
+            <a href="课程学习.html" class="nav-item">
+                <svg class="nav-icon" width="24" height="24" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#999" d="M832 64H192c-17.7 0-32 14.3-32 32v832c0 17.7 14.3 32 32 32h640c17.7 0 32-14.3 32-32V96c0-17.7-14.3-32-32-32zm-260 72h96v209.9L621.5 312 572 347.4V136zm220 752H232V136h280v296.9c0 3.3 1 6.6 3 9.3 5.1 7.2 15.1 8.9 22.3 3.7l83.8-59.9 81.4 59.4c2.7 2 6 3.1 9.4 3.1 8.8 0 16-7.2 16-16V136h64v752z"></path>
+                </svg>
+                <span class="nav-text inactive-nav">课程</span>
+            </a>
+            <a href="咨询预约.html" class="nav-item">
+                <svg class="nav-icon" width="24" height="24" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#999" d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z"></path>
+                    <path fill="#999" d="M686.7 638.6L544.1 535.5V288c0-4.4-3.6-8-8-8H488c-4.4 0-8 3.6-8 8v275.4c0 2.6 1.2 5 3.3 6.5l165.4 120.6c3.6 2.6 8.6 1.8 11.2-1.7l28.6-39c2.6-3.7 1.8-8.7-1.8-11.2z"></path>
+                </svg>
+                <span class="nav-text inactive-nav">咨询</span>
+            </a>
+            <a href="我的.html" class="nav-item">
+                <svg class="nav-icon" width="24" height="24" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#4A90E2" d="M858.5 763.6c-18.9-44.8-46.1-85-80.6-119.5-34.5-34.5-74.7-61.6-119.5-80.6-0.4-0.2-0.8-0.3-1.2-0.5C719.5 518 760 444.7 760 362c0-137-111-248-248-248S264 225 264 362c0 82.7 40.5 156 102.8 201.1-0.4 0.2-0.8 0.3-1.2 0.5-44.8 18.9-85 46-119.5 80.6-34.5 34.5-61.6 74.7-80.6 119.5C146.9 807.5 137 854 136 901.8c-0.1 4.5 3.5 8.2 8 8.2h60c4.4 0 7.9-3.5 8-7.8 2-77.2 33-149.5 87.8-204.3 56.7-56.7 132-87.9 212.2-87.9s155.5 31.2 212.2 87.9C779 752.7 810 825 812 902.2c0.1 4.4 3.6 7.8 8 7.8h60c4.5 0 8.1-3.7 8-8.2-1-47.8-10.9-94.3-29.5-138.2zM512 534c-45.9 0-89.1-17.9-121.6-50.4S340 407.9 340 362c0-45.9 17.9-89.1 50.4-121.6S466.1 190 512 190s89.1 17.9 121.6 50.4S684 316.1 684 362c0 45.9-17.9 89.1-50.4 121.6S557.9 534 512 534z"></path>
+                </svg>
+                <span class="nav-text active-nav">我的</span>
+            </a>
+        </div>
+    </div>
+</body>
+</html> 

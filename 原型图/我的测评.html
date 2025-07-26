@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心理健康平台 - 我的测评</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 375px;
+            min-height: 100vh;
+            margin: 0 auto;
+            background-color: #f5f7fa;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        .header {
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #fff;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .header-title {
+            font-size: 18px;
+            font-weight: bold;
+            flex: 1;
+            text-align: center;
+        }
+        .back-button {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .tabs {
+            display: flex;
+            background-color: #fff;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px 0;
+            font-size: 14px;
+            color: #666;
+            position: relative;
+        }
+        .tab.active {
+            color: #4A90E2;
+            font-weight: bold;
+        }
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 3px;
+            background-color: #4A90E2;
+            border-radius: 1.5px;
+        }
+        .assessment-list {
+            padding: 15px;
+        }
+        .assessment-card {
+            margin-bottom: 15px;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        .assessment-status {
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+        }
+        .status-completed {
+            background-color: #f6ffed;
+            color: #52c41a;
+        }
+        .status-inprogress {
+            background-color: #e6f7ff;
+            color: #4A90E2;
+        }
+        .status-expired {
+            background-color: #f5f5f5;
+            color: #999;
+        }
+        .assessment-content {
+            padding: 15px;
+            display: flex;
+        }
+        .assessment-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 4px;
+            object-fit: cover;
+            margin-right: 12px;
+        }
+        .assessment-info {
+            flex: 1;
+        }
+        .assessment-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: #333;
+        }
+        .assessment-description {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .assessment-time {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 8px;
+        }
+        .assessment-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+        .action-button {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 4px;
+            text-decoration: none;
+            margin-left: 8px;
+        }
+        .primary-button {
+            background-color: #4A90E2;
+            color: #fff;
+        }
+        .secondary-button {
+            background-color: #f5f5f5;
+            color: #666;
+        }
+        .result-summary {
+            padding: 12px 15px;
+            border-top: 1px solid #f0f0f0;
+            font-size: 12px;
+            color: #666;
+        }
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+        .result-label {
+            color: #999;
+        }
+        .result-value {
+            font-weight: bold;
+        }
+        .result-value.high {
+            color: #ff4d4f;
+        }
+        .result-value.medium {
+            color: #faad14;
+        }
+        .result-value.low {
+            color: #52c41a;
+        }
+        .empty-state {
+            padding: 60px 20px;
+            text-align: center;
+        }
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background-color: #f5f5f5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .empty-text {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 20px;
+        }
+        .empty-button {
+            display: inline-block;
+            padding: 8px 20px;
+            background-color: #4A90E2;
+            color: #fff;
+            border-radius: 4px;
+            font-size: 14px;
+            text-decoration: none;
+        }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background-color: #fff;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            max-width: 375px;
+            margin: 0 auto;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+        }
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+        }
+        .nav-text {
+            font-size: 12px;
+            margin-top: 4px;
+        }
+        .active-nav {
+            color: #4A90E2;
+        }
+        .inactive-nav {
+            color: #999;
+        }
+        a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部导航 -->
+        <div class="header">
+            <div class="back-button">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 12H5" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 19L5 12L12 5" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <div class="header-title">我的测评</div>
+            <div style="width: 24px;"></div>
+        </div>
+        
+        <!-- 标签栏 -->
+        <div class="tabs">
+            <div class="tab active">全部</div>
+            <div class="tab">已完成</div>
+            <div class="tab">进行中</div>
+        </div>
+        
+        <!-- 测评列表 -->
+        <div class="assessment-list">
+            <!-- 已完成测评 -->
+            <div class="assessment-card">
+                <div class="assessment-status status-completed">
+                    <span>已完成</span>
+                    <span>2023年6月15日</span>
+                </div>
+                <div class="assessment-content">
+                    <img src="https://via.placeholder.com/80x80/4A90E2/FFFFFF/?text=抑郁测试" alt="抑郁症筛查" class="assessment-image">
+                    <div class="assessment-info">
+                        <div class="assessment-name">抑郁症筛查量表（PHQ-9）</div>
+                        <div class="assessment-description">
+                            PHQ-9是一种常用的抑郁症筛查工具，通过9个问题评估过去两周内的抑郁症状。
+                        </div>
+                        <div class="assessment-time">测评用时：4分钟</div>
+                        <div class="assessment-actions">
+                            <a href="测评详情.html?id=1" class="action-button secondary-button">查看详情</a>
+                            <a href="测评结果.html?id=1" class="action-button primary-button">查看报告</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="result-summary">
+                    <div class="result-item">
+                        <span class="result-label">测评结果：</span>
+                        <span class="result-value medium">轻度抑郁（9分）</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">建议：</span>
+                        <span>建议进行心理咨询，学习情绪管理技巧</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 进行中测评 -->
+            <div class="assessment-card">
+                <div class="assessment-status status-inprogress">
+                    <span>进行中</span>
+                    <span>已完成 3/7 题</span>
+                </div>
+                <div class="assessment-content">
+                    <img src="https://via.placeholder.com/80x80/52C41A/FFFFFF/?text=焦虑自评" alt="焦虑自评" class="assessment-image">
+                    <div class="assessment-info">
+                        <div class="assessment-name">广泛性焦虑障碍量表（GAD-7）</div>
+                        <div class="assessment-description">
+                            GAD-7是一种简短的自评量表，用于评估广泛性焦虑障碍的症状严重程度。
+                        </div>
+                        <div class="assessment-time">开始时间：2023年6月20日</div>
+                        <div class="assessment-actions">
+                            <a href="测评详情.html?id=2" class="action-button secondary-button">查看详情</a>
+                            <a href="测评进行.html?id=2" class="action-button primary-button">继续测评</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 已过期测评 -->
+            <div class="assessment-card">
+                <div class="assessment-status status-expired">
+                    <span>已过期</span>
+                    <span>2023年5月10日</span>
+                </div>
+                <div class="assessment-content">
+                    <img src="https://via.placeholder.com/80x80/FA8C16/FFFFFF/?text=人格测试" alt="人格测试" class="assessment-image">
+                    <div class="assessment-info">
+                        <div class="assessment-name">大五人格测试（Big Five）</div>
+                        <div class="assessment-description">
+                            大五人格测试是一种广泛应用的人格评估工具，从五个维度评估您的性格特点。
+                        </div>
+                        <div class="assessment-time">开始时间：2023年5月8日</div>
+                        <div class="assessment-actions">
+                            <a href="测评详情.html?id=3" class="action-button secondary-button">查看详情</a>
+                            <a href="测评列表.html" class="action-button primary-button">重新测评</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 空状态 -->
+        <div class="empty-state" style="display: none;">
+            <div class="empty-icon">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 21H5C3.89543 21 3 20.1046 3 19V5C3 3.89543 3.89543 3 5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21Z" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M8.5 10C9.32843 10 10 9.32843 10 8.5C10 7.67157 9.32843 7 8.5 7C7.67157 7 7 7.67157 7 8.5C7 9.32843 7.67157 10 8.5 10Z" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M21 15L16 10L5 21" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <div class="empty-text">您还没有测评记录</div>
+            <a href="心理测评.html" class="empty-button">去测评</a>
+        </div>
+        
+        <!-- 底部占位，防止内容被底部导航遮挡 -->
+        <div style="height: 60px;"></div>
+        
+        <!-- 底部导航 -->
+        <div class="bottom-nav">
+            <a href="首页.html" class="nav-item">
+                <svg class="nav-icon" width="24" height="24" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#999" d="M946.5 505L560.1 118.8l-25.9-25.9c-12.3-12.2-32.1-12.2-44.4 0L77.5 505c-12.3 12.3-18.9 28.6-18.8 46 0.4 35.2 29.7 63.3 64.9 63.3h42.5V940h691.8V614.3h43.4c17.1 0 33.2-6.7 45.3-18.8 12.1-12.1 18.7-28.2 18.7-45.3 0-17-6.7-33.1-18.8-45.2zM568 868H456V664h112v204zm217.9-325.7V868H632V640c0-22.1-17.9-40-40-40H432c-22.1 0-40 17.9-40 40v228H238.1V542.3h-96l370-369.7 23.1 23.1L882 542.3h-96.1z"></path>
+                </svg>
+                <span class="nav-text inactive-nav">首页</span>
+            </a>
+            <a href="课程学习.html" class="nav-item">
+                <svg class="nav-icon" width="24" height="24" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#999" d="M832 64H192c-17.7 0-32 14.3-32 32v832c0 17.7 14.3 32 32 32h640c17.7 0 32-14.3 32-32V96c0-17.7-14.3-32-32-32zm-260 72h96v209.9L621.5 312 572 347.4V136zm220 752H232V136h280v296.9c0 3.3 1 6.6 3 9.3 5.1 7.2 15.1 8.9 22.3 3.7l83.8-59.9 81.4 59.4c2.7 2 6 3.1 9.4 3.1 8.8 0 16-7.2 16-16V136h64v752z"></path>
+                </svg>
+                <span class="nav-text inactive-nav">课程</span>
+            </a>
+            <a href="咨询预约.html" class="nav-item">
+                <svg class="nav-icon" width="24" height="24" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#999" d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z"></path>
+                    <path fill="#999" d="M686.7 638.6L544.1 535.5V288c0-4.4-3.6-8-8-8H488c-4.4 0-8 3.6-8 8v275.4c0 2.6 1.2 5 3.3 6.5l165.4 120.6c3.6 2.6 8.6 1.8 11.2-1.7l28.6-39c2.6-3.7 1.8-8.7-1.8-11.2z"></path>
+                </svg>
+                <span class="nav-text inactive-nav">咨询</span>
+            </a>
+            <a href="我的.html" class="nav-item">
+                <svg class="nav-icon" width="24" height="24" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#4A90E2" d="M858.5 763.6c-18.9-44.8-46.1-85-80.6-119.5-34.5-34.5-74.7-61.6-119.5-80.6-0.4-0.2-0.8-0.3-1.2-0.5C719.5 518 760 444.7 760 362c0-137-111-248-248-248S264 225 264 362c0 82.7 40.5 156 102.8 201.1-0.4 0.2-0.8 0.3-1.2 0.5-44.8 18.9-85 46-119.5 80.6-34.5 34.5-61.6 74.7-80.6 119.5C146.9 807.5 137 854 136 901.8c-0.1 4.5 3.5 8.2 8 8.2h60c4.4 0 7.9-3.5 8-7.8 2-77.2 33-149.5 87.8-204.3 56.7-56.7 132-87.9 212.2-87.9s155.5 31.2 212.2 87.9C779 752.7 810 825 812 902.2c0.1 4.4 3.6 7.8 8 7.8h60c4.5 0 8.1-3.7 8-8.2-1-47.8-10.9-94.3-29.5-138.2zM512 534c-45.9 0-89.1-17.9-121.6-50.4S340 407.9 340 362c0-45.9 17.9-89.1 50.4-121.6S466.1 190 512 190s89.1 17.9 121.6 50.4S684 316.1 684 362c0 45.9-17.9 89.1-50.4 121.6S557.9 534 512 534z"></path>
+                </svg>
+                <span class="nav-text active-nav">我的</span>
+            </a>
+        </div>
+    </div>
+</body>
+</html> 
