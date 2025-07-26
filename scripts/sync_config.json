@@ -1,0 +1,20 @@
+{
+    "source": {
+        "host": "remote_host",
+        "port": 3306,
+        "user": "remote_user",
+        "password": "remote_password",
+        "database": "remote_db"
+    },
+    "target": {
+        "host": "localhost",
+        "port": 3306,
+        "user": "local_user",
+        "password": "local_password",
+        "database": "local_db"
+    },
+    "tables": [],
+    "exclude_tables": ["log_table", "temp_table"],
+    "dump_options": "--single-transaction --quick --lock-tables=false",
+    "backup_dir": "./backups"
+} 
