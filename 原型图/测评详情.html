@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>心理健康平台 - 咨询师详情</title>
+    <title>心理健康平台 - 测评详情</title>
     <style>
         * {
             margin: 0;
@@ -56,62 +56,33 @@
             align-items: center;
             justify-content: center;
         }
-        .counselor-profile {
+        .assessment-banner {
+            width: 100%;
+            height: 180px;
+            position: relative;
+            overflow: hidden;
+        }
+        .assessment-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .assessment-info {
             background-color: #fff;
-            padding: 20px 15px;
+            padding: 15px;
             margin-bottom: 10px;
         }
-        .profile-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        .counselor-avatar {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-right: 15px;
-            border: 2px solid #f0f7ff;
-        }
-        .counselor-info {
-            flex: 1;
-        }
-        .counselor-name-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 5px;
-        }
-        .counselor-name {
+        .assessment-title {
             font-size: 18px;
             font-weight: bold;
-            margin-right: 8px;
+            color: #333;
+            margin-bottom: 10px;
+            line-height: 1.4;
         }
-        .counselor-gender {
+        .assessment-stats {
             display: flex;
             align-items: center;
-            font-size: 12px;
-            color: #4A90E2;
-            margin-right: 8px;
-        }
-        .gender-icon {
-            width: 14px;
-            height: 14px;
-            margin-right: 2px;
-        }
-        .counselor-title {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 5px;
-        }
-        .counselor-specialty {
-            font-size: 12px;
-            color: #999;
-        }
-        .counselor-stats {
-            display: flex;
-            align-items: center;
-            margin-top: 8px;
+            margin-bottom: 12px;
         }
         .stat-item {
             display: flex;
@@ -126,7 +97,7 @@
             margin-right: 4px;
             color: #999;
         }
-        .counselor-tags {
+        .assessment-tags {
             display: flex;
             flex-wrap: wrap;
             margin-top: 10px;
@@ -140,6 +111,34 @@
             font-size: 12px;
             margin-right: 8px;
             margin-bottom: 8px;
+        }
+        .price-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #f0f0f0;
+        }
+        .price {
+            font-size: 20px;
+            font-weight: bold;
+            color: #ff4d4f;
+        }
+        .original-price {
+            font-size: 14px;
+            color: #999;
+            text-decoration: line-through;
+            margin-left: 8px;
+        }
+        .free-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            background-color: #f6ffed;
+            color: #52c41a;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
         }
         a {
             text-decoration: none;
@@ -157,7 +156,7 @@
                     <path d="M12 19L5 12L12 5" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             </div>
-            <div class="header-title">咨询师详情</div>
+            <div class="header-title">测评详情</div>
             <div class="share-button">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="18" cy="5" r="3" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -169,45 +168,50 @@
             </div>
         </div>
         
-        <!-- 咨询师个人资料 -->
-        <div class="counselor-profile">
-            <div class="profile-header">
-                <img src="https://via.placeholder.com/70x70/4A90E2/FFFFFF/?text=张医生" alt="张医生" class="counselor-avatar">
-                <div class="counselor-info">
-                    <div class="counselor-name-row">
-                        <div class="counselor-name">张医生</div>
-                        <div class="counselor-gender">
-                            <svg class="gender-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M20.5 3.5L13 11M20.5 3.5H15M20.5 3.5V9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                <circle cx="9" cy="15" r="6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                            男
-                        </div>
-                    </div>
-                    <div class="counselor-title">国家二级心理咨询师</div>
-                    <div class="counselor-specialty">擅长：婚恋情感、职场压力、情绪管理</div>
-                    <div class="counselor-stats">
-                        <div class="stat-item">
-                            <svg class="stat-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                            咨询2000+小时
-                        </div>
-                        <div class="stat-item">
-                            <svg class="stat-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                            4.9分
-                        </div>
-                    </div>
+        <!-- 测评封面 -->
+        <div class="assessment-banner">
+            <img src="https://via.placeholder.com/375x180/4A90E2/FFFFFF/?text=焦虑自评量表" alt="焦虑自评量表" class="assessment-image">
+        </div>
+        
+        <!-- 测评信息 -->
+        <div class="assessment-info">
+            <h1 class="assessment-title">焦虑自评量表（SAS）</h1>
+            <div class="assessment-stats">
+                <div class="stat-item">
+                    <svg class="stat-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    5,678人已测
+                </div>
+                <div class="stat-item">
+                    <svg class="stat-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <polyline points="12 6 12 12 16 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    约10分钟
+                </div>
+                <div class="stat-item">
+                    <svg class="stat-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    专业认证
                 </div>
             </div>
-            <div class="counselor-tags">
-                <span class="tag">婚恋情感</span>
-                <span class="tag">职场压力</span>
+            <div class="assessment-tags">
+                <span class="tag">焦虑情绪</span>
+                <span class="tag">心理健康</span>
+                <span class="tag">自我评估</span>
                 <span class="tag">情绪管理</span>
-                <span class="tag">亲子关系</span>
-                <span class="tag">青少年心理</span>
+            </div>
+            <div class="price-section">
+                <div>
+                    <span class="free-tag">免费</span>
+                    <!-- <span class="price">¥29.00</span>
+                    <span class="original-price">¥49.00</span> -->
+                </div>
             </div>
         </div>
         
@@ -265,50 +269,70 @@
                 color: #666;
                 line-height: 1.8;
                 text-align: justify;
-                margin-bottom: 15px;
             }
-            .service-list {
-                margin-bottom: 15px;
+            .feature-list {
+                margin-top: 15px;
             }
-            .service-item {
+            .feature-item {
                 display: flex;
-                align-items: center;
-                justify-content: space-between;
-                padding: 12px 0;
-                border-bottom: 1px solid #f0f0f0;
+                align-items: flex-start;
+                margin-bottom: 15px;
             }
-            .service-item:last-child {
-                border-bottom: none;
+            .feature-icon {
+                width: 16px;
+                height: 16px;
+                margin-right: 8px;
+                margin-top: 2px;
+                color: #4A90E2;
             }
-            .service-info {
+            .feature-content {
                 flex: 1;
             }
-            .service-name {
+            .feature-title {
                 font-size: 15px;
                 font-weight: bold;
                 color: #333;
                 margin-bottom: 4px;
             }
-            .service-desc {
-                font-size: 12px;
-                color: #999;
+            .feature-desc {
+                font-size: 14px;
+                color: #666;
+                line-height: 1.6;
+            }
+            .assessment-steps {
+                margin-top: 15px;
+            }
+            .step-item {
+                display: flex;
+                align-items: flex-start;
+                margin-bottom: 15px;
+            }
+            .step-number {
                 display: flex;
                 align-items: center;
-            }
-            .service-icon {
-                width: 14px;
-                height: 14px;
-                margin-right: 4px;
-                color: #999;
-            }
-            .service-price {
-                font-size: 16px;
-                font-weight: bold;
-                color: #ff4d4f;
-            }
-            .price-unit {
+                justify-content: center;
+                width: 22px;
+                height: 22px;
+                background-color: #4A90E2;
+                color: #fff;
+                border-radius: 50%;
                 font-size: 12px;
-                font-weight: normal;
+                margin-right: 8px;
+                flex-shrink: 0;
+            }
+            .step-content {
+                flex: 1;
+            }
+            .step-title {
+                font-size: 15px;
+                font-weight: bold;
+                color: #333;
+                margin-bottom: 4px;
+            }
+            .step-desc {
+                font-size: 14px;
+                color: #666;
+                line-height: 1.6;
             }
         </style>
         
@@ -316,76 +340,96 @@
         <div class="tab-bar">
             <div class="tab active">简介</div>
             <div class="tab">评价</div>
-            <div class="tab">文章</div>
         </div>
         
-        <!-- 个人简介 -->
+        <!-- 测评简介 -->
         <div class="section">
             <div class="section-title">
                 <svg class="section-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <line x1="12" y1="16" x2="12" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <line x1="12" y1="8" x2="12.01" y2="8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                个人简介
+                测评简介
             </div>
             <div class="intro-text">
-                北京某心理咨询中心专职心理咨询师，国家二级心理咨询师，中国心理学会会员。毕业于北京师范大学心理学专业，拥有10年心理咨询经验。
+                焦虑自评量表（Self-Rating Anxiety Scale, SAS）是由William W.K. Zung于1971年编制的一种自评量表，用于评估个体的焦虑症状和程度。该量表被广泛应用于临床和研究领域，是一种简便、可靠的焦虑水平测量工具。
                 <br><br>
-                擅长处理婚恋情感、职场压力、情绪管理、亲子关系等问题。注重理论与实践相结合，采用认知行为疗法、精神分析、家庭系统等多种心理咨询方法，帮助来访者探索自我，解决心理困扰。
-                <br><br>
-                始终相信每个人都有自我成长的潜能，致力于为来访者提供专业、温暖的心理支持。
+                本测评包含20个问题，涵盖了焦虑的主观感受和客观表现，能够帮助您了解自己的焦虑水平，并为后续的心理调适提供参考。测评结果仅供参考，如有需要，请咨询专业心理医生或心理咨询师。
+            </div>
+            
+            <div class="feature-list">
+                <div class="feature-item">
+                    <svg class="feature-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <polyline points="22 4 12 14.01 9 11.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <div class="feature-content">
+                        <div class="feature-title">科学性</div>
+                        <div class="feature-desc">基于心理学研究，具有良好的信效度，被国际广泛认可和应用</div>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <svg class="feature-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <polyline points="22 4 12 14.01 9 11.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <div class="feature-content">
+                        <div class="feature-title">便捷性</div>
+                        <div class="feature-desc">操作简单，只需10分钟即可完成，随时随地进行自我评估</div>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <svg class="feature-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <polyline points="22 4 12 14.01 9 11.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <div class="feature-content">
+                        <div class="feature-title">专业解读</div>
+                        <div class="feature-desc">提供详细的测评报告和专业解读，帮助您更好地理解自己的焦虑状态</div>
+                    </div>
+                </div>
             </div>
         </div>
         
-        <!-- 服务项目 -->
+        <!-- 测评流程 -->
         <div class="section">
             <div class="section-title">
                 <svg class="section-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <line x1="3" y1="9" x2="21" y2="9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <line x1="9" y1="21" x2="9" y2="9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <polyline points="12 6 12 12 16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                服务项目
+                测评流程
             </div>
-            <div class="service-list">
-                <div class="service-item">
-                    <div class="service-info">
-                        <div class="service-name">线上咨询</div>
-                        <div class="service-desc">
-                            <svg class="service-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                <polyline points="12 6 12 12 16 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                            50分钟/次
-                        </div>
+            
+            <div class="assessment-steps">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <div class="step-title">开始测评</div>
+                        <div class="step-desc">点击"开始测评"按钮，阅读测评说明</div>
                     </div>
-                    <div class="service-price">¥300<span class="price-unit">/次</span></div>
                 </div>
-                <div class="service-item">
-                    <div class="service-info">
-                        <div class="service-name">线下咨询</div>
-                        <div class="service-desc">
-                            <svg class="service-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                <polyline points="12 6 12 12 16 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                            50分钟/次
-                        </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <div class="step-title">回答问题</div>
+                        <div class="step-desc">根据自己的实际情况，依次回答20个问题</div>
                     </div>
-                    <div class="service-price">¥500<span class="price-unit">/次</span></div>
                 </div>
-                <div class="service-item">
-                    <div class="service-info">
-                        <div class="service-name">心理测评解读</div>
-                        <div class="service-desc">
-                            <svg class="service-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                <polyline points="12 6 12 12 16 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                            30分钟/次
-                        </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <div class="step-title">提交答案</div>
+                        <div class="step-desc">完成所有问题后，点击"提交"按钮</div>
                     </div>
-                    <div class="service-price">¥200<span class="price-unit">/次</span></div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <div class="step-title">查看报告</div>
+                        <div class="step-desc">系统自动生成测评报告，包含分数解读和改善建议</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -395,6 +439,7 @@
                 background-color: #fff;
                 margin-bottom: 10px;
                 padding: 15px;
+                display: none;
             }
             .review-header {
                 display: flex;
@@ -483,21 +528,6 @@
                 color: #666;
                 line-height: 1.6;
             }
-            .review-tags {
-                display: flex;
-                flex-wrap: wrap;
-                margin-top: 8px;
-            }
-            .review-tag {
-                display: inline-block;
-                padding: 2px 8px;
-                background-color: #f5f7fa;
-                color: #666;
-                border-radius: 12px;
-                font-size: 12px;
-                margin-right: 8px;
-                margin-bottom: 8px;
-            }
             .more-button {
                 display: block;
                 width: 100%;
@@ -518,46 +548,26 @@
                 background-color: #fff;
                 display: flex;
                 align-items: center;
-                justify-content: space-between;
+                justify-content: center;
                 padding: 0 15px;
                 box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
                 max-width: 375px;
                 margin: 0 auto;
                 z-index: 100;
             }
-            .collect-button {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                padding: 0 15px;
-            }
-            .collect-icon {
-                width: 24px;
-                height: 24px;
-                margin-bottom: 2px;
-                color: #999;
-            }
-            .collect-text {
-                font-size: 12px;
-                color: #999;
-            }
-            .appointment-button {
-                flex: 1;
-                height: 40px;
+            .start-button {
+                width: 90%;
+                height: 44px;
                 background-color: #4A90E2;
                 color: #fff;
                 border: none;
-                border-radius: 20px;
+                border-radius: 22px;
                 font-size: 16px;
                 font-weight: bold;
                 cursor: pointer;
-                margin-left: 15px;
             }
             .bottom-padding {
                 height: 70px;
-            }
-            a{
-                text-decoration: none;
             }
         </style>
         
@@ -570,11 +580,11 @@
                     </svg>
                     用户评价
                 </div>
-                <div class="review-count">128条评价</div>
+                <div class="review-count">328条评价</div>
             </div>
             
             <div class="review-stats">
-                <div class="rating-big">4.9</div>
+                <div class="rating-big">4.8</div>
                 <div class="rating-stars">
                     <svg class="star" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -598,8 +608,8 @@
                 <!-- 评价1 -->
                 <div class="review-item">
                     <div class="reviewer-info">
-                        <img src="https://via.placeholder.com/32x32/52C41A/FFFFFF/?text=李" alt="用户头像" class="reviewer-avatar">
-                        <div class="reviewer-name">李**</div>
+                        <img src="https://via.placeholder.com/32x32/52C41A/FFFFFF/?text=张" alt="用户头像" class="reviewer-avatar">
+                        <div class="reviewer-name">张**</div>
                         <div class="review-date">2023-05-20</div>
                     </div>
                     <div class="review-rating">
@@ -620,20 +630,15 @@
                         </svg>
                     </div>
                     <div class="review-text">
-                        张医生非常专业，能够精准地找到我情绪问题的根源，并给出了很多实用的建议。咨询过程中感到很舒适，没有任何被评判的感觉。通过几次咨询，我的情绪状态有了明显改善。非常感谢！
-                    </div>
-                    <div class="review-tags">
-                        <span class="review-tag">专业水平高</span>
-                        <span class="review-tag">解决问题能力强</span>
-                        <span class="review-tag">态度温和</span>
+                        测评题目设计很合理，操作也很简单。结果报告很详细，给出的建议也很有针对性，帮助我更好地了解了自己的焦虑状态，推荐给有需要的朋友。
                     </div>
                 </div>
                 
                 <!-- 评价2 -->
                 <div class="review-item">
                     <div class="reviewer-info">
-                        <img src="https://via.placeholder.com/32x32/FA8C16/FFFFFF/?text=王" alt="用户头像" class="reviewer-avatar">
-                        <div class="reviewer-name">王**</div>
+                        <img src="https://via.placeholder.com/32x32/FA8C16/FFFFFF/?text=李" alt="用户头像" class="reviewer-avatar">
+                        <div class="reviewer-name">李**</div>
                         <div class="review-date">2023-04-15</div>
                     </div>
                     <div class="review-rating">
@@ -654,11 +659,36 @@
                         </svg>
                     </div>
                     <div class="review-text">
-                        来咨询是因为工作压力大导致的焦虑，张医生教会了我很多实用的减压技巧和认知调整方法。咨询后我的睡眠质量提高了，工作效率也有所提升。感谢张医生的帮助！
+                        最近工作压力大，感觉很焦虑，做了这个测评后发现自己确实有轻度焦虑。报告中提供的缓解方法很实用，按照建议做了一段时间，感觉好多了。
                     </div>
-                    <div class="review-tags">
-                        <span class="review-tag">方法实用</span>
-                        <span class="review-tag">效果明显</span>
+                </div>
+                
+                <!-- 评价3 -->
+                <div class="review-item">
+                    <div class="reviewer-info">
+                        <img src="https://via.placeholder.com/32x32/EB2F96/FFFFFF/?text=王" alt="用户头像" class="reviewer-avatar">
+                        <div class="reviewer-name">王**</div>
+                        <div class="review-date">2023-03-28</div>
+                    </div>
+                    <div class="review-rating">
+                        <svg class="review-star" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <svg class="review-star" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <svg class="review-star" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <svg class="review-star" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <svg class="review-star" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="review-text">
+                        这个测评很专业，题目设计合理，能够全面评估焦虑状态。测评完成后还可以看到历史记录，方便跟踪自己的情绪变化。
                     </div>
                 </div>
             </div>
@@ -669,16 +699,40 @@
         <!-- 底部占位，防止内容被底部导航遮挡 -->
         <div class="bottom-padding"></div>
         
-        <!-- 底部预约栏 -->
+        <!-- 底部开始测评按钮 -->
         <div class="bottom-bar">
-            <div class="collect-button">
-                <svg class="collect-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <span class="collect-text">收藏</span>
-            </div>
-            <button class="appointment-button"><a href="立即预约.html">立即预约</a></button>
+            <button class="start-button"><a href="开始测评.html">开始测评</a></button>
         </div>
     </div>
+    
+    <script>
+        // 选项卡切换功能
+        document.querySelectorAll('.tab').forEach((tab, index) => {
+            tab.addEventListener('click', () => {
+                // 移除所有选项卡的active类
+                document.querySelectorAll('.tab').forEach(t => {
+                    t.classList.remove('active');
+                });
+                
+                // 给当前点击的选项卡添加active类
+                tab.classList.add('active');
+                
+                // 切换内容显示
+                if (index === 0) {
+                    // 显示简介内容，隐藏评价内容
+                    document.querySelectorAll('.section').forEach(section => {
+                        section.style.display = 'block';
+                    });
+                    document.querySelector('.review-section').style.display = 'none';
+                } else {
+                    // 显示评价内容，隐藏简介内容
+                    document.querySelectorAll('.section').forEach(section => {
+                        section.style.display = 'none';
+                    });
+                    document.querySelector('.review-section').style.display = 'block';
+                }
+            });
+        });
+    </script>
 </body>
 </html> 

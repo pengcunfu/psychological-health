@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心理健康平台 - 立即预约</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 375px;
+            min-height: 100vh;
+            margin: 0 auto;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            padding-bottom: 70px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 50px;
+            background-color: #fff;
+            border-bottom: 1px solid #f0f0f0;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .header-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        .back-button {
+            position: absolute;
+            left: 15px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .counselor-card {
+            display: flex;
+            padding: 15px;
+            background-color: #fff;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .counselor-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 12px;
+        }
+        .counselor-info {
+            flex: 1;
+        }
+        .counselor-name-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+        .counselor-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-right: 8px;
+        }
+        .counselor-gender {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: #999;
+        }
+        .counselor-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        .counselor-rating {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: #ff9500;
+        }
+        .rating-star {
+            margin-right: 2px;
+        }
+        .section {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-label {
+            display: block;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .form-input {
+            width: 100%;
+            height: 40px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 0 12px;
+            font-size: 14px;
+            color: #333;
+            background-color: #fff;
+        }
+        .form-input:focus {
+            border-color: #4A90E2;
+            outline: none;
+        }
+        .form-select {
+            width: 100%;
+            height: 40px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 0 12px;
+            font-size: 14px;
+            color: #333;
+            background-color: #fff;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23999' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+        }
+        .time-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .time-item {
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 8px 0;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+        }
+        .time-item.active {
+            background-color: #4A90E2;
+            border-color: #4A90E2;
+            color: #fff;
+        }
+        .time-item.disabled {
+            background-color: #f5f5f5;
+            border-color: #e0e0e0;
+            color: #ccc;
+            cursor: not-allowed;
+        }
+        .price-section {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .price-label {
+            font-size: 14px;
+            color: #666;
+        }
+        .price-value {
+            font-size: 14px;
+            color: #333;
+        }
+        .total-price {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 10px;
+            border-top: 1px dashed #f0f0f0;
+        }
+        .total-label {
+            font-size: 14px;
+            color: #333;
+        }
+        .total-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ff4d4f;
+        }
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background-color: #fff;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 15px;
+            max-width: 375px;
+            margin: 0 auto;
+        }
+        .price-info {
+            flex: 1;
+        }
+        .price-text {
+            font-size: 12px;
+            color: #999;
+        }
+        .price-amount {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ff4d4f;
+        }
+        .submit-button {
+            width: 120px;
+            height: 40px;
+            background-color: #4A90E2;
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        .submit-button:active {
+            background-color: #3a80d2;
+        }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部导航 -->
+        <div class="header">
+            <div class="back-button">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 12H5" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 19L5 12L12 5" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <div class="header-title">立即预约</div>
+        </div>
+
+        <!-- 咨询师信息 -->
+        <div class="counselor-card">
+            <img src="https://via.placeholder.com/50x50/4A90E2/FFFFFF/?text=张医生" alt="张医生" class="counselor-avatar">
+            <div class="counselor-info">
+                <div class="counselor-name-row">
+                    <div class="counselor-name">张医生</div>
+                    <div class="counselor-gender">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 22V19H2V17H5V14H7V17H10V19H7V22H5ZM12 6.5C12 8.43 10.43 10 8.5 10C6.57 10 5 8.43 5 6.5C5 4.57 6.57 3 8.5 3C10.43 3 12 4.57 12 6.5Z" fill="#4A90E2"/>
+                        </svg>
+                        男
+                    </div>
+                </div>
+                <div class="counselor-title">国家二级心理咨询师</div>
+                <div class="counselor-rating">
+                    <svg class="rating-star" width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 17.27L18.18 21L16.54 13.97L22 9.24L14.81 8.63L12 2L9.19 8.63L2 9.24L7.46 13.97L5.82 21L12 17.27Z" fill="#FF9500"/>
+                    </svg>
+                    4.9 <span style="color: #999; margin-left: 4px;">(128人评价)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 预约表单 -->
+        <div class="section">
+            <div class="section-title">预约信息</div>
+            
+            <div class="form-group">
+                <label class="form-label">咨询方式</label>
+                <select class="form-select">
+                    <option value="video">视频咨询</option>
+                    <option value="voice">语音咨询</option>
+                    <option value="text">文字咨询</option>
+                    <option value="offline">线下面询</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">预约日期</label>
+                <input type="date" class="form-input" value="2023-06-20">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">预约时段</label>
+                <div class="time-grid">
+                    <div class="time-item disabled">09:00</div>
+                    <div class="time-item disabled">10:00</div>
+                    <div class="time-item">11:00</div>
+                    <div class="time-item active">14:00</div>
+                    <div class="time-item">15:00</div>
+                    <div class="time-item">16:00</div>
+                    <div class="time-item">17:00</div>
+                    <div class="time-item">19:00</div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">咨询时长</label>
+                <select class="form-select">
+                    <option value="45">45分钟</option>
+                    <option value="60" selected>60分钟</option>
+                    <option value="90">90分钟</option>
+                    <option value="120">120分钟</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">咨询主题</label>
+                <select class="form-select">
+                    <option value="emotion">情绪管理</option>
+                    <option value="relationship">人际关系</option>
+                    <option value="marriage">婚恋情感</option>
+                    <option value="career">职业发展</option>
+                    <option value="family">家庭关系</option>
+                    <option value="other">其他问题</option>
+                </select>
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">问题描述</label>
+                <textarea class="form-input" style="height: 100px; padding: 10px; resize: none;" placeholder="请简要描述您的问题和期望，以便咨询师提前了解和准备..."></textarea>
+            </div>
+        </div>
+
+        <!-- 价格明细 -->
+        <div class="price-section">
+            <div class="section-title">价格明细</div>
+            
+            <div class="price-row">
+                <div class="price-label">咨询费用</div>
+                <div class="price-value">¥300/次</div>
+            </div>
+            
+            <div class="price-row">
+                <div class="price-label">咨询时长</div>
+                <div class="price-value">60分钟</div>
+            </div>
+            
+            <div class="price-row">
+                <div class="price-label">优惠券</div>
+                <div class="price-value" style="color: #4A90E2;">-¥30</div>
+            </div>
+            
+            <div class="total-price">
+                <div class="total-label">合计</div>
+                <div class="total-value">¥270</div>
+            </div>
+        </div>
+
+        <!-- 支付方式 -->
+        <div class="section">
+            <div class="section-title">支付方式</div>
+            
+            <div class="payment-list">
+                <div class="payment-item active">
+                    <div class="payment-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M17 2H7C4.24 2 2 4.23 2 6.98V17.02C2 19.77 4.24 22 7 22H17C19.76 22 22 19.77 22 17.02V6.98C22 4.23 19.76 2 17 2ZM8.5 6C9.88 6 11 7.12 11 8.5C11 9.88 9.88 11 8.5 11C7.12 11 6 9.88 6 8.5C6 7.12 7.12 6 8.5 6ZM12 17.5H5V16.25C5 14.44 8.5 13.5 8.5 13.5C8.5 13.5 12 14.44 12 16.25V17.5ZM19 16H14V14H19V16ZM19 12H14V10H19V12Z" fill="#1AAD19"/>
+                        </svg>
+                    </div>
+                    <div class="payment-info">
+                        <div class="payment-name">微信支付</div>
+                        <div class="payment-desc">推荐使用微信支付</div>
+                    </div>
+                    <div class="payment-check">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z" fill="#4A90E2"/>
+                        </svg>
+                    </div>
+                </div>
+                
+                <div class="payment-item">
+                    <div class="payment-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M7 21H3V10H7V21ZM14 10H10V21H14V10ZM21 10H17V21H21V10ZM17.5 6.5C17.5 5.12 18.62 4 20 4C21.38 4 22.5 5.12 22.5 6.5C22.5 7.88 21.38 9 20 9C18.62 9 17.5 7.88 17.5 6.5ZM16 6.5C16 8.43 17.57 10 19.5 10H20.5C22.43 10 24 8.43 24 6.5C24 4.57 22.43 3 20.5 3H19.5C17.57 3 16 4.57 16 6.5ZM2 6.5C2 5.12 3.12 4 4.5 4C5.88 4 7 5.12 7 6.5C7 7.88 5.88 9 4.5 9C3.12 9 2 7.88 2 6.5ZM0.5 6.5C0.5 8.43 2.07 10 4 10H5C6.93 10 8.5 8.43 8.5 6.5C8.5 4.57 6.93 3 5 3H4C2.07 3 0.5 4.57 0.5 6.5ZM9 5.5C9 4.12 10.12 3 11.5 3H12.5C13.88 3 15 4.12 15 5.5C15 6.88 13.88 8 12.5 8H11.5C10.12 8 9 6.88 9 5.5Z" fill="#1677FF"/>
+                        </svg>
+                    </div>
+                    <div class="payment-info">
+                        <div class="payment-name">支付宝</div>
+                        <div class="payment-desc">支付宝安全支付</div>
+                    </div>
+                    <div class="payment-check"></div>
+                </div>
+                
+                <div class="payment-item">
+                    <div class="payment-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20 4H4C2.89 4 2.01 4.89 2.01 6L2 18C2 19.11 2.89 20 4 20H20C21.11 20 22 19.11 22 18V6C22 4.89 21.11 4 20 4ZM20 18H4V12H20V18ZM20 8H4V6H20V8Z" fill="#FF6B22"/>
+                        </svg>
+                    </div>
+                    <div class="payment-info">
+                        <div class="payment-name">银行卡支付</div>
+                        <div class="payment-desc">支持储蓄卡、信用卡</div>
+                    </div>
+                    <div class="payment-check"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 用户协议 -->
+        <div class="agreement-section">
+            <label class="agreement-label">
+                <input type="checkbox" checked>
+                <span class="agreement-text">我已阅读并同意<a href="javascript:void(0)" style="color: #4A90E2;">《用户服务协议》</a>和<a href="javascript:void(0)" style="color: #4A90E2;">《隐私政策》</a></span>
+            </label>
+        </div>
+
+        <style>
+            .payment-list {
+                margin-bottom: 10px;
+            }
+            .payment-item {
+                display: flex;
+                align-items: center;
+                padding: 12px 0;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            .payment-item:last-child {
+                border-bottom: none;
+            }
+            .payment-icon {
+                width: 32px;
+                height: 32px;
+                margin-right: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .payment-info {
+                flex: 1;
+            }
+            .payment-name {
+                font-size: 14px;
+                color: #333;
+                margin-bottom: 2px;
+            }
+            .payment-desc {
+                font-size: 12px;
+                color: #999;
+            }
+            .payment-check {
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                border: 1px solid #e0e0e0;
+            }
+            .payment-item.active .payment-check {
+                border: none;
+            }
+            .agreement-section {
+                padding: 15px;
+                margin-bottom: 60px;
+            }
+            .agreement-label {
+                display: flex;
+                align-items: center;
+                font-size: 12px;
+                color: #666;
+            }
+            .agreement-label input {
+                margin-right: 6px;
+            }
+        </style>
+
+        <!-- 底部固定栏 -->
+        <div class="bottom-bar">
+            <div class="price-info">
+                <div class="price-text">实付款</div>
+                <div class="price-amount">¥270</div>
+            </div>
+            <button class="submit-button">提交订单</button>
+        </div>
+    </div>
+    
+    <script>
+        // 返回按钮点击事件
+        document.querySelector('.back-button').addEventListener('click', function() {
+            window.history.back();
+        });
+        
+        // 时间选择点击事件
+        document.querySelectorAll('.time-item:not(.disabled)').forEach(function(item) {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.time-item').forEach(function(el) {
+                    el.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+        
+        // 支付方式选择事件
+        document.querySelectorAll('.payment-item').forEach(function(item) {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.payment-item').forEach(function(el) {
+                    el.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+        
+        // 提交订单按钮点击事件
+        document.querySelector('.submit-button').addEventListener('click', function() {
+            alert('预约成功！');
+            window.location.href = '我的预约.html';
+        });
+    </script>
+</body>
+</html> 

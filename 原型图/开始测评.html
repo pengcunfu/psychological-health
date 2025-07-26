@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心理健康平台 - 开始测评</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 375px;
+            min-height: 100vh;
+            margin: 0 auto;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            padding-bottom: 70px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 50px;
+            background-color: #fff;
+            border-bottom: 1px solid #f0f0f0;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .header-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        .back-button {
+            position: absolute;
+            left: 15px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .assessment-info {
+            padding: 15px;
+            background-color: #fff;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .assessment-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        .assessment-meta {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 12px;
+        }
+        .meta-item {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+        }
+        .meta-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 4px;
+        }
+        .assessment-desc {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.8;
+        }
+        .section {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+        .section-icon {
+            width: 18px;
+            height: 18px;
+            margin-right: 6px;
+        }
+        .step-list {
+            padding-left: 24px;
+            margin-bottom: 15px;
+        }
+        .step-item {
+            position: relative;
+            padding-left: 10px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+        .step-item::before {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: 8px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: #4A90E2;
+        }
+        .tip-box {
+            background-color: #f0f7ff;
+            border-left: 4px solid #4A90E2;
+            padding: 12px 15px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        .tip-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+        }
+        .tip-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 6px;
+            color: #4A90E2;
+        }
+        .tip-content {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+        }
+        .question-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin: 15px;
+        }
+        .question-number {
+            font-size: 14px;
+            color: #4A90E2;
+            margin-bottom: 10px;
+        }
+        .question-text {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .options-list {
+            display: flex;
+            flex-direction: column;
+        }
+        .option-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option-item:last-child {
+            margin-bottom: 0;
+        }
+        .option-item:hover {
+            border-color: #4A90E2;
+            background-color: #f0f7ff;
+        }
+        .option-item.selected {
+            border-color: #4A90E2;
+            background-color: #f0f7ff;
+        }
+        .option-radio {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 1px solid #ccc;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .option-item.selected .option-radio {
+            border-color: #4A90E2;
+            background-color: #4A90E2;
+        }
+        .option-item.selected .option-radio::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #fff;
+        }
+        .option-text {
+            font-size: 14px;
+            color: #333;
+        }
+        .progress-bar-container {
+            height: 4px;
+            background-color: #f0f0f0;
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 15px;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: #4A90E2;
+            border-radius: 2px;
+            width: 10%;
+        }
+        .progress-text {
+            font-size: 12px;
+            color: #999;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background-color: #fff;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 15px;
+            max-width: 375px;
+            margin: 0 auto;
+        }
+        .nav-button {
+            width: 100px;
+            height: 40px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .prev-button {
+            border: 1px solid #e0e0e0;
+            color: #666;
+            background-color: #fff;
+        }
+        .next-button {
+            background-color: #4A90E2;
+            color: #fff;
+            border: none;
+        }
+        .next-button:active {
+            background-color: #3a80d2;
+        }
+        .intro-section {
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .start-button {
+            display: block;
+            width: 200px;
+            height: 45px;
+            background-color: #4A90E2;
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 22.5px;
+            margin: 30px auto;
+            cursor: pointer;
+        }
+        .start-button:active {
+            background-color: #3a80d2;
+        }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部导航 -->
+        <div class="header">
+            <div class="back-button">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 12H5" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 19L5 12L12 5" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <div class="header-title">抑郁症筛查量表（PHQ-9）</div>
+        </div>
+
+        <!-- 测评信息 -->
+        <div class="assessment-info">
+            <div class="assessment-name">抑郁症筛查量表（PHQ-9）</div>
+            <div class="assessment-meta">
+                <div class="meta-item">
+                    <svg class="meta-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 6V12L16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    约5分钟
+                </div>
+                <div class="meta-item">
+                    <svg class="meta-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17 21V19C17 16.7909 15.2091 15 13 15H5C2.79086 15 1 16.7909 1 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M9 11C11.2091 11 13 9.20914 13 7C13 4.79086 11.2091 3 9 3C6.79086 3 5 4.79086 5 7C5 9.20914 6.79086 11 9 11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M23 21V19C22.9986 17.1771 21.765 15.5857 20 15.13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M16 3.13C17.7699 3.58317 19.0078 5.17799 19.0078 7.005C19.0078 8.83201 17.7699 10.4268 16 10.88" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    12,345人已测
+                </div>
+            </div>
+            <div class="assessment-desc">
+                PHQ-9是一种广泛使用的抑郁症筛查工具，由9个问题组成，用于评估过去两周内的抑郁症状。本测评可帮助您初步了解自己的情绪状态，但不能替代专业医生的诊断。
+            </div>
+        </div>
+
+        <!-- 测评介绍 -->
+        <div class="intro-section">
+            <div class="section-title">
+                <svg class="section-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#4A90E2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9.09 9.00002C9.3251 8.33169 9.78915 7.76813 10.4 7.40915C11.0108 7.05018 11.7289 6.91896 12.4272 7.03873C13.1255 7.15851 13.7588 7.52154 14.2151 8.06355C14.6713 8.60555 14.9211 9.29154 14.92 10C14.92 12 11.92 13 11.92 13" stroke="#4A90E2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 17H12.01" stroke="#4A90E2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                测评说明
+            </div>
+            <div class="step-list">
+                <div class="step-item">本测评共9个问题，请根据您过去两周的感受如实回答。</div>
+                <div class="step-item">每个问题有4个选项，分别对应不同频率的症状体验。</div>
+                <div class="step-item">完成所有问题后，系统将自动计算您的得分并给出相应的结果解释。</div>
+                <div class="step-item">测评结果仅供参考，如有严重情绪困扰，请咨询专业心理医生。</div>
+            </div>
+            
+            <div class="tip-box">
+                <div class="tip-title">
+                    <svg class="tip-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    温馨提示
+                </div>
+                <div class="tip-content">
+                    请在安静、不受打扰的环境下完成测评，尽量真实反映您的情况，这样才能得到更准确的评估结果。测评过程中如有不适，可随时退出。
+                </div>
+            </div>
+            
+            <button class="start-button" id="startButton">开始测评</button>
+        </div>
+
+        <!-- 测评问题（默认隐藏） -->
+        <div id="questionSection" style="display: none;">
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <div class="progress-text" id="progressText">问题 1/9</div>
+            
+            <div class="question-card">
+                <div class="question-number">问题 1</div>
+                <div class="question-text">在过去的两周内，有多少天您感到做事情没有兴趣或乐趣？</div>
+                <div class="options-list">
+                    <div class="option-item" data-value="0">
+                        <div class="option-radio"></div>
+                        <div class="option-text">完全没有</div>
+                    </div>
+                    <div class="option-item" data-value="1">
+                        <div class="option-radio"></div>
+                        <div class="option-text">有几天</div>
+                    </div>
+                    <div class="option-item" data-value="2">
+                        <div class="option-radio"></div>
+                        <div class="option-text">一半以上的天数</div>
+                    </div>
+                    <div class="option-item" data-value="3">
+                        <div class="option-radio"></div>
+                        <div class="option-text">几乎每天</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bottom-bar">
+                <div class="nav-button prev-button" id="prevButton">上一题</div>
+                <div class="nav-button next-button" id="nextButton">下一题</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 测评问题数据
+        const questions = [
+            {
+                number: 1,
+                text: "在过去的两周内，有多少天您感到做事情没有兴趣或乐趣？",
+                answer: null
+            },
+            {
+                number: 2,
+                text: "在过去的两周内，有多少天您感到心情低落、沮丧或绝望？",
+                answer: null
+            },
+            {
+                number: 3,
+                text: "在过去的两周内，有多少天您入睡困难、睡不安稳或睡眠过多？",
+                answer: null
+            },
+            {
+                number: 4,
+                text: "在过去的两周内，有多少天您感到疲倦或没有活力？",
+                answer: null
+            },
+            {
+                number: 5,
+                text: "在过去的两周内，有多少天您食欲不振或吃得过多？",
+                answer: null
+            },
+            {
+                number: 6,
+                text: "在过去的两周内，有多少天您对自己感到不满意，或认为自己是个失败者，或让自己或家人失望？",
+                answer: null
+            },
+            {
+                number: 7,
+                text: "在过去的两周内，有多少天您难以集中注意力做事，如阅读报纸或看电视？",
+                answer: null
+            },
+            {
+                number: 8,
+                text: "在过去的两周内，有多少天您行动或说话速度缓慢到被他人注意到？或相反，您比平常更烦躁或坐立不安？",
+                answer: null
+            },
+            {
+                number: 9,
+                text: "在过去的两周内，有多少天您有想到自己最好去死或以某种方式伤害自己的想法？",
+                answer: null
+            }
+        ];
+        
+        let currentQuestionIndex = 0;
+        
+        // 开始测评按钮点击事件
+        document.getElementById('startButton').addEventListener('click', function() {
+            document.querySelector('.intro-section').style.display = 'none';
+            document.getElementById('questionSection').style.display = 'block';
+            updateQuestion();
+        });
+        
+        // 选项点击事件
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.option-item')) {
+                const optionItem = e.target.closest('.option-item');
+                const value = parseInt(optionItem.dataset.value);
+                
+                // 清除所有选中状态
+                document.querySelectorAll('.option-item').forEach(item => {
+                    item.classList.remove('selected');
+                });
+                
+                // 设置当前选中状态
+                optionItem.classList.add('selected');
+                
+                // 保存答案
+                questions[currentQuestionIndex].answer = value;
+                
+                // 启用下一题按钮
+                document.getElementById('nextButton').style.opacity = '1';
+                document.getElementById('nextButton').style.pointerEvents = 'auto';
+            }
+        });
+        
+        // 上一题按钮点击事件
+        document.getElementById('prevButton').addEventListener('click', function() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                updateQuestion();
+            }
+        });
+        
+        // 下一题按钮点击事件
+        document.getElementById('nextButton').addEventListener('click', function() {
+            if (questions[currentQuestionIndex].answer !== null) {
+                if (currentQuestionIndex < questions.length - 1) {
+                    currentQuestionIndex++;
+                    updateQuestion();
+                } else {
+                    // 完成测评，计算得分
+                    const totalScore = questions.reduce((sum, q) => sum + (q.answer || 0), 0);
+                    alert(`测评完成！您的PHQ-9得分为: ${totalScore}`);
+                    window.location.href = '测评结果.html?score=' + totalScore;
+                }
+            }
+        });
+        
+        // 更新问题显示
+        function updateQuestion() {
+            const question = questions[currentQuestionIndex];
+            
+            // 更新问题文本
+            document.querySelector('.question-number').textContent = `问题 ${question.number}`;
+            document.querySelector('.question-text').textContent = question.text;
+            
+            // 更新进度条和进度文本
+            const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+            document.getElementById('progressText').textContent = `问题 ${currentQuestionIndex + 1}/${questions.length}`;
+            
+            // 清除所有选项的选中状态
+            document.querySelectorAll('.option-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // 如果该问题已有答案，设置选中状态
+            if (question.answer !== null) {
+                const selectedOption = document.querySelector(`.option-item[data-value="${question.answer}"]`);
+                if (selectedOption) {
+                    selectedOption.classList.add('selected');
+                }
+            }
+            
+            // 更新按钮状态
+            document.getElementById('prevButton').style.visibility = currentQuestionIndex === 0 ? 'hidden' : 'visible';
+            
+            if (question.answer === null) {
+                document.getElementById('nextButton').style.opacity = '0.5';
+                document.getElementById('nextButton').style.pointerEvents = 'none';
+            } else {
+                document.getElementById('nextButton').style.opacity = '1';
+                document.getElementById('nextButton').style.pointerEvents = 'auto';
+            }
+            
+            // 更新最后一题的按钮文字
+            if (currentQuestionIndex === questions.length - 1) {
+                document.getElementById('nextButton').textContent = '完成测评';
+            } else {
+                document.getElementById('nextButton').textContent = '下一题';
+            }
+        }
+        
+        // 返回按钮点击事件
+        document.querySelector('.back-button').addEventListener('click', function() {
+            if (confirm('确定要退出测评吗？已填写的答案将不会保存。')) {
+                window.history.back();
+            }
+        });
+    </script>
+</body>
+</html> 
