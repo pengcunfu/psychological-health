@@ -52,8 +52,8 @@ from utils.file_upload import FileUploader
 
 # 创建文件上传器实例
 uploader = FileUploader(
-    upload_dir='uploads',
-    static_dir='static'
+  upload_dir='uploads',
+  static_dir='../static'
 )
 
 # 保存文件

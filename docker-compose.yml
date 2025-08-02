@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    ports:
+      - "5000:5000"
+    environment:
+      # 应用配置
+      - FLASK_ENV=production
+      - CONFIG_PATH=config-prod.yaml
+      
+      # 数据库配置 (示例使用 PostgreSQL)
+      - DATABASE_URI=postgresql://user:password@db:5432/psychological_health
+      
+      # 安全配置
+      - SECRET_KEY=your-super-secret-key-here
+      
+      # CORS 配置
+      - CORS_ORIGINS=https://yourdomain.com,https://admin.yourdomain.com
+      
+      # Gunicorn 配置
+      - PORT=5000
+      - WORKERS=4
+      - TIMEOUT=60
+      - KEEP_ALIVE=5
+      - MAX_REQUESTS=1000
+      - MAX_REQUESTS_JITTER=100
+    
+    volumes:
+      # 持久化上传文件
+      - uploads_data:/app/uploads
+      - static_data:/app/static
+      
+      # 持久化数据库 (如果使用 SQLite)
+      - db_data:/app/instance
+    
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    restart: unless-stopped
+    
+    # 可选：使用外部数据库
+    # depends_on:
+    #   - db
+
+  # 可选：PostgreSQL 数据库服务
+  # db:
+  #   image: postgres:15
+  #   environment:
+  #     - POSTGRES_DB=psychological_health
+  #     - POSTGRES_USER=user
+  #     - POSTGRES_PASSWORD=password
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+  #   restart: unless-stopped
+
+  # 可选：Redis 缓存服务
+  # redis:
+  #   image: redis:7-alpine
+  #   volumes:
+  #     - redis_data:/data
+  #   ports:
+  #     - "6379:6379"
+  #   restart: unless-stopped
+
+volumes:
+  uploads_data:
+  static_data:
+  db_data:
+  # postgres_data:
+  # redis_data:
+
+networks:
+  default:
+    name: psychological_health_network 

@@ -1,4 +1,4 @@
 DEBUG: false
-SECRET_KEY: prod-secret-key
-DATABASE_URI: sqlite:///prod.db
-CORS_ORIGINS: 'https://yourdomain.com' 
+SECRET_KEY: ${SECRET_KEY:-production-secret-key-change-me}
+DATABASE_URI: ${DATABASE_URI:-sqlite:///prod.db}
+CORS_ORIGINS: ${CORS_ORIGINS:-*} 
