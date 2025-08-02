@@ -1,6 +1,0 @@
-{
-  "navigationBarTitleText": "日志",
-  "usingComponents": {
-    "navigation-bar": "/components/navigation-bar/index"
-  }
-} 

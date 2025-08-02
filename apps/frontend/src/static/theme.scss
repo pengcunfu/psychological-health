@@ -1,0 +1,109 @@
+/* 主题样式变量 */
+
+// 主题色
+$primary-color: #4A90E2;
+$success-color: #52c41a;
+$warning-color: #faad14;
+$danger-color: #f5222d;
+$info-color: #1890ff;
+
+// 文本颜色
+$text-color: #333;
+$text-color-secondary: #666;
+$text-color-tertiary: #999;
+$text-color-light: #ccc;
+$text-color-inverse: #fff;
+
+// 背景色
+$bg-color: #f5f7fa;
+$bg-color-light: #fff;
+$bg-color-dark: #333;
+
+// 边框颜色
+$border-color: #ddd;
+$border-color-light: #eee;
+$border-color-dark: #ccc;
+
+// 字体大小
+$font-size-xs: 24rpx;
+$font-size-sm: 28rpx;
+$font-size-md: 32rpx;
+$font-size-lg: 36rpx;
+$font-size-xl: 40rpx;
+$font-size-xxl: 48rpx;
+
+// 边框圆角
+$border-radius-sm: 5rpx;
+$border-radius-md: 10rpx;
+$border-radius-lg: 20rpx;
+$border-radius-circle: 50%;
+
+// 间距
+$spacing-xs: 10rpx;
+$spacing-sm: 20rpx;
+$spacing-md: 30rpx;
+$spacing-lg: 40rpx;
+$spacing-xl: 50rpx;
+
+// 阴影
+$box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+$box-shadow-lg: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
+
+// 动画时间
+$animation-duration-fast: 0.2s;
+$animation-duration-base: 0.3s;
+$animation-duration-slow: 0.4s;
+
+// 透明度
+$opacity-disabled: 0.5;
+$opacity-mask: 0.7;
+
+// 自定义主题样式
+:root {
+  --primary-color: #{$primary-color};
+  --success-color: #{$success-color};
+  --warning-color: #{$warning-color};
+  --danger-color: #{$danger-color};
+  --info-color: #{$info-color};
+  
+  --text-color: #{$text-color};
+  --text-color-secondary: #{$text-color-secondary};
+  --text-color-tertiary: #{$text-color-tertiary};
+  --text-color-light: #{$text-color-light};
+  --text-color-inverse: #{$text-color-inverse};
+  
+  --bg-color: #{$bg-color};
+  --bg-color-light: #{$bg-color-light};
+  --bg-color-dark: #{$bg-color-dark};
+  
+  --border-color: #{$border-color};
+  --border-color-light: #{$border-color-light};
+  --border-color-dark: #{$border-color-dark};
+  
+  --font-size-xs: #{$font-size-xs};
+  --font-size-sm: #{$font-size-sm};
+  --font-size-md: #{$font-size-md};
+  --font-size-lg: #{$font-size-lg};
+  --font-size-xl: #{$font-size-xl};
+  --font-size-xxl: #{$font-size-xxl};
+  
+  --border-radius-sm: #{$border-radius-sm};
+  --border-radius-md: #{$border-radius-md};
+  --border-radius-lg: #{$border-radius-lg};
+  
+  --spacing-xs: #{$spacing-xs};
+  --spacing-sm: #{$spacing-sm};
+  --spacing-md: #{$spacing-md};
+  --spacing-lg: #{$spacing-lg};
+  --spacing-xl: #{$spacing-xl};
+  
+  --box-shadow: #{$box-shadow};
+  --box-shadow-lg: #{$box-shadow-lg};
+  
+  --animation-duration-fast: #{$animation-duration-fast};
+  --animation-duration-base: #{$animation-duration-base};
+  --animation-duration-slow: #{$animation-duration-slow};
+  
+  --opacity-disabled: #{$opacity-disabled};
+  --opacity-mask: #{$opacity-mask};
+} 

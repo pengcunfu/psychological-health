@@ -1,7 +1,0 @@
-{
-  "navigationStyle": "custom",
-  "usingComponents": {
-    "container": "/components/container/index",
-    "mp-icon": "weui-miniprogram/icon/icon"
-  }
-}

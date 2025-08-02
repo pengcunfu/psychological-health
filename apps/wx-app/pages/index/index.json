@@ -1,7 +1,0 @@
-{
-  "navigationStyle": "custom",
-  "usingComponents": {
-    "container": "/components/container/index",
-    "banner": "/components/banner/index"
-  }
-}

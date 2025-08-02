@@ -1,6 +1,0 @@
-{
-  "custom": true,
-  "usingComponents": {
-    "container": "/components/container/index"
-  }
-}

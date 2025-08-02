@@ -1,7 +1,0 @@
-{
-  "component": true,
-  "usingComponents": {
-    "navigation-bar": "/components/navigation-bar/index",
-    "tab-bar": "/components/tab-bar/index"
-  }
-}

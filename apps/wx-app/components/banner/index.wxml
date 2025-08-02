@@ -1,5 +1,0 @@
-<swiper class="banner" indicator-dots="{{indicatorDots}}" autoplay="{{autoplay}}" circular="{{circular}}" interval="{{interval}}" duration="{{duration}}">
-  <swiper-item wx:for="{{banners}}" wx:key="id" bindtap="onBannerTap" data-index="{{index}}">
-    <image src="{{item.image}}" mode="aspectFill" class="banner-image"></image>
-  </swiper-item>
-</swiper>
