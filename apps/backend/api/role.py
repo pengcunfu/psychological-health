@@ -27,9 +27,9 @@ def get_roles():
     if not form.validate():
         return JsonResult.error(f'参数验证失败: {form.get_first_error()}', 400)
 
-    page = form.page
-    per_page = form.per_page
-    keyword = form.keyword
+    page = form.page.data
+    per_page = form.per_page.data
+    keyword = form.keyword.data
 
     # 构建查询
     query = Role.query

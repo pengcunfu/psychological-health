@@ -249,25 +249,25 @@ export const appointmentAPI = {
 // 角色管理API
 export const roleAPI = {
     // 获取角色列表
-    getRoles: (params) => api.get('/roles', {params}),
+    getRoles: (params) => api.get('/role', {params}),
 
     // 获取角色详情
-    getRole: (id) => api.get(`/roles/${id}`),
+    getRole: (id) => api.get(`/role/${id}`),
 
     // 创建角色
-    createRole: (data) => api.post('/roles', data),
+    createRole: (data) => api.post('/role', data),
 
     // 更新角色
-    updateRole: (id, data) => api.put(`/roles/${id}`, data),
+    updateRole: (id, data) => api.put(`/role/${id}`, data),
 
     // 删除角色
-    deleteRole: (id) => api.delete(`/roles/${id}`),
+    deleteRole: (id) => api.delete(`/role/${id}`),
 
     // 获取角色权限
-    getRolePermissions: (id) => api.get(`/roles/${id}/permissions`),
+    getRolePermissions: (id) => api.get(`/role/${id}/permissions`),
 
     // 更新角色权限
-    updateRolePermissions: (id, permissions) => api.put(`/roles/${id}/permissions`, {permissions})
+    updateRolePermissions: (id, permissions) => api.put(`/role/${id}/permissions`, {permissions})
 }
 
 // 菜单管理API
