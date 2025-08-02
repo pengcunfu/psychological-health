@@ -17,7 +17,7 @@ from models.base import db
 from utils.json_result import JsonResult
 from form.disease_tags import DiseaseTagsQueryForm
 
-disease_tags_bp = Blueprint('disease_tags', __name__, url_prefix='/disease-tag')
+disease_tags_bp = Blueprint('disease_tag', __name__, url_prefix='/disease-tag')
 
 
 @disease_tags_bp.route('', methods=['GET'])
@@ -29,12 +29,12 @@ def get_disease_tags():
 
     query = DiseaseTags.query
 
-    name = form.get_name()
+    name = form.name.data
     if name:
         query = query.filter(DiseaseTags.name.like(f'%{name}%'))
 
-    page = form.get_page()
-    per_page = form.get_per_page()
+    page = form.page.data
+    per_page = form.per_page.data
 
     pagination = query.order_by(DiseaseTags.create_time.desc()).paginate(
         page=page, per_page=per_page, error_out=False

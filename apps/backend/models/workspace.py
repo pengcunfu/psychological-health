@@ -20,6 +20,7 @@ class Workspace(BaseModel):
     latitude = Column(Float, default=0.0)  # 纬度
     longitude = Column(Float, default=0.0)  # 经度
     status = Column(Integer, default=1)  # 状态（0-关闭，1-营业中）
+    sort_order = Column(Integer, default=100)
 
     @property
     def environment_images(self) -> List[str]:

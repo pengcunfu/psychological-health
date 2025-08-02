@@ -430,65 +430,65 @@ export const deleteRole = (id) => {
 
 // 疾病标签管理接口
 export const getDiseaseTags = (params) => {
-    return api.get('/disease-tags', {params})
+    return api.get('/disease-tag', {params})
 }
 
 export const getDiseaseTag = (id) => {
-    return api.get(`/disease-tags/${id}`)
+    return api.get(`/disease-tag/${id}`)
 }
 
 export const createDiseaseTag = (data) => {
-    return api.post('/disease-tags', data)
+    return api.post('/disease-tag', data)
 }
 
 export const updateDiseaseTag = (id, data) => {
-    return api.put(`/disease-tags/${id}`, data)
+    return api.put(`/disease-tag/${id}`, data)
 }
 
 export const deleteDiseaseTag = (id) => {
-    return api.delete(`/disease-tags/${id}`)
+    return api.delete(`/disease-tag/${id}`)
 }
 
 // 工作空间管理接口
 export const getWorkspaces = (params) => {
-    return api.get('/workspaces', {params})
+    return api.get('/workspace', {params})
 }
 
 export const getWorkspace = (id) => {
-    return api.get(`/workspaces/${id}`)
+    return api.get(`/workspace/${id}`)
 }
 
 export const createWorkspace = (data) => {
-    return api.post('/workspaces', data)
+    return api.post('/workspace', data)
 }
 
 export const updateWorkspace = (id, data) => {
-    return api.put(`/workspaces/${id}`, data)
+    return api.put(`/workspace/${id}`, data)
 }
 
 export const deleteWorkspace = (id) => {
-    return api.delete(`/workspaces/${id}`)
+    return api.delete(`/workspace/${id}`)
 }
 
 // 课程大纲管理接口
 export const getCourseOutlines = (params) => {
-    return api.get('/course_outlines', {params})
+    return api.get('/course-outline', {params})
 }
 
 export const getCourseOutline = (id) => {
-    return api.get(`/course_outlines/${id}`)
+    return api.get(`/course-outline/${id}`)
 }
 
 export const createCourseOutline = (data) => {
-    return api.post('/course_outlines', data)
+    return api.post('/course-outline', data)
 }
 
 export const updateCourseOutline = (id, data) => {
-    return api.put(`/course_outlines/${id}`, data)
+    return api.put(`/course-outline/${id}`, data)
 }
 
 export const deleteCourseOutline = (id) => {
-    return api.delete(`/course_outlines/${id}`)
+    return api.delete(`/course-outline/${id}`)
 }
 
 export default {

@@ -27,8 +27,8 @@ def get_workspaces():
     if not form.validate():
         return JsonResult.error(f'参数验证失败: {form.get_first_error()}', 400)
 
-    page = form.get_page()
-    per_page = form.get_per_page()
+    page = form.page.data
+    per_page = form.per_page.data
     name = form.name.data
     status = form.status.data
 
