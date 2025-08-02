@@ -10,7 +10,7 @@ MySQL数据库同步脚本
 import os
 import sys
 import time
-import json
+import yaml
 import argparse
 import subprocess
 import logging
@@ -47,14 +47,14 @@ DEFAULT_CONFIG = {
 }
 
 def load_config(config_path):
-    """加载配置文件"""
+    """加载YAML配置文件"""
     try:
         if not os.path.exists(config_path):
             logger.error(f"配置文件不存在: {config_path}")
             return None
         
         with open(config_path, 'r', encoding='utf-8') as f:
-            config = json.load(f)
+            config = yaml.safe_load(f)
         
         # 合并默认配置
         for key, value in DEFAULT_CONFIG.items():
@@ -181,20 +181,21 @@ def sync_database(config_path):
 
 def create_sample_config():
     """创建示例配置文件"""
-    config_path = "sync_config.json"
+    config_path = "../config/sync_config.yaml"
+    
     if os.path.exists(config_path):
         logger.warning(f"配置文件已存在: {config_path}")
         return
     
     with open(config_path, 'w', encoding='utf-8') as f:
-        json.dump(DEFAULT_CONFIG, f, indent=4)
+        yaml.dump(DEFAULT_CONFIG, f, default_flow_style=False, allow_unicode=True, indent=2)
     
     logger.info(f"已创建示例配置文件: {config_path}")
     logger.info("请修改配置文件中的数据库连接信息后再运行同步命令")
 
 def main():
     parser = argparse.ArgumentParser(description="MySQL数据库同步工具")
-    parser.add_argument("config", nargs="?", default="sync_config.json", help="配置文件路径")
+    parser.add_argument("config", nargs="?", default="sync_config.yaml", help="配置文件路径")
     parser.add_argument("--init", action="store_true", help="创建示例配置文件")
     
     args = parser.parse_args()
