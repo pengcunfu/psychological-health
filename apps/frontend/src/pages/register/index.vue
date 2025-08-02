@@ -9,47 +9,47 @@
     <view class="form">
       <view class="form-group">
         <text class="form-label">用户名</text>
-        <u-input
+        <u--input
           v-model="form.username"
           placeholder="请输入用户名"
           border="bottom"
           :clearable="true"
-        />
+        ></u--input>
       </view>
       
       <view class="form-group">
         <text class="form-label">手机号</text>
-        <u-input
+        <u--input
           v-model="form.phone"
           placeholder="请输入手机号"
           border="bottom"
           :clearable="true"
           type="number"
-        />
+        ></u--input>
       </view>
       
       <view class="form-group">
         <text class="form-label">密码</text>
-        <u-input
+        <u--input
           v-model="form.password"
           type="password"
           placeholder="请输入密码"
           border="bottom"
           :clearable="true"
-          :password-icon="true"
-        />
+          :passwordIcon="true"
+        ></u--input>
       </view>
       
       <view class="form-group">
         <text class="form-label">确认密码</text>
-        <u-input
+        <u--input
           v-model="form.confirmPassword"
           type="password"
           placeholder="请再次输入密码"
           border="bottom"
           :clearable="true"
-          :password-icon="true"
-        />
+          :passwordIcon="true"
+        ></u--input>
       </view>
       
       <button class="register-btn" @click="handleRegister">注 册</button>

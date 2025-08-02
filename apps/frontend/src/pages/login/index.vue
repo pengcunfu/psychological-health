@@ -9,23 +9,23 @@
     <view class="form">
       <view class="form-group">
         <text class="form-label">手机号</text>
-        <u-input
+        <u--input
           v-model="form.username"
           placeholder="请输入手机号"
           border="bottom"
           :clearable="true"
-        />
+        ></u--input>
       </view>
       <view class="form-group">
         <text class="form-label">密码</text>
-        <u-input
+        <u--input
           v-model="form.password"
           type="password"
           placeholder="请输入密码"
           border="bottom"
           :clearable="true"
-          :password-icon="true"
-        />
+          :passwordIcon="true"
+        ></u--input>
       </view>
       
       <button class="login-btn" @click="handleLogin">登 录</button>
@@ -45,10 +45,10 @@
       
       <view class="social-login">
         <view class="social-btn" @click="handleWechatLogin">
-          <image src="/static/images/wechat.png" mode="aspectFit" class="social-icon"></image>
+          <u-icon name="weixin-fill" color="#09BB07" size="60"></u-icon>
         </view>
         <view class="social-btn" @click="handleQQLogin">
-          <image src="/static/images/qq.png" mode="aspectFit" class="social-icon"></image>
+          <u-icon name="qq-fill" color="#1296db" size="60"></u-icon>
         </view>
       </view>
     </view>
@@ -283,11 +283,6 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.social-icon {
-  width: 60rpx;
-  height: 60rpx;
 }
 
 .footer {

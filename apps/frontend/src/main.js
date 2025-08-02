@@ -1,6 +1,8 @@
 import { createSSRApp } from 'vue'
 import App from './App.vue'
 import pinia from './store'
+
+// 手动导入uView Plus
 import uviewPlus from 'uview-plus'
 
 export function createApp() {
@@ -9,7 +11,7 @@ export function createApp() {
   // 使用Pinia状态管理
   app.use(pinia)
   
-  // 使用uView组件库
+  // 使用uView Plus组件库
   app.use(uviewPlus)
   
   return {
