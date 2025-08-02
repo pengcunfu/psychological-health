@@ -6,60 +6,66 @@
         <h2 v-if="!collapsed">心理健康平台</h2>
         <h2 v-else>心理</h2>
       </div>
-      
+
       <div class="menu">
         <div class="menu-item" :class="{ active: activePath === '/' }" @click="navigateTo('/')">
           <span class="menu-icon">🏠</span>
           <span class="menu-text" v-if="!collapsed">首页</span>
         </div>
-        
+
         <div class="menu-item" :class="{ active: activePath === '/admin/users' }" @click="navigateTo('/admin/users')">
           <span class="menu-icon">👥</span>
           <span class="menu-text" v-if="!collapsed">用户管理</span>
         </div>
-        
-        <div class="menu-item" :class="{ active: activePath === '/admin/counselors' }" @click="navigateTo('/admin/counselors')">
+
+        <div class="menu-item" :class="{ active: activePath === '/admin/counselors' }"
+             @click="navigateTo('/admin/counselors')">
           <span class="menu-icon">👨‍⚕️</span>
           <span class="menu-text" v-if="!collapsed">咨询师管理</span>
         </div>
-        
-        <div class="menu-item" :class="{ active: activePath === '/admin/courses' }" @click="navigateTo('/admin/courses')">
+
+        <div class="menu-item" :class="{ active: activePath === '/admin/courses' }"
+             @click="navigateTo('/admin/courses')">
           <span class="menu-icon">📚</span>
           <span class="menu-text" v-if="!collapsed">课程管理</span>
         </div>
-        
+
         <div class="menu-item" :class="{ active: activePath === '/admin/orders' }" @click="navigateTo('/admin/orders')">
           <span class="menu-icon">📋</span>
           <span class="menu-text" v-if="!collapsed">订单管理</span>
         </div>
-        
-        <div class="menu-item" :class="{ active: activePath === '/admin/announcements' }" @click="navigateTo('/admin/announcements')">
+
+        <div class="menu-item" :class="{ active: activePath === '/admin/announcements' }"
+             @click="navigateTo('/admin/announcements')">
           <span class="menu-icon">📢</span>
           <span class="menu-text" v-if="!collapsed">公告管理</span>
         </div>
-        
-        <div class="menu-item" :class="{ active: activePath === '/admin/reviews' }" @click="navigateTo('/admin/reviews')">
+
+        <div class="menu-item" :class="{ active: activePath === '/admin/reviews' }"
+             @click="navigateTo('/admin/reviews')">
           <span class="menu-icon">⭐</span>
           <span class="menu-text" v-if="!collapsed">评价管理</span>
         </div>
-        
-        <div class="menu-item" :class="{ active: activePath === '/admin/categories' }" @click="navigateTo('/admin/categories')">
+
+        <div class="menu-item" :class="{ active: activePath === '/admin/categories' }"
+             @click="navigateTo('/admin/categories')">
           <span class="menu-icon">🏷️</span>
           <span class="menu-text" v-if="!collapsed">分类管理</span>
         </div>
-        
-        <div class="menu-item" :class="{ active: activePath === '/admin/appointments' }" @click="navigateTo('/admin/appointments')">
+
+        <div class="menu-item" :class="{ active: activePath === '/admin/appointments' }"
+             @click="navigateTo('/admin/appointments')">
           <span class="menu-icon">📅</span>
           <span class="menu-text" v-if="!collapsed">预约管理</span>
         </div>
       </div>
-      
+
       <div class="collapse-button" @click="toggleCollapse">
         <span v-if="collapsed">▶</span>
         <span v-else>◀</span>
       </div>
     </div>
-    
+
     <!-- 右侧内容区 -->
     <div class="main-content">
       <!-- 顶部导航栏 -->
@@ -73,21 +79,21 @@
             <a class="user-dropdown" @click.prevent>
               <a-avatar :size="32" :src="user?.avatar">{{ user?.username?.charAt(0).toUpperCase() || 'U' }}</a-avatar>
               <span class="username">{{ user?.username || '用户' }}</span>
-              <down-outlined />
+              <down-outlined/>
             </a>
             <template #overlay>
               <a-menu>
                 <a-menu-item key="profile">
-                  <user-outlined />
+                  <user-outlined/>
                   个人资料
                 </a-menu-item>
                 <a-menu-item key="settings">
-                  <setting-outlined />
+                  <setting-outlined/>
                   系统设置
                 </a-menu-item>
-                <a-menu-divider />
+                <a-menu-divider/>
                 <a-menu-item key="logout" @click="handleLogout">
-                  <logout-outlined />
+                  <logout-outlined/>
                   退出登录
                 </a-menu-item>
               </a-menu>
@@ -95,16 +101,16 @@
           </a-dropdown>
         </div>
       </div>
-      
+
       <!-- 内容区域 -->
       <div class="content">
-        <router-view v-if="$route.path !== '/'" />
+        <router-view v-if="$route.path !== '/'"/>
         <div v-else class="dashboard">
           <div class="welcome-card">
             <h2>欢迎使用心理健康平台管理系统</h2>
             <p>您可以使用左侧菜单导航到不同的管理功能。</p>
           </div>
-          
+
           <div class="stats-cards">
             <a-row :gutter="16">
               <a-col :span="6">
@@ -137,7 +143,7 @@
               </a-col>
             </a-row>
           </div>
-          
+
           <div class="quick-actions">
             <h3>快捷操作</h3>
             <div class="actions-grid">
@@ -149,7 +155,7 @@
                   </div>
                 </a-card>
               </router-link>
-              
+
               <router-link to="/admin/counselors" class="action-link">
                 <a-card hoverable class="action-card">
                   <div class="action-content">
@@ -158,7 +164,7 @@
                   </div>
                 </a-card>
               </router-link>
-              
+
               <router-link to="/admin/courses" class="action-link">
                 <a-card hoverable class="action-card">
                   <div class="action-content">
@@ -167,7 +173,7 @@
                   </div>
                 </a-card>
               </router-link>
-              
+
               <router-link to="/admin/orders" class="action-link">
                 <a-card hoverable class="action-card">
                   <div class="action-content">
@@ -185,11 +191,11 @@
 </template>
 
 <script>
-import { ref, onMounted, computed } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import { message } from 'ant-design-vue'
-import { authAPI } from '@/api/admin'
-import { UserOutlined, SettingOutlined, LogoutOutlined, DownOutlined } from '@ant-design/icons-vue'
+import {ref, onMounted, computed} from 'vue'
+import {useRouter, useRoute} from 'vue-router'
+import {message} from 'ant-design-vue'
+import {authAPI} from '@/api/admin'
+import {UserOutlined, SettingOutlined, LogoutOutlined, DownOutlined} from '@ant-design/icons-vue'
 
 export default {
   name: 'Home',
@@ -204,7 +210,7 @@ export default {
     const route = useRoute()
     const user = ref(null)
     const collapsed = ref(false)
-    
+
     const activePath = computed(() => {
       return route.path
     })
@@ -224,20 +230,20 @@ export default {
         router.push('/login')
       }
     }
-    
+
     const toggleCollapse = () => {
       collapsed.value = !collapsed.value
     }
-    
+
     const navigateTo = (path) => {
       router.push(path)
     }
-    
+
     const getPageTitle = () => {
       if (route.path === '/') {
         return '首页'
       }
-      
+
       const routeMatch = route.matched.find(r => r.meta.title)
       return routeMatch ? routeMatch.meta.title : '心理健康平台'
     }
@@ -484,27 +490,27 @@ export default {
     left: 0;
     top: 0;
   }
-  
+
   .sidebar.collapsed {
     left: -80px;
   }
-  
+
   .main-content {
     margin-left: 0;
   }
-  
+
   .content {
     padding: 16px;
   }
-  
+
   .header {
     padding: 0 16px;
   }
-  
+
   .username {
     display: none;
   }
-  
+
   .stats-cards .ant-col {
     width: 100%;
     margin-bottom: 16px;

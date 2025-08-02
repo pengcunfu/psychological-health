@@ -3,7 +3,9 @@
     <div class="page-header">
       <h2>分类管理</h2>
       <a-button type="primary" @click="showAddModal">
-        <template #icon><PlusOutlined /></template>
+        <template #icon>
+          <PlusOutlined/>
+        </template>
         添加分类
       </a-button>
     </div>
@@ -12,18 +14,18 @@
     <div class="search-bar">
       <a-form layout="inline" :model="searchForm" @submit="handleSearch">
         <a-form-item label="分类名称">
-          <a-input 
-            v-model:value="searchForm.name" 
-            placeholder="请输入分类名称"
-            style="width: 200px;"
+          <a-input
+              v-model:value="searchForm.name"
+              placeholder="请输入分类名称"
+              style="width: 200px;"
           />
         </a-form-item>
         <a-form-item label="类型">
-          <a-select 
-            v-model:value="searchForm.type" 
-            placeholder="请选择类型"
-            style="width: 150px;"
-            allow-clear
+          <a-select
+              v-model:value="searchForm.type"
+              placeholder="请选择类型"
+              style="width: 150px;"
+              allow-clear
           >
             <a-select-option value="course">课程分类</a-select-option>
             <a-select-option value="counselor">咨询师分类</a-select-option>
@@ -39,17 +41,17 @@
 
     <!-- 分类列表 -->
     <a-table
-      :columns="columns"
-      :data-source="categories"
-      :loading="loading"
-      :pagination="pagination"
-      @change="handleTableChange"
-      row-key="id"
+        :columns="columns"
+        :data-source="categories"
+        :loading="loading"
+        :pagination="pagination"
+        @change="handleTableChange"
+        row-key="id"
     >
       <template #icon="{ record }">
         <div class="category-icon">
           <span v-if="record.icon" class="icon-preview">
-            <component :is="record.icon" />
+            <component :is="record.icon"/>
           </span>
           <span v-else>-</span>
         </div>
@@ -62,7 +64,8 @@
       </template>
 
       <template #status="{ record }">
-        <a-badge :status="record.status === 'active' ? 'success' : 'default'" :text="record.status === 'active' ? '启用' : '禁用'" />
+        <a-badge :status="record.status === 'active' ? 'success' : 'default'"
+                 :text="record.status === 'active' ? '启用' : '禁用'"/>
       </template>
 
       <template #createTime="{ record }">
@@ -74,16 +77,16 @@
           <a-button type="link" size="small" @click="editCategory(record)">
             编辑
           </a-button>
-          <a-button 
-            type="link" 
-            size="small" 
-            @click="toggleStatus(record)"
+          <a-button
+              type="link"
+              size="small"
+              @click="toggleStatus(record)"
           >
             {{ record.status === 'active' ? '禁用' : '启用' }}
           </a-button>
           <a-popconfirm
-            title="确定要删除该分类吗？"
-            @confirm="deleteCategory(record.id)"
+              title="确定要删除该分类吗？"
+              @confirm="deleteCategory(record.id)"
           >
             <a-button type="link" size="small" danger>
               删除
@@ -95,20 +98,20 @@
 
     <!-- 添加/编辑分类弹窗 -->
     <a-modal
-      v-model:open="modalVisible"
-      :title="modalTitle"
-      @ok="handleModalOk"
-      @cancel="handleModalCancel"
-      width="600px"
+        v-model:open="modalVisible"
+        :title="modalTitle"
+        @ok="handleModalOk"
+        @cancel="handleModalCancel"
+        width="600px"
     >
       <a-form
-        ref="categoryFormRef"
-        :model="categoryForm"
-        :rules="categoryFormRules"
-        layout="vertical"
+          ref="categoryFormRef"
+          :model="categoryForm"
+          :rules="categoryFormRules"
+          layout="vertical"
       >
         <a-form-item label="分类名称" name="name">
-          <a-input v-model:value="categoryForm.name" placeholder="请输入分类名称" />
+          <a-input v-model:value="categoryForm.name" placeholder="请输入分类名称"/>
         </a-form-item>
 
         <a-form-item label="分类类型" name="type">
@@ -120,15 +123,15 @@
         </a-form-item>
 
         <a-form-item label="图标" name="icon">
-          <a-input v-model:value="categoryForm.icon" placeholder="请输入图标名称（可选）" />
+          <a-input v-model:value="categoryForm.icon" placeholder="请输入图标名称（可选）"/>
         </a-form-item>
 
         <a-form-item label="排序" name="sort">
-          <a-input-number 
-            v-model:value="categoryForm.sort" 
-            placeholder="请输入排序值（数字越小越靠前）"
-            :min="0"
-            style="width: 100%;"
+          <a-input-number
+              v-model:value="categoryForm.sort"
+              placeholder="请输入排序值（数字越小越靠前）"
+              :min="0"
+              style="width: 100%;"
           />
         </a-form-item>
 
@@ -140,10 +143,10 @@
         </a-form-item>
 
         <a-form-item label="描述" name="description">
-          <a-textarea 
-            v-model:value="categoryForm.description" 
-            placeholder="请输入分类描述（可选）"
-            :rows="3"
+          <a-textarea
+              v-model:value="categoryForm.description"
+              placeholder="请输入分类描述（可选）"
+              :rows="3"
           />
         </a-form-item>
       </a-form>
@@ -152,10 +155,10 @@
 </template>
 
 <script>
-import { ref, reactive, onMounted, computed } from 'vue'
-import { message } from 'ant-design-vue'
-import { PlusOutlined } from '@ant-design/icons-vue'
-import { categoryAPI } from '@/api/admin'
+import {ref, reactive, onMounted, computed} from 'vue'
+import {message} from 'ant-design-vue'
+import {PlusOutlined} from '@ant-design/icons-vue'
+import {categoryAPI} from '@/api/admin'
 
 export default {
   name: 'CategoryManagement',
@@ -203,14 +206,14 @@ export default {
         title: '图标',
         dataIndex: 'icon',
         key: 'icon',
-        slots: { customRender: 'icon' },
+        slots: {customRender: 'icon'},
         width: 80
       },
       {
         title: '类型',
         dataIndex: 'type',
         key: 'type',
-        slots: { customRender: 'type' },
+        slots: {customRender: 'type'},
         width: 100
       },
       {
@@ -223,7 +226,7 @@ export default {
         title: '状态',
         dataIndex: 'status',
         key: 'status',
-        slots: { customRender: 'status' },
+        slots: {customRender: 'status'},
         width: 80
       },
       {
@@ -237,29 +240,29 @@ export default {
         title: '创建时间',
         dataIndex: 'create_time',
         key: 'create_time',
-        slots: { customRender: 'createTime' },
+        slots: {customRender: 'createTime'},
         width: 150
       },
       {
         title: '操作',
         key: 'action',
-        slots: { customRender: 'action' },
+        slots: {customRender: 'action'},
         width: 180
       }
     ]
 
     const categoryFormRules = {
       name: [
-        { required: true, message: '请输入分类名称', trigger: 'blur' }
+        {required: true, message: '请输入分类名称', trigger: 'blur'}
       ],
       type: [
-        { required: true, message: '请选择分类类型', trigger: 'change' }
+        {required: true, message: '请选择分类类型', trigger: 'change'}
       ],
       sort: [
-        { required: true, message: '请输入排序值', trigger: 'blur' }
+        {required: true, message: '请输入排序值', trigger: 'blur'}
       ],
       status: [
-        { required: true, message: '请选择状态', trigger: 'change' }
+        {required: true, message: '请选择状态', trigger: 'change'}
       ]
     }
 
@@ -273,7 +276,7 @@ export default {
           name: searchForm.name,
           type: searchForm.type
         }
-        
+
         const result = await categoryAPI.getCategories(params)
         if (result.code === 200) {
           categories.value = result.data.list
@@ -335,7 +338,7 @@ export default {
     const toggleStatus = async (category) => {
       const newStatus = category.status === 'active' ? 'inactive' : 'active'
       try {
-        const result = await categoryAPI.updateCategory(category.id, { status: newStatus })
+        const result = await categoryAPI.updateCategory(category.id, {status: newStatus})
         if (result.code === 200) {
           message.success(`${newStatus === 'active' ? '启用' : '禁用'}成功`)
           fetchCategories()
@@ -362,8 +365,8 @@ export default {
     const handleModalOk = async () => {
       try {
         await categoryFormRef.value.validate()
-        
-        const data = { ...categoryForm }
+
+        const data = {...categoryForm}
         delete data.id
 
         if (isEdit.value) {
@@ -506,17 +509,17 @@ export default {
   .category-management {
     padding: 12px;
   }
-  
+
   .page-header {
     flex-direction: column;
     gap: 12px;
     align-items: stretch;
   }
-  
+
   .search-bar .ant-form {
     flex-direction: column;
   }
-  
+
   .search-bar .ant-form-item {
     margin-bottom: 8px;
   }

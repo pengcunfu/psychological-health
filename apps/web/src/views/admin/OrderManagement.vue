@@ -8,22 +8,22 @@
     <div class="search-bar">
       <a-form layout="inline" :model="searchForm" @submit="handleSearch">
         <a-form-item label="订单类型">
-          <a-select 
-            v-model:value="searchForm.type" 
-            placeholder="请选择订单类型"
-            style="width: 150px;"
-            allow-clear
+          <a-select
+              v-model:value="searchForm.type"
+              placeholder="请选择订单类型"
+              style="width: 150px;"
+              allow-clear
           >
             <a-select-option value="consultation">咨询订单</a-select-option>
             <a-select-option value="course">课程订单</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item label="状态">
-          <a-select 
-            v-model:value="searchForm.status" 
-            placeholder="请选择状态"
-            style="width: 120px;"
-            allow-clear
+          <a-select
+              v-model:value="searchForm.status"
+              placeholder="请选择状态"
+              style="width: 120px;"
+              allow-clear
           >
             <a-select-option value="pending">待支付</a-select-option>
             <a-select-option value="paid">已支付</a-select-option>
@@ -40,12 +40,12 @@
 
     <!-- 订单列表 -->
     <a-table
-      :columns="columns"
-      :data-source="orders"
-      :loading="loading"
-      :pagination="pagination"
-      @change="handleTableChange"
-      row-key="id"
+        :columns="columns"
+        :data-source="orders"
+        :loading="loading"
+        :pagination="pagination"
+        @change="handleTableChange"
+        row-key="id"
     >
       <template #type="{ record }">
         <a-tag :color="record.type === 'consultation' ? 'blue' : 'green'">
@@ -74,7 +74,8 @@
           </a-button>
           <a-dropdown v-if="record.status !== 'completed' && record.status !== 'cancelled'">
             <a-button type="link" size="small">
-              更新状态 <DownOutlined />
+              更新状态
+              <DownOutlined/>
             </a-button>
             <template #overlay>
               <a-menu @click="({ key }) => updateOrderStatus(record.id, key)">
@@ -96,10 +97,10 @@
 
     <!-- 订单详情弹窗 -->
     <a-modal
-      v-model:open="viewModalVisible"
-      title="订单详情"
-      :footer="null"
-      width="600px"
+        v-model:open="viewModalVisible"
+        title="订单详情"
+        :footer="null"
+        width="600px"
     >
       <div v-if="currentOrder" class="order-detail">
         <div class="detail-item">
@@ -148,10 +149,10 @@
 </template>
 
 <script>
-import { ref, reactive, onMounted } from 'vue'
-import { message } from 'ant-design-vue'
-import { DownOutlined } from '@ant-design/icons-vue'
-import { orderAPI } from '@/api/admin'
+import {ref, reactive, onMounted} from 'vue'
+import {message} from 'ant-design-vue'
+import {DownOutlined} from '@ant-design/icons-vue'
+import {orderAPI} from '@/api/admin'
 
 export default {
   name: 'OrderManagement',
@@ -189,7 +190,7 @@ export default {
         title: '订单类型',
         dataIndex: 'type',
         key: 'type',
-        slots: { customRender: 'type' }
+        slots: {customRender: 'type'}
       },
       {
         title: '用户ID',
@@ -207,24 +208,24 @@ export default {
         title: '订单金额',
         dataIndex: 'amount',
         key: 'amount',
-        slots: { customRender: 'amount' }
+        slots: {customRender: 'amount'}
       },
       {
         title: '订单状态',
         dataIndex: 'status',
         key: 'status',
-        slots: { customRender: 'status' }
+        slots: {customRender: 'status'}
       },
       {
         title: '创建时间',
         dataIndex: 'create_time',
         key: 'create_time',
-        slots: { customRender: 'createTime' }
+        slots: {customRender: 'createTime'}
       },
       {
         title: '操作',
         key: 'action',
-        slots: { customRender: 'action' },
+        slots: {customRender: 'action'},
         width: 180
       }
     ]
@@ -239,7 +240,7 @@ export default {
           type: searchForm.type,
           status: searchForm.status
         }
-        
+
         const result = await orderAPI.getOrders(params)
         if (result.code === 200) {
           orders.value = result.data.list
@@ -408,17 +409,17 @@ export default {
   .order-management {
     padding: 12px;
   }
-  
+
   .page-header {
     flex-direction: column;
     gap: 12px;
     align-items: stretch;
   }
-  
+
   .search-bar .ant-form {
     flex-direction: column;
   }
-  
+
   .search-bar .ant-form-item {
     margin-bottom: 8px;
   }

@@ -3,7 +3,9 @@
     <div class="page-header">
       <h2>咨询师管理</h2>
       <a-button type="primary" @click="showAddModal">
-        <template #icon><PlusOutlined /></template>
+        <template #icon>
+          <PlusOutlined/>
+        </template>
         添加咨询师
       </a-button>
     </div>
@@ -12,25 +14,25 @@
     <div class="search-bar">
       <a-form layout="inline" :model="searchForm" @submit="handleSearch">
         <a-form-item label="姓名">
-          <a-input 
-            v-model:value="searchForm.name" 
-            placeholder="请输入咨询师姓名"
-            style="width: 200px;"
+          <a-input
+              v-model:value="searchForm.name"
+              placeholder="请输入咨询师姓名"
+              style="width: 200px;"
           />
         </a-form-item>
         <a-form-item label="职称">
-          <a-input 
-            v-model:value="searchForm.title" 
-            placeholder="请输入职称"
-            style="width: 200px;"
+          <a-input
+              v-model:value="searchForm.title"
+              placeholder="请输入职称"
+              style="width: 200px;"
           />
         </a-form-item>
         <a-form-item label="状态">
-          <a-select 
-            v-model:value="searchForm.status" 
-            placeholder="请选择状态"
-            style="width: 120px;"
-            allow-clear
+          <a-select
+              v-model:value="searchForm.status"
+              placeholder="请选择状态"
+              style="width: 120px;"
+              allow-clear
           >
             <a-select-option :value="1">在职</a-select-option>
             <a-select-option :value="0">离职</a-select-option>
@@ -45,12 +47,12 @@
 
     <!-- 咨询师列表 -->
     <a-table
-      :columns="columns"
-      :data-source="counselors"
-      :loading="loading"
-      :pagination="pagination"
-      @change="handleTableChange"
-      row-key="id"
+        :columns="columns"
+        :data-source="counselors"
+        :loading="loading"
+        :pagination="pagination"
+        @change="handleTableChange"
+        row-key="id"
     >
       <template #avatar="{ record }">
         <a-avatar :src="record?.avatar" :alt="record?.name || ''" size="large">
@@ -65,7 +67,7 @@
       </template>
 
       <template #rating="{ record }">
-        <a-rate :value="record?.rating || 0" disabled allow-half />
+        <a-rate :value="record?.rating || 0" disabled allow-half/>
         <span style="margin-left: 8px;">{{ record?.rating || 0 }}</span>
       </template>
 
@@ -82,8 +84,8 @@
             查看
           </a-button>
           <a-popconfirm
-            title="确定要删除这个咨询师吗？"
-            @confirm="deleteCounselor(record.id)"
+              title="确定要删除这个咨询师吗？"
+              @confirm="deleteCounselor(record.id)"
           >
             <a-button type="link" size="small" danger>
               删除
@@ -95,27 +97,27 @@
 
     <!-- 添加/编辑咨询师弹窗 -->
     <a-modal
-      v-model:open="modalVisible"
-      :title="modalTitle"
-      @ok="handleModalOk"
-      @cancel="handleModalCancel"
-      width="800px"
+        v-model:open="modalVisible"
+        :title="modalTitle"
+        @ok="handleModalOk"
+        @cancel="handleModalCancel"
+        width="800px"
     >
       <a-form
-        ref="counselorFormRef"
-        :model="counselorForm"
-        :rules="counselorFormRules"
-        layout="vertical"
+          ref="counselorFormRef"
+          :model="counselorForm"
+          :rules="counselorFormRules"
+          layout="vertical"
       >
         <a-row :gutter="16">
           <a-col :span="12">
             <a-form-item label="姓名" name="name">
-              <a-input v-model:value="counselorForm.name" placeholder="请输入咨询师姓名" />
+              <a-input v-model:value="counselorForm.name" placeholder="请输入咨询师姓名"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="职称" name="title">
-              <a-input v-model:value="counselorForm.title" placeholder="请输入职称" />
+              <a-input v-model:value="counselorForm.title" placeholder="请输入职称"/>
             </a-form-item>
           </a-col>
         </a-row>
@@ -123,12 +125,12 @@
         <a-row :gutter="16">
           <a-col :span="12">
             <a-form-item label="手机号" name="phone">
-              <a-input v-model:value="counselorForm.phone" placeholder="请输入手机号" />
+              <a-input v-model:value="counselorForm.phone" placeholder="请输入手机号"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="邮箱" name="email">
-              <a-input v-model:value="counselorForm.email" placeholder="请输入邮箱" />
+              <a-input v-model:value="counselorForm.email" placeholder="请输入邮箱"/>
             </a-form-item>
           </a-col>
         </a-row>
@@ -144,42 +146,42 @@
           </a-col>
           <a-col :span="12">
             <a-form-item label="咨询费用(元/小时)" name="price">
-              <a-input-number 
-                v-model:value="counselorForm.price" 
-                placeholder="请输入咨询费用"
-                :min="0"
-                style="width: 100%;"
+              <a-input-number
+                  v-model:value="counselorForm.price"
+                  placeholder="请输入咨询费用"
+                  :min="0"
+                  style="width: 100%;"
               />
             </a-form-item>
           </a-col>
         </a-row>
 
         <a-form-item label="专业领域" name="specialty">
-          <a-textarea 
-            v-model:value="counselorForm.specialty" 
-            placeholder="请输入专业领域"
-            :rows="3"
+          <a-textarea
+              v-model:value="counselorForm.specialty"
+              placeholder="请输入专业领域"
+              :rows="3"
           />
         </a-form-item>
 
         <a-form-item label="个人简介" name="bio">
-          <a-textarea 
-            v-model:value="counselorForm.bio" 
-            placeholder="请输入个人简介"
-            :rows="4"
+          <a-textarea
+              v-model:value="counselorForm.bio"
+              placeholder="请输入个人简介"
+              :rows="4"
           />
         </a-form-item>
 
         <a-form-item label="头像" name="avatar">
           <a-upload
-            v-model:file-list="fileList"
-            :before-upload="beforeUpload"
-            :custom-request="uploadAvatar"
-            list-type="picture-card"
-            :max-count="1"
+              v-model:file-list="fileList"
+              :before-upload="beforeUpload"
+              :custom-request="uploadAvatar"
+              list-type="picture-card"
+              :max-count="1"
           >
             <div v-if="fileList.length < 1">
-              <upload-outlined />
+              <upload-outlined/>
               <div>上传头像</div>
             </div>
           </a-upload>
@@ -189,10 +191,10 @@
 
     <!-- 查看咨询师详情弹窗 -->
     <a-modal
-      v-model:open="viewModalVisible"
-      title="咨询师详情"
-      :footer="null"
-      width="600px"
+        v-model:open="viewModalVisible"
+        title="咨询师详情"
+        :footer="null"
+        width="600px"
     >
       <div v-if="currentCounselor" class="counselor-detail">
         <div class="detail-header">
@@ -202,12 +204,12 @@
           <div class="header-info">
             <h3>{{ currentCounselor.name }}</h3>
             <p>{{ currentCounselor.title }}</p>
-            <a-rate :value="currentCounselor.rating" disabled allow-half />
+            <a-rate :value="currentCounselor.rating" disabled allow-half/>
           </div>
         </div>
-        
-        <a-divider />
-        
+
+        <a-divider/>
+
         <div class="detail-item">
           <span class="label">手机号：</span>
           <span>{{ currentCounselor.phone || '未设置' }}</span>
@@ -244,10 +246,10 @@
 </template>
 
 <script>
-import { ref, reactive, onMounted, computed } from 'vue'
-import { message } from 'ant-design-vue'
-import { PlusOutlined, UploadOutlined } from '@ant-design/icons-vue'
-import { counselorAPI } from '@/api/admin'
+import {ref, reactive, onMounted, computed} from 'vue'
+import {message} from 'ant-design-vue'
+import {PlusOutlined, UploadOutlined} from '@ant-design/icons-vue'
+import {counselorAPI} from '@/api/admin'
 
 export default {
   name: 'CounselorManagement',
@@ -297,7 +299,7 @@ export default {
         title: '头像',
         dataIndex: 'avatar',
         key: 'avatar',
-        slots: { customRender: 'avatar' },
+        slots: {customRender: 'avatar'},
         width: 80
       },
       {
@@ -319,13 +321,13 @@ export default {
         title: '状态',
         dataIndex: 'status',
         key: 'status',
-        slots: { customRender: 'status' }
+        slots: {customRender: 'status'}
       },
       {
         title: '评分',
         dataIndex: 'rating',
         key: 'rating',
-        slots: { customRender: 'rating' }
+        slots: {customRender: 'rating'}
       },
       {
         title: '咨询费用',
@@ -337,28 +339,28 @@ export default {
         title: '创建时间',
         dataIndex: 'create_time',
         key: 'create_time',
-        slots: { customRender: 'createTime' }
+        slots: {customRender: 'createTime'}
       },
       {
         title: '操作',
         key: 'action',
-        slots: { customRender: 'action' },
+        slots: {customRender: 'action'},
         width: 180
       }
     ]
 
     const counselorFormRules = {
       name: [
-        { required: true, message: '请输入咨询师姓名', trigger: 'blur' }
+        {required: true, message: '请输入咨询师姓名', trigger: 'blur'}
       ],
       title: [
-        { required: true, message: '请输入职称', trigger: 'blur' }
+        {required: true, message: '请输入职称', trigger: 'blur'}
       ],
       email: [
-        { type: 'email', message: '请输入正确的邮箱格式', trigger: 'blur' }
+        {type: 'email', message: '请输入正确的邮箱格式', trigger: 'blur'}
       ],
       status: [
-        { required: true, message: '请选择状态', trigger: 'change' }
+        {required: true, message: '请选择状态', trigger: 'change'}
       ]
     }
 
@@ -373,7 +375,7 @@ export default {
           title: searchForm.title,
           status: searchForm.status
         }
-        
+
         const result = await counselorAPI.getCounselors(params)
         if (result.code === 200) {
           counselors.value = result.data.list
@@ -466,8 +468,8 @@ export default {
     const handleModalOk = async () => {
       try {
         await counselorFormRef.value.validate()
-        
-        const data = { ...counselorForm }
+
+        const data = {...counselorForm}
         delete data.id
 
         if (isEdit.value) {
@@ -529,7 +531,7 @@ export default {
     }
 
     // 上传头像
-    const uploadAvatar = ({ file }) => {
+    const uploadAvatar = ({file}) => {
       const reader = new FileReader()
       reader.onload = (e) => {
         counselorForm.avatar = e.target.result
@@ -659,21 +661,21 @@ export default {
   .counselor-management {
     padding: 12px;
   }
-  
+
   .page-header {
     flex-direction: column;
     gap: 12px;
     align-items: stretch;
   }
-  
+
   .search-bar .ant-form {
     flex-direction: column;
   }
-  
+
   .search-bar .ant-form-item {
     margin-bottom: 8px;
   }
-  
+
   .detail-header {
     flex-direction: column;
     text-align: center;

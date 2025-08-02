@@ -3,7 +3,9 @@
     <div class="page-header">
       <h2>课程管理</h2>
       <a-button type="primary" @click="showAddModal">
-        <template #icon><PlusOutlined /></template>
+        <template #icon>
+          <PlusOutlined/>
+        </template>
         添加课程
       </a-button>
     </div>
@@ -12,18 +14,18 @@
     <div class="search-bar">
       <a-form layout="inline" :model="searchForm" @submit="handleSearch">
         <a-form-item label="课程标题">
-          <a-input 
-            v-model:value="searchForm.title" 
-            placeholder="请输入课程标题"
-            style="width: 200px;"
+          <a-input
+              v-model:value="searchForm.title"
+              placeholder="请输入课程标题"
+              style="width: 200px;"
           />
         </a-form-item>
         <a-form-item label="状态">
-          <a-select 
-            v-model:value="searchForm.status" 
-            placeholder="请选择状态"
-            style="width: 120px;"
-            allow-clear
+          <a-select
+              v-model:value="searchForm.status"
+              placeholder="请选择状态"
+              style="width: 120px;"
+              allow-clear
           >
             <a-select-option value="published">已发布</a-select-option>
             <a-select-option value="draft">草稿</a-select-option>
@@ -39,21 +41,21 @@
 
     <!-- 课程列表 -->
     <a-table
-      :columns="columns"
-      :data-source="courses"
-      :loading="loading"
-      :pagination="pagination"
-      @change="handleTableChange"
-      row-key="id"
+        :columns="columns"
+        :data-source="courses"
+        :loading="loading"
+        :pagination="pagination"
+        @change="handleTableChange"
+        row-key="id"
     >
       <template #cover="{ record }">
         <a-image
-          :src="record?.cover_image"
-          :alt="record?.title || ''"
-          width="60"
-          height="40"
-          style="object-fit: cover; border-radius: 4px;"
-          :preview="false"
+            :src="record?.cover_image"
+            :alt="record?.title || ''"
+            width="60"
+            height="40"
+            style="object-fit: cover; border-radius: 4px;"
+            :preview="false"
         />
       </template>
 
@@ -91,7 +93,8 @@
           </a-button>
           <a-dropdown>
             <a-button type="link" size="small">
-              更多 <DownOutlined />
+              更多
+              <DownOutlined/>
             </a-button>
             <template #overlay>
               <a-menu @click="({ key }) => handleMenuAction(record, key)">
@@ -113,23 +116,23 @@
 
     <!-- 添加/编辑课程弹窗 -->
     <a-modal
-      v-model:open="modalVisible"
-      :title="modalTitle"
-      @ok="handleModalOk"
-      @cancel="handleModalCancel"
-      width="800px"
-      :body-style="{ maxHeight: '70vh', overflowY: 'auto' }"
+        v-model:open="modalVisible"
+        :title="modalTitle"
+        @ok="handleModalOk"
+        @cancel="handleModalCancel"
+        width="800px"
+        :body-style="{ maxHeight: '70vh', overflowY: 'auto' }"
     >
       <a-form
-        ref="courseFormRef"
-        :model="courseForm"
-        :rules="courseFormRules"
-        layout="vertical"
+          ref="courseFormRef"
+          :model="courseForm"
+          :rules="courseFormRules"
+          layout="vertical"
       >
         <a-row :gutter="16">
           <a-col :span="16">
             <a-form-item label="课程标题" name="title">
-              <a-input v-model:value="courseForm.title" placeholder="请输入课程标题" />
+              <a-input v-model:value="courseForm.title" placeholder="请输入课程标题"/>
             </a-form-item>
           </a-col>
           <a-col :span="8">
@@ -144,60 +147,60 @@
         </a-row>
 
         <a-form-item label="课程副标题" name="subtitle">
-          <a-input v-model:value="courseForm.subtitle" placeholder="请输入课程副标题" />
+          <a-input v-model:value="courseForm.subtitle" placeholder="请输入课程副标题"/>
         </a-form-item>
 
         <a-row :gutter="16">
           <a-col :span="12">
             <a-form-item label="课程价格" name="price">
-              <a-input-number 
-                v-model:value="courseForm.price" 
-                placeholder="请输入课程价格"
-                :min="0"
-                :precision="2"
-                style="width: 100%;"
-                addon-before="¥"
+              <a-input-number
+                  v-model:value="courseForm.price"
+                  placeholder="请输入课程价格"
+                  :min="0"
+                  :precision="2"
+                  style="width: 100%;"
+                  addon-before="¥"
               />
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="课程时长(分钟)" name="duration">
-              <a-input-number 
-                v-model:value="courseForm.duration" 
-                placeholder="请输入课程时长"
-                :min="1"
-                style="width: 100%;"
+              <a-input-number
+                  v-model:value="courseForm.duration"
+                  placeholder="请输入课程时长"
+                  :min="1"
+                  style="width: 100%;"
               />
             </a-form-item>
           </a-col>
         </a-row>
 
         <a-form-item label="课程描述" name="description">
-          <a-textarea 
-            v-model:value="courseForm.description" 
-            placeholder="请输入课程描述"
-            :rows="4"
+          <a-textarea
+              v-model:value="courseForm.description"
+              placeholder="请输入课程描述"
+              :rows="4"
           />
         </a-form-item>
 
         <a-form-item label="课程内容" name="content">
-          <a-textarea 
-            v-model:value="courseForm.content" 
-            placeholder="请输入详细的课程内容"
-            :rows="6"
+          <a-textarea
+              v-model:value="courseForm.content"
+              placeholder="请输入详细的课程内容"
+              :rows="6"
           />
         </a-form-item>
 
         <a-form-item label="课程封面" name="cover_image">
           <a-upload
-            v-model:file-list="fileList"
-            :before-upload="beforeUpload"
-            :custom-request="uploadCover"
-            list-type="picture-card"
-            :max-count="1"
+              v-model:file-list="fileList"
+              :before-upload="beforeUpload"
+              :custom-request="uploadCover"
+              list-type="picture-card"
+              :max-count="1"
           >
             <div v-if="fileList.length < 1">
-              <upload-outlined />
+              <upload-outlined/>
               <div>上传封面</div>
             </div>
           </a-upload>
@@ -205,10 +208,10 @@
 
         <a-form-item label="关键词标签">
           <a-select
-            v-model:value="courseForm.tags"
-            mode="tags"
-            placeholder="请输入关键词标签"
-            style="width: 100%;"
+              v-model:value="courseForm.tags"
+              mode="tags"
+              placeholder="请输入关键词标签"
+              style="width: 100%;"
           >
           </a-select>
         </a-form-item>
@@ -217,19 +220,19 @@
 
     <!-- 查看课程详情弹窗 -->
     <a-modal
-      v-model:open="viewModalVisible"
-      title="课程详情"
-      :footer="null"
-      width="700px"
+        v-model:open="viewModalVisible"
+        title="课程详情"
+        :footer="null"
+        width="700px"
     >
       <div v-if="currentCourse" class="course-detail">
         <div class="detail-header">
           <a-image
-            :src="currentCourse.cover_image"
-            :alt="currentCourse.title"
-            width="120"
-            height="80"
-            style="object-fit: cover; border-radius: 8px;"
+              :src="currentCourse.cover_image"
+              :alt="currentCourse.title"
+              width="120"
+              height="80"
+              style="object-fit: cover; border-radius: 8px;"
           />
           <div class="header-info">
             <h3>{{ currentCourse.title }}</h3>
@@ -246,9 +249,9 @@
             </div>
           </div>
         </div>
-        
-        <a-divider />
-        
+
+        <a-divider/>
+
         <div class="detail-section">
           <h4>课程描述</h4>
           <p>{{ currentCourse.description || '暂无描述' }}</p>
@@ -285,10 +288,10 @@
 </template>
 
 <script>
-import { ref, reactive, onMounted, computed } from 'vue'
-import { message } from 'ant-design-vue'
-import { PlusOutlined, UploadOutlined, DownOutlined } from '@ant-design/icons-vue'
-import { courseAPI } from '@/api/admin'
+import {ref, reactive, onMounted, computed} from 'vue'
+import {message} from 'ant-design-vue'
+import {PlusOutlined, UploadOutlined, DownOutlined} from '@ant-design/icons-vue'
+import {courseAPI} from '@/api/admin'
 
 export default {
   name: 'CourseManagement',
@@ -338,21 +341,21 @@ export default {
         title: '封面',
         dataIndex: 'cover_image',
         key: 'cover_image',
-        slots: { customRender: 'cover' },
+        slots: {customRender: 'cover'},
         width: 80
       },
       {
         title: '课程信息',
         dataIndex: 'title',
         key: 'title',
-        slots: { customRender: 'title' },
+        slots: {customRender: 'title'},
         width: 250
       },
       {
         title: '价格',
         dataIndex: 'price',
         key: 'price',
-        slots: { customRender: 'price' },
+        slots: {customRender: 'price'},
         width: 100
       },
       {
@@ -366,33 +369,33 @@ export default {
         title: '状态',
         dataIndex: 'status',
         key: 'status',
-        slots: { customRender: 'status' },
+        slots: {customRender: 'status'},
         width: 100
       },
       {
         title: '创建时间',
         dataIndex: 'create_time',
         key: 'create_time',
-        slots: { customRender: 'createTime' },
+        slots: {customRender: 'createTime'},
         width: 150
       },
       {
         title: '操作',
         key: 'action',
-        slots: { customRender: 'action' },
+        slots: {customRender: 'action'},
         width: 150
       }
     ]
 
     const courseFormRules = {
       title: [
-        { required: true, message: '请输入课程标题', trigger: 'blur' }
+        {required: true, message: '请输入课程标题', trigger: 'blur'}
       ],
       status: [
-        { required: true, message: '请选择状态', trigger: 'change' }
+        {required: true, message: '请选择状态', trigger: 'change'}
       ],
       price: [
-        { required: true, message: '请输入课程价格', trigger: 'blur' }
+        {required: true, message: '请输入课程价格', trigger: 'blur'}
       ]
     }
 
@@ -406,7 +409,7 @@ export default {
           title: searchForm.title,
           status: searchForm.status
         }
-        
+
         const result = await courseAPI.getCourses(params)
         if (result.code === 200) {
           courses.value = result.data.list
@@ -503,7 +506,7 @@ export default {
     // 更新课程状态
     const updateCourseStatus = async (courseId, status) => {
       try {
-        const result = await courseAPI.updateCourse(courseId, { status })
+        const result = await courseAPI.updateCourse(courseId, {status})
         if (result.code === 200) {
           message.success('状态更新成功')
           fetchCourses()
@@ -517,8 +520,8 @@ export default {
     const handleModalOk = async () => {
       try {
         await courseFormRef.value.validate()
-        
-        const data = { ...courseForm }
+
+        const data = {...courseForm}
         delete data.id
 
         if (isEdit.value) {
@@ -580,7 +583,7 @@ export default {
     }
 
     // 上传封面
-    const uploadCover = ({ file }) => {
+    const uploadCover = ({file}) => {
       const reader = new FileReader()
       reader.onload = (e) => {
         courseForm.cover_image = e.target.result
@@ -776,26 +779,26 @@ export default {
   .course-management {
     padding: 12px;
   }
-  
+
   .page-header {
     flex-direction: column;
     gap: 12px;
     align-items: stretch;
   }
-  
+
   .search-bar .ant-form {
     flex-direction: column;
   }
-  
+
   .search-bar .ant-form-item {
     margin-bottom: 8px;
   }
-  
+
   .detail-header {
     flex-direction: column;
     text-align: center;
   }
-  
+
   .info-grid {
     grid-template-columns: 1fr;
   }

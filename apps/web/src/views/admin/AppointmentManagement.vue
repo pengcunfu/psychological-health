@@ -8,25 +8,25 @@
     <div class="search-bar">
       <a-form layout="inline" :model="searchForm" @submit="handleSearch">
         <a-form-item label="咨询师ID">
-          <a-input 
-            v-model:value="searchForm.counselor_id" 
-            placeholder="请输入咨询师ID"
-            style="width: 150px;"
+          <a-input
+              v-model:value="searchForm.counselor_id"
+              placeholder="请输入咨询师ID"
+              style="width: 150px;"
           />
         </a-form-item>
         <a-form-item label="用户ID">
-          <a-input 
-            v-model:value="searchForm.user_id" 
-            placeholder="请输入用户ID"
-            style="width: 150px;"
+          <a-input
+              v-model:value="searchForm.user_id"
+              placeholder="请输入用户ID"
+              style="width: 150px;"
           />
         </a-form-item>
         <a-form-item label="状态">
-          <a-select 
-            v-model:value="searchForm.status" 
-            placeholder="请选择状态"
-            style="width: 150px;"
-            allow-clear
+          <a-select
+              v-model:value="searchForm.status"
+              placeholder="请选择状态"
+              style="width: 150px;"
+              allow-clear
           >
             <a-select-option value="pending">待确认</a-select-option>
             <a-select-option value="confirmed">已确认</a-select-option>
@@ -36,9 +36,9 @@
           </a-select>
         </a-form-item>
         <a-form-item label="日期范围">
-          <a-range-picker 
-            v-model:value="searchForm.date_range" 
-            style="width: 240px;"
+          <a-range-picker
+              v-model:value="searchForm.date_range"
+              style="width: 240px;"
           />
         </a-form-item>
         <a-form-item>
@@ -50,23 +50,23 @@
 
     <!-- 预约列表 -->
     <a-table
-      :columns="columns"
-      :data-source="appointments"
-      :loading="loading"
-      :pagination="pagination"
-      @change="handleTableChange"
-      row-key="id"
+        :columns="columns"
+        :data-source="appointments"
+        :loading="loading"
+        :pagination="pagination"
+        @change="handleTableChange"
+        row-key="id"
     >
       <template #counselor_name="{ record }">
         <div class="counselor-info">
-          <a-avatar v-if="record.counselor_avatar" :src="record.counselor_avatar" size="small" />
+          <a-avatar v-if="record.counselor_avatar" :src="record.counselor_avatar" size="small"/>
           <span class="counselor-name">{{ record.counselor_name }}</span>
         </div>
       </template>
 
       <template #user_name="{ record }">
         <div class="user-info">
-          <a-avatar v-if="record.user_avatar" :src="record.user_avatar" size="small" />
+          <a-avatar v-if="record.user_avatar" :src="record.user_avatar" size="small"/>
           <span class="user-name">{{ record.user_name }}</span>
         </div>
       </template>
@@ -95,7 +95,8 @@
           </a-button>
           <a-dropdown v-if="record.status === 'pending'">
             <a-button type="link" size="small">
-              操作 <DownOutlined />
+              操作
+              <DownOutlined/>
             </a-button>
             <template #overlay>
               <a-menu @click="({ key }) => handleStatusChange(record.id, key)">
@@ -110,7 +111,8 @@
           </a-dropdown>
           <a-dropdown v-else-if="record.status === 'confirmed'">
             <a-button type="link" size="small">
-              操作 <DownOutlined />
+              操作
+              <DownOutlined/>
             </a-button>
             <template #overlay>
               <a-menu @click="({ key }) => handleStatusChange(record.id, key)">
@@ -132,10 +134,10 @@
 
     <!-- 查看预约详情弹窗 -->
     <a-modal
-      v-model:open="viewModalVisible"
-      title="预约详情"
-      :footer="null"
-      width="700px"
+        v-model:open="viewModalVisible"
+        title="预约详情"
+        :footer="null"
+        width="700px"
     >
       <div v-if="currentAppointment" class="appointment-detail">
         <div class="detail-header">
@@ -144,9 +146,9 @@
             {{ getStatusText(currentAppointment.status) }}
           </a-tag>
         </div>
-        
-        <a-divider />
-        
+
+        <a-divider/>
+
         <div class="detail-section">
           <h4>基本信息</h4>
           <div class="info-grid">
@@ -180,10 +182,10 @@
         <div class="detail-section">
           <h4>咨询师信息</h4>
           <div class="person-info">
-            <a-avatar 
-              v-if="currentAppointment.counselor_avatar" 
-              :src="currentAppointment.counselor_avatar" 
-              :size="64"
+            <a-avatar
+                v-if="currentAppointment.counselor_avatar"
+                :src="currentAppointment.counselor_avatar"
+                :size="64"
             />
             <div class="person-details">
               <div class="person-name">{{ currentAppointment.counselor_name }}</div>
@@ -195,10 +197,10 @@
         <div class="detail-section">
           <h4>用户信息</h4>
           <div class="person-info">
-            <a-avatar 
-              v-if="currentAppointment.user_avatar" 
-              :src="currentAppointment.user_avatar" 
-              :size="64"
+            <a-avatar
+                v-if="currentAppointment.user_avatar"
+                :src="currentAppointment.user_avatar"
+                :size="64"
             />
             <div class="person-details">
               <div class="person-name">{{ currentAppointment.user_name }}</div>
@@ -223,15 +225,15 @@
         <div v-if="currentAppointment.status === 'pending'" class="detail-section">
           <h4>操作</h4>
           <a-space>
-            <a-button 
-              type="primary" 
-              @click="handleStatusChange(currentAppointment.id, 'confirmed')"
+            <a-button
+                type="primary"
+                @click="handleStatusChange(currentAppointment.id, 'confirmed')"
             >
               确认预约
             </a-button>
-            <a-button 
-              danger 
-              @click="handleStatusChange(currentAppointment.id, 'cancelled')"
+            <a-button
+                danger
+                @click="handleStatusChange(currentAppointment.id, 'cancelled')"
             >
               取消预约
             </a-button>
@@ -241,20 +243,20 @@
         <div v-else-if="currentAppointment.status === 'confirmed'" class="detail-section">
           <h4>操作</h4>
           <a-space>
-            <a-button 
-              type="primary" 
-              @click="handleStatusChange(currentAppointment.id, 'completed')"
+            <a-button
+                type="primary"
+                @click="handleStatusChange(currentAppointment.id, 'completed')"
             >
               标记完成
             </a-button>
-            <a-button 
-              danger 
-              @click="handleStatusChange(currentAppointment.id, 'cancelled')"
+            <a-button
+                danger
+                @click="handleStatusChange(currentAppointment.id, 'cancelled')"
             >
               取消预约
             </a-button>
-            <a-button 
-              @click="showRescheduleModal(currentAppointment)"
+            <a-button
+                @click="showRescheduleModal(currentAppointment)"
             >
               改期
             </a-button>
@@ -265,51 +267,51 @@
 
     <!-- 改期弹窗 -->
     <a-modal
-      v-model:open="rescheduleModalVisible"
-      title="预约改期"
-      @ok="handleReschedule"
-      @cancel="rescheduleModalVisible = false"
-      width="500px"
+        v-model:open="rescheduleModalVisible"
+        title="预约改期"
+        @ok="handleReschedule"
+        @cancel="rescheduleModalVisible = false"
+        width="500px"
     >
       <a-form
-        ref="rescheduleFormRef"
-        :model="rescheduleForm"
-        :rules="rescheduleFormRules"
-        layout="vertical"
+          ref="rescheduleFormRef"
+          :model="rescheduleForm"
+          :rules="rescheduleFormRules"
+          layout="vertical"
       >
         <a-form-item label="预约日期" name="appointment_date">
-          <a-date-picker 
-            v-model:value="rescheduleForm.appointment_date" 
-            style="width: 100%;"
+          <a-date-picker
+              v-model:value="rescheduleForm.appointment_date"
+              style="width: 100%;"
           />
         </a-form-item>
-        
+
         <a-row :gutter="16">
           <a-col :span="12">
             <a-form-item label="开始时间" name="start_time">
-              <a-time-picker 
-                v-model:value="rescheduleForm.start_time" 
-                format="HH:mm"
-                style="width: 100%;"
+              <a-time-picker
+                  v-model:value="rescheduleForm.start_time"
+                  format="HH:mm"
+                  style="width: 100%;"
               />
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="结束时间" name="end_time">
-              <a-time-picker 
-                v-model:value="rescheduleForm.end_time" 
-                format="HH:mm"
-                style="width: 100%;"
+              <a-time-picker
+                  v-model:value="rescheduleForm.end_time"
+                  format="HH:mm"
+                  style="width: 100%;"
               />
             </a-form-item>
           </a-col>
         </a-row>
-        
+
         <a-form-item label="改期原因" name="reason">
-          <a-textarea 
-            v-model:value="rescheduleForm.reason" 
-            placeholder="请输入改期原因"
-            :rows="3"
+          <a-textarea
+              v-model:value="rescheduleForm.reason"
+              placeholder="请输入改期原因"
+              :rows="3"
           />
         </a-form-item>
       </a-form>
@@ -318,10 +320,10 @@
 </template>
 
 <script>
-import { ref, reactive, onMounted } from 'vue'
-import { message } from 'ant-design-vue'
-import { DownOutlined } from '@ant-design/icons-vue'
-import { appointmentAPI } from '@/api/admin'
+import {ref, reactive, onMounted} from 'vue'
+import {message} from 'ant-design-vue'
+import {DownOutlined} from '@ant-design/icons-vue'
+import {appointmentAPI} from '@/api/admin'
 import dayjs from 'dayjs'
 
 export default {
@@ -372,21 +374,21 @@ export default {
         title: '咨询师',
         dataIndex: 'counselor_name',
         key: 'counselor_name',
-        slots: { customRender: 'counselor_name' },
+        slots: {customRender: 'counselor_name'},
         width: 150
       },
       {
         title: '用户',
         dataIndex: 'user_name',
         key: 'user_name',
-        slots: { customRender: 'user_name' },
+        slots: {customRender: 'user_name'},
         width: 150
       },
       {
         title: '预约时间',
         dataIndex: 'appointment_date',
         key: 'appointment_date',
-        slots: { customRender: 'appointment_time' },
+        slots: {customRender: 'appointment_time'},
         width: 200
       },
       {
@@ -400,33 +402,33 @@ export default {
         title: '状态',
         dataIndex: 'status',
         key: 'status',
-        slots: { customRender: 'status' },
+        slots: {customRender: 'status'},
         width: 100
       },
       {
         title: '创建时间',
         dataIndex: 'create_time',
         key: 'create_time',
-        slots: { customRender: 'createTime' },
+        slots: {customRender: 'createTime'},
         width: 150
       },
       {
         title: '操作',
         key: 'action',
-        slots: { customRender: 'action' },
+        slots: {customRender: 'action'},
         width: 180
       }
     ]
 
     const rescheduleFormRules = {
       appointment_date: [
-        { required: true, message: '请选择预约日期', trigger: 'change' }
+        {required: true, message: '请选择预约日期', trigger: 'change'}
       ],
       start_time: [
-        { required: true, message: '请选择开始时间', trigger: 'change' }
+        {required: true, message: '请选择开始时间', trigger: 'change'}
       ],
       end_time: [
-        { required: true, message: '请选择结束时间', trigger: 'change' }
+        {required: true, message: '请选择结束时间', trigger: 'change'}
       ]
     }
 
@@ -441,12 +443,12 @@ export default {
           user_id: searchForm.user_id,
           status: searchForm.status
         }
-        
+
         if (searchForm.date_range && searchForm.date_range.length === 2) {
           params.start_date = searchForm.date_range[0].format('YYYY-MM-DD')
           params.end_date = searchForm.date_range[1].format('YYYY-MM-DD')
         }
-        
+
         const result = await appointmentAPI.getAppointments(params)
         if (result.code === 200) {
           appointments.value = result.data.list
@@ -513,7 +515,7 @@ export default {
       rescheduleForm.start_time = dayjs(appointment.start_time, 'HH:mm')
       rescheduleForm.end_time = dayjs(appointment.end_time, 'HH:mm')
       rescheduleForm.reason = ''
-      
+
       rescheduleModalVisible.value = true
     }
 
@@ -521,7 +523,7 @@ export default {
     const handleReschedule = async () => {
       try {
         await rescheduleFormRef.value.validate()
-        
+
         const data = {
           appointment_date: rescheduleForm.appointment_date.format('YYYY-MM-DD'),
           start_time: rescheduleForm.start_time.format('HH:mm'),
@@ -529,7 +531,7 @@ export default {
           reason: rescheduleForm.reason,
           status: 'rescheduled'
         }
-        
+
         const result = await appointmentAPI.updateAppointment(rescheduleForm.appointment_id, data)
         if (result.code === 200) {
           message.success('预约改期成功')
@@ -747,31 +749,31 @@ export default {
   .appointment-management {
     padding: 12px;
   }
-  
+
   .page-header {
     flex-direction: column;
     gap: 12px;
     align-items: stretch;
   }
-  
+
   .search-bar .ant-form {
     flex-direction: column;
   }
-  
+
   .search-bar .ant-form-item {
     margin-bottom: 8px;
   }
-  
+
   .detail-header {
     flex-direction: column;
     gap: 12px;
     align-items: flex-start;
   }
-  
+
   .info-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .person-info {
     flex-direction: column;
     text-align: center;

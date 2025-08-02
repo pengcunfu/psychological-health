@@ -8,25 +8,25 @@
     <div class="search-bar">
       <a-form layout="inline" :model="searchForm" @submit="handleSearch">
         <a-form-item label="咨询师ID">
-          <a-input 
-            v-model:value="searchForm.counselor_id" 
-            placeholder="请输入咨询师ID"
-            style="width: 150px;"
+          <a-input
+              v-model:value="searchForm.counselor_id"
+              placeholder="请输入咨询师ID"
+              style="width: 150px;"
           />
         </a-form-item>
         <a-form-item label="订单ID">
-          <a-input 
-            v-model:value="searchForm.order_id" 
-            placeholder="请输入订单ID"
-            style="width: 150px;"
+          <a-input
+              v-model:value="searchForm.order_id"
+              placeholder="请输入订单ID"
+              style="width: 150px;"
           />
         </a-form-item>
         <a-form-item label="评分">
-          <a-select 
-            v-model:value="searchForm.rating" 
-            placeholder="请选择评分"
-            style="width: 120px;"
-            allow-clear
+          <a-select
+              v-model:value="searchForm.rating"
+              placeholder="请选择评分"
+              style="width: 120px;"
+              allow-clear
           >
             <a-select-option :value="5">5分</a-select-option>
             <a-select-option :value="4">4分</a-select-option>
@@ -36,11 +36,11 @@
           </a-select>
         </a-form-item>
         <a-form-item label="状态">
-          <a-select 
-            v-model:value="searchForm.status" 
-            placeholder="请选择状态"
-            style="width: 120px;"
-            allow-clear
+          <a-select
+              v-model:value="searchForm.status"
+              placeholder="请选择状态"
+              style="width: 120px;"
+              allow-clear
           >
             <a-select-option value="pending">待审核</a-select-option>
             <a-select-option value="approved">已通过</a-select-option>
@@ -56,16 +56,16 @@
 
     <!-- 评价列表 -->
     <a-table
-      :columns="columns"
-      :data-source="reviews"
-      :loading="loading"
-      :pagination="pagination"
-      @change="handleTableChange"
-      row-key="id"
+        :columns="columns"
+        :data-source="reviews"
+        :loading="loading"
+        :pagination="pagination"
+        @change="handleTableChange"
+        row-key="id"
     >
       <template #rating="{ record }">
         <div class="rating-display">
-          <a-rate :value="record.rating" disabled />
+          <a-rate :value="record.rating" disabled/>
           <span class="rating-text">{{ record.rating }}/5</span>
         </div>
       </template>
@@ -75,12 +75,12 @@
           <p class="content-text">{{ record.content }}</p>
           <div v-if="record.images && record.images.length" class="review-images">
             <a-image
-              v-for="(img, index) in record.images.slice(0, 3)"
-              :key="index"
-              :src="img"
-              width="40"
-              height="40"
-              style="object-fit: cover; border-radius: 4px; margin-right: 8px;"
+                v-for="(img, index) in record.images.slice(0, 3)"
+                :key="index"
+                :src="img"
+                width="40"
+                height="40"
+                style="object-fit: cover; border-radius: 4px; margin-right: 8px;"
             />
             <span v-if="record.images.length > 3" class="more-images">
               +{{ record.images.length - 3 }}
@@ -106,7 +106,8 @@
           </a-button>
           <a-dropdown v-if="record.status === 'pending'">
             <a-button type="link" size="small">
-              审核 <DownOutlined />
+              审核
+              <DownOutlined/>
             </a-button>
             <template #overlay>
               <a-menu @click="({ key }) => handleAudit(record.id, key)">
@@ -120,8 +121,8 @@
             </template>
           </a-dropdown>
           <a-popconfirm
-            title="确定要删除这条评价吗？"
-            @confirm="deleteReview(record.id)"
+              title="确定要删除这条评价吗？"
+              @confirm="deleteReview(record.id)"
           >
             <a-button type="link" size="small" danger>
               删除
@@ -133,15 +134,15 @@
 
     <!-- 查看评价详情弹窗 -->
     <a-modal
-      v-model:open="viewModalVisible"
-      title="评价详情"
-      :footer="null"
-      width="600px"
+        v-model:open="viewModalVisible"
+        title="评价详情"
+        :footer="null"
+        width="600px"
     >
       <div v-if="currentReview" class="review-detail">
         <div class="detail-header">
           <div class="rating-section">
-            <a-rate :value="currentReview.rating" disabled />
+            <a-rate :value="currentReview.rating" disabled/>
             <span class="rating-score">{{ currentReview.rating }}/5</span>
           </div>
           <a-tag :color="getStatusColor(currentReview.status)">
@@ -149,7 +150,7 @@
           </a-tag>
         </div>
 
-        <a-divider />
+        <a-divider/>
 
         <div class="detail-section">
           <h4>评价内容</h4>
@@ -160,12 +161,12 @@
           <h4>评价图片</h4>
           <div class="images-grid">
             <a-image
-              v-for="(img, index) in currentReview.images"
-              :key="index"
-              :src="img"
-              width="80"
-              height="80"
-              style="object-fit: cover; border-radius: 6px;"
+                v-for="(img, index) in currentReview.images"
+                :key="index"
+                :src="img"
+                width="80"
+                height="80"
+                style="object-fit: cover; border-radius: 6px;"
             />
           </div>
         </div>
@@ -195,15 +196,15 @@
         <div v-if="currentReview.status === 'pending'" class="detail-section">
           <h4>审核操作</h4>
           <a-space>
-            <a-button 
-              type="primary" 
-              @click="handleAudit(currentReview.id, 'approved')"
+            <a-button
+                type="primary"
+                @click="handleAudit(currentReview.id, 'approved')"
             >
               通过审核
             </a-button>
-            <a-button 
-              danger 
-              @click="handleAudit(currentReview.id, 'rejected')"
+            <a-button
+                danger
+                @click="handleAudit(currentReview.id, 'rejected')"
             >
               拒绝审核
             </a-button>
@@ -215,10 +216,10 @@
 </template>
 
 <script>
-import { ref, reactive, onMounted } from 'vue'
-import { message } from 'ant-design-vue'
-import { DownOutlined } from '@ant-design/icons-vue'
-import { reviewAPI } from '@/api/admin'
+import {ref, reactive, onMounted} from 'vue'
+import {message} from 'ant-design-vue'
+import {DownOutlined} from '@ant-design/icons-vue'
+import {reviewAPI} from '@/api/admin'
 
 export default {
   name: 'ReviewManagement',
@@ -264,34 +265,34 @@ export default {
         title: '评分',
         dataIndex: 'rating',
         key: 'rating',
-        slots: { customRender: 'rating' },
+        slots: {customRender: 'rating'},
         width: 150
       },
       {
         title: '评价内容',
         dataIndex: 'content',
         key: 'content',
-        slots: { customRender: 'content' },
+        slots: {customRender: 'content'},
         width: 300
       },
       {
         title: '审核状态',
         dataIndex: 'status',
         key: 'status',
-        slots: { customRender: 'status' },
+        slots: {customRender: 'status'},
         width: 100
       },
       {
         title: '评价时间',
         dataIndex: 'create_time',
         key: 'create_time',
-        slots: { customRender: 'createTime' },
+        slots: {customRender: 'createTime'},
         width: 150
       },
       {
         title: '操作',
         key: 'action',
-        slots: { customRender: 'action' },
+        slots: {customRender: 'action'},
         width: 180
       }
     ]
@@ -308,7 +309,7 @@ export default {
           rating: searchForm.rating,
           status: searchForm.status
         }
-        
+
         const result = await reviewAPI.getReviews(params)
         if (result.code === 200) {
           reviews.value = result.data.list
@@ -561,31 +562,31 @@ export default {
   .review-management {
     padding: 12px;
   }
-  
+
   .page-header {
     flex-direction: column;
     gap: 12px;
     align-items: stretch;
   }
-  
+
   .search-bar .ant-form {
     flex-direction: column;
   }
-  
+
   .search-bar .ant-form-item {
     margin-bottom: 8px;
   }
-  
+
   .detail-header {
     flex-direction: column;
     gap: 12px;
     align-items: flex-start;
   }
-  
+
   .info-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .review-content {
     max-width: 200px;
   }

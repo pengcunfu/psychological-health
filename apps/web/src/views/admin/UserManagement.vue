@@ -3,7 +3,9 @@
     <div class="page-header">
       <h2>用户管理</h2>
       <a-button type="primary" @click="showAddModal">
-        <template #icon><PlusOutlined /></template>
+        <template #icon>
+          <PlusOutlined/>
+        </template>
         添加用户
       </a-button>
     </div>
@@ -12,10 +14,10 @@
     <div class="search-bar">
       <a-form layout="inline" :model="searchForm" @submit="handleSearch">
         <a-form-item label="用户名">
-          <a-input 
-            v-model:value="searchForm.username" 
-            placeholder="请输入用户名"
-            style="width: 200px;"
+          <a-input
+              v-model:value="searchForm.username"
+              placeholder="请输入用户名"
+              style="width: 200px;"
           />
         </a-form-item>
         <a-form-item>
@@ -27,12 +29,12 @@
 
     <!-- 用户列表 -->
     <a-table
-      :columns="columns"
-      :data-source="users"
-      :loading="loading"
-      :pagination="pagination"
-      @change="handleTableChange"
-      row-key="id"
+        :columns="columns"
+        :data-source="users"
+        :loading="loading"
+        :pagination="pagination"
+        @change="handleTableChange"
+        row-key="id"
     >
       <template #avatar="{ record }">
         <a-avatar :src="record.avatar" :alt="record.username">
@@ -59,8 +61,8 @@
             查看
           </a-button>
           <a-popconfirm
-            title="确定要删除这个用户吗？"
-            @confirm="deleteUser(record.id)"
+              title="确定要删除这个用户吗？"
+              @confirm="deleteUser(record.id)"
           >
             <a-button type="link" size="small" danger>
               删除
@@ -72,49 +74,49 @@
 
     <!-- 添加/编辑用户弹窗 -->
     <a-modal
-      v-model:open="modalVisible"
-      :title="modalTitle"
-      @ok="handleModalOk"
-      @cancel="handleModalCancel"
-      width="600px"
+        v-model:open="modalVisible"
+        :title="modalTitle"
+        @ok="handleModalOk"
+        @cancel="handleModalCancel"
+        width="600px"
     >
       <a-form
-        ref="userFormRef"
-        :model="userForm"
-        :rules="userFormRules"
-        layout="vertical"
+          ref="userFormRef"
+          :model="userForm"
+          :rules="userFormRules"
+          layout="vertical"
       >
         <a-row :gutter="16">
           <a-col :span="12">
             <a-form-item label="用户名" name="username">
-              <a-input v-model:value="userForm.username" placeholder="请输入用户名" />
+              <a-input v-model:value="userForm.username" placeholder="请输入用户名"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="手机号" name="phone">
-              <a-input v-model:value="userForm.phone" placeholder="请输入手机号" />
+              <a-input v-model:value="userForm.phone" placeholder="请输入手机号"/>
             </a-form-item>
           </a-col>
         </a-row>
 
         <a-form-item label="邮箱" name="email">
-          <a-input v-model:value="userForm.email" placeholder="请输入邮箱" />
+          <a-input v-model:value="userForm.email" placeholder="请输入邮箱"/>
         </a-form-item>
 
         <a-form-item v-if="!isEdit" label="密码" name="password">
-          <a-input-password v-model:value="userForm.password" placeholder="请输入密码" />
+          <a-input-password v-model:value="userForm.password" placeholder="请输入密码"/>
         </a-form-item>
 
         <a-form-item label="头像" name="avatar">
           <a-upload
-            v-model:file-list="fileList"
-            :before-upload="beforeUpload"
-            :custom-request="uploadAvatar"
-            list-type="picture-card"
-            :max-count="1"
+              v-model:file-list="fileList"
+              :before-upload="beforeUpload"
+              :custom-request="uploadAvatar"
+              list-type="picture-card"
+              :max-count="1"
           >
             <div v-if="fileList.length < 1">
-              <upload-outlined />
+              <upload-outlined/>
               <div>上传头像</div>
             </div>
           </a-upload>
@@ -124,10 +126,10 @@
 
     <!-- 查看用户详情弹窗 -->
     <a-modal
-      v-model:open="viewModalVisible"
-      title="用户详情"
-      :footer="null"
-      width="500px"
+        v-model:open="viewModalVisible"
+        title="用户详情"
+        :footer="null"
+        width="500px"
     >
       <div v-if="currentUser" class="user-detail">
         <div class="detail-item">
@@ -164,10 +166,10 @@
 </template>
 
 <script>
-import { ref, reactive, onMounted, computed } from 'vue'
-import { message } from 'ant-design-vue'
-import { PlusOutlined, UploadOutlined } from '@ant-design/icons-vue'
-import { userAPI } from '@/api/admin'
+import {ref, reactive, onMounted, computed} from 'vue'
+import {message} from 'ant-design-vue'
+import {PlusOutlined, UploadOutlined} from '@ant-design/icons-vue'
+import {userAPI} from '@/api/admin'
 
 export default {
   name: 'UserManagement',
@@ -211,7 +213,7 @@ export default {
         title: '头像',
         dataIndex: 'avatar',
         key: 'avatar',
-        slots: { customRender: 'avatar' },
+        slots: {customRender: 'avatar'},
         width: 80
       },
       {
@@ -233,33 +235,33 @@ export default {
         title: '角色',
         dataIndex: 'roles',
         key: 'roles',
-        slots: { customRender: 'roles' }
+        slots: {customRender: 'roles'}
       },
       {
         title: '创建时间',
         dataIndex: 'create_time',
         key: 'create_time',
-        slots: { customRender: 'createTime' }
+        slots: {customRender: 'createTime'}
       },
       {
         title: '操作',
         key: 'action',
-        slots: { customRender: 'action' },
+        slots: {customRender: 'action'},
         width: 180
       }
     ]
 
     const userFormRules = {
       username: [
-        { required: true, message: '请输入用户名', trigger: 'blur' },
-        { min: 3, max: 20, message: '用户名长度为3-20个字符', trigger: 'blur' }
+        {required: true, message: '请输入用户名', trigger: 'blur'},
+        {min: 3, max: 20, message: '用户名长度为3-20个字符', trigger: 'blur'}
       ],
       email: [
-        { type: 'email', message: '请输入正确的邮箱格式', trigger: 'blur' }
+        {type: 'email', message: '请输入正确的邮箱格式', trigger: 'blur'}
       ],
       password: [
-        { required: true, message: '请输入密码', trigger: 'blur' },
-        { min: 6, message: '密码长度至少6个字符', trigger: 'blur' }
+        {required: true, message: '请输入密码', trigger: 'blur'},
+        {min: 6, message: '密码长度至少6个字符', trigger: 'blur'}
       ]
     }
 
@@ -272,7 +274,7 @@ export default {
           per_page: pagination.pageSize,
           username: searchForm.username
         }
-        
+
         const result = await userAPI.getUsers(params)
         if (result.code === 200) {
           users.value = result.data.list
@@ -356,8 +358,8 @@ export default {
     const handleModalOk = async () => {
       try {
         await userFormRef.value.validate()
-        
-        const data = { ...userForm }
+
+        const data = {...userForm}
         delete data.id
 
         if (isEdit.value) {
@@ -415,7 +417,7 @@ export default {
     }
 
     // 上传头像
-    const uploadAvatar = ({ file }) => {
+    const uploadAvatar = ({file}) => {
       const reader = new FileReader()
       reader.onload = (e) => {
         userForm.avatar = e.target.result
@@ -523,17 +525,17 @@ export default {
   .user-management {
     padding: 12px;
   }
-  
+
   .page-header {
     flex-direction: column;
     gap: 12px;
     align-items: stretch;
   }
-  
+
   .search-bar .ant-form {
     flex-direction: column;
   }
-  
+
   .search-bar .ant-form-item {
     margin-bottom: 8px;
   }

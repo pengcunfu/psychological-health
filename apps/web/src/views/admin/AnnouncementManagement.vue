@@ -3,7 +3,9 @@
     <div class="page-header">
       <h2>公告管理</h2>
       <a-button type="primary" @click="showAddModal">
-        <template #icon><PlusOutlined /></template>
+        <template #icon>
+          <PlusOutlined/>
+        </template>
         发布公告
       </a-button>
     </div>
@@ -12,18 +14,18 @@
     <div class="search-bar">
       <a-form layout="inline" :model="searchForm" @submit="handleSearch">
         <a-form-item label="公告标题">
-          <a-input 
-            v-model:value="searchForm.title" 
-            placeholder="请输入公告标题"
-            style="width: 200px;"
+          <a-input
+              v-model:value="searchForm.title"
+              placeholder="请输入公告标题"
+              style="width: 200px;"
           />
         </a-form-item>
         <a-form-item label="状态">
-          <a-select 
-            v-model:value="searchForm.status" 
-            placeholder="请选择状态"
-            style="width: 120px;"
-            allow-clear
+          <a-select
+              v-model:value="searchForm.status"
+              placeholder="请选择状态"
+              style="width: 120px;"
+              allow-clear
           >
             <a-select-option value="published">已发布</a-select-option>
             <a-select-option value="draft">草稿</a-select-option>
@@ -31,11 +33,11 @@
           </a-select>
         </a-form-item>
         <a-form-item label="类型">
-          <a-select 
-            v-model:value="searchForm.type" 
-            placeholder="请选择类型"
-            style="width: 150px;"
-            allow-clear
+          <a-select
+              v-model:value="searchForm.type"
+              placeholder="请选择类型"
+              style="width: 150px;"
+              allow-clear
           >
             <a-select-option value="system">系统公告</a-select-option>
             <a-select-option value="activity">活动公告</a-select-option>
@@ -52,12 +54,12 @@
 
     <!-- 公告列表 -->
     <a-table
-      :columns="columns"
-      :data-source="announcements"
-      :loading="loading"
-      :pagination="pagination"
-      @change="handleTableChange"
-      row-key="id"
+        :columns="columns"
+        :data-source="announcements"
+        :loading="loading"
+        :pagination="pagination"
+        @change="handleTableChange"
+        row-key="id"
     >
       <template #type="{ record }">
         <a-tag :color="getTypeColor(record?.type)">
@@ -91,7 +93,8 @@
           </a-button>
           <a-dropdown>
             <a-button type="link" size="small">
-              更多 <DownOutlined />
+              更多
+              <DownOutlined/>
             </a-button>
             <template #overlay>
               <a-menu @click="({ key }) => handleMenuAction(record, key)">
@@ -113,21 +116,21 @@
 
     <!-- 添加/编辑公告弹窗 -->
     <a-modal
-      v-model:open="modalVisible"
-      :title="modalTitle"
-      @ok="handleModalOk"
-      @cancel="handleModalCancel"
-      width="800px"
-      :body-style="{ maxHeight: '70vh', overflowY: 'auto' }"
+        v-model:open="modalVisible"
+        :title="modalTitle"
+        @ok="handleModalOk"
+        @cancel="handleModalCancel"
+        width="800px"
+        :body-style="{ maxHeight: '70vh', overflowY: 'auto' }"
     >
       <a-form
-        ref="announcementFormRef"
-        :model="announcementForm"
-        :rules="announcementFormRules"
-        layout="vertical"
+          ref="announcementFormRef"
+          :model="announcementForm"
+          :rules="announcementFormRules"
+          layout="vertical"
       >
         <a-form-item label="公告标题" name="title">
-          <a-input v-model:value="announcementForm.title" placeholder="请输入公告标题" />
+          <a-input v-model:value="announcementForm.title" placeholder="请输入公告标题"/>
         </a-form-item>
 
         <a-row :gutter="16">
@@ -165,47 +168,47 @@
         <a-row :gutter="16">
           <a-col :span="12">
             <a-form-item label="生效时间" name="start_time">
-              <a-date-picker 
-                v-model:value="announcementForm.start_time"
-                show-time
-                placeholder="请选择生效时间"
-                style="width: 100%;"
+              <a-date-picker
+                  v-model:value="announcementForm.start_time"
+                  show-time
+                  placeholder="请选择生效时间"
+                  style="width: 100%;"
               />
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="失效时间" name="end_time">
-              <a-date-picker 
-                v-model:value="announcementForm.end_time"
-                show-time
-                placeholder="请选择失效时间"
-                style="width: 100%;"
+              <a-date-picker
+                  v-model:value="announcementForm.end_time"
+                  show-time
+                  placeholder="请选择失效时间"
+                  style="width: 100%;"
               />
             </a-form-item>
           </a-col>
         </a-row>
 
         <a-form-item label="公告摘要" name="summary">
-          <a-textarea 
-            v-model:value="announcementForm.summary" 
-            placeholder="请输入公告摘要（选填）"
-            :rows="2"
+          <a-textarea
+              v-model:value="announcementForm.summary"
+              placeholder="请输入公告摘要（选填）"
+              :rows="2"
           />
         </a-form-item>
 
         <a-form-item label="公告内容" name="content">
-          <a-textarea 
-            v-model:value="announcementForm.content" 
-            placeholder="请输入公告详细内容"
-            :rows="8"
+          <a-textarea
+              v-model:value="announcementForm.content"
+              placeholder="请输入公告详细内容"
+              :rows="8"
           />
         </a-form-item>
 
         <a-form-item label="是否置顶" name="is_pinned">
-          <a-switch 
-            v-model:checked="announcementForm.is_pinned"
-            checked-children="是"
-            un-checked-children="否"
+          <a-switch
+              v-model:checked="announcementForm.is_pinned"
+              checked-children="是"
+              un-checked-children="否"
           />
         </a-form-item>
       </a-form>
@@ -213,10 +216,10 @@
 
     <!-- 查看公告详情弹窗 -->
     <a-modal
-      v-model:open="viewModalVisible"
-      title="公告详情"
-      :footer="null"
-      width="700px"
+        v-model:open="viewModalVisible"
+        title="公告详情"
+        :footer="null"
+        width="700px"
     >
       <div v-if="currentAnnouncement" class="announcement-detail">
         <div class="detail-header">
@@ -236,9 +239,9 @@
             </a-tag>
           </div>
         </div>
-        
-        <a-divider />
-        
+
+        <a-divider/>
+
         <div v-if="currentAnnouncement?.summary" class="detail-section">
           <h4>摘要</h4>
           <p>{{ currentAnnouncement?.summary }}</p>
@@ -276,10 +279,10 @@
 </template>
 
 <script>
-import { ref, reactive, onMounted, computed } from 'vue'
-import { message } from 'ant-design-vue'
-import { PlusOutlined, DownOutlined } from '@ant-design/icons-vue'
-import { announcementAPI } from '@/api/admin'
+import {ref, reactive, onMounted, computed} from 'vue'
+import {message} from 'ant-design-vue'
+import {PlusOutlined, DownOutlined} from '@ant-design/icons-vue'
+import {announcementAPI} from '@/api/admin'
 import dayjs from 'dayjs'
 
 export default {
@@ -335,21 +338,21 @@ export default {
         title: '类型',
         dataIndex: 'type',
         key: 'type',
-        slots: { customRender: 'type' },
+        slots: {customRender: 'type'},
         width: 100
       },
       {
         title: '优先级',
         dataIndex: 'priority',
         key: 'priority',
-        slots: { customRender: 'priority' },
+        slots: {customRender: 'priority'},
         width: 80
       },
       {
         title: '状态',
         dataIndex: 'status',
         key: 'status',
-        slots: { customRender: 'status' },
+        slots: {customRender: 'status'},
         width: 80
       },
       {
@@ -370,32 +373,32 @@ export default {
         title: '创建时间',
         dataIndex: 'create_time',
         key: 'create_time',
-        slots: { customRender: 'createTime' },
+        slots: {customRender: 'createTime'},
         width: 150
       },
       {
         title: '操作',
         key: 'action',
-        slots: { customRender: 'action' },
+        slots: {customRender: 'action'},
         width: 150
       }
     ]
 
     const announcementFormRules = {
       title: [
-        { required: true, message: '请输入公告标题', trigger: 'blur' }
+        {required: true, message: '请输入公告标题', trigger: 'blur'}
       ],
       type: [
-        { required: true, message: '请选择公告类型', trigger: 'change' }
+        {required: true, message: '请选择公告类型', trigger: 'change'}
       ],
       priority: [
-        { required: true, message: '请选择优先级', trigger: 'change' }
+        {required: true, message: '请选择优先级', trigger: 'change'}
       ],
       status: [
-        { required: true, message: '请选择状态', trigger: 'change' }
+        {required: true, message: '请选择状态', trigger: 'change'}
       ],
       content: [
-        { required: true, message: '请输入公告内容', trigger: 'blur' }
+        {required: true, message: '请输入公告内容', trigger: 'blur'}
       ]
     }
 
@@ -410,7 +413,7 @@ export default {
           status: searchForm.status,
           type: searchForm.type
         }
-        
+
         const result = await announcementAPI.getAnnouncements(params)
         if (result.code === 200) {
           announcements.value = result.data.list
@@ -500,7 +503,7 @@ export default {
     // 更新公告状态
     const updateAnnouncementStatus = async (announcementId, status) => {
       try {
-        const result = await announcementAPI.updateAnnouncement(announcementId, { status })
+        const result = await announcementAPI.updateAnnouncement(announcementId, {status})
         if (result.code === 200) {
           message.success('状态更新成功')
           fetchAnnouncements()
@@ -514,10 +517,10 @@ export default {
     const handleModalOk = async () => {
       try {
         await announcementFormRef.value.validate()
-        
-        const data = { ...announcementForm }
+
+        const data = {...announcementForm}
         delete data.id
-        
+
         // 转换时间格式
         if (data.start_time) {
           data.start_time = data.start_time.format('YYYY-MM-DD HH:mm:ss')
@@ -769,21 +772,21 @@ export default {
   .announcement-management {
     padding: 12px;
   }
-  
+
   .page-header {
     flex-direction: column;
     gap: 12px;
     align-items: stretch;
   }
-  
+
   .search-bar .ant-form {
     flex-direction: column;
   }
-  
+
   .search-bar .ant-form-item {
     margin-bottom: 8px;
   }
-  
+
   .info-grid {
     grid-template-columns: 1fr;
   }
