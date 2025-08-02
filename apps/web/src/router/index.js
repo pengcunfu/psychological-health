@@ -9,6 +9,13 @@ import AnnouncementManagement from '@/views/admin/AnnouncementManagement.vue'
 import ReviewManagement from '@/views/admin/ReviewManagement.vue'
 import CategoryManagement from '@/views/admin/CategoryManagement.vue'
 import AppointmentManagement from '@/views/admin/AppointmentManagement.vue'
+import BannerManagement from '@/views/admin/BannerManagement.vue'
+import MenuManagement from '@/views/admin/MenuManagement.vue'
+import GroupManagement from '@/views/admin/GroupManagement.vue'
+import RoleManagement from '@/views/admin/RoleManagement.vue'
+import DiseaseTagsManagement from '@/views/admin/DiseaseTagsManagement.vue'
+import WorkspaceManagement from '@/views/admin/WorkspaceManagement.vue'
+import CourseOutlineManagement from '@/views/admin/CourseOutlineManagement.vue'
 
 const routes = [
     {
@@ -103,6 +110,69 @@ const routes = [
                 component: AppointmentManagement,
                 meta: {
                     title: '预约管理',
+                    requiresAuth: true
+                }
+            },
+            {
+                path: 'admin/banners',
+                name: 'BannerManagement',
+                component: BannerManagement,
+                meta: {
+                    title: '横幅管理',
+                    requiresAuth: true
+                }
+            },
+            {
+                path: 'admin/menus',
+                name: 'MenuManagement',
+                component: MenuManagement,
+                meta: {
+                    title: '菜单管理',
+                    requiresAuth: true
+                }
+            },
+            {
+                path: 'admin/groups',
+                name: 'GroupManagement',
+                component: GroupManagement,
+                meta: {
+                    title: '群组管理',
+                    requiresAuth: true
+                }
+            },
+            {
+                path: 'admin/roles',
+                name: 'RoleManagement',
+                component: RoleManagement,
+                meta: {
+                    title: '角色管理',
+                    requiresAuth: true
+                }
+            },
+            {
+                path: 'admin/disease-tags',
+                name: 'DiseaseTagsManagement',
+                component: DiseaseTagsManagement,
+                meta: {
+                    title: '疾病标签管理',
+                    requiresAuth: true
+                }
+            },
+            {
+                path: 'admin/workspaces',
+                name: 'WorkspaceManagement',
+                component: WorkspaceManagement,
+                meta: {
+                    title: '工作空间管理',
+                    requiresAuth: true
+                }
+            },
+            {
+                path: 'admin/course-outlines',
+                name: 'CourseOutlineManagement',
+                component: CourseOutlineManagement,
+                meta: {
+                    title: '课程大纲管理',
                     requiresAuth: true
                 }
             }

@@ -16,6 +16,11 @@ from utils.config import Config
 from utils.swagger_config import api_bp
 from models.base import db
 from middleware.global_exception_handler import GlobalExceptionHandler
+from api.role import role_bp
+from api.banner import banner_bp
+from api.group import group_bp
+from api.menu import menu_bp
+from api.workspace import workspace_bp
 
 app = Flask(__name__)
 CORS(app)
@@ -51,6 +56,11 @@ app.register_blueprint(category_bp)
 app.register_blueprint(login_bp)
 app.register_blueprint(file_upload_bp)
 app.register_blueprint(api_bp)
+app.register_blueprint(role_bp)
+app.register_blueprint(banner_bp)
+app.register_blueprint(group_bp)
+app.register_blueprint(menu_bp)
+app.register_blueprint(workspace_bp)
 
 # 初始化全局异常处理器（这是关键步骤）
 exception_handler = GlobalExceptionHandler()

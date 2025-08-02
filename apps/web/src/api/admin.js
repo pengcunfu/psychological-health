@@ -134,6 +134,13 @@ export const courseAPI = {
     getCourseChapters: (id) => api.get(`/course/${id}/chapters`)
 }
 
+// 导出单独的课程API函数，以便在其他组件中直接使用
+export const getCourses = (params) => courseAPI.getCourses(params)
+export const getCourse = (id) => courseAPI.getCourse(id)
+export const createCourse = (data) => courseAPI.createCourse(data)
+export const updateCourse = (id, data) => courseAPI.updateCourse(id, data)
+export const deleteCourse = (id) => courseAPI.deleteCourse(id)
+
 // 订单管理API
 export const orderAPI = {
     // 获取订单列表
@@ -242,25 +249,25 @@ export const appointmentAPI = {
 // 角色管理API
 export const roleAPI = {
     // 获取角色列表
-    getRoles: (params) => api.get('/role', {params}),
+    getRoles: (params) => api.get('/roles', {params}),
 
     // 获取角色详情
-    getRole: (id) => api.get(`/role/${id}`),
+    getRole: (id) => api.get(`/roles/${id}`),
 
     // 创建角色
-    createRole: (data) => api.post('/role', data),
+    createRole: (data) => api.post('/roles', data),
 
     // 更新角色
-    updateRole: (id, data) => api.put(`/role/${id}`, data),
+    updateRole: (id, data) => api.put(`/roles/${id}`, data),
 
     // 删除角色
-    deleteRole: (id) => api.delete(`/role/${id}`),
+    deleteRole: (id) => api.delete(`/roles/${id}`),
 
     // 获取角色权限
-    getRolePermissions: (id) => api.get(`/role/${id}/permissions`),
+    getRolePermissions: (id) => api.get(`/roles/${id}/permissions`),
 
     // 更新角色权限
-    updateRolePermissions: (id, permissions) => api.put(`/role/${id}/permissions`, {permissions})
+    updateRolePermissions: (id, permissions) => api.put(`/roles/${id}/permissions`, {permissions})
 }
 
 // 菜单管理API
@@ -398,6 +405,90 @@ export const groupAPI = {
 
     // 删除群组
     deleteGroup: (id) => api.delete(`/group/${id}`)
+}
+
+// 角色管理接口
+export const getRoles = (params) => {
+    return api.get('/role', {params})
+}
+
+export const getRole = (id) => {
+    return api.get(`/role/${id}`)
+}
+
+export const createRole = (data) => {
+    return api.post('/role', data)
+}
+
+export const updateRole = (id, data) => {
+    return api.put(`/role/${id}`, data)
+}
+
+export const deleteRole = (id) => {
+    return api.delete(`/role/${id}`)
+}
+
+// 疾病标签管理接口
+export const getDiseaseTags = (params) => {
+    return api.get('/disease-tags', {params})
+}
+
+export const getDiseaseTag = (id) => {
+    return api.get(`/disease-tags/${id}`)
+}
+
+export const createDiseaseTag = (data) => {
+    return api.post('/disease-tags', data)
+}
+
+export const updateDiseaseTag = (id, data) => {
+    return api.put(`/disease-tags/${id}`, data)
+}
+
+export const deleteDiseaseTag = (id) => {
+    return api.delete(`/disease-tags/${id}`)
+}
+
+// 工作空间管理接口
+export const getWorkspaces = (params) => {
+    return api.get('/workspaces', {params})
+}
+
+export const getWorkspace = (id) => {
+    return api.get(`/workspaces/${id}`)
+}
+
+export const createWorkspace = (data) => {
+    return api.post('/workspaces', data)
+}
+
+export const updateWorkspace = (id, data) => {
+    return api.put(`/workspaces/${id}`, data)
+}
+
+export const deleteWorkspace = (id) => {
+    return api.delete(`/workspaces/${id}`)
+}
+
+// 课程大纲管理接口
+export const getCourseOutlines = (params) => {
+    return api.get('/course_outlines', {params})
+}
+
+export const getCourseOutline = (id) => {
+    return api.get(`/course_outlines/${id}`)
+}
+
+export const createCourseOutline = (data) => {
+    return api.post('/course_outlines', data)
+}
+
+export const updateCourseOutline = (id, data) => {
+    return api.put(`/course_outlines/${id}`, data)
+}
+
+export const deleteCourseOutline = (id) => {
+    return api.delete(`/course_outlines/${id}`)
 }
 
 export default {

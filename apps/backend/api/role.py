@@ -1,5 +1,4 @@
 from flask import Blueprint, request
-from sqlalchemy.exc import SQLAlchemyError
 import uuid
 
 from models.role import Role
@@ -8,7 +7,7 @@ from models.base import db
 from form.role import RoleQueryForm, RoleCreateForm, RoleUpdateForm
 from utils.json_result import JsonResult
 
-role_bp = Blueprint("role", __name__, url_prefix="/roles")
+role_bp = Blueprint("role", __name__, url_prefix="/role")
 
 
 @role_bp.route('', methods=['GET'])
@@ -18,9 +17,9 @@ def get_roles():
     if not form.validate():
         return JsonResult.error(f'参数验证失败: {form.get_first_error()}', 400)
 
-    page = form.get_page()
-    per_page = form.get_per_page()
-    keyword = form.get_keyword()
+    page = form.page
+    per_page = form.per_page
+    keyword = form.keyword
 
     # 构建查询
     query = Role.query
@@ -81,6 +80,7 @@ def create_role():
     db.session.commit()
 
     return JsonResult.success(role.to_dict(), '角色创建成功')
+
 
 @role_bp.route('/<role_id>', methods=['PUT'])
 def update_role(role_id):
