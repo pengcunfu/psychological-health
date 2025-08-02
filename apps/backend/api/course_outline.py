@@ -1,3 +1,14 @@
+"""
+课程大纲API
+提供课程大纲的增删改查功能
+
+接口列表：
+- GET /course_outlines - 获取课程大纲列表
+- GET /course_outlines/<outline_id> - 获取单个课程大纲详情
+- POST /course_outlines - 创建课程大纲
+- PUT /course_outlines/<outline_id> - 更新课程大纲
+- DELETE /course_outlines/<outline_id> - 删除课程大纲
+"""
 from flask import Blueprint, request
 from sqlalchemy.exc import SQLAlchemyError
 import uuid

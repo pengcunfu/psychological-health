@@ -1,3 +1,14 @@
+"""
+公告管理API
+提供系统公告的增删改查功能
+
+接口列表：
+- GET /announcement - 获取公告列表
+- GET /announcement/<announcement_id> - 获取单个公告详情
+- POST /announcement - 创建公告
+- PUT /announcement/<announcement_id> - 更新公告
+- DELETE /announcement/<announcement_id> - 删除公告
+"""
 from flask import Blueprint
 import uuid
 from models.announcement import Announcement

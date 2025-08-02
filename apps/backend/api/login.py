@@ -1,4 +1,18 @@
-from flask import Blueprint, request, jsonify, session, send_file
+"""
+登录认证API
+提供用户登录、注册、密码重置等认证相关功能
+
+接口列表：
+- POST /login - 用户登录
+- POST /register - 用户注册
+- POST /logout - 用户登出
+- POST /reset-password - 重置密码
+- POST /verify-code - 验证码验证
+- POST /send-code - 发送验证码
+- GET /user/info - 获取当前用户信息
+- POST /refresh-token - 刷新访问令牌
+"""
+from flask import Blueprint, request, jsonify, session, send_file, current_app, g
 from datetime import datetime
 import hashlib
 import uuid

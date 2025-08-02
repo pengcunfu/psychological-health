@@ -1,3 +1,18 @@
+"""
+咨询师管理API
+提供咨询师的增删改查功能
+
+接口列表：
+- GET /counselor - 获取咨询师列表
+- GET /counselor/<counselor_id> - 获取单个咨询师详情
+- POST /counselor - 创建咨询师
+- PUT /counselor/<counselor_id> - 更新咨询师
+- DELETE /counselor/<counselor_id> - 删除咨询师
+- GET /counselor/<counselor_id>/reviews - 获取咨询师的评价列表
+- GET /counselor/<counselor_id>/appointments - 获取咨询师的预约列表
+- POST /counselor/<counselor_id>/avatar - 上传咨询师头像
+- PUT /counselor/<counselor_id>/status - 更新咨询师状态
+"""
 from flask import Blueprint, request
 from sqlalchemy.exc import SQLAlchemyError
 import uuid

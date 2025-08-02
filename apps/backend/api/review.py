@@ -1,3 +1,17 @@
+"""
+评价管理API
+提供用户评价的增删改查功能
+
+接口列表：
+- GET /review - 获取评价列表
+- GET /review/<review_id> - 获取单个评价详情
+- POST /review - 创建评价
+- PUT /review/<review_id> - 更新评价
+- DELETE /review/<review_id> - 删除评价
+- GET /review/user/<user_id> - 获取用户的评价列表
+- GET /review/counselor/<counselor_id> - 获取咨询师的评价列表
+- GET /review/course/<course_id> - 获取课程的评价列表
+"""
 from flask import Blueprint, request
 from flask_restx import Namespace, Resource, fields
 from sqlalchemy.exc import SQLAlchemyError

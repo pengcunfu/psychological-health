@@ -1,3 +1,20 @@
+"""
+订单管理API
+提供订单的增删改查及状态管理功能
+
+接口列表：
+- GET /order - 获取订单列表
+- GET /order/<order_id> - 获取单个订单详情
+- POST /order - 创建订单
+- PUT /order/<order_id> - 更新订单
+- DELETE /order/<order_id> - 删除订单
+- PUT /order/<order_id>/status - 更新订单状态
+- POST /order/<order_id>/pay - 支付订单
+- POST /order/<order_id>/cancel - 取消订单
+- POST /order/<order_id>/refund - 退款订单
+- GET /order/user/<user_id> - 获取用户的订单列表
+- GET /order/stats - 获取订单统计数据
+"""
 from flask import Blueprint, request
 from sqlalchemy.exc import SQLAlchemyError
 import uuid

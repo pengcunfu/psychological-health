@@ -1,3 +1,14 @@
+"""
+工作空间API
+提供工作空间的增删改查功能
+
+接口列表：
+- GET /workspaces - 获取工作空间列表
+- GET /workspaces/<workspace_id> - 获取单个工作空间详情
+- POST /workspaces - 创建工作空间
+- PUT /workspaces/<workspace_id> - 更新工作空间
+- DELETE /workspaces/<workspace_id> - 删除工作空间
+"""
 from flask import Blueprint, request
 from models import db
 from models.workspace import Workspace

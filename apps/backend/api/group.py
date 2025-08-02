@@ -1,3 +1,14 @@
+"""
+群组管理API
+提供系统群组的增删改查功能
+
+接口列表：
+- GET /group - 获取群组列表
+- GET /group/<group_id> - 获取单个群组详情
+- POST /group - 创建群组
+- PUT /group/<group_id> - 更新群组
+- DELETE /group/<group_id> - 删除群组
+"""
 from flask import Blueprint, request
 from sqlalchemy.exc import SQLAlchemyError
 import uuid

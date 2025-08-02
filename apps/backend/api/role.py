@@ -1,3 +1,13 @@
+"""
+角色管理API
+提供系统角色的增删改查功能
+
+接口列表：
+- GET /role - 获取角色列表
+- POST /role - 创建角色
+- PUT /role/<role_id> - 更新角色信息
+- DELETE /role/<role_id> - 删除角色
+"""
 from flask import Blueprint, request
 import uuid
 

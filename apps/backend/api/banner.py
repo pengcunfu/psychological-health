@@ -1,3 +1,14 @@
+"""
+横幅管理API
+提供系统横幅的增删改查功能
+
+接口列表：
+- GET /banner - 获取横幅列表
+- GET /banner/<banner_id> - 获取单个横幅详情
+- POST /banner - 创建横幅
+- PUT /banner/<banner_id> - 更新横幅
+- DELETE /banner/<banner_id> - 删除横幅
+"""
 from flask import Blueprint, request
 from models.banner import Banner
 from form.banner import BannerQueryForm, BannerCreateForm, BannerUpdateForm

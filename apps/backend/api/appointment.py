@@ -1,5 +1,19 @@
+"""
+预约管理API
+提供咨询预约的增删改查功能
+
+接口列表：
+- GET /appointment - 获取预约列表
+- GET /appointment/<appointment_id> - 获取单个预约详情
+- POST /appointment - 创建预约
+- PUT /appointment/<appointment_id> - 更新预约
+- DELETE /appointment/<appointment_id> - 删除预约
+- PUT /appointment/<appointment_id>/status - 更新预约状态
+- GET /appointment/user/<user_id> - 获取用户的预约列表
+- GET /appointment/counselor/<counselor_id> - 获取咨询师的预约列表
+"""
 from datetime import datetime
-from flask import Blueprint
+from flask import Blueprint, request
 from models.appointment import Appointment
 from models.base import db
 from utils.json_result import JsonResult

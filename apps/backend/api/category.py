@@ -1,3 +1,16 @@
+"""
+分类管理API
+提供系统分类的增删改查功能
+
+接口列表：
+- GET /category - 获取分类列表
+- GET /category/<category_id> - 获取单个分类详情
+- POST /category - 创建分类
+- PUT /category/<category_id> - 更新分类
+- DELETE /category/<category_id> - 删除分类
+- GET /category/tree - 获取分类树结构
+- GET /category/<category_id>/items - 获取分类下的项目
+"""
 from flask import Blueprint, request
 from sqlalchemy.exc import SQLAlchemyError
 import uuid

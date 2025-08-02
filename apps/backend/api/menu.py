@@ -1,3 +1,16 @@
+"""
+菜单管理API
+提供系统菜单的增删改查功能
+
+接口列表：
+- GET /menu - 获取菜单列表
+- GET /menu/<menu_id> - 获取单个菜单详情
+- POST /menu - 创建菜单
+- PUT /menu/<menu_id> - 更新菜单
+- DELETE /menu/<menu_id> - 删除菜单
+- GET /menu/user/<user_id>/permissions - 获取用户的权限菜单
+- GET /menu/tree - 获取菜单树结构
+"""
 from flask import Blueprint, request
 from models.base import db
 from models.menu import Menu

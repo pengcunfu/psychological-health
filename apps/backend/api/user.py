@@ -1,3 +1,15 @@
+"""
+用户管理API
+提供用户的增删改查功能
+
+接口列表：
+- GET /user - 获取用户列表
+- GET /user/<user_id> - 获取单个用户详情
+- POST /user - 创建用户
+- PUT /user/<user_id> - 更新用户信息
+- DELETE /user/<user_id> - 删除用户
+- PUT /user/<user_id>/roles - 分配用户角色
+"""
 from flask import Blueprint, request
 
 from models import db

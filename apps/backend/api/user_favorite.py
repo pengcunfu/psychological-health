@@ -1,3 +1,15 @@
+"""
+用户收藏API
+提供用户收藏功能的管理
+
+接口列表：
+- GET /user-favorite - 获取收藏列表
+- GET /user-favorite/<favorite_id> - 获取单个收藏详情
+- POST /user-favorite - 创建收藏
+- DELETE /user-favorite/<favorite_id> - 删除收藏
+- GET /user-favorite/user/<user_id> - 获取用户的收藏列表
+- GET /user-favorite/check - 检查是否已收藏
+"""
 import uuid
 
 from flask import Blueprint, request

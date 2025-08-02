@@ -1,3 +1,17 @@
+"""
+文件上传API
+提供文件上传、下载和管理功能
+
+接口列表：
+- POST /upload - 上传文件
+- POST /upload/image - 上传图片
+- POST /upload/avatar - 上传头像
+- POST /upload/document - 上传文档
+- GET /file/<file_id> - 获取文件信息
+- GET /file/download/<file_id> - 下载文件
+- DELETE /file/<file_id> - 删除文件
+- GET /file/list - 获取文件列表
+"""
 from flask import Blueprint, request, jsonify, current_app
 from werkzeug.exceptions import RequestEntityTooLarge
 from utils.file_upload import FileUploader

@@ -1,3 +1,16 @@
+"""
+课程管理API
+提供课程的增删改查功能
+
+接口列表：
+- GET /course - 获取课程列表
+- GET /course/<course_id> - 获取单个课程详情
+- POST /course - 创建课程
+- PUT /course/<course_id> - 更新课程
+- DELETE /course/<course_id> - 删除课程
+- GET /course/category/<category_id> - 获取分类下的课程
+- POST /course/<course_id>/cover - 上传课程封面
+"""
 from flask import Blueprint, request
 from sqlalchemy.exc import SQLAlchemyError
 import uuid

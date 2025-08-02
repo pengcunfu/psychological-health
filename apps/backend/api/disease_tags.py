@@ -1,3 +1,14 @@
+"""
+疾病标签API
+提供疾病标签的增删改查功能
+
+接口列表：
+- GET /disease-tags - 获取疾病标签列表
+- GET /disease-tags/<tag_id> - 获取单个疾病标签详情
+- POST /disease-tags - 创建疾病标签
+- PUT /disease-tags/<tag_id> - 更新疾病标签
+- DELETE /disease-tags/<tag_id> - 删除疾病标签
+"""
 from flask import Blueprint, request
 from sqlalchemy.exc import SQLAlchemyError
 
