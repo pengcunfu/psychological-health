@@ -21,6 +21,7 @@ from models.counselor import Counselor
 from models.base import db
 from utils.json_result import JsonResult
 from form.counselor import CounselorCreateForm, CounselorUpdateForm, CounselorQueryForm
+from utils.validate import validate_args
 
 counselor_bp = Blueprint('counselor', __name__, url_prefix='/counselor')
 
@@ -28,12 +29,8 @@ counselor_bp = Blueprint('counselor', __name__, url_prefix='/counselor')
 @counselor_bp.route('', methods=['GET'])
 def get_counselors():
     """获取咨询师列表"""
-    # 使用表单验证查询参数
-    form = CounselorQueryForm(data=request.args)
-    if not form.validate():
-        return JsonResult.error(f'参数验证失败: {form.get_first_error()}', 400)
+    form = validate_args(CounselorQueryForm)
 
-    # 构建查询
     query = Counselor.query
 
     if form.name.data:
@@ -49,7 +46,7 @@ def get_counselors():
     )
 
     return JsonResult.success({
-        'counselors': [counselor.to_dict() for counselor in pagination.items],
+        'list': [counselor.to_dict() for counselor in pagination.items],
         'total': pagination.total,
         'page': form.page.data,
         'per_page': form.per_page.data,
@@ -75,9 +72,7 @@ def create_counselor():
         return JsonResult.error('请求数据不能为空', 400)
 
     # 使用表单验证
-    form = CounselorCreateForm(data=data)
-    if not form.validate():
-        return JsonResult.error(f'参数验证失败: {form.get_first_error()}', 400)
+    form = validate_args(CounselorCreateForm)
 
     # 创建咨询师
     counselor = Counselor(
@@ -89,7 +84,7 @@ def create_counselor():
         rating=form.rating.data or 0.0,
         consultation_count=form.consultation_count.data or 0,
         introduction=form.introduction.data or '',
-        tags=form.tags.data or ''
+        tags=form.tags.data or '',
     )
 
     db.session.add(counselor)
