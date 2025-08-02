@@ -19,7 +19,7 @@ from utils.json_result import JsonResult
 import os
 
 # 创建蓝图
-file_upload_bp = Blueprint('file_upload', __name__, url_prefix='/file')
+file_upload_bp = Blueprint('file', __name__, url_prefix='/file')
 
 
 # 文件上传器将在请求中动态创建

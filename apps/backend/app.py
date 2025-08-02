@@ -9,7 +9,7 @@ from api.user_favorite import user_favorite_bp
 from api.review import review_bp
 from api.order import order_bp
 from api.user import user_bp
-from api.login import login_bp
+from api.auth import login_bp
 from api.file import file_upload_bp
 from api.category import category_bp
 from utils.config import Config

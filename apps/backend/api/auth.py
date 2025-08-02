@@ -26,7 +26,7 @@ from middleware.auth import AuthMiddleware, login_required
 from models.base import db
 from utils.verify_code import VerifyCodeGenerator
 
-login_bp = Blueprint('login', __name__, url_prefix='/auth')
+login_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 
 def hash_password(password: str) -> str:
@@ -53,7 +53,7 @@ def login():
 
         if not username or not password:
             return JsonResult.error("用户名和密码不能为空", 400)
-            
+
         # 如果提供了验证码，则验证它
         if verify_code:
             stored_code = session.get('verify_code')
@@ -366,10 +366,10 @@ def get_verify_code():
         generator = VerifyCodeGenerator()
         # 生成验证码
         code, image_stream = generator.generate()
-        
+
         # 将验证码存储在会话中，以便后续验证
         session['verify_code'] = code
-        
+
         # 返回验证码图片
         response = send_file(
             image_stream,

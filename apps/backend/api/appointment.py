@@ -20,7 +20,7 @@ from utils.json_result import JsonResult
 from form.appointment import AppointmentCreateForm, AppointmentUpdateForm, AppointmentQueryForm
 from utils.validate import validate_data, validate_args
 
-appointment_bp = Blueprint('appointment', __name__, url_prefix='/appointments')
+appointment_bp = Blueprint('appointment', __name__, url_prefix='/appointment')
 
 
 @appointment_bp.route('', methods=['GET'])

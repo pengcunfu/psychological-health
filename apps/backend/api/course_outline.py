@@ -18,7 +18,7 @@ from models.base import db
 from utils.json_result import JsonResult
 from form.course_outline import CourseOutlineQueryForm, CourseOutlineCreateForm, CourseOutlineUpdateForm
 
-course_outline_bp = Blueprint('course_outline', __name__, url_prefix='/course_outlines')
+course_outline_bp = Blueprint('course_outline', __name__, url_prefix='/course_outline')
 
 
 @course_outline_bp.route('', methods=['GET'])

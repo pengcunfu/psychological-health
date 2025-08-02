@@ -17,7 +17,7 @@ from form.workspace import WorkspaceQueryForm, WorkspaceCreateForm, WorkspaceUpd
 from utils.json_result import JsonResult
 import uuid
 
-workspace_bp = Blueprint('workspace', __name__, url_prefix='/workspaces')
+workspace_bp = Blueprint('workspace', __name__, url_prefix='/workspace')
 
 
 @workspace_bp.route('', methods=['GET'])

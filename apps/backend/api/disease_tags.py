@@ -17,7 +17,7 @@ from models.base import db
 from utils.json_result import JsonResult
 from form.disease_tags import DiseaseTagsQueryForm
 
-disease_tags_bp = Blueprint('disease_tags', __name__, url_prefix='/disease-tags')
+disease_tags_bp = Blueprint('disease_tags', __name__, url_prefix='/disease-tag')
 
 
 @disease_tags_bp.route('', methods=['GET'])

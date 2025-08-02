@@ -20,7 +20,7 @@ from models.base import db
 from utils.json_result import JsonResult
 from form.category import CategoryCreateForm, CategoryUpdateForm, CategoryQueryForm, CategoryStatusUpdateForm
 
-category_bp = Blueprint('category', __name__, url_prefix='/categories')
+category_bp = Blueprint('category', __name__, url_prefix='/category')
 
 
 @category_bp.route('', methods=['GET'])

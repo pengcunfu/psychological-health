@@ -20,7 +20,7 @@ from models.base import db
 from utils.json_result import JsonResult
 from form.course import CourseQueryForm, CourseCreateForm, CourseUpdateForm
 
-course_bp = Blueprint('course', __name__, url_prefix='/courses')
+course_bp = Blueprint('course', __name__, url_prefix='/course')
 
 
 @course_bp.route('', methods=['GET'])

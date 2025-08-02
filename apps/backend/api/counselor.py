@@ -22,7 +22,7 @@ from models.base import db
 from utils.json_result import JsonResult
 from form.counselor import CounselorCreateForm, CounselorUpdateForm, CounselorQueryForm
 
-counselor_bp = Blueprint('counselor', __name__, url_prefix='/counselors')
+counselor_bp = Blueprint('counselor', __name__, url_prefix='/counselor')
 
 
 @counselor_bp.route('', methods=['GET'])

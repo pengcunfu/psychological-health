@@ -18,7 +18,7 @@ from form.announcement import AnnouncementCreateForm, AnnouncementUpdateForm, An
 from utils.validate import validate_args, validate_data, check_id
 from utils.model_helper import update_model_from_form
 
-announcements_bp = Blueprint('announcements', __name__, url_prefix='/announcements')
+announcements_bp = Blueprint('announcements', __name__, url_prefix='/announcement')
 
 
 @announcements_bp.route('', methods=['GET'])

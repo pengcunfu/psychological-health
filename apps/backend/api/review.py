@@ -23,7 +23,7 @@ from utils.json_result import JsonResult
 from utils.swagger_models import create_review_models
 from form.review import ReviewCreateForm, ReviewUpdateForm, ReviewQueryForm
 
-review_bp = Blueprint('review', __name__, url_prefix='/reviews')
+review_bp = Blueprint('review', __name__, url_prefix='/review')
 
 
 @review_bp.route('', methods=['GET'])

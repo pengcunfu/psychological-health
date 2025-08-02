@@ -20,7 +20,7 @@ from models.base import db
 from utils.json_result import JsonResult
 from form.user_favorite import UserFavoriteCreateForm, UserFavoriteQueryForm
 
-user_favorite_bp = Blueprint('user_favorite', __name__, url_prefix='/favorite')
+user_favorite_bp = Blueprint('user_favorite', __name__, url_prefix='/user-favorite')
 
 
 @user_favorite_bp.route('', methods=['GET'])
