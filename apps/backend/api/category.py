@@ -19,6 +19,8 @@ from models.category import Category
 from models.base import db
 from utils.json_result import JsonResult
 from form.category import CategoryCreateForm, CategoryUpdateForm, CategoryQueryForm, CategoryStatusUpdateForm
+from utils.validate import validate_data, validate_args
+from utils.model_helper import update_model_from_form
 
 category_bp = Blueprint('category', __name__, url_prefix='/category')
 
@@ -27,9 +29,7 @@ category_bp = Blueprint('category', __name__, url_prefix='/category')
 def get_categories():
     """获取分类列表"""
     # 使用表单验证查询参数
-    form = CategoryQueryForm(data=request.args)
-    if not form.validate():
-        return JsonResult.error(f'参数验证失败: {form.get_first_error()}', 400)
+    form = validate_args(CategoryQueryForm)
 
     # 构建查询
     query = Category.query
@@ -45,11 +45,10 @@ def get_categories():
     )
 
     return JsonResult.success({
-        'categories': [category.to_dict() for category in pagination.items],
+        'list': [category.to_dict() for category in pagination.items],
         'total': pagination.total,
         'page': form.page.data,
-        'per_page': pagination.per_page,
-        'pages': pagination.pages
+        'per_page': form.per_page.data
     })
 
 
@@ -66,14 +65,8 @@ def get_category(category_id):
 @category_bp.route('', methods=['POST'])
 def create_category():
     """创建分类"""
-    data = request.get_json()
-    if not data:
-        return JsonResult.error('请求数据不能为空', 400)
-
     # 使用表单验证
-    form = CategoryCreateForm(data=data)
-    if not form.validate():
-        return JsonResult.error(f'参数验证失败: {form.get_first_error()}', 400)
+    form = validate_data(CategoryCreateForm)
 
     # 创建分类
     category = Category(
@@ -99,28 +92,11 @@ def update_category(category_id):
     if not category:
         return JsonResult.error('分类不存在', 404)
 
-    data = request.get_json()
-    if not data:
-        return JsonResult.error('请求数据不能为空', 400)
-
     # 使用表单验证
-    form = CategoryUpdateForm(data=data)
-    if not form.validate():
-        return JsonResult.error(f'参数验证失败: {form.get_first_error()}', 400)
+    form = validate_data(CategoryUpdateForm)
 
     # 更新字段
-    if form.name.data:
-        category.name = form.name.data
-    if form.icon.data is not None:
-        category.icon = form.icon.data
-    if form.path.data is not None:
-        category.path = form.path.data
-    if form.description.data is not None:
-        category.description = form.description.data
-    if form.sort_order.data is not None:
-        category.sort_order = form.sort_order.data
-    if form.status.data is not None:
-        category.status = form.status.data
+    update_model_from_form(category, form)
 
     db.session.commit()
 
@@ -151,14 +127,8 @@ def update_category_status(category_id):
     if not category:
         return JsonResult.error('分类不存在', 404)
 
-    data = request.get_json()
-    if not data:
-        return JsonResult.error('请求数据不能为空', 400)
-
     # 使用表单验证
-    form = CategoryStatusUpdateForm(data=data)
-    if not form.validate():
-        return JsonResult.error(f'参数验证失败: {form.get_first_error()}', 400)
+    form = validate_data(CategoryStatusUpdateForm)
 
     category.status = form.status.data
     db.session.commit()

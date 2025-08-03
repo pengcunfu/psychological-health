@@ -1,18 +1,8 @@
 <template>
   <div class="counselor-management">
-    <div class="page-header">
-      <h2>咨询师管理</h2>
-      <a-button type="primary" @click="showAddModal">
-        <template #icon>
-          <PlusOutlined/>
-        </template>
-        添加咨询师
-      </a-button>
-    </div>
-
-    <!-- 搜索栏 -->
-    <div class="search-bar">
-      <a-form layout="inline" :model="searchForm" @submit="handleSearch">
+    <!-- 搜索栏和添加按钮在同一行 -->
+    <div class="search-and-action-bar">
+      <a-form layout="inline" :model="searchForm" @submit="handleSearch" class="search-form">
         <a-form-item label="姓名">
           <a-input
               v-model:value="searchForm.name"
@@ -43,6 +33,13 @@
           <a-button style="margin-left: 8px;" @click="resetSearch">重置</a-button>
         </a-form-item>
       </a-form>
+      
+      <a-button type="primary" @click="showAddModal">
+        <template #icon>
+          <PlusOutlined/>
+        </template>
+        添加咨询师
+      </a-button>
     </div>
 
     <!-- 咨询师列表 -->
@@ -592,53 +589,57 @@ export default {
 
 <style scoped>
 .counselor-management {
-  padding: 24px;
+  padding: 0;
 }
 
-.page-header {
+.search-and-action-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
-}
-
-.page-header h2 {
-  margin: 0;
-  color: #1890ff;
-}
-
-.search-bar {
+  margin-bottom: 12px;
   background: white;
-  padding: 16px;
-  border-radius: 6px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 12px;
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.search-form .ant-form {
+  flex: 1;
+  margin-right: 12px;
+}
+
+.search-form .ant-form-item {
+  margin-bottom: 0;
+}
+
+.search-form .ant-form-item:last-child {
+  margin-bottom: 0;
 }
 
 .counselor-detail {
-  padding: 16px 0;
+  padding: 12px 0;
 }
 
 .detail-header {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
 .header-info h3 {
-  margin: 0 0 4px 0;
+  margin: 0 0 3px 0;
   color: #1890ff;
 }
 
 .header-info p {
-  margin: 0 0 8px 0;
+  margin: 0 0 6px 0;
   color: #666;
 }
 
 .detail-item {
   display: flex;
   align-items: flex-start;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .detail-item .label {
@@ -659,21 +660,20 @@ export default {
 
 @media (max-width: 768px) {
   .counselor-management {
-    padding: 12px;
+    padding: 8px;
   }
 
-  .page-header {
+  .search-and-action-bar {
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
     align-items: stretch;
-  }
-
-  .search-bar .ant-form {
-    flex-direction: column;
-  }
-
-  .search-bar .ant-form-item {
+    padding: 8px;
     margin-bottom: 8px;
+  }
+
+  .search-form .ant-form {
+    width: 100%;
+    margin-right: 0;
   }
 
   .detail-header {

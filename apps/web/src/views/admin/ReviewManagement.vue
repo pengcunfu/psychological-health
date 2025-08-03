@@ -1,12 +1,8 @@
 <template>
   <div class="review-management">
-    <div class="page-header">
-      <h2>评价管理</h2>
-    </div>
-
     <!-- 搜索栏 -->
-    <div class="search-bar">
-      <a-form layout="inline" :model="searchForm" @submit="handleSearch">
+    <div class="search-and-action-bar">
+      <a-form layout="inline" :model="searchForm" @submit="handleSearch" class="search-form">
         <a-form-item label="咨询师ID">
           <a-input
               v-model:value="searchForm.counselor_id"
@@ -437,27 +433,23 @@ export default {
 
 <style scoped>
 .review-management {
-  padding: 24px;
+  padding: 0;
 }
 
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-}
-
-.page-header h2 {
-  margin: 0;
-  color: #1890ff;
-}
-
-.search-bar {
+.search-and-action-bar {
   background: white;
-  padding: 16px;
-  border-radius: 6px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.search-form .ant-form-item {
+  margin-bottom: 0;
+}
+
+.search-form .ant-form-item:last-child {
+  margin-bottom: 0;
 }
 
 .rating-display {
@@ -496,20 +488,20 @@ export default {
 }
 
 .review-detail {
-  padding: 16px 0;
+  padding: 12px 0;
 }
 
 .detail-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .rating-section {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
 }
 
 .rating-score {
@@ -519,11 +511,11 @@ export default {
 }
 
 .detail-section {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .detail-section h4 {
-  margin: 0 0 8px 0;
+  margin: 0 0 6px 0;
   color: #333;
   font-size: 14px;
   font-weight: 600;
@@ -537,13 +529,13 @@ export default {
 .images-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
 }
 
 .info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 8px;
 }
 
 .info-item {
@@ -560,26 +552,29 @@ export default {
 
 @media (max-width: 768px) {
   .review-management {
-    padding: 12px;
+    padding: 8px;
   }
 
-  .page-header {
-    flex-direction: column;
-    gap: 12px;
-    align-items: stretch;
-  }
-
-  .search-bar .ant-form {
-    flex-direction: column;
-  }
-
-  .search-bar .ant-form-item {
+  .search-and-action-bar {
+    padding: 8px;
     margin-bottom: 8px;
+  }
+
+  .search-form .ant-form {
+    flex-direction: column;
+  }
+
+  .search-form .ant-form-item {
+    margin-bottom: 8px;
+  }
+
+  .search-form .ant-form-item:last-child {
+    margin-bottom: 0;
   }
 
   .detail-header {
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
     align-items: flex-start;
   }
 

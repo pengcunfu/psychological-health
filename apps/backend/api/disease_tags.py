@@ -11,11 +11,14 @@
 """
 from flask import Blueprint, request
 from sqlalchemy.exc import SQLAlchemyError
+import uuid
 
 from models.disease_tags import DiseaseTags
 from models.base import db
 from utils.json_result import JsonResult
-from form.disease_tags import DiseaseTagsQueryForm
+from form.disease_tags import DiseaseTagsQueryForm, DiseaseTagsCreateForm
+from utils.validate import validate_data, validate_args
+from utils.model_helper import update_model_from_form
 
 disease_tags_bp = Blueprint('disease_tag', __name__, url_prefix='/disease-tag')
 
@@ -23,9 +26,7 @@ disease_tags_bp = Blueprint('disease_tag', __name__, url_prefix='/disease-tag')
 @disease_tags_bp.route('', methods=['GET'])
 def get_disease_tags():
     """获取疾病标签列表"""
-    form = DiseaseTagsQueryForm(request.args)
-    if not form.validate():
-        return JsonResult.error(form.get_first_error(), 400)
+    form = validate_args(DiseaseTagsQueryForm)
 
     query = DiseaseTags.query
 
@@ -43,11 +44,10 @@ def get_disease_tags():
     tags = [tag.to_dict() for tag in pagination.items]
 
     return JsonResult.success({
-        'tags': tags,
+        'list': tags,
         'total': pagination.total,
         'page': page,
-        'per_page': per_page,
-        'pages': pagination.pages
+        'per_page': per_page
     })
 
 
@@ -61,55 +61,46 @@ def get_disease_tag(tag_id):
     return JsonResult.success(tag.to_dict())
 
 
-from form.disease_tags import DiseaseTagsCreateForm
-
-
 @disease_tags_bp.route('', methods=['POST'])
 def create_disease_tag():
     """创建疾病标签"""
-    form = DiseaseTagsCreateForm(request.get_json())
-    if not form.validate():
-        return JsonResult.error(form.get_first_error(), 400)
+    form = validate_data(DiseaseTagsCreateForm)
 
-        # 检查标签名称是否已存在
-        existing_tag = DiseaseTags.query.filter_by(name=form.name.data).first()
-        if existing_tag:
-            return JsonResult.error('标签名称已存在', 400)
+    # 检查标签名称是否已存在
+    existing_tag = DiseaseTags.query.filter_by(name=form.name.data).first()
+    if existing_tag:
+        return JsonResult.error('标签名称已存在', 400)
 
-        # 创建疾病标签
-        tag = DiseaseTags(
-            name=form.name.data,
-            description=form.description.data
-        )
+    # 创建疾病标签
+    tag = DiseaseTags(
+        id=str(uuid.uuid4()),
+        name=form.name.data,
+        description=form.description.data
+    )
 
-        db.session.add(tag)
-        db.session.commit()
+    db.session.add(tag)
+    db.session.commit()
 
-        return JsonResult.success(tag.to_dict(), '疾病标签创建成功', 201)
+    return JsonResult.success(tag.to_dict(), '疾病标签创建成功', 201)
 
 
 @disease_tags_bp.route('/<tag_id>', methods=['PUT'])
 def update_disease_tag(tag_id):
     """更新疾病标签"""
-    form = DiseaseTagsCreateForm(request.get_json())
-    if not form.validate():
-        return JsonResult.error(form.get_first_error(), 400)
-
     tag = DiseaseTags.query.filter_by(id=tag_id).first()
     if not tag:
         return JsonResult.error('疾病标签不存在', 404)
 
-    # 更新字段
-    if form.name.data:
-        # 检查新名称是否与其他标签重复
-        if form.name.data != tag.name:
-            existing_tag = DiseaseTags.query.filter_by(name=form.name.data).first()
-            if existing_tag:
-                return JsonResult.error('标签名称已存在', 400)
-        tag.name = form.name.data
+    form = validate_data(DiseaseTagsCreateForm)
 
-    if form.description.data is not None:
-        tag.description = form.description.data
+    # 检查新名称是否与其他标签重复
+    if form.name.data and form.name.data != tag.name:
+        existing_tag = DiseaseTags.query.filter_by(name=form.name.data).first()
+        if existing_tag:
+            return JsonResult.error('标签名称已存在', 400)
+
+    # 更新字段
+    update_model_from_form(tag, form)
 
     db.session.commit()
 

@@ -1,33 +1,41 @@
 <template>
   <div class="workspace-management">
-    <div class="page-header">
-      <h2>工作空间管理</h2>
-      <a-button type="primary" @click="showAddModal">
-        <plus-outlined /> 添加工作空间
-      </a-button>
-    </div>
-
-    <!-- 搜索区域 -->
-    <div class="search-container">
-      <a-form layout="inline">
+    <!-- 搜索栏和操作栏 -->
+    <div class="search-and-action-bar">
+      <a-form layout="inline" :model="searchForm" @submit="handleSearch" class="search-form">
         <a-form-item label="工作空间名称">
-          <a-input v-model:value="searchForm.name" placeholder="请输入工作空间名称" allowClear />
+          <a-input 
+            v-model:value="searchForm.name" 
+            placeholder="请输入工作空间名称" 
+            style="width: 200px;"
+            allow-clear 
+          />
         </a-form-item>
         <a-form-item label="状态">
-          <a-select v-model:value="searchForm.status" style="width: 120px" allowClear placeholder="请选择状态">
+          <a-select 
+            v-model:value="searchForm.status" 
+            style="width: 120px;" 
+            allow-clear 
+            placeholder="请选择状态"
+          >
             <a-select-option :value="1">启用</a-select-option>
             <a-select-option :value="0">禁用</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item>
-          <a-button type="primary" @click="handleSearch">
-            <search-outlined /> 搜索
-          </a-button>
-          <a-button style="margin-left: 8px" @click="handleReset">
-            <reload-outlined /> 重置
-          </a-button>
+          <a-button type="primary" html-type="submit">搜索</a-button>
+          <a-button style="margin-left: 8px;" @click="handleReset">重置</a-button>
         </a-form-item>
       </a-form>
+      
+      <div class="action-buttons">
+        <a-button type="primary" @click="showAddModal">
+          <template #icon>
+            <PlusOutlined/>
+          </template>
+          添加工作空间
+        </a-button>
+      </div>
     </div>
 
     <!-- 数据表格 -->
@@ -37,25 +45,37 @@
       :loading="loading"
       :pagination="pagination"
       @change="handleTableChange"
-      rowKey="id"
+      row-key="id"
     >
       <template #bodyCell="{ column, record }">
+        <template v-if="column.key === 'description'">
+          <div class="description-cell">
+            <span class="description-text">{{ record.description || '-' }}</span>
+          </div>
+        </template>
+        
         <template v-if="column.key === 'status'">
           <a-tag :color="record.status === 1 ? 'green' : 'red'">
             {{ record.status === 1 ? '启用' : '禁用' }}
           </a-tag>
         </template>
+        
+        <template v-if="column.key === 'create_time'">
+          {{ formatDate(record.create_time) }}
+        </template>
+        
         <template v-if="column.key === 'action'">
           <a-space>
-            <a @click="showEditModal(record)">编辑</a>
-            <a-divider type="vertical" />
+            <a-button type="link" size="small" @click="showEditModal(record)">
+              编辑
+            </a-button>
             <a-popconfirm
-              title="确定要删除该工作空间吗?"
-              ok-text="确定"
-              cancel-text="取消"
+              title="确定要删除该工作空间吗？"
               @confirm="handleDelete(record.id)"
             >
-              <a class="danger-link">删除</a>
+              <a-button type="link" size="small" danger>
+                删除
+              </a-button>
             </a-popconfirm>
           </a-space>
         </template>
@@ -64,26 +84,35 @@
 
     <!-- 添加/编辑工作空间弹窗 -->
     <a-modal
-      v-model:visible="modalVisible"
+      v-model:open="modalVisible"
       :title="modalTitle"
       @ok="handleModalOk"
       @cancel="handleModalCancel"
+      width="600px"
     >
       <a-form
-        ref="workspaceForm"
+        ref="workspaceFormRef"
         :model="workspaceForm"
         :rules="rules"
-        :label-col="{ span: 4 }"
-        :wrapper-col="{ span: 20 }"
+        layout="vertical"
       >
-        <a-form-item label="名称" name="name">
+        <a-form-item label="工作空间名称" name="name">
           <a-input v-model:value="workspaceForm.name" placeholder="请输入工作空间名称" />
         </a-form-item>
-        <a-form-item label="描述" name="description">
-          <a-textarea v-model:value="workspaceForm.description" placeholder="请输入工作空间描述" :rows="4" />
+        <a-form-item label="工作空间描述" name="description">
+          <a-textarea 
+            v-model:value="workspaceForm.description" 
+            placeholder="请输入工作空间描述（可选）" 
+            :rows="4" 
+          />
         </a-form-item>
         <a-form-item label="排序" name="sort_order">
-          <a-input-number v-model:value="workspaceForm.sort_order" :min="0" style="width: 100%" />
+          <a-input-number 
+            v-model:value="workspaceForm.sort_order" 
+            :min="0" 
+            style="width: 100%;" 
+            placeholder="请输入排序值（数字越小越靠前）"
+          />
         </a-form-item>
         <a-form-item label="状态" name="status">
           <a-radio-group v-model:value="workspaceForm.status">
@@ -97,31 +126,57 @@
 </template>
 
 <script>
-import { defineComponent, ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { message } from 'ant-design-vue'
-import { PlusOutlined, SearchOutlined, ReloadOutlined } from '@ant-design/icons-vue'
+import { PlusOutlined } from '@ant-design/icons-vue'
 import { getWorkspaces, createWorkspace, updateWorkspace, deleteWorkspace } from '@/api/admin'
 
-export default defineComponent({
+export default {
   name: 'WorkspaceManagement',
   components: {
-    PlusOutlined,
-    SearchOutlined,
-    ReloadOutlined
+    PlusOutlined
   },
   setup() {
+    const loading = ref(false)
+    const workspaces = ref([])
+    const modalVisible = ref(false)
+    const isEdit = ref(false)
+    const workspaceFormRef = ref()
+
+    const searchForm = reactive({
+      name: '',
+      status: undefined
+    })
+
+    const workspaceForm = reactive({
+      name: '',
+      description: '',
+      sort_order: 0,
+      status: 1
+    })
+
+    const pagination = reactive({
+      current: 1,
+      pageSize: 10,
+      total: 0,
+      showSizeChanger: true,
+      showQuickJumper: true,
+      showTotal: (total) => `共 ${total} 条记录`
+    })
+
     // 表格列定义
     const columns = [
       {
         title: '工作空间名称',
         dataIndex: 'name',
-        key: 'name'
+        key: 'name',
+        width: 200
       },
       {
         title: '描述',
         dataIndex: 'description',
         key: 'description',
-        ellipsis: true
+        width: 300
       },
       {
         title: '排序',
@@ -139,7 +194,7 @@ export default defineComponent({
         title: '创建时间',
         dataIndex: 'create_time',
         key: 'create_time',
-        width: 180
+        width: 150
       },
       {
         title: '操作',
@@ -147,33 +202,6 @@ export default defineComponent({
         width: 150
       }
     ]
-
-    // 数据状态
-    const workspaces = ref([])
-    const loading = ref(false)
-    const pagination = reactive({
-      current: 1,
-      pageSize: 10,
-      total: 0,
-      showTotal: (total) => `共 ${total} 条数据`
-    })
-
-    // 搜索表单
-    const searchForm = reactive({
-      name: '',
-      status: undefined,
-      page: 1,
-      per_page: 10
-    })
-
-    // 工作空间表单
-    const workspaceForm = reactive({
-      id: '',
-      name: '',
-      description: '',
-      sort_order: 0,
-      status: 1
-    })
 
     // 表单校验规则
     const rules = {
@@ -189,26 +217,24 @@ export default defineComponent({
       ]
     }
 
-    // 弹窗控制
-    const modalVisible = ref(false)
-    const modalTitle = ref('添加工作空间')
-    const isEdit = ref(false)
-    const workspaceFormRef = ref(null)
-
     // 获取工作空间列表
     const fetchWorkspaces = async () => {
       loading.value = true
       try {
-        const res = await getWorkspaces({
-          name: searchForm.name,
-          status: searchForm.status,
+        const params = {
           page: pagination.current,
-          per_page: pagination.pageSize
-        })
-        workspaces.value = res.data.list
-        pagination.total = res.data.total
+          per_page: pagination.pageSize,
+          name: searchForm.name,
+          status: searchForm.status
+        }
+
+        const result = await getWorkspaces(params)
+        if (result.code === 200) {
+          workspaces.value = result.data.list || result.data.workspaces || []
+          pagination.total = result.data.total
+        }
       } catch (error) {
-        message.error('获取工作空间列表失败：' + error.message)
+        message.error('获取工作空间列表失败')
       } finally {
         loading.value = false
       }
@@ -222,13 +248,15 @@ export default defineComponent({
 
     // 重置搜索
     const handleReset = () => {
-      searchForm.name = ''
-      searchForm.status = undefined
+      Object.assign(searchForm, {
+        name: '',
+        status: undefined
+      })
       pagination.current = 1
       fetchWorkspaces()
     }
 
-    // 表格变化
+    // 表格分页改变
     const handleTableChange = (pag) => {
       pagination.current = pag.current
       pagination.pageSize = pag.pageSize
@@ -238,63 +266,63 @@ export default defineComponent({
     // 显示添加弹窗
     const showAddModal = () => {
       isEdit.value = false
-      modalTitle.value = '添加工作空间'
-      resetForm()
       modalVisible.value = true
+      resetForm()
     }
 
     // 显示编辑弹窗
     const showEditModal = (record) => {
       isEdit.value = true
-      modalTitle.value = '编辑工作空间'
-      resetForm()
-      
-      // 填充表单数据
-      workspaceForm.id = record.id
-      workspaceForm.name = record.name
-      workspaceForm.description = record.description
-      workspaceForm.sort_order = record.sort_order
-      workspaceForm.status = record.status
-      
       modalVisible.value = true
+      Object.assign(workspaceForm, {
+        id: record.id,
+        name: record.name,
+        description: record.description,
+        sort_order: record.sort_order,
+        status: record.status
+      })
     }
 
     // 重置表单
     const resetForm = () => {
-      workspaceForm.id = ''
-      workspaceForm.name = ''
-      workspaceForm.description = ''
-      workspaceForm.sort_order = 0
-      workspaceForm.status = 1
-      
-      if (workspaceFormRef.value) {
-        workspaceFormRef.value.resetFields()
+      Object.assign(workspaceForm, {
+        name: '',
+        description: '',
+        sort_order: 0,
+        status: 1
+      })
+      workspaceFormRef.value?.resetFields()
+    }
+
+    // 模态框确定
+    const handleModalOk = async () => {
+      try {
+        await workspaceFormRef.value.validate()
+
+        const data = { ...workspaceForm }
+        delete data.id
+
+        if (isEdit.value) {
+          const result = await updateWorkspace(workspaceForm.id, data)
+          if (result.code === 200) {
+            message.success('更新成功')
+            modalVisible.value = false
+            fetchWorkspaces()
+          }
+        } else {
+          const result = await createWorkspace(data)
+          if (result.code === 200 || result.code === 201) {
+            message.success('创建成功')
+            modalVisible.value = false
+            fetchWorkspaces()
+          }
+        }
+      } catch (error) {
+        console.error('表单验证失败:', error)
       }
     }
 
-    // 提交表单
-    const handleModalOk = () => {
-      workspaceFormRef.value.validate().then(async () => {
-        try {
-          if (isEdit.value) {
-            await updateWorkspace(workspaceForm.id, workspaceForm)
-            message.success('工作空间更新成功')
-          } else {
-            await createWorkspace(workspaceForm)
-            message.success('工作空间创建成功')
-          }
-          
-          modalVisible.value = false
-          fetchWorkspaces()
-        } catch (error) {
-          message.error('操作失败：' + error.message)
-        }
-      }).catch(error => {
-        console.log('表单校验失败', error)
-      })
-    }
-
-    // 取消弹窗
+    // 模态框取消
     const handleModalCancel = () => {
       modalVisible.value = false
       resetForm()
@@ -303,29 +331,41 @@ export default defineComponent({
     // 删除工作空间
     const handleDelete = async (id) => {
       try {
-        await deleteWorkspace(id)
-        message.success('工作空间删除成功')
-        fetchWorkspaces()
+        const result = await deleteWorkspace(id)
+        if (result.code === 200) {
+          message.success('删除成功')
+          fetchWorkspaces()
+        }
       } catch (error) {
-        message.error('删除失败：' + error.message)
+        message.error('删除失败')
       }
     }
+
+    // 格式化日期
+    const formatDate = (dateString) => {
+      if (!dateString) return '-'
+      return new Date(dateString).toLocaleString('zh-CN')
+    }
+
+    const modalTitle = computed(() => isEdit.value ? '编辑工作空间' : '添加工作空间')
 
     onMounted(() => {
       fetchWorkspaces()
     })
 
     return {
-      columns,
-      workspaces,
       loading,
-      pagination,
+      workspaces,
       searchForm,
       workspaceForm,
+      workspaceFormRef,
       rules,
       modalVisible,
+      isEdit,
+      pagination,
+      columns,
       modalTitle,
-      workspaceFormRef,
+      fetchWorkspaces,
       handleSearch,
       handleReset,
       handleTableChange,
@@ -333,39 +373,115 @@ export default defineComponent({
       showEditModal,
       handleModalOk,
       handleModalCancel,
-      handleDelete
+      handleDelete,
+      formatDate
     }
   }
-})
+}
 </script>
 
 <style scoped>
 .workspace-management {
-  padding: 20px;
-  background: #fff;
-  border-radius: 4px;
+  padding: 0;
 }
 
-.page-header {
+.search-and-action-bar {
+  background: white;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
-.page-header h2 {
-  margin: 0;
-  font-size: 18px;
+.search-form {
+  flex: 1;
+  min-width: 0;
 }
 
-.search-container {
-  margin-bottom: 20px;
-  padding: 16px;
-  background: #f9f9f9;
-  border-radius: 4px;
+.search-form .ant-form-item {
+  margin-bottom: 0;
 }
 
-.danger-link {
-  color: #ff4d4f;
+.search-form .ant-form-item:last-child {
+  margin-bottom: 0;
 }
-</style> 
+
+.action-buttons {
+  flex-shrink: 0;
+}
+
+.description-cell {
+  max-width: 280px;
+}
+
+.description-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #666;
+}
+
+@media (max-width: 768px) {
+  .workspace-management {
+    padding: 8px;
+  }
+
+  .search-and-action-bar {
+    padding: 8px;
+    margin-bottom: 8px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-form .ant-form {
+    flex-direction: column;
+  }
+
+  .search-form .ant-form-item {
+    margin-bottom: 8px;
+  }
+
+  .search-form .ant-form-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .action-buttons {
+    width: 100%;
+  }
+
+  .action-buttons .ant-btn {
+    width: 100%;
+  }
+
+  .description-cell {
+    max-width: 200px;
+  }
+}
+
+@media (max-width: 576px) {
+  .search-and-action-bar {
+    padding: 6px;
+  }
+
+  .search-form .ant-form-item label {
+    font-size: 13px;
+  }
+
+  .search-form .ant-input,
+  .search-form .ant-select {
+    font-size: 13px;
+  }
+
+     .description-cell {
+     max-width: 150px;
+   }
+ }
+ </style> 

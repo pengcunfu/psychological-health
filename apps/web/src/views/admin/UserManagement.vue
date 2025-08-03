@@ -1,136 +1,110 @@
 <template>
   <div class="user-management">
-    <div class="page-header">
-      <h2>用户管理</h2>
-      <a-button type="primary" @click="showAddModal">
-        <template #icon>
-          <PlusOutlined/>
-        </template>
-        添加用户
-      </a-button>
-    </div>
-
-    <!-- 搜索栏 -->
-    <div class="search-bar">
-      <a-form layout="inline" :model="searchForm" @submit="handleSearch">
+    <!-- 搜索栏和添加按钮在同一行 -->
+    <div class="search-and-action-bar">
+      <a-form layout="inline" :model="searchForm" @submit="handleSearch" class="search-form">
         <a-form-item label="用户名">
-          <a-input
-              v-model:value="searchForm.username"
-              placeholder="请输入用户名"
-              style="width: 200px;"
-          />
+          <a-input v-model:value="searchForm.username" placeholder="请输入用户名" style="width: 200px;" />
         </a-form-item>
         <a-form-item>
           <a-button type="primary" html-type="submit">搜索</a-button>
           <a-button style="margin-left: 8px;" @click="resetSearch">重置</a-button>
         </a-form-item>
       </a-form>
+
+      <a-button type="primary" @click="showAddModal">
+        <template #icon>
+          <PlusOutlined />
+        </template>
+        添加用户
+      </a-button>
     </div>
 
     <!-- 用户列表 -->
-    <a-table
-        :columns="columns"
-        :data-source="users"
-        :loading="loading"
-        :pagination="pagination"
-        @change="handleTableChange"
-        row-key="id"
-    >
-      <template #avatar="{ record }">
-        <a-avatar :src="record.avatar" :alt="record.username">
-          {{ record.username?.[0]?.toUpperCase() }}
-        </a-avatar>
-      </template>
-
-      <template #roles="{ record }">
-        <a-tag v-for="role in record.roles" :key="role.id" color="blue">
-          {{ role.name }}
-        </a-tag>
-      </template>
-
-      <template #createTime="{ record }">
-        {{ formatDate(record.create_time) }}
-      </template>
-
-      <template #action="{ record }">
-        <a-space>
-          <a-button type="link" size="small" @click="editUser(record)">
-            编辑
-          </a-button>
-          <a-button type="link" size="small" @click="viewUser(record)">
-            查看
-          </a-button>
-          <a-popconfirm
-              title="确定要删除这个用户吗？"
-              @confirm="deleteUser(record.id)"
-          >
-            <a-button type="link" size="small" danger>
-              删除
+    <a-table :columns="columns" :data-source="users" :loading="loading" :pagination="pagination"
+      @change="handleTableChange" row-key="id">
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.key === 'avatar'">
+          <a-avatar :src="record.avatar" :alt="record.username">
+            {{ record.username?.[0]?.toUpperCase() }}
+          </a-avatar>
+        </template>
+        
+        <template v-if="column.key === 'roles'">
+          <a-tag v-for="role in record.roles" :key="role.id" color="blue">
+            {{ role.name }}
+          </a-tag>
+        </template>
+        
+        <template v-if="column.key === 'create_time'">
+          {{ formatDate(record.create_time) }}
+        </template>
+        
+        <template v-if="column.key === 'action'">
+          <a-space>
+            <a-button type="link" size="small" @click="editUser(record)">
+              编辑
             </a-button>
-          </a-popconfirm>
-        </a-space>
+            <a-button type="link" size="small" @click="viewUser(record)">
+              查看
+            </a-button>
+            <a-popconfirm title="确定要删除这个用户吗？" @confirm="deleteUser(record.id)">
+              <a-button type="link" size="small" danger>
+                删除
+              </a-button>
+            </a-popconfirm>
+          </a-space>
+        </template>
       </template>
     </a-table>
 
     <!-- 添加/编辑用户弹窗 -->
-    <a-modal
-        v-model:open="modalVisible"
-        :title="modalTitle"
-        @ok="handleModalOk"
-        @cancel="handleModalCancel"
-        width="600px"
-    >
-      <a-form
-          ref="userFormRef"
-          :model="userForm"
-          :rules="userFormRules"
-          layout="vertical"
-      >
+    <a-modal v-model:open="modalVisible" :title="modalTitle" @ok="handleModalOk" @cancel="handleModalCancel"
+      width="600px">
+      <a-form ref="userFormRef" :model="userForm" :rules="userFormRules" layout="vertical">
         <a-row :gutter="16">
           <a-col :span="12">
             <a-form-item label="用户名" name="username">
-              <a-input v-model:value="userForm.username" placeholder="请输入用户名"/>
+              <a-input v-model:value="userForm.username" placeholder="请输入用户名" />
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="手机号" name="phone">
-              <a-input v-model:value="userForm.phone" placeholder="请输入手机号"/>
+              <a-input v-model:value="userForm.phone" placeholder="请输入手机号" />
             </a-form-item>
           </a-col>
         </a-row>
 
         <a-form-item label="邮箱" name="email">
-          <a-input v-model:value="userForm.email" placeholder="请输入邮箱"/>
+          <a-input v-model:value="userForm.email" placeholder="请输入邮箱" />
         </a-form-item>
 
         <a-form-item v-if="!isEdit" label="密码" name="password">
-          <a-input-password v-model:value="userForm.password" placeholder="请输入密码"/>
+          <a-input-password v-model:value="userForm.password" placeholder="请输入密码" />
         </a-form-item>
 
         <a-form-item label="头像" name="avatar">
-          <a-upload
-              v-model:file-list="fileList"
-              :before-upload="beforeUpload"
-              :custom-request="uploadAvatar"
-              list-type="picture-card"
-              :max-count="1"
+          <a-upload 
+            v-model:file-list="fileList" 
+            :before-upload="beforeUpload" 
+            :custom-request="uploadAvatar"
+            list-type="picture-card" 
+            :max-count="1"
+            :show-upload-list="{ showPreviewIcon: false, showRemoveIcon: true }"
+            @remove="handleRemoveAvatar"
           >
             <div v-if="fileList.length < 1">
-              <upload-outlined/>
+              <upload-outlined />
               <div>上传头像</div>
             </div>
           </a-upload>
+          <div class="upload-tips">支持 jpg、png 格式，文件大小不超过 2MB</div>
         </a-form-item>
       </a-form>
     </a-modal>
 
     <!-- 查看用户详情弹窗 -->
-    <a-modal
-        v-model:open="viewModalVisible"
-        title="用户详情"
-        :footer="null"
-        width="500px"
-    >
+    <a-modal v-model:open="viewModalVisible" title="用户详情" :footer="null" width="500px">
       <div v-if="currentUser" class="user-detail">
         <div class="detail-item">
           <span class="label">头像：</span>
@@ -166,10 +140,10 @@
 </template>
 
 <script>
-import {ref, reactive, onMounted, computed} from 'vue'
-import {message} from 'ant-design-vue'
-import {PlusOutlined, UploadOutlined} from '@ant-design/icons-vue'
-import {userAPI} from '@/api/admin'
+import { ref, reactive, onMounted, computed } from 'vue'
+import { message } from 'ant-design-vue'
+import { PlusOutlined, UploadOutlined } from '@ant-design/icons-vue'
+import { userAPI } from '@/api/admin'
 
 export default {
   name: 'UserManagement',
@@ -213,7 +187,6 @@ export default {
         title: '头像',
         dataIndex: 'avatar',
         key: 'avatar',
-        slots: {customRender: 'avatar'},
         width: 80
       },
       {
@@ -234,34 +207,31 @@ export default {
       {
         title: '角色',
         dataIndex: 'roles',
-        key: 'roles',
-        slots: {customRender: 'roles'}
+        key: 'roles'
       },
       {
         title: '创建时间',
         dataIndex: 'create_time',
-        key: 'create_time',
-        slots: {customRender: 'createTime'}
+        key: 'create_time'
       },
       {
         title: '操作',
         key: 'action',
-        slots: {customRender: 'action'},
         width: 180
       }
     ]
 
     const userFormRules = {
       username: [
-        {required: true, message: '请输入用户名', trigger: 'blur'},
-        {min: 3, max: 20, message: '用户名长度为3-20个字符', trigger: 'blur'}
+        { required: true, message: '请输入用户名', trigger: 'blur' },
+        { min: 3, max: 20, message: '用户名长度为3-20个字符', trigger: 'blur' }
       ],
       email: [
-        {type: 'email', message: '请输入正确的邮箱格式', trigger: 'blur'}
+        { type: 'email', message: '请输入正确的邮箱格式', trigger: 'blur' }
       ],
       password: [
-        {required: true, message: '请输入密码', trigger: 'blur'},
-        {min: 6, message: '密码长度至少6个字符', trigger: 'blur'}
+        { required: true, message: '请输入密码', trigger: 'blur' },
+        { min: 3, message: '密码长度至少6个字符', trigger: 'blur' }
       ]
     }
 
@@ -295,7 +265,9 @@ export default {
 
     // 重置搜索
     const resetSearch = () => {
-      searchForm.username = ''
+      Object.assign(searchForm, {
+        username: ''
+      })
       pagination.current = 1
       fetchUsers()
     }
@@ -359,7 +331,7 @@ export default {
       try {
         await userFormRef.value.validate()
 
-        const data = {...userForm}
+        const data = { ...userForm }
         delete data.id
 
         if (isEdit.value) {
@@ -417,18 +389,50 @@ export default {
     }
 
     // 上传头像
-    const uploadAvatar = ({file}) => {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        userForm.avatar = e.target.result
-        fileList.value = [{
-          uid: file.uid,
-          name: file.name,
-          status: 'done',
-          url: e.target.result
-        }]
+    const uploadAvatar = async ({ file }) => {
+      try {
+        const formData = new FormData()
+        formData.append('file', file)
+        formData.append('subfolder', 'avatars')
+        formData.append('use_unique_name', 'true')
+
+        // 调用文件上传接口
+        const response = await fetch('/api/file/upload-to-static', {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        })
+
+        const result = await response.json()
+        
+        if (result.success) {
+          // 获取上传成功后的URL
+          userForm.avatar = result.data.url
+          fileList.value = [{
+            uid: file.uid,
+            name: file.name,
+            status: 'done',
+            url: result.data.url
+          }]
+          message.success('头像上传成功')
+        } else {
+          message.error(result.message || '头像上传失败')
+          fileList.value = []
+        }
+      } catch (error) {
+        console.error('头像上传失败:', error)
+        message.error('头像上传失败')
+        fileList.value = []
       }
-      reader.readAsDataURL(file)
+    }
+
+    // 移除头像
+    const handleRemoveAvatar = () => {
+      userForm.avatar = ''
+      fileList.value = []
+      message.success('头像已移除')
     }
 
     // 格式化日期
@@ -470,6 +474,7 @@ export default {
       handleModalCancel,
       beforeUpload,
       uploadAvatar,
+      handleRemoveAvatar,
       formatDate
     }
   }
@@ -478,37 +483,41 @@ export default {
 
 <style scoped>
 .user-management {
-  padding: 24px;
+  padding: 0;
 }
 
-.page-header {
+.search-and-action-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
-}
-
-.page-header h2 {
-  margin: 0;
-  color: #1890ff;
-}
-
-.search-bar {
+  margin-bottom: 12px;
   background: white;
-  padding: 16px;
-  border-radius: 6px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 12px;
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.search-form .ant-form {
+  flex: 1;
+  margin-right: 12px;
+}
+
+.search-form .ant-form-item {
+  margin-bottom: 0;
+}
+
+.search-form .ant-form-item:last-child {
+  margin-bottom: 0;
 }
 
 .user-detail {
-  padding: 16px 0;
+  padding: 12px 0;
 }
 
 .detail-item {
   display: flex;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .detail-item .label {
@@ -521,23 +530,28 @@ export default {
   margin-bottom: 0;
 }
 
+.upload-tips {
+  font-size: 12px;
+  color: #999;
+  margin-top: 8px;
+}
+
 @media (max-width: 768px) {
   .user-management {
-    padding: 12px;
+    padding: 8px;
   }
 
-  .page-header {
+  .search-and-action-bar {
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
     align-items: stretch;
-  }
-
-  .search-bar .ant-form {
-    flex-direction: column;
-  }
-
-  .search-bar .ant-form-item {
+    padding: 8px;
     margin-bottom: 8px;
   }
+
+  .search-form .ant-form {
+    width: 100%;
+    margin-right: 0;
+  }
 }
-</style> 
+</style>

@@ -1,18 +1,8 @@
 <template>
   <div class="menu-management">
-    <div class="page-header">
-      <h2>菜单管理</h2>
-      <a-button type="primary" @click="showAddModal">
-        <template #icon>
-          <PlusOutlined/>
-        </template>
-        添加菜单
-      </a-button>
-    </div>
-
-    <!-- 搜索栏 -->
-    <div class="search-bar">
-      <a-form layout="inline" :model="searchForm" @submit="handleSearch">
+    <!-- 搜索栏和操作栏 -->
+    <div class="search-and-action-bar">
+      <a-form layout="inline" :model="searchForm" @submit="handleSearch" class="search-form">
         <a-form-item label="菜单名称">
           <a-input
               v-model:value="searchForm.keyword"
@@ -25,6 +15,15 @@
           <a-button style="margin-left: 8px;" @click="resetSearch">重置</a-button>
         </a-form-item>
       </a-form>
+      
+      <div class="action-buttons">
+        <a-button type="primary" @click="showAddModal">
+          <template #icon>
+            <PlusOutlined/>
+          </template>
+          添加菜单
+        </a-button>
+      </div>
     </div>
 
     <!-- 菜单列表 -->
@@ -35,31 +34,52 @@
         :pagination="pagination"
         @change="handleTableChange"
         row-key="id"
+        :scroll="{ x: 1200 }"
     >
       <template #icon="{ record }">
-        <span v-if="record?.icon">
-          <component :is="getIconComponent(record.icon)"/>
-          {{ record?.icon }}
-        </span>
-        <span v-else>-</span>
+        <div class="menu-icon">
+          <span v-if="record.icon" class="icon-preview">
+            <component :is="getIconComponent(record.icon)"/>
+            <span class="icon-text">{{ record.icon }}</span>
+          </span>
+          <span v-else class="no-icon">-</span>
+        </div>
       </template>
 
       <template #menuType="{ record }">
-        <a-tag :color="getMenuTypeColor(record?.menu_type)">
-          {{ getMenuTypeText(record?.menu_type) }}
+        <a-tag :color="getMenuTypeColor(record.menu_type)">
+          {{ getMenuTypeText(record.menu_type) }}
         </a-tag>
       </template>
 
       <template #status="{ record }">
-        <a-tag :color="record?.status === 1 ? 'green' : 'red'">
-          {{ record?.status === 1 ? '启用' : '禁用' }}
+        <a-tag :color="record.status === 1 ? 'green' : 'red'">
+          {{ record.status === 1 ? '启用' : '禁用' }}
         </a-tag>
       </template>
 
       <template #visible="{ record }">
-        <a-tag :color="record?.is_visible === 1 ? 'blue' : 'orange'">
-          {{ record?.is_visible === 1 ? '显示' : '隐藏' }}
+        <a-tag :color="record.is_visible === 1 ? 'blue' : 'orange'">
+          {{ record.is_visible === 1 ? '显示' : '隐藏' }}
         </a-tag>
+      </template>
+
+      <template #path="{ record }">
+        <div class="path-cell">
+          <span class="path-text">{{ record.path || '-' }}</span>
+        </div>
+      </template>
+
+      <template #component="{ record }">
+        <div class="component-cell">
+          <span class="component-text">{{ record.component || '-' }}</span>
+        </div>
+      </template>
+
+      <template #permission="{ record }">
+        <div class="permission-cell">
+          <span class="permission-text">{{ record.permission || '-' }}</span>
+        </div>
       </template>
 
       <template #action="{ record }">
@@ -223,7 +243,7 @@
         <a-form-item label="备注" name="remark">
           <a-textarea
               v-model:value="menuForm.remark"
-              placeholder="请输入备注信息"
+              placeholder="请输入备注信息（可选）"
               :rows="3"
           />
         </a-form-item>
@@ -239,16 +259,16 @@
     >
       <div v-if="currentMenu" class="menu-detail">
         <div class="detail-header">
-          <h3>{{ currentMenu?.name || '' }}</h3>
+          <h3>{{ currentMenu.name || '' }}</h3>
           <div class="meta-info">
-            <a-tag :color="getMenuTypeColor(currentMenu?.menu_type)">
-              {{ getMenuTypeText(currentMenu?.menu_type) }}
+            <a-tag :color="getMenuTypeColor(currentMenu.menu_type)">
+              {{ getMenuTypeText(currentMenu.menu_type) }}
             </a-tag>
-            <a-tag :color="currentMenu?.status === 1 ? 'green' : 'red'">
-              {{ currentMenu?.status === 1 ? '启用' : '禁用' }}
+            <a-tag :color="currentMenu.status === 1 ? 'green' : 'red'">
+              {{ currentMenu.status === 1 ? '启用' : '禁用' }}
             </a-tag>
-            <a-tag :color="currentMenu?.is_visible === 1 ? 'blue' : 'orange'">
-              {{ currentMenu?.is_visible === 1 ? '显示' : '隐藏' }}
+            <a-tag :color="currentMenu.is_visible === 1 ? 'blue' : 'orange'">
+              {{ currentMenu.is_visible === 1 ? '显示' : '隐藏' }}
             </a-tag>
           </div>
         </div>
@@ -257,25 +277,25 @@
 
         <div class="detail-section">
           <a-descriptions bordered :column="2">
-            <a-descriptions-item label="菜单名称">{{ currentMenu?.name || '-' }}</a-descriptions-item>
+            <a-descriptions-item label="菜单名称">{{ currentMenu.name || '-' }}</a-descriptions-item>
             <a-descriptions-item label="菜单图标">
-              <span v-if="currentMenu?.icon">
+              <span v-if="currentMenu.icon">
                 <component :is="getIconComponent(currentMenu.icon)"/>
-                {{ currentMenu?.icon }}
+                {{ currentMenu.icon }}
               </span>
               <span v-else>-</span>
             </a-descriptions-item>
-            <a-descriptions-item label="路由路径">{{ currentMenu?.path || '-' }}</a-descriptions-item>
-            <a-descriptions-item label="组件路径">{{ currentMenu?.component || '-' }}</a-descriptions-item>
-            <a-descriptions-item label="权限标识">{{ currentMenu?.permission || '-' }}</a-descriptions-item>
-            <a-descriptions-item label="排序">{{ currentMenu?.sort_order || '0' }}</a-descriptions-item>
-            <a-descriptions-item label="菜单层级">{{ currentMenu?.level || '1' }}</a-descriptions-item>
-            <a-descriptions-item label="是否缓存">{{ currentMenu?.is_cache === 1 ? '是' : '否' }}</a-descriptions-item>
+            <a-descriptions-item label="路由路径">{{ currentMenu.path || '-' }}</a-descriptions-item>
+            <a-descriptions-item label="组件路径">{{ currentMenu.component || '-' }}</a-descriptions-item>
+            <a-descriptions-item label="权限标识">{{ currentMenu.permission || '-' }}</a-descriptions-item>
+            <a-descriptions-item label="排序">{{ currentMenu.sort_order || '0' }}</a-descriptions-item>
+            <a-descriptions-item label="菜单层级">{{ currentMenu.level || '1' }}</a-descriptions-item>
+            <a-descriptions-item label="是否缓存">{{ currentMenu.is_cache === 1 ? '是' : '否' }}</a-descriptions-item>
             <a-descriptions-item label="是否外链">{{
-                currentMenu?.is_external === 1 ? '是' : '否'
+                currentMenu.is_external === 1 ? '是' : '否'
               }}
             </a-descriptions-item>
-            <a-descriptions-item label="备注" :span="2">{{ currentMenu?.remark || '-' }}</a-descriptions-item>
+            <a-descriptions-item label="备注" :span="2">{{ currentMenu.remark || '-' }}</a-descriptions-item>
           </a-descriptions>
         </div>
       </div>
@@ -339,14 +359,15 @@ export default {
         title: '菜单名称',
         dataIndex: 'name',
         key: 'name',
-        width: 150
+        width: 150,
+        fixed: 'left'
       },
       {
         title: '图标',
         dataIndex: 'icon',
         key: 'icon',
         slots: {customRender: 'icon'},
-        width: 100
+        width: 120
       },
       {
         title: '排序',
@@ -358,18 +379,21 @@ export default {
         title: '权限标识',
         dataIndex: 'permission',
         key: 'permission',
+        slots: {customRender: 'permission'},
         width: 150
       },
       {
         title: '路由路径',
         dataIndex: 'path',
         key: 'path',
+        slots: {customRender: 'path'},
         width: 150
       },
       {
         title: '组件路径',
         dataIndex: 'component',
         key: 'component',
+        slots: {customRender: 'component'},
         width: 150
       },
       {
@@ -426,7 +450,7 @@ export default {
 
         const result = await menuAPI.getMenus(params)
         if (result.code === 200) {
-          menus.value = result.data.items || []
+          menus.value = result.data.items || result.data.list || []
           pagination.total = result.data.total || 0
         }
       } catch (error) {
@@ -443,7 +467,7 @@ export default {
         const result = await menuAPI.getMenus({per_page: 100})
         if (result.code === 200) {
           // 只获取目录和菜单类型作为父级菜单选项
-          parentMenus.value = (result.data.items || []).filter(item =>
+          parentMenus.value = (result.data.items || result.data.list || []).filter(item =>
               item.menu_type === 0 || item.menu_type === 1
           )
         }
@@ -461,7 +485,9 @@ export default {
 
     // 重置搜索
     const resetSearch = () => {
-      searchForm.keyword = ''
+      Object.assign(searchForm, {
+        keyword: ''
+      })
       pagination.current = 1
       fetchMenus()
     }
@@ -496,6 +522,7 @@ export default {
           menuForm[key] = menu[key]
         }
       })
+      menuForm.id = menu.id
     }
 
     // 查看菜单
@@ -525,9 +552,12 @@ export default {
       try {
         await menuFormRef.value.validate()
 
+        const data = { ...menuForm }
+        delete data.id
+
         if (isEdit.value) {
           // 编辑菜单
-          const result = await menuAPI.updateMenu(menuForm.id, menuForm)
+          const result = await menuAPI.updateMenu(menuForm.id, data)
           if (result.code === 200) {
             message.success('更新成功')
             modalVisible.value = false
@@ -537,8 +567,8 @@ export default {
           }
         } else {
           // 创建菜单
-          const result = await menuAPI.createMenu(menuForm)
-          if (result.code === 200) {
+          const result = await menuAPI.createMenu(data)
+          if (result.code === 200 || result.code === 201) {
             message.success('创建成功')
             modalVisible.value = false
             fetchMenus()
@@ -648,69 +678,171 @@ export default {
 
 <style scoped>
 .menu-management {
-  padding: 24px;
+  padding: 0;
 }
 
-.page-header {
+.search-and-action-bar {
+  background: white;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
-.page-header h2 {
-  margin: 0;
+.search-form {
+  flex: 1;
+  min-width: 0;
+}
+
+.search-form .ant-form-item {
+  margin-bottom: 0;
+}
+
+.search-form .ant-form-item:last-child {
+  margin-bottom: 0;
+}
+
+.action-buttons {
+  flex-shrink: 0;
+}
+
+.menu-icon {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon-preview {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   color: #1890ff;
 }
 
-.search-bar {
-  background: white;
-  padding: 16px;
-  border-radius: 6px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+.icon-text {
+  font-size: 12px;
+  color: #666;
+}
+
+.no-icon {
+  color: #ccc;
+  font-style: italic;
+}
+
+.path-cell,
+.component-cell,
+.permission-cell {
+  max-width: 130px;
+}
+
+.path-text,
+.component-text,
+.permission-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #666;
 }
 
 .menu-detail {
-  padding: 16px 0;
+  padding: 12px 0;
 }
 
 .detail-header {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .detail-header h3 {
   margin: 0 0 12px 0;
   color: #1890ff;
+  font-size: 18px;
 }
 
 .meta-info {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .detail-section {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 @media (max-width: 768px) {
   .menu-management {
-    padding: 12px;
+    padding: 8px;
   }
 
-  .page-header {
+  .search-and-action-bar {
+    padding: 8px;
+    margin-bottom: 8px;
     flex-direction: column;
-    gap: 12px;
     align-items: stretch;
   }
 
-  .search-bar .ant-form {
+  .search-form .ant-form {
     flex-direction: column;
   }
 
-  .search-bar .ant-form-item {
+  .search-form .ant-form-item {
     margin-bottom: 8px;
+  }
+
+  .search-form .ant-form-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .action-buttons {
+    width: 100%;
+  }
+
+  .action-buttons .ant-btn {
+    width: 100%;
+  }
+
+  .path-cell,
+  .component-cell,
+  .permission-cell {
+    max-width: 100px;
+  }
+
+  .meta-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+}
+
+@media (max-width: 576px) {
+  .search-and-action-bar {
+    padding: 6px;
+  }
+
+  .search-form .ant-form-item label {
+    font-size: 13px;
+  }
+
+  .search-form .ant-input {
+    font-size: 13px;
+  }
+
+  .path-cell,
+  .component-cell,
+  .permission-cell {
+    max-width: 80px;
+  }
+
+  .icon-text {
+    font-size: 11px;
   }
 }
 </style> 

@@ -1,15 +1,8 @@
 <template>
   <div class="course-outline-management">
-    <div class="page-header">
-      <h2>课程大纲管理</h2>
-      <a-button type="primary" @click="showAddModal">
-        <plus-outlined /> 添加课程大纲
-      </a-button>
-    </div>
-
-    <!-- 搜索区域 -->
-    <div class="search-container">
-      <a-form layout="inline">
+    <!-- 搜索栏和添加按钮在同一行 -->
+    <div class="search-and-action-bar">
+      <a-form layout="inline" class="search-form">
         <a-form-item label="课程">
           <a-select
             v-model:value="searchForm.course_id"
@@ -28,6 +21,10 @@
           </a-button>
         </a-form-item>
       </a-form>
+      
+      <a-button type="primary" @click="showAddModal">
+        <plus-outlined /> 添加课程大纲
+      </a-button>
     </div>
 
     <!-- 数据表格 -->
@@ -343,28 +340,33 @@ export default defineComponent({
 
 <style scoped>
 .course-outline-management {
-  padding: 20px;
+  padding: 0;
   background: #fff;
   border-radius: 4px;
 }
 
-.page-header {
+.search-and-action-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-}
-
-.page-header h2 {
-  margin: 0;
-  font-size: 18px;
-}
-
-.search-container {
-  margin-bottom: 20px;
-  padding: 16px;
-  background: #f9f9f9;
+  margin-bottom: 12px;
+  background: white;
+  padding: 12px;
   border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.search-form .ant-form {
+  flex: 1;
+  margin-right: 12px;
+}
+
+.search-form .ant-form-item {
+  margin-bottom: 0;
+}
+
+.search-form .ant-form-item:last-child {
+  margin-bottom: 0;
 }
 
 .content-preview {
@@ -378,5 +380,24 @@ export default defineComponent({
 
 .danger-link {
   color: #ff4d4f;
+}
+
+@media (max-width: 768px) {
+  .course-outline-management {
+    padding: 8px;
+  }
+
+  .search-and-action-bar {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+    padding: 8px;
+    margin-bottom: 8px;
+  }
+
+  .search-form .ant-form {
+    width: 100%;
+    margin-right: 0;
+  }
 }
 </style> 

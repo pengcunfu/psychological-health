@@ -20,6 +20,8 @@ from models.user_role import UserRole
 from sqlalchemy.exc import SQLAlchemyError
 from utils.json_result import JsonResult
 from form.menu import MenuQueryForm, MenuCreateForm, MenuUpdateForm
+from utils.validate import validate_data, validate_args
+from utils.model_helper import update_model_from_form
 from datetime import datetime
 import uuid
 
@@ -30,9 +32,7 @@ menu_bp = Blueprint("menu", __name__, url_prefix="/menu")
 def get_menus():
     """获取菜单列表"""
     # 参数验证
-    form = MenuQueryForm()
-    if not form.validate_on_submit():
-        return JsonResult.error("参数验证失败", form.errors)
+    form = validate_args(MenuQueryForm)
 
     keyword = form.keyword.data
     page = form.page.data or 1
@@ -54,28 +54,22 @@ def get_menus():
     )
 
     return JsonResult.success({
-        'items': [menu.to_dict() for menu in pagination.items],
+        'list': [menu.to_dict() for menu in pagination.items],
         'total': pagination.total,
         'page': page,
-        'size': size
-    }, "获取菜单列表成功")
+        'per_page': size
+    })
 
 
 @menu_bp.route('', methods=['POST'])
 def create_menu():
     """创建菜单"""
-    # 检查请求数据
-    if not request.get_json():
-        return JsonResult.error("请求数据不能为空")
-
     # 参数验证
-    form = MenuCreateForm()
-    if not form.validate_on_submit():
-        return JsonResult.error("参数验证失败", form.errors)
+    form = validate_data(MenuCreateForm)
 
     # 检查菜单名称是否重复
     if Menu.query.filter_by(name=form.name.data).first():
-        return JsonResult.error("菜单名称已存在")
+        return JsonResult.error("菜单名称已存在", 400)
 
     # 创建菜单
     menu = Menu(
@@ -100,42 +94,27 @@ def create_menu():
 
     db.session.add(menu)
     db.session.commit()
-    return JsonResult.success(menu.to_dict(), "菜单创建成功")
+    return JsonResult.success(menu.to_dict(), "菜单创建成功", 201)
 
 
 @menu_bp.route('/<menu_id>', methods=['PUT'])
 def update_menu(menu_id):
     """更新菜单"""
-    # 检查请求数据
-    if not request.get_json():
-        return JsonResult.error("请求数据不能为空")
-
     # 查找菜单
     menu = Menu.query.filter_by(id=menu_id).first()
     if not menu:
-        return JsonResult.error("菜单不存在")
+        return JsonResult.error("菜单不存在", 404)
 
     # 参数验证
-    form = MenuUpdateForm()
-    if not form.validate_on_submit():
-        return JsonResult.error("参数验证失败", form.errors)
+    form = validate_data(MenuUpdateForm)
 
     # 检查菜单名称是否重复（排除自己）
     if form.name.data and form.name.data != menu.name:
         if Menu.query.filter_by(name=form.name.data).first():
-            return JsonResult.error("菜单名称已存在")
+            return JsonResult.error("菜单名称已存在", 400)
 
     # 更新菜单信息
-    update_fields = [
-        'name', 'path', 'icon', 'parent_id', 'level', 'sort_order',
-        'menu_type', 'permission', 'component', 'is_external',
-        'is_visible', 'is_cache', 'status', 'remark'
-    ]
-
-    for field in update_fields:
-        if hasattr(form, field) and getattr(form, field).data is not None:
-            setattr(menu, field, getattr(form, field).data)
-
+    update_model_from_form(menu, form)
     menu.update_time = datetime.now()
     db.session.commit()
 
@@ -148,15 +127,15 @@ def delete_menu(menu_id):
     # 查找菜单
     menu = Menu.query.filter_by(id=menu_id).first()
     if not menu:
-        return JsonResult.error("菜单不存在")
+        return JsonResult.error("菜单不存在", 404)
 
     # 检查是否有子菜单
     if Menu.query.filter_by(parent_id=menu_id).first():
-        return JsonResult.error("该菜单存在子菜单，无法删除")
+        return JsonResult.error("该菜单存在子菜单，无法删除", 400)
 
     # 检查是否有角色使用该菜单
     if Role.query.filter(Role.menu_ids.contains(menu_id)).first():
-        return JsonResult.error("该菜单正在被角色使用，无法删除")
+        return JsonResult.error("该菜单正在被角色使用，无法删除", 400)
 
     db.session.delete(menu)
     db.session.commit()
@@ -169,7 +148,7 @@ def get_user_permissions(user_id):
     # 查找用户
     user = User.query.filter_by(id=user_id).first()
     if not user:
-        return JsonResult.error("用户不存在")
+        return JsonResult.error("用户不存在", 404)
 
     # 获取用户角色
     user_roles = UserRole.query.filter_by(user_id=user_id).all()

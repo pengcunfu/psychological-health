@@ -20,7 +20,7 @@ from form.user import UserCreateForm, UserUpdateForm, UserQueryForm
 from utils.json_result import JsonResult
 import uuid
 from utils.validate import validate_data, validate_args, check_id
-from utils.model_helper import create_model_from_form
+from utils.model_helper import update_model_from_form
 
 user_bp = Blueprint('user', __name__, url_prefix='/user')
 
@@ -108,7 +108,7 @@ def update_user(user_id):
         return JsonResult.error('用户不存在', 404)
 
     form = validate_data(UserUpdateForm)
-    create_model_from_form(user, form)
+    update_model_from_form(user, form)
     db.session.commit()
     return JsonResult.success(user.to_dict(), '用户更新成功')
 

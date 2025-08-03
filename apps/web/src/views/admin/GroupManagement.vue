@@ -1,18 +1,8 @@
 <template>
   <div class="group-management">
-    <div class="page-header">
-      <h2>群组管理</h2>
-      <a-button type="primary" @click="showAddModal">
-        <template #icon>
-          <PlusOutlined/>
-        </template>
-        添加群组
-      </a-button>
-    </div>
-
-    <!-- 搜索栏 -->
-    <div class="search-bar">
-      <a-form layout="inline" :model="searchForm" @submit="handleSearch">
+    <!-- 搜索栏和操作栏 -->
+    <div class="search-and-action-bar">
+      <a-form layout="inline" :model="searchForm" @submit="handleSearch" class="search-form">
         <a-form-item label="群组名称">
           <a-input
               v-model:value="searchForm.name"
@@ -25,6 +15,15 @@
           <a-button style="margin-left: 8px;" @click="resetSearch">重置</a-button>
         </a-form-item>
       </a-form>
+      
+      <div class="action-buttons">
+        <a-button type="primary" @click="showAddModal">
+          <template #icon>
+            <PlusOutlined/>
+          </template>
+          添加群组
+        </a-button>
+      </div>
     </div>
 
     <!-- 群组列表 -->
@@ -38,14 +37,12 @@
     >
       <template #description="{ record }">
         <div class="description-cell">
-          <a-tooltip :title="record?.description || '-'">
-            <div class="ellipsis">{{ record?.description || '-' }}</div>
-          </a-tooltip>
+          <span class="description-text">{{ record.description || '-' }}</span>
         </div>
       </template>
 
       <template #createTime="{ record }">
-        {{ formatDate(record?.create_time) }}
+        {{ formatDate(record.create_time) }}
       </template>
 
       <template #action="{ record }">
@@ -89,7 +86,7 @@
         <a-form-item label="群组描述" name="description">
           <a-textarea
               v-model:value="groupForm.description"
-              placeholder="请输入群组描述"
+              placeholder="请输入群组描述（可选）"
               :rows="4"
           />
         </a-form-item>
@@ -105,17 +102,17 @@
     >
       <div v-if="currentGroup" class="group-detail">
         <div class="detail-header">
-          <h3>{{ currentGroup?.name || '' }}</h3>
+          <h3>{{ currentGroup.name || '' }}</h3>
         </div>
 
         <a-divider/>
 
         <div class="detail-section">
           <a-descriptions bordered :column="1">
-            <a-descriptions-item label="群组名称">{{ currentGroup?.name || '-' }}</a-descriptions-item>
-            <a-descriptions-item label="群组描述">{{ currentGroup?.description || '-' }}</a-descriptions-item>
-            <a-descriptions-item label="创建时间">{{ formatDate(currentGroup?.create_time) }}</a-descriptions-item>
-            <a-descriptions-item label="更新时间">{{ formatDate(currentGroup?.update_time) }}</a-descriptions-item>
+            <a-descriptions-item label="群组名称">{{ currentGroup.name || '-' }}</a-descriptions-item>
+            <a-descriptions-item label="群组描述">{{ currentGroup.description || '-' }}</a-descriptions-item>
+            <a-descriptions-item label="创建时间">{{ formatDate(currentGroup.create_time) }}</a-descriptions-item>
+            <a-descriptions-item label="更新时间">{{ formatDate(currentGroup.update_time) }}</a-descriptions-item>
           </a-descriptions>
         </div>
 
@@ -188,8 +185,7 @@ export default {
         title: '操作',
         key: 'action',
         slots: {customRender: 'action'},
-        width: 150,
-        fixed: 'right'
+        width: 150
       }
     ]
 
@@ -211,7 +207,7 @@ export default {
 
         const result = await groupAPI.getGroups(params)
         if (result.code === 200) {
-          groups.value = result.data.groups || []
+          groups.value = result.data.groups || result.data.list || []
           pagination.total = result.data.total || 0
         }
       } catch (error) {
@@ -230,7 +226,9 @@ export default {
 
     // 重置搜索
     const resetSearch = () => {
-      searchForm.name = ''
+      Object.assign(searchForm, {
+        name: ''
+      })
       pagination.current = 1
       fetchGroups()
     }
@@ -289,9 +287,12 @@ export default {
       try {
         await groupFormRef.value.validate()
 
+        const data = { ...groupForm }
+        delete data.id
+
         if (isEdit.value) {
           // 编辑群组
-          const result = await groupAPI.updateGroup(groupForm.id, groupForm)
+          const result = await groupAPI.updateGroup(groupForm.id, data)
           if (result.code === 200) {
             message.success('更新成功')
             modalVisible.value = false
@@ -301,8 +302,8 @@ export default {
           }
         } else {
           // 创建群组
-          const result = await groupAPI.createGroup(groupForm)
-          if (result.code === 200) {
+          const result = await groupAPI.createGroup(data)
+          if (result.code === 200 || result.code === 201) {
             message.success('创建成功')
             modalVisible.value = false
             fetchGroups()
@@ -374,73 +375,123 @@ export default {
 
 <style scoped>
 .group-management {
-  padding: 24px;
+  padding: 0;
 }
 
-.page-header {
+.search-and-action-bar {
+  background: white;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
-.page-header h2 {
-  margin: 0;
-  color: #1890ff;
+.search-form {
+  flex: 1;
+  min-width: 0;
 }
 
-.search-bar {
-  background: white;
-  padding: 16px;
-  border-radius: 6px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+.search-form .ant-form-item {
+  margin-bottom: 0;
 }
 
-.group-detail {
-  padding: 16px 0;
+.search-form .ant-form-item:last-child {
+  margin-bottom: 0;
 }
 
-.detail-header {
-  margin-bottom: 20px;
-}
-
-.detail-header h3 {
-  margin: 0;
-  color: #1890ff;
-}
-
-.detail-section {
-  margin-bottom: 20px;
+.action-buttons {
+  flex-shrink: 0;
 }
 
 .description-cell {
-  max-width: 300px;
+  max-width: 280px;
 }
 
-.ellipsis {
-  white-space: nowrap;
+.description-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #666;
+}
+
+.group-detail {
+  padding: 12px 0;
+}
+
+.detail-header {
+  margin-bottom: 16px;
+}
+
+.detail-header h3 {
+  margin: 0 0 12px 0;
+  color: #1890ff;
+  font-size: 18px;
+}
+
+.detail-section {
+  margin-bottom: 16px;
 }
 
 @media (max-width: 768px) {
   .group-management {
-    padding: 12px;
+    padding: 8px;
   }
 
-  .page-header {
+  .search-and-action-bar {
+    padding: 8px;
+    margin-bottom: 8px;
     flex-direction: column;
-    gap: 12px;
     align-items: stretch;
   }
 
-  .search-bar .ant-form {
+  .search-form .ant-form {
     flex-direction: column;
   }
 
-  .search-bar .ant-form-item {
+  .search-form .ant-form-item {
     margin-bottom: 8px;
+  }
+
+  .search-form .ant-form-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .action-buttons {
+    width: 100%;
+  }
+
+  .action-buttons .ant-btn {
+    width: 100%;
+  }
+
+  .description-cell {
+    max-width: 200px;
+  }
+}
+
+@media (max-width: 576px) {
+  .search-and-action-bar {
+    padding: 6px;
+  }
+
+  .search-form .ant-form-item label {
+    font-size: 13px;
+  }
+
+  .search-form .ant-input {
+    font-size: 13px;
+  }
+
+  .description-cell {
+    max-width: 150px;
   }
 }
 </style> 

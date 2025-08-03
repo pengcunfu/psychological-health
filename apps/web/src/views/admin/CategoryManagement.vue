@@ -1,18 +1,8 @@
 <template>
   <div class="category-management">
-    <div class="page-header">
-      <h2>分类管理</h2>
-      <a-button type="primary" @click="showAddModal">
-        <template #icon>
-          <PlusOutlined/>
-        </template>
-        添加分类
-      </a-button>
-    </div>
-
-    <!-- 搜索栏 -->
-    <div class="search-bar">
-      <a-form layout="inline" :model="searchForm" @submit="handleSearch">
+    <!-- 搜索栏和操作栏 -->
+    <div class="search-and-action-bar">
+      <a-form layout="inline" :model="searchForm" @submit="handleSearch" class="search-form">
         <a-form-item label="分类名称">
           <a-input
               v-model:value="searchForm.name"
@@ -37,6 +27,15 @@
           <a-button style="margin-left: 8px;" @click="resetSearch">重置</a-button>
         </a-form-item>
       </a-form>
+      
+      <div class="action-buttons">
+        <a-button type="primary" @click="showAddModal">
+          <template #icon>
+            <PlusOutlined/>
+          </template>
+          添加分类
+        </a-button>
+      </div>
     </div>
 
     <!-- 分类列表 -->
@@ -53,7 +52,7 @@
           <span v-if="record.icon" class="icon-preview">
             <component :is="record.icon"/>
           </span>
-          <span v-else>-</span>
+          <span v-else class="no-icon">-</span>
         </div>
       </template>
 
@@ -64,8 +63,15 @@
       </template>
 
       <template #status="{ record }">
-        <a-badge :status="record.status === 'active' ? 'success' : 'default'"
-                 :text="record.status === 'active' ? '启用' : '禁用'"/>
+        <a-tag :color="record.status === 1 ? 'green' : 'default'">
+          {{ record.status === 1 ? '启用' : '禁用' }}
+        </a-tag>
+      </template>
+
+      <template #description="{ record }">
+        <div class="description-cell">
+          <span class="description-text">{{ record.description || '-' }}</span>
+        </div>
       </template>
 
       <template #createTime="{ record }">
@@ -81,8 +87,9 @@
               type="link"
               size="small"
               @click="toggleStatus(record)"
+              :style="{ color: record.status === 1 ? '#ff4d4f' : '#52c41a' }"
           >
-            {{ record.status === 'active' ? '禁用' : '启用' }}
+            {{ record.status === 1 ? '禁用' : '启用' }}
           </a-button>
           <a-popconfirm
               title="确定要删除该分类吗？"
@@ -137,8 +144,8 @@
 
         <a-form-item label="状态" name="status">
           <a-radio-group v-model:value="categoryForm.status">
-            <a-radio value="active">启用</a-radio>
-            <a-radio value="inactive">禁用</a-radio>
+            <a-radio :value="1">启用</a-radio>
+            <a-radio :value="0">禁用</a-radio>
           </a-radio-group>
         </a-form-item>
 
@@ -182,7 +189,7 @@ export default {
       type: 'course',
       icon: '',
       sort: 0,
-      status: 'active',
+      status: 1,
       description: ''
     })
 
@@ -214,12 +221,12 @@ export default {
         dataIndex: 'type',
         key: 'type',
         slots: {customRender: 'type'},
-        width: 100
+        width: 120
       },
       {
         title: '排序',
-        dataIndex: 'sort',
-        key: 'sort',
+        dataIndex: 'sort_order',
+        key: 'sort_order',
         width: 80
       },
       {
@@ -227,13 +234,13 @@ export default {
         dataIndex: 'status',
         key: 'status',
         slots: {customRender: 'status'},
-        width: 80
+        width: 100
       },
       {
         title: '描述',
         dataIndex: 'description',
         key: 'description',
-        ellipsis: true,
+        slots: {customRender: 'description'},
         width: 200
       },
       {
@@ -328,7 +335,7 @@ export default {
         name: category.name,
         type: category.type,
         icon: category.icon,
-        sort: category.sort,
+        sort: category.sort_order || category.sort,
         status: category.status,
         description: category.description
       })
@@ -336,11 +343,11 @@ export default {
 
     // 切换状态
     const toggleStatus = async (category) => {
-      const newStatus = category.status === 'active' ? 'inactive' : 'active'
+      const newStatus = category.status === 1 ? 0 : 1
       try {
         const result = await categoryAPI.updateCategory(category.id, {status: newStatus})
         if (result.code === 200) {
-          message.success(`${newStatus === 'active' ? '启用' : '禁用'}成功`)
+          message.success(`${newStatus === 1 ? '启用' : '禁用'}成功`)
           fetchCategories()
         }
       } catch (error) {
@@ -368,6 +375,12 @@ export default {
 
         const data = {...categoryForm}
         delete data.id
+        
+        // 将前端字段名映射为后端字段名
+        if (data.sort !== undefined) {
+          data.sort_order = data.sort
+          delete data.sort
+        }
 
         if (isEdit.value) {
           const result = await categoryAPI.updateCategory(categoryForm.id, data)
@@ -402,7 +415,7 @@ export default {
         type: 'course',
         icon: '',
         sort: 0,
-        status: 'active',
+        status: 1,
         description: ''
       })
       categoryFormRef.value?.resetFields()
@@ -472,27 +485,37 @@ export default {
 
 <style scoped>
 .category-management {
-  padding: 24px;
+  padding: 0;
 }
 
-.page-header {
+.search-and-action-bar {
+  background: white;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
-.page-header h2 {
-  margin: 0;
-  color: #1890ff;
+.search-form {
+  flex: 1;
+  min-width: 0;
 }
 
-.search-bar {
-  background: white;
-  padding: 16px;
-  border-radius: 6px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+.search-form .ant-form-item {
+  margin-bottom: 0;
+}
+
+.search-form .ant-form-item:last-child {
+  margin-bottom: 0;
+}
+
+.action-buttons {
+  flex-shrink: 0;
 }
 
 .category-icon {
@@ -503,25 +526,81 @@ export default {
 
 .icon-preview {
   font-size: 18px;
+  color: #1890ff;
+}
+
+.no-icon {
+  color: #ccc;
+  font-style: italic;
+}
+
+.description-cell {
+  max-width: 180px;
+}
+
+.description-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #666;
 }
 
 @media (max-width: 768px) {
   .category-management {
-    padding: 12px;
+    padding: 8px;
   }
 
-  .page-header {
+  .search-and-action-bar {
+    padding: 8px;
+    margin-bottom: 8px;
     flex-direction: column;
-    gap: 12px;
     align-items: stretch;
   }
 
-  .search-bar .ant-form {
+  .search-form .ant-form {
     flex-direction: column;
   }
 
-  .search-bar .ant-form-item {
+  .search-form .ant-form-item {
     margin-bottom: 8px;
+  }
+
+  .search-form .ant-form-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .action-buttons {
+    width: 100%;
+  }
+
+  .action-buttons .ant-btn {
+    width: 100%;
+  }
+
+  .description-cell {
+    max-width: 120px;
+  }
+}
+
+@media (max-width: 576px) {
+  .search-and-action-bar {
+    padding: 6px;
+  }
+
+  .search-form .ant-form-item label {
+    font-size: 13px;
+  }
+
+  .search-form .ant-input,
+  .search-form .ant-select {
+    font-size: 13px;
+  }
+
+  .description-cell {
+    max-width: 100px;
   }
 }
 </style> 
