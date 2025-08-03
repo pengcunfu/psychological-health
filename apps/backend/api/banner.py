@@ -15,15 +15,16 @@ from form.banner import BannerQueryForm, BannerCreateForm, BannerUpdateForm
 from sqlalchemy.exc import SQLAlchemyError
 from utils.json_result import JsonResult
 from models.base import db
+from utils.validate import validate_data, validate_args
+from utils.model_helper import update_model_from_form
+import uuid
 
 banner_bp = Blueprint("banner", __name__, url_prefix="/banner")
 
 
 @banner_bp.route("", methods=['GET'])
 def get_banners():
-    form = BannerQueryForm(data=request.args)
-    if not form.validate():
-        return JsonResult.error(f'参数验证失败: {form.get_first_error()}', 400)
+    form = validate_args(BannerQueryForm)
 
     page = form.page.data
     per_page = form.per_page.data
@@ -33,13 +34,14 @@ def get_banners():
     if title:
         query = query.filter(Banner.title.like(f'%{title}%'))
 
-    paginate = query.paginate(page=page, per_page=per_page, error_out=False)
+    paginate = query.order_by(Banner.sort_order.asc()).paginate(
+        page=page, per_page=per_page, error_out=False
+    )
     banners = paginate.items
 
     return JsonResult.success({
         'list': [banner.to_dict() for banner in banners],
-        'total_pages': paginate.pages,
-        'total_items': paginate.total,
+        'total': paginate.total,
         'page': page,
         'per_page': per_page
     })
@@ -49,31 +51,23 @@ def get_banners():
 def get_banner(banner_id):
     banner = Banner.query.get(banner_id)
     if not banner:
-        return JsonResult.error("Banner not found", 404)
+        return JsonResult.error("横幅不存在", 404)
     return JsonResult.success(banner.to_dict())
 
 
 @banner_bp.route("", methods=['POST'])
 def create_banner():
-    data = request.get_json()
-    if not data:
-        return JsonResult.error('请求数据不能为空', 400)
+    form = validate_data(BannerCreateForm)
 
-    form = BannerCreateForm(data=data)
-    if not form.validate():
-        return JsonResult.error(f'参数验证失败: {form.get_first_error()}', 400)
-
-    title = form.title.data
-    image_url = form.image_url.data
-    link_url = form.link_url.data
-    sort_order = form.sort_order.data if form.sort_order.data is not None else 0
-
+    # 创建横幅
     banner = Banner(
-        title=title,
-        image_url=image_url,
-        link_url=link_url,
-        sort_order=sort_order,
+        id=str(uuid.uuid4()),
+        title=form.title.data,
+        image_url=form.image_url.data,
+        link_url=form.link_url.data,
+        sort_order=form.sort_order.data if form.sort_order.data is not None else 0,
     )
+    
     db.session.add(banner)
     db.session.commit()
     return JsonResult.success(banner.to_dict(), "创建成功", 201)
@@ -83,24 +77,12 @@ def create_banner():
 def update_banner(banner_id):
     banner = Banner.query.get(banner_id)
     if not banner:
-        return JsonResult.error("Banner not found", 404)
+        return JsonResult.error("横幅不存在", 404)
 
-    data = request.get_json()
-    if not data:
-        return JsonResult.error('请求数据不能为空', 400)
+    form = validate_data(BannerUpdateForm)
 
-    form = BannerUpdateForm(data=data)
-    if not form.validate():
-        return JsonResult.error(f'参数验证失败: {form.get_first_error()}', 400)
-
-    if form.title.data is not None:
-        banner.title = form.title.data
-    if form.image_url.data is not None:
-        banner.image_url = form.image_url.data
-    if form.link_url.data is not None:
-        banner.link_url = form.link_url.data
-    if form.sort_order.data is not None:
-        banner.sort_order = form.sort_order.data
+    # 更新字段
+    update_model_from_form(banner, form)
 
     db.session.commit()
     return JsonResult.success(banner.to_dict(), "更新成功")
@@ -110,7 +92,7 @@ def update_banner(banner_id):
 def delete_banner(banner_id):
     banner = Banner.query.get(banner_id)
     if not banner:
-        return JsonResult.error("Banner not found", 404)
+        return JsonResult.error("横幅不存在", 404)
 
     db.session.delete(banner)
     db.session.commit()

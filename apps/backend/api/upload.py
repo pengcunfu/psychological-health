@@ -4,34 +4,23 @@
 
 接口列表：
 - POST /upload - 上传文件
-- POST /upload/image - 上传图片
-- POST /upload/avatar - 上传头像
-- POST /upload/document - 上传文档
-- GET /file/<file_id> - 获取文件信息
-- GET /file/download/<file_id> - 下载文件
-- DELETE /file/<file_id> - 删除文件
-- GET /file/list - 获取文件列表
+- POST /upload/avatar - 上传头像（保存到static/uploads/avatar目录，UUID命名）
+- POST /upload/banner - 上传横幅图（保存到static/uploads/banner目录，UUID命名）
+- POST /upload/course-cover - 上传课程封面（保存到static/uploads/course_cover目录，UUID命名）
 """
+import os
+import uuid
 from flask import Blueprint, request, jsonify, current_app
 from werkzeug.exceptions import RequestEntityTooLarge
+from werkzeug.utils import secure_filename
 from utils.file_upload import FileUploader
 from utils.json_result import JsonResult
-import os
 
 # 创建蓝图
-file_upload_bp = Blueprint('file', __name__, url_prefix='/file')
+file_upload_bp = Blueprint('upload', __name__, url_prefix='/upload')
 
 
-# 文件上传器将在请求中动态创建
-def get_file_uploader():
-    """获取文件上传器实例"""
-    return FileUploader(
-        upload_dir=os.path.join(current_app.root_path, 'uploads'),
-        static_dir=os.path.join(current_app.root_path, 'static')
-    )
-
-
-@file_upload_bp.route('/upload', methods=['POST'])
+@file_upload_bp.route('', methods=['POST'])
 def upload_file():
     """
     文件上传接口
@@ -51,10 +40,14 @@ def upload_file():
 
         # 获取参数
         file_type = request.form.get('file_type')
-        use_unique_name = request.form.get('use_unique_name', 'true').lower() == 'true'
+        use_unique_name = request.form.get(
+            'use_unique_name', 'true').lower() == 'true'
 
         # 保存文件
-        uploader = get_file_uploader()
+        uploader = FileUploader(
+            upload_dir=os.path.join(current_app.root_path, 'uploads'),
+            static_dir=os.path.join(current_app.root_path, 'static')
+        )
         file_info = uploader.save(
             file=file,
             file_type=file_type,
@@ -71,14 +64,13 @@ def upload_file():
         return JsonResult.error(f'上传失败: {str(e)}')
 
 
-@file_upload_bp.route('/upload-to-static', methods=['POST'])
-def upload_to_static():
+@file_upload_bp.route('/avatar', methods=['POST'])
+def upload_avatar():
     """
-    上传文件到static目录，可直接通过URL访问
-    支持的参数:
-    - file: 上传的文件
-    - subfolder: 子文件夹名称 (默认uploads)
-    - use_unique_name: 是否使用唯一文件名 (默认true)
+    上传头像接口
+    将头像保存到 static/uploads/avatar 目录
+    使用 UUID + 原文件后缀名作为文件名
+    支持的图片格式: jpg, jpeg, png, gif, webp
     """
     try:
         # 检查是否有文件
@@ -89,226 +81,178 @@ def upload_to_static():
         if file.filename == '':
             return JsonResult.error('没有选择文件')
 
-        # 获取参数
-        subfolder = request.form.get('subfolder', 'uploads')
-        use_unique_name = request.form.get('use_unique_name', 'true').lower() == 'true'
+        # 获取原文件名和后缀
+        # original_filename = secure_filename(file.filename)
+        original_filename = file.filename
+        if '.' not in original_filename:
+            return JsonResult.error('文件必须包含后缀名')
 
-        # 保存文件到static目录
-        uploader = get_file_uploader()
-        file_info = uploader.save_to_static(
-            file=file,
-            subfolder=subfolder,
-            use_unique_name=use_unique_name
-        )
+        file_ext = original_filename.rsplit('.', 1)[1].lower()
 
-        return JsonResult.success(file_info, '文件上传成功')
+        # 检查文件类型（仅允许图片）
+        allowed_extensions = {'jpg', 'jpeg', 'png', 'gif', 'webp'}
+        if file_ext not in allowed_extensions:
+            return JsonResult.error(f'不支持的文件格式，仅支持: {", ".join(allowed_extensions)}')
+
+        # 生成唯一文件名：UUID + 后缀
+        unique_filename = f"{str(uuid.uuid4())}.{file_ext}"
+
+        # 确保目录存在
+        avatar_dir = os.path.join(
+            current_app.root_path, 'static', 'uploads', 'avatar')
+        os.makedirs(avatar_dir, exist_ok=True)
+
+        # 保存文件
+        file_path = os.path.join(avatar_dir, unique_filename)
+        file.save(file_path)
+
+        # 生成可访问的URL路径
+        url_path = f"/static/uploads/avatar/{unique_filename}"
+
+        # 返回文件信息
+        file_info = {
+            'filename': unique_filename,
+            'original_filename': original_filename,
+            'url': url_path,
+            'file_size': os.path.getsize(file_path),
+            'file_type': file_ext,
+            'upload_path': f"uploads/avatar/{unique_filename}"
+        }
+
+        return JsonResult.success(file_info, '头像上传成功')
 
     except ValueError as e:
         return JsonResult.error(str(e))
+    except RequestEntityTooLarge:
+        return JsonResult.error('文件大小超过限制')
     except Exception as e:
         return JsonResult.error(f'上传失败: {str(e)}')
 
 
-@file_upload_bp.route('/download/<path:file_path>')
-def download_file(file_path):
+@file_upload_bp.route('/banner', methods=['POST'])
+def upload_banner():
     """
-    文件下载接口
-    :param file_path: 文件相对路径
-    """
-    try:
-        # 构建完整文件路径
-        full_path = os.path.join(current_app.root_path, 'uploads', file_path)
-
-        # 获取下载名称
-        download_name = request.args.get('name')
-        as_attachment = request.args.get('attachment', 'true').lower() == 'true'
-
-        uploader = get_file_uploader()
-        return uploader.download_file(
-            file_path=full_path,
-            as_attachment=as_attachment,
-            download_name=download_name
-        )
-
-    except Exception as e:
-        return JsonResult.error(f'下载失败: {str(e)}')
-
-
-@file_upload_bp.route('/info/<path:file_path>')
-def get_file_info(file_path):
-    """
-    获取文件信息
-    :param file_path: 文件相对路径
+    上传横幅图接口
+    将横幅图保存到 static/uploads/banner 目录
+    使用 UUID + 原文件后缀名作为文件名
+    支持的图片格式: jpg, jpeg, png, gif, webp
     """
     try:
-        # 构建完整文件路径
-        full_path = os.path.join(current_app.root_path, 'uploads', file_path)
+        # 检查是否有文件
+        if 'file' not in request.files:
+            return JsonResult.error('没有选择文件')
 
-        uploader = get_file_uploader()
-        file_info = uploader.get_file_info(full_path)
-        if file_info:
-            return JsonResult.success(file_info)
-        else:
-            return JsonResult.error('文件不存在')
+        file = request.files['file']
+        if file.filename == '':
+            return JsonResult.error('没有选择文件')
 
-    except Exception as e:
-        return JsonResult.error(f'获取文件信息失败: {str(e)}')
+        # 获取原文件名和后缀
+        # original_filename = secure_filename(file.filename)
+        original_filename = file.filename
+        if '.' not in original_filename:
+            return JsonResult.error('文件必须包含后缀名')
+        
+        file_ext = original_filename.rsplit('.', 1)[1].lower()
+        
+        # 检查文件类型（仅允许图片）
+        allowed_extensions = {'jpg', 'jpeg', 'png', 'gif', 'webp'}
+        if file_ext not in allowed_extensions:
+            return JsonResult.error(f'不支持的文件格式，仅支持: {", ".join(allowed_extensions)}')
 
-
-@file_upload_bp.route('/list')
-def list_files():
-    """
-    列出上传目录中的文件
-    """
-    try:
-        directory = request.args.get('directory')
-        if directory:
-            directory = os.path.join(current_app.root_path, directory)
-
-        uploader = get_file_uploader()
-        files = uploader.list_files(directory)
-        return JsonResult.success(files)
-
-    except Exception as e:
-        return JsonResult.error(f'获取文件列表失败: {str(e)}')
-
-
-@file_upload_bp.route('/delete', methods=['DELETE'])
-def delete_file():
-    """
-    删除文件
-    请求体: {"file_path": "相对文件路径"}
-    """
-    try:
-        data = request.get_json()
-        if not data or 'file_path' not in data:
-            return JsonResult.error('缺少文件路径参数')
-
-        file_path = data['file_path']
-        full_path = os.path.join(current_app.root_path, 'uploads', file_path)
-
-        uploader = get_file_uploader()
-        if uploader.delete_file(full_path):
-            return JsonResult.success(None, '文件删除成功')
-        else:
-            return JsonResult.error('文件删除失败或文件不存在')
-
-    except Exception as e:
-        return JsonResult.error(f'删除文件失败: {str(e)}')
-
-
-@file_upload_bp.route('/config', methods=['GET', 'PUT'])
-def manage_config():
-    """配置管理"""
-    uploader = get_file_uploader()
-
-    if request.method == 'GET':
-        # 获取当前配置
-        config = {
-            'max_file_size_mb': uploader.max_file_size // (1024 * 1024),
-            'allowed_extensions': uploader.allowed_extensions,
-            'upload_dir': uploader.upload_dir,
-            'static_dir': uploader.static_dir
+        # 生成唯一文件名：UUID + 后缀
+        unique_filename = f"{str(uuid.uuid4())}.{file_ext}"
+        
+        # 确保目录存在
+        banner_dir = os.path.join(
+            current_app.root_path, 'static', 'uploads', 'banner')
+        os.makedirs(banner_dir, exist_ok=True)
+        
+        # 保存文件
+        file_path = os.path.join(banner_dir, unique_filename)
+        file.save(file_path)
+        
+        # 生成可访问的URL路径
+        url_path = f"/static/uploads/banner/{unique_filename}"
+        
+        # 返回文件信息
+        file_info = {
+            'filename': unique_filename,
+            'original_filename': original_filename,
+            'url': url_path,
+            'file_size': os.path.getsize(file_path),
+            'file_type': file_ext,
+            'upload_path': f"uploads/banner/{unique_filename}"
         }
-        return JsonResult.success(config)
+        
+        return JsonResult.success(file_info, '横幅图上传成功')
 
-    elif request.method == 'PUT':
-        # 更新配置
-        data = request.get_json()
-
-        if 'max_file_size_mb' in data:
-            uploader.set_max_file_size(data['max_file_size_mb'])
-
-        if 'allowed_extensions' in data:
-            for file_type, extensions in data['allowed_extensions'].items():
-                for ext in extensions:
-                    uploader.add_allowed_extension(file_type, ext)
-
-        return JsonResult.success({'message': '配置更新成功'})
-
-
-@file_upload_bp.route('/static/list', methods=['GET'])
-def list_static_files():
-    """列出static目录中的文件"""
-    uploader = get_file_uploader()
-    subfolder = request.args.get('subfolder')
-
-    try:
-        files = uploader.list_static_files(subfolder)
-        return JsonResult.success({
-            'files': files,
-            'total': len(files),
-            'subfolder': subfolder
-        })
+    except ValueError as e:
+        return JsonResult.error(str(e))
+    except RequestEntityTooLarge:
+        return JsonResult.error('文件大小超过限制')
     except Exception as e:
-        return JsonResult.error(f'获取文件列表失败: {str(e)}')
+        return JsonResult.error(f'上传失败: {str(e)}')
 
 
-@file_upload_bp.route('/static/info/<path:file_path>', methods=['GET'])
-def get_static_file_info(file_path):
-    """获取static目录中文件的信息"""
-    uploader = get_file_uploader()
-
+@file_upload_bp.route('/course-cover', methods=['POST'])
+def upload_course_cover():
+    """
+    上传课程封面接口
+    将课程封面保存到 static/uploads/course_cover 目录
+    使用 UUID + 原文件后缀名作为文件名
+    支持的图片格式: jpg, jpeg, png, gif, webp
+    """
     try:
-        file_info = uploader.get_static_file_info(file_path)
-        if file_info:
-            return JsonResult.success(file_info)
-        else:
-            return JsonResult.error('文件不存在', 404)
+        # 检查是否有文件
+        if 'file' not in request.files:
+            return JsonResult.error('没有选择文件')
+
+        file = request.files['file']
+        if file.filename == '':
+            return JsonResult.error('没有选择文件')
+
+        # 获取原文件名和后缀
+        original_filename = file.filename
+        if '.' not in original_filename:
+            return JsonResult.error('文件必须包含后缀名')
+        
+        file_ext = original_filename.rsplit('.', 1)[1].lower()
+        
+        # 检查文件类型（仅允许图片）
+        allowed_extensions = {'jpg', 'jpeg', 'png', 'gif', 'webp'}
+        if file_ext not in allowed_extensions:
+            return JsonResult.error(f'不支持的文件格式，仅支持: {", ".join(allowed_extensions)}')
+
+        # 生成唯一文件名：UUID + 后缀
+        unique_filename = f"{str(uuid.uuid4())}.{file_ext}"
+        
+        # 确保目录存在
+        course_cover_dir = os.path.join(
+            current_app.root_path, 'static', 'uploads', 'course_cover')
+        os.makedirs(course_cover_dir, exist_ok=True)
+        
+        # 保存文件
+        file_path = os.path.join(course_cover_dir, unique_filename)
+        file.save(file_path)
+        
+        # 生成可访问的URL路径
+        url_path = f"/static/uploads/course_cover/{unique_filename}"
+        
+        # 返回文件信息
+        file_info = {
+            'filename': unique_filename,
+            'original_filename': original_filename,
+            'url': url_path,
+            'file_size': os.path.getsize(file_path),
+            'file_type': file_ext,
+            'upload_path': f"uploads/course_cover/{unique_filename}"
+        }
+        
+        return JsonResult.success(file_info, '课程封面上传成功')
+
+    except ValueError as e:
+        return JsonResult.error(str(e))
+    except RequestEntityTooLarge:
+        return JsonResult.error('文件大小超过限制')
     except Exception as e:
-        return JsonResult.error(f'获取文件信息失败: {str(e)}')
-
-
-@file_upload_bp.route('/static/delete', methods=['DELETE'])
-def delete_static_file():
-    """删除static目录中的文件"""
-    uploader = get_file_uploader()
-    data = request.get_json()
-
-    if not data or 'file_path' not in data:
-        return JsonResult.error('请提供文件路径')
-
-    file_path = data['file_path']
-
-    try:
-        success = uploader.delete_static_file(file_path)
-        if success:
-            return JsonResult.success({'message': '文件删除成功'})
-        else:
-            return JsonResult.error('文件删除失败或文件不存在')
-    except Exception as e:
-        return JsonResult.error(f'删除文件失败: {str(e)}')
-
-
-@file_upload_bp.route('/cdn/url', methods=['POST'])
-def get_cdn_url():
-    """获取文件的CDN访问URL"""
-    uploader = get_file_uploader()
-    data = request.get_json()
-
-    if not data or 'file_path' not in data:
-        return JsonResult.error('请提供文件路径')
-
-    file_path = data['file_path']
-    base_url = data.get('base_url')
-
-    try:
-        cdn_url = uploader.get_cdn_url(file_path, base_url)
-        return JsonResult.success({
-            'file_path': file_path,
-            'cdn_url': cdn_url,
-            'base_url': base_url
-        })
-    except Exception as e:
-        return JsonResult.error(f'生成CDN URL失败: {str(e)}')
-
-
-# 错误处理
-@file_upload_bp.errorhandler(RequestEntityTooLarge)
-def handle_file_too_large(e):
-    return JsonResult.error('文件大小超过限制')
-
-
-@file_upload_bp.errorhandler(413)
-def handle_payload_too_large(e):
-    return JsonResult.error('请求数据过大')
+        return JsonResult.error(f'上传失败: {str(e)}')

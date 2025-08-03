@@ -25,7 +25,7 @@
       @change="handleTableChange" row-key="id">
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'avatar'">
-          <a-avatar :src="record.avatar" :alt="record.username">
+          <a-avatar :src="FileUploader.getFullImageUrl(record.avatar)" :alt="record.username">
             {{ record.username?.[0]?.toUpperCase() }}
           </a-avatar>
         </template>
@@ -87,18 +87,26 @@
           <a-upload 
             v-model:file-list="fileList" 
             :before-upload="beforeUpload" 
-            :custom-request="uploadAvatar"
+            :custom-request="handleUploadAvatar"
+            @remove="handleRemoveAvatar"
             list-type="picture-card" 
             :max-count="1"
-            :show-upload-list="{ showPreviewIcon: false, showRemoveIcon: true }"
-            @remove="handleRemoveAvatar"
+            accept="image/*"
+            :show-upload-list="{
+              showPreviewIcon: true,
+              showRemoveIcon: true,
+              showDownloadIcon: false
+            }"
           >
             <div v-if="fileList.length < 1">
               <upload-outlined />
-              <div>上传头像</div>
+              <div style="margin-top: 8px;">上传头像</div>
+              <div style="color: #999; font-size: 12px; margin-top: 4px;">
+                支持 JPG、PNG、GIF、WebP<br/>
+                文件大小不超过 2MB
+              </div>
             </div>
           </a-upload>
-          <div class="upload-tips">支持 jpg、png 格式，文件大小不超过 2MB</div>
         </a-form-item>
       </a-form>
     </a-modal>
@@ -108,7 +116,7 @@
       <div v-if="currentUser" class="user-detail">
         <div class="detail-item">
           <span class="label">头像：</span>
-          <a-avatar :src="currentUser.avatar" size="large">
+          <a-avatar :src="FileUploader.getFullImageUrl(currentUser.avatar)" size="large">
             {{ currentUser.username?.[0]?.toUpperCase() }}
           </a-avatar>
         </div>
@@ -144,6 +152,7 @@ import { ref, reactive, onMounted, computed } from 'vue'
 import { message } from 'ant-design-vue'
 import { PlusOutlined, UploadOutlined } from '@ant-design/icons-vue'
 import { userAPI } from '@/api/admin'
+import { uploadAvatar, FileUploader } from '@/api/upload'
 
 export default {
   name: 'UserManagement',
@@ -298,12 +307,17 @@ export default {
         avatar: user.avatar
       })
       if (user.avatar) {
+        // 使用封装的方法获取完整URL进行显示
+        const fullImageUrl = FileUploader.getFullImageUrl(user.avatar)
         fileList.value = [{
           uid: '-1',
           name: 'avatar.png',
           status: 'done',
-          url: user.avatar
+          url: fullImageUrl,
+          thumbUrl: fullImageUrl
         }]
+      } else {
+        fileList.value = []
       }
     }
 
@@ -375,56 +389,58 @@ export default {
 
     // 上传前验证
     const beforeUpload = (file) => {
-      const isImage = file.type.startsWith('image/')
-      if (!isImage) {
-        message.error('只能上传图片文件!')
+      try {
+        // 使用封装的验证方法
+        FileUploader.validateImage(file, 2) // 头像限制2MB
+        return true // 允许上传
+      } catch (error) {
+        message.error(error.message)
         return false
       }
-      const isLt2M = file.size / 1024 / 1024 < 2
-      if (!isLt2M) {
-        message.error('图片大小不能超过 2MB!')
-        return false
-      }
-      return false // 阻止自动上传
     }
 
     // 上传头像
-    const uploadAvatar = async ({ file }) => {
+    const handleUploadAvatar = async ({ file }) => {
       try {
-        const formData = new FormData()
-        formData.append('file', file)
-        formData.append('subfolder', 'avatars')
-        formData.append('use_unique_name', 'true')
-
-        // 调用文件上传接口
-        const response = await fetch('/api/file/upload-to-static', {
-          method: 'POST',
-          body: formData,
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        })
-
-        const result = await response.json()
+        // 调用封装的头像上传接口
+        const result = await uploadAvatar(file)
         
-        if (result.success) {
-          // 获取上传成功后的URL
-          userForm.avatar = result.data.url
+        if (result.success && result.data) {
+          // 上传成功，设置头像URL
+          const imageUrl = result.data.url
+          // 使用封装的方法获取完整URL用于显示
+          const fullImageUrl = FileUploader.getFullImageUrl(imageUrl)
+          
+          userForm.avatar = imageUrl // 保存相对路径到表单
+          
+          // 更新文件列表显示
+          fileList.value = [{
+            uid: file.uid,
+            name: result.data.original_filename || file.name,
+            status: 'done',
+            url: fullImageUrl,
+            response: result.data,
+            thumbUrl: fullImageUrl
+          }]
+          
+          message.success('头像上传成功')
+        } else {
+          // 上传失败
           fileList.value = [{
             uid: file.uid,
             name: file.name,
-            status: 'done',
-            url: result.data.url
+            status: 'error'
           }]
-          message.success('头像上传成功')
-        } else {
           message.error(result.message || '头像上传失败')
-          fileList.value = []
         }
       } catch (error) {
         console.error('头像上传失败:', error)
+        fileList.value = [{
+          uid: file.uid,
+          name: file.name,
+          status: 'error'
+        }]
         message.error('头像上传失败')
-        fileList.value = []
       }
     }
 
@@ -473,9 +489,10 @@ export default {
       handleModalOk,
       handleModalCancel,
       beforeUpload,
-      uploadAvatar,
+      handleUploadAvatar,
       handleRemoveAvatar,
-      formatDate
+      formatDate,
+      FileUploader
     }
   }
 }

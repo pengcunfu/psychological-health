@@ -6,15 +6,15 @@ from .base import BaseForm
 
 class AnnouncementCreateForm(BaseForm):
     """公告创建表单"""
-    counselor_id = StringField('咨询师ID', [
-        DataRequired(message='咨询师ID不能为空'),
-        Length(max=36, message='咨询师ID长度不能超过36个字符')
-    ])
+    # counselor_id = StringField('咨询师ID', [
+    #     DataRequired(message='咨询师ID不能为空'),
+    #     Length(max=36, message='咨询师ID长度不能超过36个字符')
+    # ])
 
-    service_id = StringField('服务ID', [
-        DataRequired(message='服务ID不能为空'),
-        Length(max=36, message='服务ID长度不能超过36个字符')
-    ])
+    # service_id = StringField('服务ID', [
+    #     DataRequired(message='服务ID不能为空'),
+    #     Length(max=36, message='服务ID长度不能超过36个字符')
+    # ])
 
     user_id = StringField('用户ID', [
         DataRequired(message='用户ID不能为空'),
@@ -44,15 +44,15 @@ class AnnouncementCreateForm(BaseForm):
 
 class AnnouncementUpdateForm(BaseForm):
     """公告更新表单"""
-    counselor_id = StringField('咨询师ID', [
-        Optional(),
-        Length(max=36, message='咨询师ID长度不能超过36个字符')
-    ])
+    # counselor_id = StringField('咨询师ID', [
+    #     Optional(),
+    #     Length(max=36, message='咨询师ID长度不能超过36个字符')
+    # ])
 
-    service_id = StringField('服务ID', [
-        Optional(),
-        Length(max=36, message='服务ID长度不能超过36个字符')
-    ])
+    # service_id = StringField('服务ID', [
+    #     Optional(),
+    #     Length(max=36, message='服务ID长度不能超过36个字符')
+    # ])
 
     user_id = StringField('用户ID', [
         Optional(),
@@ -92,20 +92,20 @@ class AnnouncementQueryForm(BaseForm):
         NumberRange(min=1, max=100, message='每页数量必须在1-100之间')
     ], default=10)
 
-    counselor_id = StringField('咨询师ID', [
-        Optional(),
-        Length(max=36, message='咨询师ID长度不能超过36个字符')
-    ])
+    # counselor_id = StringField('咨询师ID', [
+    #     Optional(),
+    #     Length(max=36, message='咨询师ID长度不能超过36个字符')
+    # ])
 
     user_id = StringField('用户ID', [
         Optional(),
         Length(max=36, message='用户ID长度不能超过36个字符')
     ])
 
-    service_id = StringField('服务ID', [
-        Optional(),
-        Length(max=36, message='服务ID长度不能超过36个字符')
-    ])
+    # service_id = StringField('服务ID', [
+    #     Optional(),
+    #     Length(max=36, message='服务ID长度不能超过36个字符')
+    # ])
 
     status = IntegerField('状态', [
         Optional(),

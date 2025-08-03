@@ -33,34 +33,40 @@
         @change="handleTableChange"
         row-key="id"
     >
-      <template #image="{ record }">
-        <a-image
-            :src="record?.image_url"
-            :alt="record?.title || ''"
-            width="120"
-            height="60"
-            style="object-fit: cover; border-radius: 4px;"
-            :preview="true"
-        />
-      </template>
-
-      <template #action="{ record }">
-        <a-space>
-          <a-button type="link" size="small" @click="editBanner(record)">
-            编辑
-          </a-button>
-          <a-button type="link" size="small" @click="viewBanner(record)">
-            查看
-          </a-button>
-          <a-popconfirm
-              title="确定要删除这个轮播图吗？"
-              @confirm="deleteBanner(record.id)"
-          >
-            <a-button type="link" size="small" danger>
-              删除
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.key === 'image_url'">
+          <a-image
+              :src="FileUploader.getFullImageUrl(record?.image_url)"
+              :alt="record?.title || ''"
+              width="120"
+              height="60"
+              style="object-fit: cover; border-radius: 4px;"
+              :preview="true"
+          />
+        </template>
+        
+        <template v-else-if="column.key === 'create_time'">
+          {{ formatDate(record.create_time) }}
+        </template>
+        
+        <template v-else-if="column.key === 'action'">
+          <a-space>
+            <a-button type="link" size="small" @click="editBanner(record)">
+              编辑
             </a-button>
-          </a-popconfirm>
-        </a-space>
+            <a-button type="link" size="small" @click="viewBanner(record)">
+              查看
+            </a-button>
+            <a-popconfirm
+                title="确定要删除这个轮播图吗？"
+                @confirm="deleteBanner(record.id)"
+            >
+              <a-button type="link" size="small" danger>
+                删除
+              </a-button>
+            </a-popconfirm>
+          </a-space>
+        </template>
       </template>
     </a-table>
 
@@ -100,12 +106,23 @@
               v-model:file-list="fileList"
               :before-upload="beforeUpload"
               :custom-request="uploadImage"
+              @remove="handleRemoveImage"
               list-type="picture-card"
               :max-count="1"
+              accept="image/*"
+              :show-upload-list="{
+                showPreviewIcon: true,
+                showRemoveIcon: true,
+                showDownloadIcon: false
+              }"
           >
             <div v-if="fileList.length < 1">
               <upload-outlined/>
-              <div>上传图片</div>
+              <div style="margin-top: 8px;">上传图片</div>
+              <div style="color: #999; font-size: 12px; margin-top: 4px;">
+                支持 JPG、PNG、GIF、WebP<br/>
+                文件大小不超过 5MB
+              </div>
             </div>
           </a-upload>
         </a-form-item>
@@ -128,7 +145,7 @@
 
         <div class="detail-image">
           <a-image
-              :src="currentBanner?.image_url"
+              :src="FileUploader.getFullImageUrl(currentBanner?.image_url)"
               :alt="currentBanner?.title || ''"
               width="100%"
               style="max-height: 300px; object-fit: contain;"
@@ -159,6 +176,7 @@ import {ref, reactive, onMounted, computed} from 'vue'
 import {message} from 'ant-design-vue'
 import {PlusOutlined, UploadOutlined} from '@ant-design/icons-vue'
 import {bannerAPI} from '@/api/admin'
+import {uploadBanner, FileUploader} from '@/api/upload'
 
 export default {
   name: 'BannerManagement',
@@ -201,7 +219,6 @@ export default {
         title: '图片',
         dataIndex: 'image_url',
         key: 'image_url',
-        slots: {customRender: 'image'},
         width: 150
       },
       {
@@ -227,13 +244,11 @@ export default {
         title: '创建时间',
         dataIndex: 'create_time',
         key: 'create_time',
-        width: 150,
-        render: (text) => formatDate(text)
+        width: 150
       },
       {
         title: '操作',
         key: 'action',
-        slots: {customRender: 'action'},
         width: 150,
         fixed: 'right'
       }
@@ -261,7 +276,7 @@ export default {
         const result = await bannerAPI.getBanners(params)
         if (result.code === 200) {
           banners.value = result.data.list || []
-          pagination.total = result.data.total_items || 0
+          pagination.total = result.data.total || 0
         }
       } catch (error) {
         console.error('获取轮播图列表失败:', error)
@@ -314,12 +329,18 @@ export default {
 
       // 设置图片预览
       if (banner.image_url) {
+        // 使用封装的方法获取完整URL
+        const fullImageUrl = FileUploader.getFullImageUrl(banner.image_url)
+        
         fileList.value = [{
           uid: '-1',
           name: 'banner.jpg',
           status: 'done',
-          url: banner.image_url
+          url: fullImageUrl,
+          thumbUrl: fullImageUrl
         }]
+      } else {
+        fileList.value = []
       }
     }
 
@@ -396,33 +417,66 @@ export default {
 
     // 上传前验证
     const beforeUpload = (file) => {
-      const isImage = file.type.startsWith('image/')
-      if (!isImage) {
-        message.error('只能上传图片文件!')
+      try {
+        // 使用封装的验证方法
+        FileUploader.validateImage(file, 5)
+        return true // 允许上传
+      } catch (error) {
+        message.error(error.message)
         return false
       }
-      const isLt2M = file.size / 1024 / 1024 < 2
-      if (!isLt2M) {
-        message.error('图片大小不能超过 2MB!')
-        return false
-      }
-      return false // 阻止自动上传
     }
 
     // 上传图片
-    const uploadImage = ({file}) => {
-      // 这里使用FileReader模拟上传，实际项目中应该调用上传API
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        bannerForm.image_url = e.target.result
+    const uploadImage = async ({file}) => {
+      try {
+        // 调用横幅图上传接口
+        const result = await uploadBanner(file)
+        
+        if (result.success && result.data) {
+          // 上传成功，设置图片URL
+          const imageUrl = result.data.url
+          // 使用封装的方法获取完整URL
+          const fullImageUrl = FileUploader.getFullImageUrl(imageUrl)
+          
+          bannerForm.image_url = imageUrl // 保存相对路径到表单
+          
+          // 更新文件列表显示，使用完整URL进行预览
+          fileList.value = [{
+            uid: file.uid,
+            name: result.data.original_filename || file.name,
+            status: 'done',
+            url: fullImageUrl, // 使用完整URL进行预览
+            response: result.data,
+            thumbUrl: fullImageUrl // 添加缩略图URL
+          }]
+          
+          message.success('图片上传成功')
+        } else {
+          // 上传失败
+          fileList.value = [{
+            uid: file.uid,
+            name: file.name,
+            status: 'error'
+          }]
+          message.error(result.message || '图片上传失败')
+        }
+      } catch (error) {
+        console.error('上传图片失败:', error)
         fileList.value = [{
           uid: file.uid,
           name: file.name,
-          status: 'done',
-          url: e.target.result
+          status: 'error'
         }]
+        message.error('图片上传失败')
       }
-      reader.readAsDataURL(file)
+    }
+
+    // 删除图片
+    const handleRemoveImage = () => {
+      bannerForm.image_url = ''
+      fileList.value = []
+      return true
     }
 
     // 格式化日期
@@ -464,7 +518,9 @@ export default {
       handleModalCancel,
       beforeUpload,
       uploadImage,
-      formatDate
+      formatDate,
+      handleRemoveImage,
+      FileUploader
     }
   }
 }

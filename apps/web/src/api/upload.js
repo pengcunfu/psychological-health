@@ -1,0 +1,158 @@
+/**
+ * 文件上传相关API
+ */
+
+// 上传头像
+export const uploadAvatar = async (file) => {
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const response = await fetch('/api/upload/avatar', {
+      method: 'POST',
+      body: formData
+    })
+
+    const result = await response.json()
+    return result
+  } catch (error) {
+    console.error('上传头像失败:', error)
+    throw error
+  }
+}
+
+// 上传横幅图
+export const uploadBanner = async (file) => {
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const response = await fetch('/api/upload/banner', {
+      method: 'POST',
+      body: formData
+    })
+
+    const result = await response.json()
+    return result
+  } catch (error) {
+    console.error('上传横幅图失败:', error)
+    throw error
+  }
+}
+
+// 上传课程封面
+export const uploadCourseCover = async (file) => {
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const response = await fetch('/api/upload/course-cover', {
+      method: 'POST',
+      body: formData
+    })
+
+    const result = await response.json()
+    return result
+  } catch (error) {
+    console.error('上传课程封面失败:', error)
+    throw error
+  }
+}
+
+// 通用文件上传
+export const uploadFile = async (file, fileType = null, useUniqueName = true) => {
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+    
+    if (fileType) {
+      formData.append('file_type', fileType)
+    }
+    
+    formData.append('use_unique_name', useUniqueName.toString())
+
+    const response = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData
+    })
+
+    const result = await response.json()
+    return result
+  } catch (error) {
+    console.error('上传文件失败:', error)
+    throw error
+  }
+}
+
+// 文件上传工具类
+export class FileUploader {
+  // 验证文件类型
+  static validateFileType(file, allowedTypes) {
+    return allowedTypes.includes(file.type)
+  }
+
+  // 验证文件大小
+  static validateFileSize(file, maxSizeMB) {
+    const maxSizeBytes = maxSizeMB * 1024 * 1024
+    return file.size <= maxSizeBytes
+  }
+
+  // 获取完整的图片URL
+  static getFullImageUrl(imageUrl) {
+    if (!imageUrl) return ''
+    // 如果是http或https开头的完整URL，直接返回
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+      return imageUrl
+    }
+    // 否则添加当前域名前缀
+    return `${window.location.origin}/api/${imageUrl}`
+  }
+
+  // 验证图片文件
+  static validateImage(file, maxSizeMB = 5) {
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
+    
+    if (!file.type.startsWith('image/')) {
+      throw new Error('只能上传图片文件!')
+    }
+    
+    if (!this.validateFileType(file, allowedTypes)) {
+      throw new Error('只支持 JPG、PNG、GIF、WebP 格式的图片!')
+    }
+    
+    if (!this.validateFileSize(file, maxSizeMB)) {
+      throw new Error(`图片大小不能超过 ${maxSizeMB}MB!`)
+    }
+    
+    return true
+  }
+
+  // 验证文档文件
+  static validateDocument(file, maxSizeMB = 10) {
+    const allowedTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    ]
+    
+    if (!this.validateFileType(file, allowedTypes)) {
+      throw new Error('只支持 PDF、Word、Excel 格式的文档!')
+    }
+    
+    if (!this.validateFileSize(file, maxSizeMB)) {
+      throw new Error(`文档大小不能超过 ${maxSizeMB}MB!`)
+    }
+    
+    return true
+  }
+}
+
+export default {
+  uploadAvatar,
+  uploadBanner,
+  uploadCourseCover,
+  uploadFile,
+  FileUploader
+}

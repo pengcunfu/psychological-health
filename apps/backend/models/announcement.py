@@ -7,8 +7,8 @@ class Announcement(BaseModel):
     __tablename__ = 'announcements'
 
     id = Column(String(50), primary_key=True)  # 公告ID
-    counselor_id = Column(String(50), nullable=False)  # 咨询师ID
-    service_id = Column(String(50), nullable=False)  # 服务ID
+    # admin_id = Column(String(50), nullable=False)  # 管理员ID
+    # service_id = Column(String(50), nullable=False)  # 服务ID
     user_id = Column(String(50), nullable=False)  # 用户ID
     date = Column(String(20), nullable=False)  # 日期
     note = Column(String(500))  # 备注
@@ -19,8 +19,8 @@ class Announcement(BaseModel):
         """转换为字典"""
         return {
             'id': self.id,
-            'counselor_id': self.counselor_id,
-            'service_id': self.service_id,
+            # 'admin_id': self.admin_id,
+            # 'service_id': self.service_id,
             'user_id': self.user_id,
             'date': self.date,
             'note': self.note,

@@ -51,44 +51,50 @@
         @change="handleTableChange"
         row-key="id"
     >
-      <template #avatar="{ record }">
-        <a-avatar :src="record?.avatar" :alt="record?.name || ''" size="large">
-          {{ record?.name?.[0] || '' }}
-        </a-avatar>
-      </template>
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.key === 'avatar'">
+          <a-avatar :src="FileUploader.getFullImageUrl(record?.avatar)" :alt="record?.name || ''" size="large">
+            {{ record?.name?.[0] || '' }}
+          </a-avatar>
+        </template>
+        
+        <template v-else-if="column.key === 'status'">
+          <a-tag :color="record?.status === 1 ? 'green' : 'red'">
+            {{ record?.status === 1 ? '在职' : '离职' }}
+          </a-tag>
+        </template>
 
-      <template #status="{ record }">
-        <a-tag :color="record?.status === 1 ? 'green' : 'red'">
-          {{ record?.status === 1 ? '在职' : '离职' }}
-        </a-tag>
-      </template>
+        <template v-else-if="column.key === 'rating'">
+          <a-rate :value="record?.rating || 0" disabled allow-half/>
+          <span style="margin-left: 8px;">{{ record?.rating || 0 }}</span>
+        </template>
 
-      <template #rating="{ record }">
-        <a-rate :value="record?.rating || 0" disabled allow-half/>
-        <span style="margin-left: 8px;">{{ record?.rating || 0 }}</span>
-      </template>
+        <template v-else-if="column.key === 'price'">
+          {{ `${record?.price || 0} 元/小时` }}
+        </template>
 
-      <template #createTime="{ record }">
-        {{ formatDate(record?.create_time) }}
-      </template>
+        <template v-else-if="column.key === 'create_time'">
+          {{ formatDate(record?.create_time) }}
+        </template>
 
-      <template #action="{ record }">
-        <a-space>
-          <a-button type="link" size="small" @click="editCounselor(record)">
-            编辑
-          </a-button>
-          <a-button type="link" size="small" @click="viewCounselor(record)">
-            查看
-          </a-button>
-          <a-popconfirm
-              title="确定要删除这个咨询师吗？"
-              @confirm="deleteCounselor(record.id)"
-          >
-            <a-button type="link" size="small" danger>
-              删除
+        <template v-else-if="column.key === 'action'">
+          <a-space>
+            <a-button type="link" size="small" @click="editCounselor(record)">
+              编辑
             </a-button>
-          </a-popconfirm>
-        </a-space>
+            <a-button type="link" size="small" @click="viewCounselor(record)">
+              查看
+            </a-button>
+            <a-popconfirm
+                title="确定要删除这个咨询师吗？"
+                @confirm="deleteCounselor(record.id)"
+            >
+              <a-button type="link" size="small" danger>
+                删除
+              </a-button>
+            </a-popconfirm>
+          </a-space>
+        </template>
       </template>
     </a-table>
 
@@ -173,13 +179,24 @@
           <a-upload
               v-model:file-list="fileList"
               :before-upload="beforeUpload"
-              :custom-request="uploadAvatar"
+              :custom-request="handleUploadAvatar"
+              @remove="handleRemoveAvatar"
               list-type="picture-card"
               :max-count="1"
+              accept="image/*"
+              :show-upload-list="{
+                showPreviewIcon: true,
+                showRemoveIcon: true,
+                showDownloadIcon: false
+              }"
           >
             <div v-if="fileList.length < 1">
               <upload-outlined/>
-              <div>上传头像</div>
+              <div style="margin-top: 8px;">上传头像</div>
+              <div style="color: #999; font-size: 12px; margin-top: 4px;">
+                支持 JPG、PNG、GIF、WebP<br/>
+                文件大小不超过 2MB
+              </div>
             </div>
           </a-upload>
         </a-form-item>
@@ -195,7 +212,7 @@
     >
       <div v-if="currentCounselor" class="counselor-detail">
         <div class="detail-header">
-          <a-avatar :src="currentCounselor.avatar" size="large">
+          <a-avatar :src="FileUploader.getFullImageUrl(currentCounselor.avatar)" size="large">
             {{ currentCounselor.name?.[0] }}
           </a-avatar>
           <div class="header-info">
@@ -247,6 +264,7 @@ import {ref, reactive, onMounted, computed} from 'vue'
 import {message} from 'ant-design-vue'
 import {PlusOutlined, UploadOutlined} from '@ant-design/icons-vue'
 import {counselorAPI} from '@/api/admin'
+import {uploadAvatar, FileUploader} from '@/api/upload'
 
 export default {
   name: 'CounselorManagement',
@@ -296,7 +314,6 @@ export default {
         title: '头像',
         dataIndex: 'avatar',
         key: 'avatar',
-        slots: {customRender: 'avatar'},
         width: 80
       },
       {
@@ -317,31 +334,26 @@ export default {
       {
         title: '状态',
         dataIndex: 'status',
-        key: 'status',
-        slots: {customRender: 'status'}
+        key: 'status'
       },
       {
         title: '评分',
         dataIndex: 'rating',
-        key: 'rating',
-        slots: {customRender: 'rating'}
+        key: 'rating'
       },
       {
         title: '咨询费用',
         dataIndex: 'price',
-        key: 'price',
-        render: (text) => `${text || 0} 元/小时`
+        key: 'price'
       },
       {
         title: '创建时间',
         dataIndex: 'create_time',
-        key: 'create_time',
-        slots: {customRender: 'createTime'}
+        key: 'create_time'
       },
       {
         title: '操作',
         key: 'action',
-        slots: {customRender: 'action'},
         width: 180
       }
     ]
@@ -433,12 +445,17 @@ export default {
         avatar: counselor.avatar
       })
       if (counselor.avatar) {
+        // 使用封装的方法获取完整URL进行显示
+        const fullImageUrl = FileUploader.getFullImageUrl(counselor.avatar)
         fileList.value = [{
           uid: '-1',
           name: 'avatar.png',
           status: 'done',
-          url: counselor.avatar
+          url: fullImageUrl,
+          thumbUrl: fullImageUrl
         }]
+      } else {
+        fileList.value = []
       }
     }
 
@@ -514,32 +531,65 @@ export default {
 
     // 上传前验证
     const beforeUpload = (file) => {
-      const isImage = file.type.startsWith('image/')
-      if (!isImage) {
-        message.error('只能上传图片文件!')
+      try {
+        // 使用封装的验证方法
+        FileUploader.validateImage(file, 2) // 头像限制2MB
+        return true // 允许上传
+      } catch (error) {
+        message.error(error.message)
         return false
       }
-      const isLt2M = file.size / 1024 / 1024 < 2
-      if (!isLt2M) {
-        message.error('图片大小不能超过 2MB!')
-        return false
-      }
-      return false
     }
 
     // 上传头像
-    const uploadAvatar = ({file}) => {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        counselorForm.avatar = e.target.result
+    const handleUploadAvatar = async ({file}) => {
+      try {
+        // 调用封装的头像上传接口
+        const result = await uploadAvatar(file)
+        
+        if (result.success && result.data) {
+          // 上传成功，设置头像URL
+          const imageUrl = result.data.url
+          // 使用封装的方法获取完整URL用于显示
+          const fullImageUrl = FileUploader.getFullImageUrl(imageUrl)
+          
+          counselorForm.avatar = imageUrl // 保存相对路径到表单
+          
+          // 更新文件列表显示
+          fileList.value = [{
+            uid: file.uid,
+            name: result.data.original_filename || file.name,
+            status: 'done',
+            url: fullImageUrl,
+            response: result.data,
+            thumbUrl: fullImageUrl
+          }]
+          
+          message.success('头像上传成功')
+        } else {
+          // 上传失败
+          fileList.value = [{
+            uid: file.uid,
+            name: file.name,
+            status: 'error'
+          }]
+          message.error(result.message || '头像上传失败')
+        }
+      } catch (error) {
+        console.error('头像上传失败:', error)
         fileList.value = [{
           uid: file.uid,
           name: file.name,
-          status: 'done',
-          url: e.target.result
+          status: 'error'
         }]
+        message.error('头像上传失败')
       }
-      reader.readAsDataURL(file)
+    }
+
+    // 移除头像
+    const handleRemoveAvatar = (file) => {
+      counselorForm.avatar = '' // 清空头像URL
+      fileList.value = fileList.value.filter(f => f.uid !== file.uid)
     }
 
     // 格式化日期
@@ -580,8 +630,10 @@ export default {
       handleModalOk,
       handleModalCancel,
       beforeUpload,
-      uploadAvatar,
-      formatDate
+      handleUploadAvatar,
+      handleRemoveAvatar,
+      formatDate,
+      FileUploader
     }
   }
 }

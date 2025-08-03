@@ -3,10 +3,10 @@
     <!-- 搜索栏和操作栏 -->
     <div class="search-and-action-bar">
       <a-form layout="inline" :model="searchForm" @submit="handleSearch" class="search-form">
-        <a-form-item label="群组名称">
+        <a-form-item label="群组标题">
           <a-input
-              v-model:value="searchForm.name"
-              placeholder="请输入群组名称"
+              v-model:value="searchForm.title"
+              placeholder="请输入群组标题"
               style="width: 200px;"
           />
         </a-form-item>
@@ -35,33 +35,35 @@
         @change="handleTableChange"
         row-key="id"
     >
-      <template #description="{ record }">
-        <div class="description-cell">
-          <span class="description-text">{{ record.description || '-' }}</span>
-        </div>
-      </template>
-
-      <template #createTime="{ record }">
-        {{ formatDate(record.create_time) }}
-      </template>
-
-      <template #action="{ record }">
-        <a-space>
-          <a-button type="link" size="small" @click="editGroup(record)">
-            编辑
-          </a-button>
-          <a-button type="link" size="small" @click="viewGroup(record)">
-            查看
-          </a-button>
-          <a-popconfirm
-              title="确定要删除这个群组吗？"
-              @confirm="deleteGroup(record.id)"
-          >
-            <a-button type="link" size="small" danger>
-              删除
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.key === 'description'">
+          <div class="description-cell">
+            <span class="description-text">{{ record.description || '-' }}</span>
+          </div>
+        </template>
+        
+        <template v-if="column.key === 'create_time'">
+          {{ formatDate(record.create_time) }}
+        </template>
+        
+        <template v-if="column.key === 'action'">
+          <a-space>
+            <a-button type="link" size="small" @click="editGroup(record)">
+              编辑
             </a-button>
-          </a-popconfirm>
-        </a-space>
+            <a-button type="link" size="small" @click="viewGroup(record)">
+              查看
+            </a-button>
+            <a-popconfirm
+                title="确定要删除这个群组吗？"
+                @confirm="deleteGroup(record.id)"
+            >
+              <a-button type="link" size="small" danger>
+                删除
+              </a-button>
+            </a-popconfirm>
+          </a-space>
+        </template>
       </template>
     </a-table>
 
@@ -79,8 +81,8 @@
           :rules="groupFormRules"
           layout="vertical"
       >
-        <a-form-item label="群组名称" name="name">
-          <a-input v-model:value="groupForm.name" placeholder="请输入群组名称"/>
+        <a-form-item label="群组标题" name="title">
+          <a-input v-model:value="groupForm.title" placeholder="请输入群组标题"/>
         </a-form-item>
 
         <a-form-item label="群组描述" name="description">
@@ -102,14 +104,14 @@
     >
       <div v-if="currentGroup" class="group-detail">
         <div class="detail-header">
-          <h3>{{ currentGroup.name || '' }}</h3>
+          <h3>{{ currentGroup.title || '' }}</h3>
         </div>
 
         <a-divider/>
 
         <div class="detail-section">
           <a-descriptions bordered :column="1">
-            <a-descriptions-item label="群组名称">{{ currentGroup.name || '-' }}</a-descriptions-item>
+            <a-descriptions-item label="群组标题">{{ currentGroup.title || '-' }}</a-descriptions-item>
             <a-descriptions-item label="群组描述">{{ currentGroup.description || '-' }}</a-descriptions-item>
             <a-descriptions-item label="创建时间">{{ formatDate(currentGroup.create_time) }}</a-descriptions-item>
             <a-descriptions-item label="更新时间">{{ formatDate(currentGroup.update_time) }}</a-descriptions-item>
@@ -143,11 +145,11 @@ export default {
     const groupFormRef = ref()
 
     const searchForm = reactive({
-      name: ''
+      title: ''
     })
 
     const groupForm = reactive({
-      name: '',
+      title: '',
       description: ''
     })
 
@@ -162,36 +164,33 @@ export default {
 
     const columns = [
       {
-        title: '群组名称',
-        dataIndex: 'name',
-        key: 'name',
+        title: '群组标题',
+        dataIndex: 'title',
+        key: 'title',
         width: 200
       },
       {
         title: '描述',
         dataIndex: 'description',
         key: 'description',
-        slots: {customRender: 'description'},
         width: 300
       },
       {
         title: '创建时间',
         dataIndex: 'create_time',
         key: 'create_time',
-        slots: {customRender: 'createTime'},
         width: 150
       },
       {
         title: '操作',
         key: 'action',
-        slots: {customRender: 'action'},
         width: 150
       }
     ]
 
     const groupFormRules = {
-      name: [
-        {required: true, message: '请输入群组名称', trigger: 'blur'}
+      title: [
+        {required: true, message: '请输入群组标题', trigger: 'blur'}
       ]
     }
 
@@ -202,7 +201,7 @@ export default {
         const params = {
           page: pagination.current,
           per_page: pagination.pageSize,
-          name: searchForm.name
+          title: searchForm.title
         }
 
         const result = await groupAPI.getGroups(params)
@@ -227,7 +226,7 @@ export default {
     // 重置搜索
     const resetSearch = () => {
       Object.assign(searchForm, {
-        name: ''
+        title: ''
       })
       pagination.current = 1
       fetchGroups()
@@ -255,7 +254,7 @@ export default {
       // 填充表单数据
       Object.assign(groupForm, {
         id: group.id,
-        name: group.name,
+        title: group.title,
         description: group.description
       })
     }
@@ -325,7 +324,7 @@ export default {
     // 重置群组表单
     const resetGroupForm = () => {
       Object.assign(groupForm, {
-        name: '',
+        title: '',
         description: ''
       })
       groupFormRef.value?.resetFields()
