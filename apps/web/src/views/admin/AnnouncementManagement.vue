@@ -1,18 +1,8 @@
 <template>
   <div class="announcement-management">
-    <div class="page-header">
-      <h2>公告管理</h2>
-      <a-button type="primary" @click="showAddModal">
-        <template #icon>
-          <PlusOutlined/>
-        </template>
-        发布公告
-      </a-button>
-    </div>
-
-    <!-- 搜索栏 -->
-    <div class="search-bar">
-      <a-form layout="inline" :model="searchForm" @submit="handleSearch">
+    <!-- 搜索栏和添加按钮在同一行 -->
+    <div class="search-and-action-bar">
+      <a-form layout="inline" :model="searchForm" @submit="handleSearch" class="search-form">
         <a-form-item label="公告标题">
           <a-input
               v-model:value="searchForm.title"
@@ -50,6 +40,13 @@
           <a-button style="margin-left: 8px;" @click="resetSearch">重置</a-button>
         </a-form-item>
       </a-form>
+      
+      <a-button type="primary" @click="showAddModal">
+        <template #icon>
+          <PlusOutlined/>
+        </template>
+        发布公告
+      </a-button>
     </div>
 
     <!-- 公告列表 -->
@@ -691,51 +688,55 @@ export default {
 
 <style scoped>
 .announcement-management {
-  padding: 24px;
+  padding: 0px;
 }
 
-.page-header {
+.search-and-action-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
-}
-
-.page-header h2 {
-  margin: 0;
-  color: #1890ff;
-}
-
-.search-bar {
+  margin-bottom: 12px;
   background: white;
-  padding: 16px;
-  border-radius: 6px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 12px;
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.search-form .ant-form {
+  flex: 1;
+  margin-right: 12px;
+}
+
+.search-form .ant-form-item {
+  margin-bottom: 0;
+}
+
+.search-form .ant-form-item:last-child {
+  margin-bottom: 0;
 }
 
 .announcement-detail {
-  padding: 16px 0;
+  padding: 12px 0;
 }
 
 .detail-header h3 {
-  margin: 0 0 12px 0;
+  margin: 0 0 8px 0;
   color: #1890ff;
 }
 
 .meta-info {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
 }
 
 .detail-section {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .detail-section h4 {
-  margin: 0 0 8px 0;
+  margin: 0 0 6px 0;
   color: #333;
   font-size: 14px;
   font-weight: 600;
@@ -749,7 +750,7 @@ export default {
 .info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 8px;
 }
 
 .info-item {
@@ -770,21 +771,20 @@ export default {
 
 @media (max-width: 768px) {
   .announcement-management {
-    padding: 12px;
+    padding: 8px;
   }
 
-  .page-header {
+  .search-and-action-bar {
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
     align-items: stretch;
-  }
-
-  .search-bar .ant-form {
-    flex-direction: column;
-  }
-
-  .search-bar .ant-form-item {
+    padding: 8px;
     margin-bottom: 8px;
+  }
+
+  .search-form .ant-form {
+    width: 100%;
+    margin-right: 0;
   }
 
   .info-grid {

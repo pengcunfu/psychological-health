@@ -16,7 +16,7 @@ export default {
   },
   setup() {
     const userStore = useUserStore()
-    const showTabBar = ref(false)
+    const showTabBar = ref(true)
     
     // 检查当前页面是否是tabBar页面
     const checkTabBarPage = () => {

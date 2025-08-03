@@ -1,18 +1,8 @@
 <template>
   <div class="banner-management">
-    <div class="page-header">
-      <h2>轮播图管理</h2>
-      <a-button type="primary" @click="showAddModal">
-        <template #icon>
-          <PlusOutlined/>
-        </template>
-        添加轮播图
-      </a-button>
-    </div>
-
-    <!-- 搜索栏 -->
-    <div class="search-bar">
-      <a-form layout="inline" :model="searchForm" @submit="handleSearch">
+    <!-- 搜索栏和添加按钮在同一行 -->
+    <div class="search-and-action-bar">
+      <a-form layout="inline" :model="searchForm" @submit="handleSearch" class="search-form">
         <a-form-item label="标题">
           <a-input
               v-model:value="searchForm.title"
@@ -25,6 +15,13 @@
           <a-button style="margin-left: 8px;" @click="resetSearch">重置</a-button>
         </a-form-item>
       </a-form>
+      
+      <a-button type="primary" @click="showAddModal">
+        <template #icon>
+          <PlusOutlined/>
+        </template>
+        添加轮播图
+      </a-button>
     </div>
 
     <!-- 轮播图列表 -->
@@ -475,35 +472,16 @@ export default {
 
 <style scoped>
 .banner-management {
-  padding: 24px;
-}
-
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-}
-
-.page-header h2 {
+  padding: 0;
   margin: 0;
-  color: #1890ff;
-}
-
-.search-bar {
-  background: white;
-  padding: 16px;
-  border-radius: 6px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .banner-detail {
-  padding: 16px 0;
+  padding: 12px 0;
 }
 
 .detail-header {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .detail-header h3 {
@@ -512,31 +490,54 @@ export default {
 }
 
 .detail-image {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   text-align: center;
 }
 
 .detail-section {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
+}
+
+.search-and-action-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  background: white;
+  padding: 12px;
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.search-form .ant-form {
+  flex: 1; /* Allow form to grow and shrink */
+  margin-right: 12px; /* Space between form and button */
+}
+
+.search-form .ant-form-item {
+  margin-bottom: 0; /* Remove bottom margin for inline form items */
+}
+
+.search-form .ant-form-item:last-child {
+  margin-bottom: 0; /* Remove bottom margin for the last item */
 }
 
 @media (max-width: 768px) {
   .banner-management {
-    padding: 12px;
+    padding: 8px;
   }
 
-  .page-header {
+  .search-and-action-bar {
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
     align-items: stretch;
-  }
-
-  .search-bar .ant-form {
-    flex-direction: column;
-  }
-
-  .search-bar .ant-form-item {
+    padding: 8px;
     margin-bottom: 8px;
+  }
+
+  .search-form .ant-form {
+    width: 100%;
+    margin-right: 0;
   }
 }
 </style> 
