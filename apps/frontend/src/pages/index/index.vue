@@ -19,6 +19,7 @@
     <!-- 轮播图 -->
     <view class="banner">
       <swiper 
+        v-if="bannerList.length > 0"
         :autoplay="true"
         :interval="3000"
         :duration="300"
@@ -44,8 +45,15 @@
           </view>
         </swiper-item>
       </swiper>
-      <view v-if="bannerList.length === 0" class="banner-loading">
-        <text>轮播图加载中...</text>
+      <view v-else class="banner-empty">
+        <u-empty 
+          text="暂无轮播图"
+          icon="https://cdn.uviewui.com/uview/empty/list.png"
+          iconSize="80"
+          textSize="12"
+          textColor="#999999"
+          marginTop="50"
+        />
       </view>
     </view>
 
@@ -78,7 +86,7 @@
         </view>
       </view>
       
-      <scroll-view class="counselor-list" scroll-x="true" show-scrollbar="false">
+      <scroll-view class="counselor-list" scroll-x="true" show-scrollbar="false" v-if="counselorList.length > 0">
         <view 
           class="counselor-card" 
           v-for="(item, index) in counselorList" 
@@ -97,6 +105,16 @@
           </view>
         </view>
       </scroll-view>
+      <view v-else class="section-empty">
+        <u-empty 
+          text="暂无推荐咨询师"
+          icon="https://cdn.uviewui.com/uview/empty/list.png"
+          iconSize="100"
+          textSize="14"
+          textColor="#999999"
+          marginTop="40"
+        />
+      </view>
     </view>
 
     <!-- 推荐课程 -->
@@ -112,7 +130,7 @@
         </view>
       </view>
       
-      <view class="course-list">
+      <view class="course-list" v-if="courseList.length > 0">
         <view 
           class="course-card" 
           v-for="(item, index) in courseList" 
@@ -134,6 +152,16 @@
           </view>
         </view>
       </view>
+      <view v-else class="section-empty">
+        <u-empty 
+          text="暂无推荐课程"
+          icon="https://cdn.uviewui.com/uview/empty/list.png"
+          iconSize="100"
+          textSize="14"
+          textColor="#999999"
+          marginTop="40"
+        />
+      </view>
     </view>
 
     <!-- 心理测评推荐 -->
@@ -149,7 +177,7 @@
         </view>
       </view>
       
-      <view class="course-list">
+      <view class="course-list" v-if="assessmentList.length > 0">
         <view 
           class="course-card" 
           v-for="(item, index) in assessmentList" 
@@ -166,6 +194,16 @@
             <text class="course-free" v-else>免费</text>
           </view>
         </view>
+      </view>
+      <view v-else class="section-empty">
+        <u-empty 
+          text="暂无心理测评"
+          icon="https://cdn.uviewui.com/uview/empty/list.png"
+          iconSize="100"
+          textSize="14"
+          textColor="#999999"
+          marginTop="40"
+        />
       </view>
     </view>
 
@@ -242,29 +280,7 @@ const counselorList = ref([])
 const courseList = ref([])
 
 // 测评数据
-const assessmentList = ref([
-  {
-    id: 1,
-    name: '抑郁症筛查量表（PHQ-9）',
-    duration: 5,
-    price: 0,
-    cover: 'https://via.placeholder.com/240x160/4A90E2/FFFFFF?text=抑郁测试'
-  },
-  {
-    id: 2,
-    name: '广泛性焦虑障碍量表（GAD-7）',
-    duration: 3,
-    price: 0,
-    cover: 'https://via.placeholder.com/240x160/52C41A/FFFFFF?text=焦虑测试'
-  },
-  {
-    id: 3,
-    name: '大五人格测试（Big Five）',
-    duration: 15,
-    price: 19,
-    cover: 'https://via.placeholder.com/240x160/FA8C16/FFFFFF?text=人格测试'
-  }
-])
+const assessmentList = ref([])
 
 // 获取咨询师列表
 const fetchCounselors = async () => {
@@ -274,49 +290,14 @@ const fetchCounselors = async () => {
       per_page: 5
     })
     
-    if (res.code === 200 && res.success) {
+    if (res.code === 200 && res.success && res.data) {
       counselorList.value = res.data.list || []
+    } else {
+      counselorList.value = []
     }
   } catch (error) {
-    // 如果API调用失败，使用模拟数据作为后备
-    counselorList.value = [
-    {
-      id: 1,
-      name: '张医生',
-      title: '心理咨询师 · 婚恋情感',
-      rating: 4.9,
-      consultation_count: 128,
-      price: 300,
-      avatar: 'https://via.placeholder.com/280x280/4A90E2/FFFFFF?text=张医生'
-    },
-    {
-      id: 2,
-      name: '李医生',
-      title: '心理咨询师 · 青少年心理',
-      rating: 4.8,
-      consultation_count: 96,
-      price: 280,
-      avatar: 'https://via.placeholder.com/280x280/52C41A/FFFFFF?text=李医生'
-    },
-    {
-      id: 3,
-      name: '王医生',
-      title: '心理咨询师 · 职场压力',
-      rating: 4.7,
-      consultation_count: 85,
-      price: 320,
-      avatar: 'https://via.placeholder.com/280x280/FA8C16/FFFFFF?text=王医生'
-    },
-    {
-      id: 4,
-      name: '赵医生',
-      title: '心理咨询师 · 抑郁焦虑',
-      rating: 4.9,
-      consultation_count: 142,
-      price: 350,
-      avatar: 'https://via.placeholder.com/280x280/EB2F96/FFFFFF?text=赵医生'
-    }
-    ]
+    console.error('获取咨询师列表失败:', error)
+    counselorList.value = []
   }
 }
 
@@ -339,52 +320,13 @@ const fetchCourses = async () => {
       }))
       console.log('处理后的课程列表:', courseList.value)
     } else {
-      console.log('API返回数据格式异常，使用模拟数据')
-      courseList.value = getDefaultCourses()
+      console.log('API返回数据格式异常')
+      courseList.value = []
     }
   } catch (error) {
     console.error('获取课程列表失败:', error)
-    // 如果API调用失败，使用模拟数据作为后备
-    courseList.value = getDefaultCourses()
+    courseList.value = []
   }
-}
-
-// 获取默认课程数据
-const getDefaultCourses = () => {
-  return [
-    {
-      id: 'default-1',
-      title: '情绪管理：如何应对日常压力与焦虑',
-      rating: 4.8,
-      student_count: 2345,
-      price: 99,
-      cover_image: 'https://via.placeholder.com/240x160/4A90E2/FFFFFF?text=情绪管理'
-    },
-    {
-      id: 'default-2',
-      title: '人际关系：构建健康社交圈的技巧',
-      rating: 4.7,
-      student_count: 1876,
-      price: 89,
-      cover_image: 'https://via.placeholder.com/240x160/52C41A/FFFFFF?text=人际关系'
-    },
-    {
-      id: 'default-3',
-      title: '自我成长：发现内在力量的旅程',
-      rating: 4.9,
-      student_count: 2103,
-      price: 129,
-      cover_image: 'https://via.placeholder.com/240x160/FA8C16/FFFFFF?text=自我成长'
-    },
-    {
-      id: 'default-4',
-      title: '冥想入门：21天正念练习指南',
-      rating: 4.6,
-      student_count: 3421,
-      price: 0,
-      cover_image: 'https://via.placeholder.com/240x160/EB2F96/FFFFFF?text=冥想入门'
-    }
-  ]
 }
 
 // 获取轮播图数据
@@ -395,44 +337,15 @@ const fetchBanners = async () => {
       per_page: 10
     })
     
-    if (res.code === 200 && res.success) {
-      bannerList.value = res.data.list.length > 0 ? res.data.list : getDefaultBanners()
+    if (res.code === 200 && res.success && res.data) {
+      bannerList.value = res.data.list || []
     } else {
-      bannerList.value = getDefaultBanners()
+      bannerList.value = []
     }
   } catch (error) {
-    bannerList.value = getDefaultBanners()
+    console.error('获取轮播图失败:', error)
+    bannerList.value = []
   }
-}
-
-// 获取默认轮播图数据
-const getDefaultBanners = () => {
-  return [
-    { 
-      id: 'default-1',
-      title: '心理健康服务',
-      image_url: 'https://via.placeholder.com/750x320/4A90E2/FFFFFF?text=心理健康服务',
-      link_url: '/pages/counselor/index',
-      sort_order: 0,
-      status: 1
-    },
-    { 
-      id: 'default-2',
-      title: '专业咨询服务',
-      image_url: 'https://via.placeholder.com/750x320/52c41a/FFFFFF?text=专业咨询服务',
-      link_url: '/pages/course/index',
-      sort_order: 1,
-      status: 1
-    },
-    { 
-      id: 'default-3',
-      title: '心理健康资讯',
-      image_url: 'https://via.placeholder.com/750x320/faad14/FFFFFF?text=心理健康资讯',
-      link_url: 'https://www.who.int/zh/news-room/fact-sheets/detail/mental-disorders',
-      sort_order: 2,
-      status: 1
-    }
-  ]
 }
 
 // 轮播图点击处理
@@ -610,6 +523,15 @@ onShow(() => {
   font-size: 28rpx;
 }
 
+.banner-empty {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fafafa;
+  border-radius: 12rpx;
+}
+
 // 功能导航样式
 .nav-grid {
   display: grid;
@@ -686,6 +608,16 @@ onShow(() => {
     font-size: 24rpx;
     color: #999;
   }
+}
+
+.section-empty {
+  height: 200rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fafafa;
+  border-radius: 12rpx;
+  margin: 20rpx 0;
 }
 
 // 咨询师列表样式

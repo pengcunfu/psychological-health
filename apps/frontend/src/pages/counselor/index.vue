@@ -1,221 +1,327 @@
 <template>
   <view class="container tab-page">
     <view class="search-bar">
-      <u-search
-        v-model="searchKeyword"
-        placeholder="搜索咨询师"
-        :show-action="false"
-        @search="handleSearch"
-        @custom="handleSearch"
-      ></u-search>
+      <up-search
+          v-model="searchKeyword"
+          placeholder="搜索咨询师"
+          :show-action="false"
+          @search="handleSearch"
+          @custom="handleSearch"
+      ></up-search>
     </view>
 
-    <view class="filter-bar">
-      <view 
-        class="filter-item" 
-        :class="{ active: activeFilter === 'all' }" 
-        @click="setFilter('all')"
-      >
-        全部
-      </view>
-      <view 
-        class="filter-item" 
-        :class="{ active: activeFilter === 'rating' }" 
-        @click="setFilter('rating')"
-      >
-        评分最高
-      </view>
-      <view 
-        class="filter-item" 
-        :class="{ active: activeFilter === 'price-asc' }" 
-        @click="setFilter('price-asc')"
-      >
-        价格从低到高
-      </view>
-      <view 
-        class="filter-item" 
-        :class="{ active: activeFilter === 'price-desc' }" 
-        @click="setFilter('price-desc')"
-      >
-        价格从高到低
-      </view>
-    </view>
+    <!-- 使用uViewPlus Tabs组件 -->
+    <up-tabs
+        :list="tabList"
+        :current="currentTab"
+        @change="handleTabChange"
+        :activeStyle="{
+        color: '#4A90E2',
+        fontWeight: 'bold',
+        transform: 'scale(1.05)'
+      }"
+        :inactiveStyle="{
+        color: '#666666'
+      }"
+        lineWidth="30"
+        lineColor="#4A90E2"
+        lineHeight="4"
+        itemStyle="padding-left: 15px; padding-right: 15px; height: 50px;"
+    />
 
-    <view class="counselor-list">
-      <view 
-        class="counselor-card" 
-        v-for="(item, index) in counselorList" 
-        :key="index"
-        @click="navigateToDetail(item.id)"
+    <!-- 咨询师列表 -->
+    <up-list v-if="!loading && counselorList.length > 0">
+      <up-list-item
+          v-for="(item, index) in counselorList"
+          :key="item.id || index"
+          @click="navigateToDetail(item.id)"
       >
-        <view class="counselor-header">
-          <u-avatar :src="item.avatar || '/static/images/default-avatar.png'" size="120"></u-avatar>
-          <view class="counselor-info">
-            <view class="counselor-name-row">
-              <text class="counselor-name">{{ item.name }}</text>
-              <text class="counselor-title">{{ item.title }}</text>
-            </view>
-            <view class="counselor-rating">
-              <u-icon name="star-fill" color="#faad14" size="24"></u-icon>
-              <text class="rating-text">{{ item.rating }}</text>
-              <text class="consultation-count">{{ item.consultation_count }}次咨询</text>
-            </view>
-            <view class="counselor-tags">
-              <text class="tag" v-for="(tag, tagIndex) in item.tags" :key="tagIndex">{{ tag }}</text>
+        <view class="counselor-card">
+          <view class="counselor-header">
+            <up-avatar :src="item.avatar || '/static/images/default-avatar.png'" size="120"></up-avatar>
+            <view class="counselor-info">
+              <view class="counselor-name-row">
+                <text class="counselor-name">{{ item.name || '未知咨询师' }}</text>
+                <text class="counselor-title">{{ item.title || item.professional_title || '心理咨询师' }}</text>
+              </view>
+              <view class="counselor-rating">
+                <up-icon name="star-fill" color="#faad14" size="24"></up-icon>
+                <text class="rating-text">{{ item.rating || '4.8' }}</text>
+                <text class="consultation-count">{{ item.consultation_count || 0 }}次咨询</text>
+              </view>
+              <view class="counselor-tags" v-if="item.specialties && item.specialties.length > 0">
+                <text class="tag" v-for="(tag, tagIndex) in item.specialties.slice(0, 3)" :key="tagIndex">{{
+                    tag
+                  }}
+                </text>
+              </view>
+              <view class="counselor-tags" v-else>
+                <text class="tag">心理咨询</text>
+                <text class="tag">情感支持</text>
+              </view>
             </view>
           </view>
+          <view class="counselor-content">
+            <text class="counselor-intro text-ellipsis-2">
+              {{ item.introduction || item.description || '专业心理咨询师，致力于为您提供优质的心理健康服务' }}
+            </text>
+          </view>
+          <view class="counselor-footer">
+            <text class="price">¥{{ item.price || item.consultation_fee || 300 }}/次</text>
+            <up-button
+                text="立即预约"
+                type="primary"
+                size="small"
+                @click.stop="handleAppointment(item)"
+                :customStyle="{
+                backgroundColor: '#4A90E2',
+                borderColor: '#4A90E2',
+                borderRadius: '30rpx',
+                height: '60rpx',
+                fontSize: '28rpx'
+              }"
+            ></up-button>
+          </view>
         </view>
-        <view class="counselor-content">
-          <text class="counselor-intro text-ellipsis-2">{{ item.introduction || '暂无简介' }}</text>
-        </view>
-        <view class="counselor-footer">
-          <text class="price">¥{{ item.price }}/次</text>
-          <button class="appointment-btn">立即预约</button>
-        </view>
-      </view>
+      </up-list-item>
+    </up-list>
+
+    <!-- 空状态 -->
+    <view v-if="!loading && counselorList.length === 0" class="empty-state">
+      <up-empty
+          text="暂无咨询师数据"
+          icon="https://cdn.uviewui.com/uview/empty/list.png"
+          iconSize="120"
+          textSize="14"
+          textColor="#999999"
+          marginTop="80"
+      >
+        <template v-slot:bottom>
+          <up-button
+              text="刷新重试"
+              type="primary"
+              size="small"
+              @click="fetchCounselors(true)"
+              :customStyle="{
+              marginTop: '20rpx',
+              width: '200rpx'
+            }"
+          ></up-button>
+        </template>
+      </up-empty>
     </view>
 
-    <u-loadmore :status="loadMoreStatus" />
+    <!-- 加载更多 -->
+    <up-loadmore :status="loadMoreStatus" @loadmore="loadMore"/>
   </view>
 </template>
 
-<script>
-import { ref, reactive } from 'vue'
-import { onLoad, onReachBottom } from '@dcloudio/uni-app'
-import { request } from '@/utils/request'
+<script setup>
+import {ref, reactive, computed} from 'vue'
+import {onLoad, onReachBottom} from '@dcloudio/uni-app'
+import {counselorAPI} from '@/api/counselor'
 
-export default {
-  setup() {
-    const searchKeyword = ref('')
-    const activeFilter = ref('all')
-    const counselorList = ref([])
-    const loadMoreStatus = ref('loading')
-    
-    const pagination = reactive({
-      page: 1,
-      per_page: 10,
-      total: 0,
-      total_pages: 0
-    })
-    
-    // 获取咨询师列表
-    const fetchCounselors = async (reset = false) => {
+// 搜索关键词
+const searchKeyword = ref('')
+
+// 当前选中的标签页
+const currentTab = ref(0)
+
+// 标签页列表
+const tabList = ref([
+  {name: '全部'},
+  {name: '评分最高'},
+  {name: '价格最低'},
+  {name: '价格最高'}
+])
+
+// 咨询师列表
+const counselorList = ref([])
+
+// 加载状态
+const loading = ref(false)
+const loadMoreStatus = ref('loadmore')
+
+// 分页信息
+const pagination = reactive({
+  page: 1,
+  per_page: 10,
+  total: 0,
+  total_pages: 0
+})
+
+// 当前筛选条件
+const currentFilter = computed(() => {
+  const filters = ['all', 'rating', 'price-asc', 'price-desc']
+  return filters[currentTab.value] || 'all'
+})
+
+// 获取咨询师列表
+const fetchCounselors = async (reset = false) => {
+  if (reset) {
+    pagination.page = 1
+    counselorList.value = []
+  }
+
+  loading.value = true
+  loadMoreStatus.value = 'loading'
+
+  try {
+    // 构建查询参数
+    const params = {
+      page: pagination.page,
+      per_page: pagination.per_page
+    }
+
+    // 添加搜索关键词
+    if (searchKeyword.value) {
+      params.keyword = searchKeyword.value
+    }
+
+    // 根据筛选条件添加排序参数
+    switch (currentFilter.value) {
+      case 'rating':
+        params.sort_by = 'rating'
+        params.sort_order = 'desc'
+        break
+      case 'price-asc':
+        params.sort_by = 'price'
+        params.sort_order = 'asc'
+        break
+      case 'price-desc':
+        params.sort_by = 'price'
+        params.sort_order = 'desc'
+        break
+    }
+
+    console.log('获取咨询师列表参数:', params)
+
+    const res = await counselorAPI.getCounselors(params)
+
+    console.log('咨询师API响应:', res)
+
+    if (res.code === 200 && res.success && res.data) {
+      // 处理咨询师数据
+      let newList = res.data.list || []
+
+      // 数据处理和字段映射
+      newList = newList.map(item => {
+        const processedItem = {
+          ...item,
+          // 字段映射和默认值处理
+          id: item.id,
+          name: item.name || '未知咨询师',
+          avatar: item.avatar || '/static/images/default-avatar.png',
+          title: item.title || '心理咨询师',
+          professional_title: item.title || '心理咨询师',
+          rating: item.rating || 4.8,
+          consultation_count: item.consultation_count || 0,
+          price: item.price || 300,
+          consultation_fee: item.price || 300,
+          introduction: item.introduction || '专业心理咨询师，致力于为您提供优质的心理健康服务',
+          description: item.introduction || '专业心理咨询师，致力于为您提供优质的心理健康服务',
+          // 处理专业领域 - 将tags字段映射为specialties
+          specialties: processSpecialties(item.tags || []),
+          tags: item.tags || [],
+          expertise: item.tags || []
+        }
+        return processedItem
+      })
+
+      // 更新列表
+      counselorList.value = reset ? newList : [...counselorList.value, ...newList]
+
+      // 更新分页信息
+      pagination.total = res.data.total || 0
+      pagination.total_pages = res.data.pages || Math.ceil((res.data.total || 0) / pagination.per_page)
+
+      // 更新加载更多状态
+      loadMoreStatus.value = pagination.page >= pagination.total_pages ? 'nomore' : 'loadmore'
+
+      console.log('咨询师列表加载成功，共', newList.length, '条数据')
+    } else {
+      console.log('API返回数据格式异常:', res)
+
+      // 设置为空数组，显示空状态
       if (reset) {
-        pagination.page = 1
         counselorList.value = []
       }
-      
-      loadMoreStatus.value = 'loading'
-      
-      try {
-        // 构建查询参数
-        const params = {
-          page: pagination.page,
-          per_page: pagination.per_page,
-          keyword: searchKeyword.value
-        }
-        
-        // 根据筛选条件添加排序参数
-        switch (activeFilter.value) {
-          case 'rating':
-            params.sort_by = 'rating'
-            params.sort_order = 'desc'
-            break
-          case 'price-asc':
-            params.sort_by = 'price'
-            params.sort_order = 'asc'
-            break
-          case 'price-desc':
-            params.sort_by = 'price'
-            params.sort_order = 'desc'
-            break
-        }
-        
-        const res = await request({
-          url: '/counselor',
-          method: 'GET',
-          data: params
-        })
-        
-        if (res.code === 200 && res.success) {
-          // 解析返回的咨询师列表
-          const newList = res.data.counselors || []
-          
-          // 处理标签字段，将字符串转为数组
-          newList.forEach(item => {
-            if (typeof item.tags === 'string') {
-              item.tags = item.tags.split(',').filter(tag => tag.trim() !== '')
-            } else if (!Array.isArray(item.tags)) {
-              item.tags = []
-            }
-          })
-          
-          // 更新列表和分页信息
-          counselorList.value = reset ? newList : [...counselorList.value, ...newList]
-          pagination.total = res.data.total || 0
-          pagination.total_pages = res.data.pages || 0
-          
-          // 更新加载更多状态
-          loadMoreStatus.value = pagination.page >= pagination.total_pages ? 'nomore' : 'loadmore'
-        } else {
-          loadMoreStatus.value = 'loadmore'
-          uni.showToast({
-            title: res.message || '获取咨询师列表失败',
-            icon: 'none'
-          })
-        }
-      } catch (error) {
-        console.error('获取咨询师列表失败:', error)
-        loadMoreStatus.value = 'loadmore'
-        uni.showToast({
-          title: '获取咨询师列表失败，请稍后重试',
-          icon: 'none'
-        })
-      }
+      loadMoreStatus.value = 'nomore'
     }
-    
-    // 搜索处理
-    const handleSearch = () => {
-      fetchCounselors(true)
+  } catch (error) {
+    console.error('获取咨询师列表失败:', error)
+
+    // 设置为空数组，显示空状态
+    if (reset) {
+      counselorList.value = []
     }
-    
-    // 筛选处理
-    const setFilter = (filter) => {
-      activeFilter.value = filter
-      fetchCounselors(true)
-    }
-    
-    // 跳转到详情页
-    const navigateToDetail = (id) => {
-      uni.navigateTo({
-        url: `/pages/counselor/detail/index?id=${id}`
-      })
-    }
-    
-    // 页面加载
-    onLoad(() => {
-      fetchCounselors()
+
+    loadMoreStatus.value = 'loadmore'
+    uni.showToast({
+      title: '获取咨询师列表失败，请稍后重试',
+      icon: 'none'
     })
-    
-    // 下拉加载更多
-    onReachBottom(() => {
-      if (loadMoreStatus.value === 'loadmore') {
-        pagination.page++
-        fetchCounselors()
-      }
-    })
-    
-    return {
-      searchKeyword,
-      activeFilter,
-      counselorList,
-      loadMoreStatus,
-      handleSearch,
-      setFilter,
-      navigateToDetail
-    }
+  } finally {
+    loading.value = false
   }
 }
+
+// 处理专业领域数据
+const processSpecialties = (tags) => {
+  if (Array.isArray(tags) && tags.length > 0) {
+    return tags
+  }
+  if (typeof tags === 'string' && tags.trim()) {
+    return tags.split(',').map(s => s.trim()).filter(s => s)
+  }
+  // 如果没有标签，返回默认标签
+  return ['心理咨询', '情感支持']
+}
+
+// 标签页切换处理
+const handleTabChange = (index) => {
+  currentTab.value = index
+  fetchCounselors(true)
+}
+
+// 搜索处理
+const handleSearch = () => {
+  fetchCounselors(true)
+}
+
+// 跳转到详情页
+const navigateToDetail = (id) => {
+  uni.navigateTo({
+    url: `/pages/counselor/detail/index?id=${id}`
+  })
+}
+
+// 预约处理
+const handleAppointment = (counselor) => {
+  uni.showToast({
+    title: `预约${counselor.name}`,
+    icon: 'none'
+  })
+  // TODO: 实现预约逻辑
+}
+
+// 加载更多
+const loadMore = () => {
+  if (loadMoreStatus.value === 'loadmore') {
+    pagination.page++
+    fetchCounselors()
+  }
+}
+
+// 页面加载
+onLoad(() => {
+  fetchCounselors()
+})
+
+// 下拉加载更多
+onReachBottom(() => {
+  loadMore()
+})
 </script>
 
 <style lang="scss">
@@ -228,37 +334,7 @@ export default {
 .search-bar {
   padding: 20rpx 30rpx;
   background-color: #fff;
-}
-
-.filter-bar {
-  display: flex;
-  background-color: #fff;
-  padding: 0 20rpx;
   margin-bottom: 20rpx;
-  border-bottom: 1rpx solid #f0f0f0;
-}
-
-.filter-item {
-  padding: 20rpx 30rpx;
-  font-size: 28rpx;
-  color: #666;
-  position: relative;
-}
-
-.filter-item.active {
-  color: #4A90E2;
-  font-weight: bold;
-}
-
-.filter-item.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 40rpx;
-  height: 4rpx;
-  background-color: #4A90E2;
 }
 
 .counselor-list {
@@ -271,6 +347,11 @@ export default {
   padding: 30rpx;
   margin-bottom: 20rpx;
   box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+
+.counselor-card:active {
+  transform: scale(0.98);
 }
 
 .counselor-header {
@@ -324,16 +405,15 @@ export default {
 .counselor-tags {
   display: flex;
   flex-wrap: wrap;
+  gap: 8rpx;
 }
 
 .tag {
-  font-size: 24rpx;
+  font-size: 22rpx;
   color: #4A90E2;
   background-color: rgba(74, 144, 226, 0.1);
-  padding: 4rpx 10rpx;
+  padding: 4rpx 8rpx;
   border-radius: 4rpx;
-  margin-right: 10rpx;
-  margin-bottom: 10rpx;
 }
 
 .counselor-content {
@@ -344,6 +424,14 @@ export default {
   font-size: 28rpx;
   color: #666;
   line-height: 1.6;
+}
+
+.text-ellipsis-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .counselor-footer {
@@ -358,12 +446,17 @@ export default {
   font-weight: bold;
 }
 
-.appointment-btn {
-  background-color: #4A90E2;
-  color: #fff;
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100rpx 50rpx;
+}
+
+.empty-text {
   font-size: 28rpx;
-  padding: 10rpx 30rpx;
-  border-radius: 30rpx;
-  border: none;
+  color: #999;
+  margin-top: 20rpx;
 }
 </style> 
