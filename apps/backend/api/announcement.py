@@ -11,6 +11,7 @@
 """
 from flask import Blueprint
 import uuid
+from datetime import datetime
 from models.announcement import Announcement
 from models.base import db
 from utils.json_result import JsonResult
@@ -30,16 +31,14 @@ def get_announcements():
     # 构建查询
     query = Announcement.query
 
-    if form.counselor_id.data:
-        query = query.filter(Announcement.counselor_id == form.counselor_id.data)
-    if form.user_id.data:
-        query = query.filter(Announcement.user_id == form.user_id.data)
-    if form.service_id.data:
-        query = query.filter(Announcement.service_id == form.service_id.data)
+    if form.title.data:
+        query = query.filter(Announcement.title.contains(form.title.data))
+    if form.type.data:
+        query = query.filter(Announcement.type == form.type.data)
     if form.status.data:
         query = query.filter(Announcement.status == form.status.data)
-    if form.date.data:
-        query = query.filter(Announcement.date == form.date.data)
+    if form.priority.data:
+        query = query.filter(Announcement.priority == form.priority.data)
 
     # 分页查询
     pagination = query.order_by(Announcement.create_time.desc()).paginate(
@@ -49,7 +48,7 @@ def get_announcements():
     announcements = [announcement.to_dict() for announcement in pagination.items]
 
     return JsonResult.success({
-        'announcements': announcements,
+        'list': announcements,
         'total': pagination.total,
         'page': form.page.data,
         'per_page': form.per_page.data,
@@ -73,16 +72,35 @@ def create_announcement():
     """创建公告"""
     form: AnnouncementCreateForm = validate_data(AnnouncementCreateForm)
 
+    # 解析时间字段
+    start_time = None
+    end_time = None
+    
+    if form.start_time.data:
+        try:
+            start_time = datetime.strptime(form.start_time.data, '%Y-%m-%d %H:%M:%S')
+        except ValueError:
+            return JsonResult.error('生效时间格式错误，请使用 YYYY-MM-DD HH:MM:SS 格式', 400)
+    
+    if form.end_time.data:
+        try:
+            end_time = datetime.strptime(form.end_time.data, '%Y-%m-%d %H:%M:%S')
+        except ValueError:
+            return JsonResult.error('失效时间格式错误，请使用 YYYY-MM-DD HH:MM:SS 格式', 400)
+
     # 创建公告
     announcement = Announcement(
         id=str(uuid.uuid4()),
-        counselor_id=form.counselor_id.data,
-        service_id=form.service_id.data,
-        user_id=form.user_id.data,
-        date=form.date.data,
-        note=form.note.data or '',
-        time_slot=form.time_slot.data,
-        status=form.status.data or 1
+        title=form.title.data,
+        type=form.type.data,
+        priority=form.priority.data,
+        status=form.status.data,
+        summary=form.summary.data or '',
+        content=form.content.data,
+        start_time=start_time,
+        end_time=end_time,
+        is_pinned=form.is_pinned.data or False
+        # user_id 暂时不传入
     )
 
     db.session.add(announcement)
@@ -98,8 +116,38 @@ def update_announcement(announcement_id):
     announcement = Announcement.query.filter_by(id=announcement_id).first()
     if not announcement:
         return JsonResult.error('公告不存在', 404)
+    
     form = validate_data(AnnouncementUpdateForm)
-    update_model_from_form(announcement, form)
+    
+    # 处理时间字段
+    if form.start_time.data:
+        try:
+            announcement.start_time = datetime.strptime(form.start_time.data, '%Y-%m-%d %H:%M:%S')
+        except ValueError:
+            return JsonResult.error('生效时间格式错误，请使用 YYYY-MM-DD HH:MM:SS 格式', 400)
+    
+    if form.end_time.data:
+        try:
+            announcement.end_time = datetime.strptime(form.end_time.data, '%Y-%m-%d %H:%M:%S')
+        except ValueError:
+            return JsonResult.error('失效时间格式错误，请使用 YYYY-MM-DD HH:MM:SS 格式', 400)
+    
+    # 更新其他字段
+    if form.title.data is not None:
+        announcement.title = form.title.data
+    if form.type.data is not None:
+        announcement.type = form.type.data
+    if form.priority.data is not None:
+        announcement.priority = form.priority.data
+    if form.status.data is not None:
+        announcement.status = form.status.data
+    if form.summary.data is not None:
+        announcement.summary = form.summary.data
+    if form.content.data is not None:
+        announcement.content = form.content.data
+    if form.is_pinned.data is not None:
+        announcement.is_pinned = form.is_pinned.data
+    
     db.session.commit()
     return JsonResult.success(announcement.to_dict(), '公告更新成功')
 

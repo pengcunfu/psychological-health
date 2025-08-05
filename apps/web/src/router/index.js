@@ -16,6 +16,8 @@ import RoleManagement from '@/views/admin/RoleManagement.vue'
 import DiseaseTagsManagement from '@/views/admin/DiseaseTagsManagement.vue'
 import WorkspaceManagement from '@/views/admin/WorkspaceManagement.vue'
 import CourseOutlineManagement from '@/views/admin/CourseOutlineManagement.vue'
+import NotFound from '@/views/common/404.vue'
+import Unauthorized from '@/views/common/401.vue'
 
 const routes = [
     {
@@ -177,6 +179,22 @@ const routes = [
                 }
             }
         ]
+    },
+    {
+        path: '/401',
+        name: 'Unauthorized',
+        component: Unauthorized,
+        meta: {
+            requiresAuth: false
+        }
+    },
+    {
+        path: '/:pathMatch(.*)*',
+        name: 'NotFound',
+        component: NotFound,
+        meta: {
+            requiresAuth: false
+        }
     }
 ]
 

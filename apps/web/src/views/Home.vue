@@ -560,7 +560,7 @@ export default {
 
 /* 仪表盘样式 */
 .dashboard {
-  max-width: 1200px;
+  /* max-width: 1200px; */
   margin: 0 auto;
 }
 

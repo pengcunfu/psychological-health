@@ -1,82 +1,97 @@
-from wtforms import StringField, IntegerField
-from wtforms.validators import DataRequired, Length, Optional, NumberRange
+from wtforms import StringField, IntegerField, TextAreaField, DateTimeField, BooleanField
+from wtforms.validators import DataRequired, Length, Optional, AnyOf, NumberRange
+from datetime import datetime
 
 from .base import BaseForm
 
 
 class AnnouncementCreateForm(BaseForm):
     """公告创建表单"""
-    # counselor_id = StringField('咨询师ID', [
-    #     DataRequired(message='咨询师ID不能为空'),
-    #     Length(max=36, message='咨询师ID长度不能超过36个字符')
-    # ])
-
-    # service_id = StringField('服务ID', [
-    #     DataRequired(message='服务ID不能为空'),
-    #     Length(max=36, message='服务ID长度不能超过36个字符')
-    # ])
-
-    user_id = StringField('用户ID', [
-        DataRequired(message='用户ID不能为空'),
-        Length(max=36, message='用户ID长度不能超过36个字符')
+    title = StringField('公告标题', [
+        DataRequired(message='公告标题不能为空'),
+        Length(max=200, message='公告标题长度不能超过200个字符')
     ])
 
-    date = StringField('日期', [
-        DataRequired(message='日期不能为空'),
-        Length(max=10, message='日期格式错误')
+    type = StringField('公告类型', [
+        DataRequired(message='公告类型不能为空'),
+        AnyOf(['system', 'activity', 'maintenance', 'notice'], message='公告类型必须是system、activity、maintenance或notice')
     ])
 
-    time_slot = StringField('时间段', [
-        DataRequired(message='时间段不能为空'),
-        Length(max=50, message='时间段长度不能超过50个字符')
+    priority = StringField('优先级', [
+        DataRequired(message='优先级不能为空'),
+        AnyOf(['low', 'medium', 'high', 'urgent'], message='优先级必须是low、medium、high或urgent')
     ])
 
-    note = StringField('备注', [
+    status = StringField('状态', [
+        DataRequired(message='状态不能为空'),
+        AnyOf(['draft', 'published', 'archived'], message='状态必须是draft、published或archived')
+    ])
+
+    summary = TextAreaField('公告摘要', [
         Optional(),
-        Length(max=500, message='备注长度不能超过500个字符')
+        Length(max=500, message='公告摘要长度不能超过500个字符')
     ])
 
-    status = IntegerField('状态', [
-        Optional(),
-        NumberRange(min=0, max=1, message='状态值必须为0或1')
+    content = TextAreaField('公告内容', [
+        DataRequired(message='公告内容不能为空'),
+        Length(max=5000, message='公告内容长度不能超过5000个字符')
+    ])
+
+    start_time = StringField('生效时间', [
+        Optional()
+    ])
+
+    end_time = StringField('失效时间', [
+        Optional()
+    ])
+
+    is_pinned = BooleanField('是否置顶', [
+        Optional()
     ])
 
 
 class AnnouncementUpdateForm(BaseForm):
     """公告更新表单"""
-    # counselor_id = StringField('咨询师ID', [
-    #     Optional(),
-    #     Length(max=36, message='咨询师ID长度不能超过36个字符')
-    # ])
-
-    # service_id = StringField('服务ID', [
-    #     Optional(),
-    #     Length(max=36, message='服务ID长度不能超过36个字符')
-    # ])
-
-    user_id = StringField('用户ID', [
+    title = StringField('公告标题', [
         Optional(),
-        Length(max=36, message='用户ID长度不能超过36个字符')
+        Length(max=200, message='公告标题长度不能超过200个字符')
     ])
 
-    date = StringField('日期', [
+    type = StringField('公告类型', [
         Optional(),
-        Length(max=10, message='日期格式错误')
+        AnyOf(['system', 'activity', 'maintenance', 'notice'], message='公告类型必须是system、activity、maintenance或notice')
     ])
 
-    time_slot = StringField('时间段', [
+    priority = StringField('优先级', [
         Optional(),
-        Length(max=50, message='时间段长度不能超过50个字符')
+        AnyOf(['low', 'medium', 'high', 'urgent'], message='优先级必须是low、medium、high或urgent')
     ])
 
-    note = StringField('备注', [
+    status = StringField('状态', [
         Optional(),
-        Length(max=500, message='备注长度不能超过500个字符')
+        AnyOf(['draft', 'published', 'archived'], message='状态必须是draft、published或archived')
     ])
 
-    status = IntegerField('状态', [
+    summary = TextAreaField('公告摘要', [
         Optional(),
-        NumberRange(min=0, max=1, message='状态值必须为0或1')
+        Length(max=500, message='公告摘要长度不能超过500个字符')
+    ])
+
+    content = TextAreaField('公告内容', [
+        Optional(),
+        Length(max=5000, message='公告内容长度不能超过5000个字符')
+    ])
+
+    start_time = StringField('生效时间', [
+        Optional()
+    ])
+
+    end_time = StringField('失效时间', [
+        Optional()
+    ])
+
+    is_pinned = BooleanField('是否置顶', [
+        Optional()
     ])
 
 
@@ -92,27 +107,22 @@ class AnnouncementQueryForm(BaseForm):
         NumberRange(min=1, max=100, message='每页数量必须在1-100之间')
     ], default=10)
 
-    # counselor_id = StringField('咨询师ID', [
-    #     Optional(),
-    #     Length(max=36, message='咨询师ID长度不能超过36个字符')
-    # ])
-
-    user_id = StringField('用户ID', [
+    title = StringField('公告标题', [
         Optional(),
-        Length(max=36, message='用户ID长度不能超过36个字符')
+        Length(max=200, message='公告标题长度不能超过200个字符')
     ])
 
-    # service_id = StringField('服务ID', [
-    #     Optional(),
-    #     Length(max=36, message='服务ID长度不能超过36个字符')
-    # ])
-
-    status = IntegerField('状态', [
+    type = StringField('公告类型', [
         Optional(),
-        NumberRange(min=0, max=1, message='状态值必须为0或1')
+        AnyOf(['system', 'activity', 'maintenance', 'notice'], message='公告类型必须是system、activity、maintenance或notice')
     ])
 
-    date = StringField('日期', [
+    status = StringField('状态', [
         Optional(),
-        Length(max=10, message='日期格式错误')
+        AnyOf(['draft', 'published', 'archived'], message='状态必须是draft、published或archived')
+    ])
+
+    priority = StringField('优先级', [
+        Optional(),
+        AnyOf(['low', 'medium', 'high', 'urgent'], message='优先级必须是low、medium、high或urgent')
     ])
