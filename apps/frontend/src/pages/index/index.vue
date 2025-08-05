@@ -18,19 +18,23 @@
 
     <!-- 轮播图 -->
     <view class="banner">
-      <swiper class="swiper" autoplay :interval="3000" :duration="300" circular indicator-dots v-if="bannerList.length > 0">
-        <swiper-item v-for="(item, index) in bannerList" :key="item.id || index" @click="handleBannerClick(item)">
-          <image 
-            :src="item.image_url" 
-            class="banner-image" 
-            mode="aspectFill"
-            @error="onImageError"
-            @load="onImageLoad"
-          ></image>
-          <view v-if="item.title" class="banner-title">{{ item.title }}</view>
-        </swiper-item>
-      </swiper>
-      <view v-else class="banner-loading">
+      <u-swiper
+        :list="bannerList"
+        keyName="image_url"
+        :autoplay="true"
+        :interval="3000"
+        :duration="300"
+        :circular="true"
+        :indicator="true"
+        indicatorActiveColor="#4A90E2"
+        indicatorInactiveColor="rgba(255, 255, 255, 0.5)"
+        indicatorStyle="bottom: 20rpx; right: 20rpx;"
+        :height="160"
+        :showTitle="true"
+        @click="handleBannerClick"
+        @change="handleBannerChange"
+      ></u-swiper>
+      <view v-if="bannerList.length === 0" class="banner-loading">
         <text>轮播图加载中...</text>
       </view>
     </view>
@@ -423,8 +427,9 @@ const getDefaultBanners = () => {
 }
 
 // 轮播图点击处理
-const handleBannerClick = (banner) => {
-  if (banner.link_url) {
+const handleBannerClick = (index) => {
+  const banner = bannerList.value[index]
+  if (banner && banner.link_url) {
     // 判断是否是外部链接
     if (banner.link_url.startsWith('http')) {
       // 外部链接，在webview中打开
@@ -436,6 +441,11 @@ const handleBannerClick = (banner) => {
       uni.navigateTo({ url: banner.link_url })
     }
   }
+}
+
+// 轮播图变化处理
+const handleBannerChange = (index) => {
+  console.log('当前轮播图索引:', index)
 }
 
 // 页面跳转
@@ -546,30 +556,6 @@ onShow(() => {
 // 轮播图样式
 .banner {
   height: 320rpx;
-}
-
-.swiper {
-  width: 100%;
-  height: 100%;
-}
-
-.banner-image {
-  width: 100%;
-  height: 100%;
-}
-
-.banner-title {
-  position: absolute;
-  bottom: 20rpx;
-  left: 20rpx;
-  right: 20rpx;
-  color: #fff;
-  font-size: 28rpx;
-  font-weight: bold;
-  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.5);
-  background: linear-gradient(transparent, rgba(0, 0, 0, 0.3));
-  padding: 20rpx 20rpx 10rpx;
-  border-radius: 8rpx;
 }
 
 .banner-loading {

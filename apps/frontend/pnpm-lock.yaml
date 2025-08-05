@@ -60,8 +60,8 @@ importers:
         specifier: ^2.1.7
         version: 2.3.1(vue@3.5.18)
       uview-plus:
-        specifier: ^3.4.67
-        version: 3.4.67
+        specifier: ^3.4.71
+        version: 3.4.71
       vue:
         specifier: ^3.4.21
         version: 3.5.18
@@ -3402,8 +3402,8 @@ packages:
     resolution: {integrity: sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==}
     engines: {node: '>= 0.4.0'}
 
-  uview-plus@3.4.67:
-    resolution: {integrity: sha512-rBHKbloV6mH5+9OpcaMXxhLYl6w+lG7ERynCKINJ9B240ilmOOqtJN7bk+2sBrmY4JO2rbFeYMXP8mala/yo8g==}
+  uview-plus@3.4.71:
+    resolution: {integrity: sha512-hLAht6HHp+HvEsfHLx6tVufIyct+PNZaNluoFf8d4eU/6zvNkhwWUSLVterxdngf2zOS9wq+3Ffobri72lqBFw==}
     engines: {HBuilderX: ^3.1.0, uni-app: ^4.66, uni-app-x: ''}
 
   v8-to-istanbul@8.1.1:
@@ -7943,7 +7943,7 @@ snapshots:
 
   utils-merge@1.0.1: {}
 
-  uview-plus@3.4.67:
+  uview-plus@3.4.71:
     dependencies:
       clipboard: 2.0.11
       dayjs: 1.11.13
