@@ -3,18 +3,28 @@
     <!-- 顶部搜索栏 -->
     <view class="header">
       <view class="back-button" @click="goBack">
-        <u-icon name="arrow-left" size="48" color="#333"></u-icon>
+        <u-icon name="arrow-left" size="22" color="#333"></u-icon>
       </view>
       <view class="search-container">
-        <input 
-          class="search-input" 
-          placeholder="搜索课程、测评、咨询师..." 
+        <u-input
           v-model="searchKeyword"
-          @input="onSearchInput"
+          placeholder="搜索课程、测评、咨询师..."
+          :border="false"
+          :clearable="true"
+          :focus="true"
+          @change="onSearchInput"
           @confirm="performSearch"
-          auto-focus
-        />
-        <u-icon class="search-icon" name="search" size="32" color="#999"></u-icon>
+          shape="round"
+          height="72"
+          backgroundColor="#f5f7fa"
+          fontSize="28"
+          placeholderStyle="color: #999; font-size: 28rpx;"
+          :customStyle="{ padding: '0', margin: '0' }"
+        >
+          <template #suffix>
+            <u-icon name="search" size="22" color="#999" @click="performSearch"></u-icon>
+          </template>
+        </u-input>
       </view>
       <text class="cancel-button" @click="goBack">取消</text>
     </view>
@@ -157,8 +167,8 @@ export default {
       uni.navigateBack()
     },
     
-    onSearchInput(e) {
-      this.searchKeyword = e.detail.value
+    onSearchInput(value) {
+      this.searchKeyword = value
     },
     
     performSearch() {
@@ -300,38 +310,18 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 20rpx;
   flex-shrink: 0;
 }
 
 .search-container {
   flex: 1;
-  position: relative;
   height: 72rpx;
-}
-
-.search-input {
-  width: 100%;
-  height: 100%;
-  border: none;
-  border-radius: 36rpx;
-  background-color: #f5f7fa;
-  padding: 0 80rpx 0 30rpx;
-  font-size: 28rpx;
-  color: #333;
-}
-
-.search-icon {
-  position: absolute;
-  right: 30rpx;
-  top: 50%;
-  transform: translateY(-50%);
+  margin: 0 20rpx;
 }
 
 .cancel-button {
   font-size: 28rpx;
   color: #4A90E2;
-  margin-left: 20rpx;
   flex-shrink: 0;
 }
 
@@ -515,5 +505,51 @@ export default {
   background-color: #f0f7ff;
   padding: 2rpx 4rpx;
   border-radius: 2rpx;
+}
+
+/* uview输入框样式优化 - 彻底移除边距 */
+.search-container ::v-deep .u-input {
+  height: 72rpx !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.search-container ::v-deep .u-input__content {
+  height: 72rpx !important;
+  background-color: #f5f7fa !important;
+  border-radius: 36rpx !important;
+  padding: 0 30rpx !important;
+  margin: 0 !important;
+  border: none !important;
+  box-sizing: border-box !important;
+}
+
+.search-container ::v-deep .u-input__content__field-wrapper {
+  height: 72rpx !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.search-container ::v-deep .u-input__content__field-wrapper__field {
+  height: 72rpx !important;
+  line-height: 72rpx !important;
+  font-size: 28rpx !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+
+/* 移除可能的默认间距和边框 */
+.search-container ::v-deep .uni-input-wrapper {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.search-container ::v-deep .uni-input-placeholder,
+.search-container ::v-deep .uni-input-input {
+  padding: 0 !important;
+  margin: 0 !important;
 }
 </style> 
