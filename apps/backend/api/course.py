@@ -11,6 +11,7 @@
 - GET /course/category/<category_id> - 获取分类下的课程
 - POST /course/<course_id>/cover - 上传课程封面
 """
+from unicodedata import category
 from flask import Blueprint, request
 from sqlalchemy.exc import SQLAlchemyError
 import uuid
@@ -34,12 +35,16 @@ def get_courses():
     page = form.page.data
     per_page = form.per_page.data
     title = form.title.data
+    status = form.status.data
 
     # 构建查询
     query = Course.query
 
     if title:
         query = query.filter(Course.title.like(f'%{title}%'))
+    
+    if status:
+        query = query.filter(Course.status == status)
 
     # 分页查询
     pagination = query.order_by(Course.create_time.desc()).paginate(
@@ -75,18 +80,41 @@ def create_course():
     """创建课程"""
     form = validate_data(CourseCreateForm)
 
+    # 处理标签数据
+    tags_data = []
+    if form.tags.data:
+        import json
+        try:
+            if isinstance(form.tags.data, str):
+                tags_data = json.loads(form.tags.data) if form.tags.data.strip() else []
+            elif isinstance(form.tags.data, list):
+                tags_data = form.tags.data
+        except (json.JSONDecodeError, TypeError):
+            tags_data = []
+
     # 创建课程
     course = Course(
         id=str(uuid.uuid4()),
         title=form.title.data,
+        subtitle=form.subtitle.data or '',
         description=form.description.data or '',
-        price=form.price.data,
-        score=form.score.data or 0.0,
+        content=form.content.data or '',
+        price=form.price.data or 0.0,
+        original_price=form.price.data or 0.0,
+        duration=form.duration.data or 60,
+        status=form.status.data or 'draft',
+        rating=0.0,
         cover_image=form.cover_image.data or '',
-        video_url=form.video_url.data or '',
-        category_id=form.category_id.data,
-        counselor_id=form.counselor_id.data
+        teacher=form.teacher.data or '默认讲师',  # 必填字段默认值
+        teacher_title=form.teacher_title.data or '资深讲师',
+        teacher_avatar=form.teacher_avatar.data or '',
+        lesson_count=0,
+        student_count=0,
     )
+    
+    # 设置标签
+    if tags_data:
+        course.tags = tags_data
 
     db.session.add(course)
     db.session.commit()
@@ -103,8 +131,22 @@ def update_course(course_id):
 
     form = validate_data(CourseUpdateForm)
 
-    # 更新字段
-    update_model_from_form(course, form)
+    # 处理标签数据
+    if form.tags.data is not None:
+        import json
+        try:
+            if isinstance(form.tags.data, str):
+                tags_data = json.loads(form.tags.data) if form.tags.data.strip() else []
+            elif isinstance(form.tags.data, list):
+                tags_data = form.tags.data
+            else:
+                tags_data = []
+            course.tags = tags_data
+        except (json.JSONDecodeError, TypeError):
+            course.tags = []
+
+    # 更新其他字段
+    update_model_from_form(course, form, exclude_fields=['tags'])
 
     db.session.commit()
 

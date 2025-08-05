@@ -47,7 +47,7 @@
     >
       <template #cover="{ record }">
         <a-image
-            :src="record?.cover_image"
+            :src="FileUploader.getFullImageUrl(record?.cover_image)"
             :alt="record?.title || ''"
             width="60"
             height="40"
@@ -193,6 +193,7 @@
               v-model:file-list="fileList"
               :before-upload="beforeUpload"
               :custom-request="uploadCover"
+              :on-remove="handleRemove"
               list-type="picture-card"
               :max-count="1"
           >
@@ -225,7 +226,7 @@
       <div v-if="currentCourse" class="course-detail">
         <div class="detail-header">
           <a-image
-              :src="currentCourse.cover_image"
+              :src="FileUploader.getFullImageUrl(currentCourse.cover_image)"
               :alt="currentCourse.title"
               width="120"
               height="80"
@@ -289,6 +290,7 @@ import {ref, reactive, onMounted, computed} from 'vue'
 import {message} from 'ant-design-vue'
 import {PlusOutlined, UploadOutlined, DownOutlined} from '@ant-design/icons-vue'
 import {courseAPI} from '@/api/admin'
+import {uploadCourseCover, FileUploader} from '@/api/upload'
 
 export default {
   name: 'CourseManagement',
@@ -466,11 +468,13 @@ export default {
         tags: course.tags || []
       })
       if (course.cover_image) {
+        // 获取完整的图片URL用于预览
+        const imageUrl = FileUploader.getFullImageUrl(course.cover_image)
         fileList.value = [{
           uid: '-1',
           name: 'cover.png',
           status: 'done',
-          url: course.cover_image
+          url: imageUrl
         }]
       }
     }
@@ -566,32 +570,72 @@ export default {
 
     // 上传前验证
     const beforeUpload = (file) => {
-      const isImage = file.type.startsWith('image/')
-      if (!isImage) {
-        message.error('只能上传图片文件!')
+      try {
+        FileUploader.validateImage(file, 2) // 验证图片，最大2MB
+        return true
+      } catch (error) {
+        message.error(error.message)
         return false
       }
-      const isLt2M = file.size / 1024 / 1024 < 2
-      if (!isLt2M) {
-        message.error('图片大小不能超过 2MB!')
-        return false
-      }
-      return false
+    }
+
+    // 移除封面
+    const handleRemove = (file) => {
+      courseForm.cover_image = ''
+      fileList.value = []
+      return true
     }
 
     // 上传封面
-    const uploadCover = ({file}) => {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        courseForm.cover_image = e.target.result
+    const uploadCover = async ({file, onSuccess, onError, onProgress}) => {
+      try {
+        // 显示上传中状态
         fileList.value = [{
           uid: file.uid,
           name: file.name,
-          status: 'done',
-          url: e.target.result
+          status: 'uploading',
+          percent: 0
         }]
+        
+        // 调用上传接口
+        const result = await uploadCourseCover(file)
+        
+        if (result.success && result.code === 200) {
+          // 上传成功，获取完整的图片URL
+          const imageUrl = FileUploader.getFullImageUrl(result.data.url)
+          
+          // 更新表单数据
+          courseForm.cover_image = result.data.url // 保存相对路径到数据库
+          
+          // 更新文件列表状态
+          fileList.value = [{
+            uid: file.uid,
+            name: file.name,
+            status: 'done',
+            url: imageUrl, // 显示完整URL用于预览
+            response: result
+          }]
+          
+          // 调用成功回调
+          onSuccess && onSuccess(result, file)
+          message.success('封面上传成功!')
+        } else {
+          throw new Error(result.message || '上传失败')
+        }
+      } catch (error) {
+        console.error('上传封面失败:', error)
+        
+        // 更新文件列表状态为失败
+        fileList.value = [{
+          uid: file.uid,
+          name: file.name,
+          status: 'error'
+        }]
+        
+        // 调用失败回调
+        onError && onError(error)
+        message.error(error.message || '上传封面失败!')
       }
-      reader.readAsDataURL(file)
     }
 
     // 获取状态颜色
@@ -655,9 +699,11 @@ export default {
       handleModalCancel,
       beforeUpload,
       uploadCover,
+      handleRemove,
       getStatusColor,
       getStatusText,
-      formatDate
+      formatDate,
+      FileUploader
     }
   }
 }
