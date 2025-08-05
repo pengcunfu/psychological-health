@@ -21,6 +21,7 @@ from utils.json_result import JsonResult
 from form.course import CourseQueryForm, CourseCreateForm, CourseUpdateForm
 from utils.validate import validate_data, validate_args
 from utils.model_helper import update_model_from_form
+from utils.image import process_course_images
 
 course_bp = Blueprint('course', __name__, url_prefix='/course')
 
@@ -46,9 +47,11 @@ def get_courses():
     )
 
     courses = [course.to_dict() for course in pagination.items]
+    # 处理课程数据中的图片URL
+    processed_courses = process_course_images(courses)
 
     return JsonResult.success({
-        'list': courses,
+        'list': processed_courses,
         'total': pagination.total,
         'page': page,
         'per_page': per_page
@@ -62,7 +65,9 @@ def get_course(course_id):
     if not course:
         return JsonResult.error('课程不存在', 404)
 
-    return JsonResult.success(course.to_dict())
+    # 处理课程数据中的图片URL
+    course_data = process_course_images(course.to_dict())
+    return JsonResult.success(course_data)
 
 
 @course_bp.route('', methods=['POST'])

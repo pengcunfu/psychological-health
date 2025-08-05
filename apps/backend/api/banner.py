@@ -17,6 +17,7 @@ from utils.json_result import JsonResult
 from models.base import db
 from utils.validate import validate_data, validate_args
 from utils.model_helper import update_model_from_form
+from utils.image import process_banner_images
 import uuid
 
 banner_bp = Blueprint("banner", __name__, url_prefix="/banner")
@@ -39,8 +40,12 @@ def get_banners():
     )
     banners = paginate.items
 
+    # 处理轮播图数据中的图片URL
+    banners_data = [banner.to_dict() for banner in banners]
+    processed_banners = process_banner_images(banners_data)
+    
     return JsonResult.success({
-        'list': [banner.to_dict() for banner in banners],
+        'list': processed_banners,
         'total': paginate.total,
         'page': page,
         'per_page': per_page
@@ -52,7 +57,9 @@ def get_banner(banner_id):
     banner = Banner.query.get(banner_id)
     if not banner:
         return JsonResult.error("横幅不存在", 404)
-    return JsonResult.success(banner.to_dict())
+    # 处理轮播图数据中的图片URL
+    banner_data = process_banner_images(banner.to_dict())
+    return JsonResult.success(banner_data)
 
 
 @banner_bp.route("", methods=['POST'])

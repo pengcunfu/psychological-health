@@ -17,6 +17,12 @@ export default {
   // 默认头像
   defaultAvatar: '/static/images/default-avatar.png',
   
+  // 默认课程封面
+  defaultCourseCover: '/static/images/default-course.png',
+  
+  // 默认测评封面
+  defaultAssessmentCover: '/static/images/default-assessment.png',
+  
   // 应用名称
   appName: '心理健康平台',
   

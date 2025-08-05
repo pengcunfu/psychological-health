@@ -168,8 +168,10 @@
 import { ref, computed, onMounted } from 'vue'
 import { onLoad, onShow } from '@dcloudio/uni-app'
 import { useUserStore } from '@/store/user'
-import { request } from '@/utils/request'
 import { bannerAPI } from '@/api/banner'
+import { counselorAPI } from '@/api/counselor'
+import { courseAPI } from '@/api/course'
+
 import TabBar from '@/components/TabBar/index.vue'
 import SvgIcon from '@/components/SvgIcon/index.vue'
 
@@ -256,58 +258,53 @@ const assessmentList = ref([
 // 获取咨询师列表
 const fetchCounselors = async () => {
   try {
-    const res = await request({
-      url: '/counselor',
-      method: 'GET',
-      data: {
-        page: 1,
-        per_page: 5
-      }
+    const res = await counselorAPI.getCounselors({
+      page: 1,
+      per_page: 5
     })
     
     if (res.code === 200 && res.success) {
-      counselorList.value = res.data.counselors || []
+      counselorList.value = res.data.list || []
     }
   } catch (error) {
-    console.error('获取咨询师列表失败:', error)
-    // 模拟数据
+    // 如果API调用失败，使用模拟数据作为后备
     counselorList.value = [
-      {
-        id: 1,
-        name: '张医生',
-        title: '心理咨询师 · 婚恋情感',
-        rating: 4.9,
-        consultation_count: 128,
-        price: 300,
-        avatar: 'https://via.placeholder.com/280x280/4A90E2/FFFFFF?text=张医生'
-      },
-      {
-        id: 2,
-        name: '李医生',
-        title: '心理咨询师 · 青少年心理',
-        rating: 4.8,
-        consultation_count: 96,
-        price: 280,
-        avatar: 'https://via.placeholder.com/280x280/52C41A/FFFFFF?text=李医生'
-      },
-      {
-        id: 3,
-        name: '王医生',
-        title: '心理咨询师 · 职场压力',
-        rating: 4.7,
-        consultation_count: 85,
-        price: 320,
-        avatar: 'https://via.placeholder.com/280x280/FA8C16/FFFFFF?text=王医生'
-      },
-      {
-        id: 4,
-        name: '赵医生',
-        title: '心理咨询师 · 抑郁焦虑',
-        rating: 4.9,
-        consultation_count: 142,
-        price: 350,
-        avatar: 'https://via.placeholder.com/280x280/EB2F96/FFFFFF?text=赵医生'
-      }
+    {
+      id: 1,
+      name: '张医生',
+      title: '心理咨询师 · 婚恋情感',
+      rating: 4.9,
+      consultation_count: 128,
+      price: 300,
+      avatar: 'https://via.placeholder.com/280x280/4A90E2/FFFFFF?text=张医生'
+    },
+    {
+      id: 2,
+      name: '李医生',
+      title: '心理咨询师 · 青少年心理',
+      rating: 4.8,
+      consultation_count: 96,
+      price: 280,
+      avatar: 'https://via.placeholder.com/280x280/52C41A/FFFFFF?text=李医生'
+    },
+    {
+      id: 3,
+      name: '王医生',
+      title: '心理咨询师 · 职场压力',
+      rating: 4.7,
+      consultation_count: 85,
+      price: 320,
+      avatar: 'https://via.placeholder.com/280x280/FA8C16/FFFFFF?text=王医生'
+    },
+    {
+      id: 4,
+      name: '赵医生',
+      title: '心理咨询师 · 抑郁焦虑',
+      rating: 4.9,
+      consultation_count: 142,
+      price: 350,
+      avatar: 'https://via.placeholder.com/280x280/EB2F96/FFFFFF?text=赵医生'
+    }
     ]
   }
 }
@@ -315,54 +312,49 @@ const fetchCounselors = async () => {
 // 获取课程列表
 const fetchCourses = async () => {
   try {
-    const res = await request({
-      url: '/course',
-      method: 'GET',
-      data: {
-        page: 1,
-        per_page: 4
-      }
+    const res = await courseAPI.getCourses({
+      page: 1,
+      per_page: 4
     })
     
     if (res.code === 200 && res.success) {
       courseList.value = res.data.list || []
     }
   } catch (error) {
-    console.error('获取课程列表失败:', error)
-    // 模拟数据
+    // 如果API调用失败，使用模拟数据作为后备
     courseList.value = [
-      {
-        id: 1,
-        name: '情绪管理：如何应对日常压力与焦虑',
-        rating: 4.8,
-        sales: 2345,
-        price: 99,
-        cover: 'https://via.placeholder.com/240x160/4A90E2/FFFFFF?text=情绪管理'
-      },
-      {
-        id: 2,
-        name: '人际关系：构建健康社交圈的技巧',
-        rating: 4.7,
-        sales: 1876,
-        price: 89,
-        cover: 'https://via.placeholder.com/240x160/52C41A/FFFFFF?text=人际关系'
-      },
-      {
-        id: 3,
-        name: '自我成长：发现内在力量的旅程',
-        rating: 4.9,
-        sales: 2103,
-        price: 129,
-        cover: 'https://via.placeholder.com/240x160/FA8C16/FFFFFF?text=自我成长'
-      },
-      {
-        id: 4,
-        name: '冥想入门：21天正念练习指南',
-        rating: 4.6,
-        sales: 3421,
-        price: 0,
-        cover: 'https://via.placeholder.com/240x160/EB2F96/FFFFFF?text=冥想入门'
-      }
+    {
+      id: 1,
+      name: '情绪管理：如何应对日常压力与焦虑',
+      rating: 4.8,
+      sales: 2345,
+      price: 99,
+      cover: 'https://via.placeholder.com/240x160/4A90E2/FFFFFF?text=情绪管理'
+    },
+    {
+      id: 2,
+      name: '人际关系：构建健康社交圈的技巧',
+      rating: 4.7,
+      sales: 1876,
+      price: 89,
+      cover: 'https://via.placeholder.com/240x160/52C41A/FFFFFF?text=人际关系'
+    },
+    {
+      id: 3,
+      name: '自我成长：发现内在力量的旅程',
+      rating: 4.9,
+      sales: 2103,
+      price: 129,
+      cover: 'https://via.placeholder.com/240x160/FA8C16/FFFFFF?text=自我成长'
+    },
+    {
+      id: 4,
+      name: '冥想入门：21天正念练习指南',
+      rating: 4.6,
+      sales: 3421,
+      price: 0,
+      cover: 'https://via.placeholder.com/240x160/EB2F96/FFFFFF?text=冥想入门'
+    }
     ]
   }
 }
@@ -376,22 +368,11 @@ const fetchBanners = async () => {
     })
     
     if (res.code === 200 && res.success) {
-      console.log(res.data.list)
-      
-      // 处理图片URL，添加服务器地址前缀
-      const processedBanners = res.data.list.map(banner => ({
-        ...banner,
-        image_url: banner.image_url.startsWith('http') 
-          ? banner.image_url 
-          : `http://localhost:5000${banner.image_url}`
-      }))
-      
-      bannerList.value = processedBanners.length > 0 ? processedBanners : getDefaultBanners()
+      bannerList.value = res.data.list.length > 0 ? res.data.list : getDefaultBanners()
     } else {
       bannerList.value = getDefaultBanners()
     }
   } catch (error) {
-    console.error('获取轮播图失败:', error)
     bannerList.value = getDefaultBanners()
   }
 }
@@ -445,7 +426,7 @@ const handleBannerClick = (index) => {
 
 // 轮播图变化处理
 const handleBannerChange = (index) => {
-  console.log('当前轮播图索引:', index)
+  // 轮播图变化处理
 }
 
 // 页面跳转
@@ -455,12 +436,11 @@ const navigateTo = (url) => {
 
 
 const onImageLoad = (e) => {
-  console.log('轮播图图片加载成功:', e)
+  // 图片加载成功
 }
 
-// 测试图标加载
 const onImageError = (e) => {
-  console.error('图标加载失败:', e)
+  // 图片加载失败
 }
 
 

@@ -22,6 +22,7 @@ from models.base import db
 from utils.json_result import JsonResult
 from form.counselor import CounselorCreateForm, CounselorUpdateForm, CounselorQueryForm
 from utils.validate import validate_args
+from utils.image import process_counselor_images
 
 counselor_bp = Blueprint('counselor', __name__, url_prefix='/counselor')
 
@@ -45,8 +46,12 @@ def get_counselors():
         page=form.page.data, per_page=form.per_page.data, error_out=False
     )
 
+    # 处理咨询师数据中的图片URL
+    counselors_data = [counselor.to_dict() for counselor in pagination.items]
+    processed_counselors = process_counselor_images(counselors_data)
+    
     return JsonResult.success({
-        'list': [counselor.to_dict() for counselor in pagination.items],
+        'list': processed_counselors,
         'total': pagination.total,
         'page': form.page.data,
         'per_page': form.per_page.data,
@@ -61,7 +66,9 @@ def get_counselor(counselor_id):
     if not counselor:
         return JsonResult.error('咨询师不存在', 404)
 
-    return JsonResult.success(counselor.to_dict())
+    # 处理咨询师数据中的图片URL
+    counselor_data = process_counselor_images(counselor.to_dict())
+    return JsonResult.success(counselor_data)
 
 
 @counselor_bp.route('', methods=['POST'])
