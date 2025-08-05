@@ -7,11 +7,11 @@
         <view class="logo-text">心理健康</view>
       </view>
       <view class="search-bar" @click="navigateTo('/pages/search/index')">
-        <u-icon name="search" size="32" color="#999"></u-icon>
+        <u-icon name="search" size="22" color="#999"></u-icon>
         <text class="search-text">搜索咨询师、课程</text>
       </view>
       <view class="message-icon" @click="navigateTo('/pages/message/index')">
-        <u-icon name="bell" size="48" color="#333"></u-icon>
+        <u-icon name="bell" size="22" color="#333"></u-icon>
         <view class="message-dot"></view>
       </view>
     </view>
@@ -72,10 +72,10 @@
           <view class="section-title-icon"></view>
           推荐咨询师
         </view>
-        <text class="section-more" @click="navigateTo('/pages/counselor/index')">
-          查看全部
-          <u-icon name="arrow-right" size="24" color="#999"></u-icon>
-        </text>
+        <view class="section-more" @click="navigateTo('/pages/counselor/index')">
+          <text>查看全部</text>
+          <u-icon name="arrow-right" size="16" color="#999"></u-icon>
+        </view>
       </view>
       
       <scroll-view class="counselor-list" scroll-x="true" show-scrollbar="false">
@@ -106,10 +106,10 @@
           <view class="section-title-icon"></view>
           推荐课程
         </view>
-        <text class="section-more" @click="navigateTo('/pages/course/index')">
-          查看全部
-          <u-icon name="arrow-right" size="24" color="#999"></u-icon>
-        </text>
+        <view class="section-more" @click="navigateTo('/pages/course/index')">
+          <text>查看全部</text>
+          <u-icon name="arrow-right" size="16" color="#999"></u-icon>
+        </view>
       </view>
       
       <view class="course-list">
@@ -143,10 +143,10 @@
           <view class="section-title-icon"></view>
           心理测评
         </view>
-        <text class="section-more" @click="navigateTo('/pages/assessment/index')">
-          查看全部
-          <u-icon name="arrow-right" size="24" color="#999"></u-icon>
-        </text>
+        <view class="section-more" @click="navigateTo('/pages/assessment/index')">
+          <text>查看全部</text>
+          <u-icon name="arrow-right" size="16" color="#999"></u-icon>
+        </view>
       </view>
       
       <view class="course-list">
@@ -662,6 +662,13 @@ onShow(() => {
   color: #999;
   display: flex;
   align-items: center;
+  gap: 8rpx;
+  cursor: pointer;
+  
+  text {
+    font-size: 24rpx;
+    color: #999;
+  }
 }
 
 // 咨询师列表样式
