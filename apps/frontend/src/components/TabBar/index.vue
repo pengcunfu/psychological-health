@@ -16,15 +16,19 @@
       <template #active-icon>
         <SvgIcon 
           :name="item.iconName" 
+          path="tabbar"
           :active="true"
           :size="44"
+          :fallbackIcon="item.fallbackIcon"
         />
       </template>
       <template #inactive-icon>
         <SvgIcon 
           :name="item.iconName" 
+          path="tabbar"
           :active="false"
           :size="44"
+          :fallbackIcon="item.fallbackIcon"
         />
       </template>
     </u-tabbar-item>
@@ -41,22 +45,26 @@ const tabList = [
   {
     pagePath: '/pages/index/index',
     iconName: 'home',
-    text: '首页'
+    text: '首页',
+    fallbackIcon: 'home'
   },
   {
     pagePath: '/pages/counselor/index',
     iconName: 'counselor',
-    text: '咨询'
+    text: '咨询',
+    fallbackIcon: 'account'
   },
   {
     pagePath: '/pages/course/index',
     iconName: 'course',
-    text: '课程'
+    text: '课程',
+    fallbackIcon: 'play-circle'
   },
   {
     pagePath: '/pages/profile/index',
     iconName: 'profile',
-    text: '我的'
+    text: '我的',
+    fallbackIcon: 'account-circle'
   }
 ]
 

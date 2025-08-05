@@ -2,7 +2,7 @@ import { createSSRApp } from 'vue'
 import App from './App.vue'
 import pinia from './store'
 
-// 手动导入uView Plus
+// 导入uView Plus
 import uviewPlus from 'uview-plus'
 
 export function createApp() {
