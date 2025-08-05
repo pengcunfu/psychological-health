@@ -1,327 +1,519 @@
 <template>
   <view class="container tab-page">
-    <view class="search-bar">
-      <u-search
-        v-model="searchKeyword"
-        placeholder="搜索课程"
-        :show-action="false"
-        @search="handleSearch"
-        @custom="handleSearch"
-      ></u-search>
+    <!-- 顶部导航栏 -->
+    <view class="header">
+      <view class="back-button" @click="goBack">
+        <up-icon name="arrow-left" size="20" color="#333"></up-icon>
+      </view>
+      <view class="header-title">课程学习</view>
+      <view class="search-button" @click="handleSearchClick">
+        <up-icon name="search" size="20" color="#333"></up-icon>
+      </view>
     </view>
 
-    <view class="filter-bar">
+    <!-- 标签栏 -->
+    <view class="tabs">
+      <view class="tab active">全部课程</view>
+      <view class="tab">我的课程</view>
+    </view>
+
+    <!-- 分类列表 -->
+    <view class="category-list">
       <view 
-        class="filter-item" 
-        :class="{ active: activeFilter === 'all' }" 
-        @click="setFilter('all')"
+        class="category-item" 
+        :class="{ active: activeCategory === 'all' }" 
+        @click="setCategory('all')"
       >
         全部
       </view>
       <view 
-        class="filter-item" 
-        :class="{ active: activeFilter === 'popular' }" 
-        @click="setFilter('popular')"
+        class="category-item" 
+        :class="{ active: activeCategory === category.id }" 
+        v-for="category in categories" 
+        :key="category.id"
+        @click="setCategory(category.id)"
       >
-        最热门
-      </view>
-      <view 
-        class="filter-item" 
-        :class="{ active: activeFilter === 'newest' }" 
-        @click="setFilter('newest')"
-      >
-        最新上架
-      </view>
-      <view 
-        class="filter-item" 
-        :class="{ active: activeFilter === 'price' }" 
-        @click="setFilter('price')"
-      >
-        价格排序
+        {{ category.name }}
       </view>
     </view>
 
+    <!-- 课程列表 -->
     <view class="course-list">
       <view 
         class="course-card" 
         v-for="(item, index) in courseList" 
-        :key="index"
+        :key="item.id || index"
         @click="navigateToDetail(item.id)"
       >
-        <image class="course-image" :src="item.cover || '/static/images/default-course.png'" mode="aspectFill"></image>
+        <!-- 课程图片 -->
+        <image 
+          class="course-img" 
+          :src="item.cover_image || '/static/images/default-course.png'" 
+          mode="aspectFill"
+        ></image>
+        
+        <!-- 课程信息 -->
         <view class="course-info">
-          <text class="course-name text-ellipsis">{{ item.name }}</text>
-          <view class="course-teacher">
-            <u-avatar :src="item.teacher_avatar || '/static/images/default-avatar.png'" size="40"></u-avatar>
-            <text class="teacher-name">{{ item.teacher_name }}</text>
+          <view class="course-content">
+            <!-- 课程名称 -->
+            <view class="course-name">{{ item.name || '课程名称' }}</view>
+            
+            <!-- 讲师信息 -->
+            <view class="course-teacher">
+              讲师：{{ item.teacher_name || '未知讲师' }} | {{ item.teacher_title || '心理咨询师' }}
+            </view>
           </view>
+          
+          <!-- 课程统计 -->
           <view class="course-stats">
-            <text class="course-sales">{{ item.sales || 0 }}人已学习</text>
-            <text class="course-lessons">{{ item.lesson_count || 0 }}课时</text>
+            <view class="course-rating">
+              <up-icon name="star-fill" color="#ff9800" size="12"></up-icon>
+              <text class="rating-text">{{ item.rating || '4.8' }}</text>
+            </view>
+            <view class="course-count">{{ item.student_count || 0 }}人学习</view>
           </view>
-          <view class="course-footer">
-            <text class="course-price">¥{{ item.price || 0 }}</text>
-            <button class="buy-btn">立即购买</button>
+          
+          <!-- 课程价格 -->
+          <view class="course-price" v-if="item.price && item.price > 0">
+            ¥{{ item.price }}
+          </view>
+          <view class="course-free" v-else>
+            免费
           </view>
         </view>
       </view>
     </view>
 
-    <u-loadmore :status="loadMoreStatus" />
+    <!-- 空状态 -->
+    <view v-if="!loading && courseList.length === 0" class="empty-state">
+      <view class="empty-content">
+        <up-icon name="search" size="60" color="#ccc"></up-icon>
+        <text class="empty-title">暂无课程</text>
+        <text class="empty-subtitle">试试切换其他分类</text>
+        <up-button
+            text="重新加载"
+            type="primary"
+            size="normal"
+            @click="fetchCourses(true)"
+            :customStyle="{
+              marginTop: '30rpx',
+              width: '160rpx',
+              borderRadius: '22rpx',
+              background: '#4A90E2'
+            }"
+        ></up-button>
+      </view>
+    </view>
+
+    <!-- 加载更多 -->
+    <view class="load-more-container">
+      <up-loadmore :status="loadMoreStatus" @loadmore="loadMore" 
+        :loading-text="'正在加载更多课程...'"
+        :loadmore-text="'上拉加载更多'"
+        :nomore-text="'已加载全部课程'"
+        icon-size="20"
+        :margin-top="20"
+        :margin-bottom="20"
+      />
+    </view>
   </view>
 </template>
 
-<script>
+<script setup>
 import { ref, reactive } from 'vue'
 import { onLoad, onReachBottom } from '@dcloudio/uni-app'
-import { request } from '@/utils/request'
+import { courseAPI } from '@/api/course'
 
-export default {
-  setup() {
-    const searchKeyword = ref('')
-    const activeFilter = ref('all')
-    const courseList = ref([])
-    const loadMoreStatus = ref('loading')
-    
-    const pagination = reactive({
-      page: 1,
-      per_page: 10,
-      total: 0,
-      total_pages: 0
-    })
-    
-    // 获取课程列表
-    const fetchCourses = async (reset = false) => {
+// 搜索关键词
+const searchKeyword = ref('')
+
+// 当前选中的分类
+const activeCategory = ref('all')
+
+// 分类列表
+const categories = ref([
+  { id: 'emotion', name: '情绪管理' },
+  { id: 'relationship', name: '人际关系' },
+  { id: 'workplace', name: '职场压力' },
+  { id: 'meditation', name: '冥想放松' },
+  { id: 'youth', name: '青少年心理' },
+  { id: 'love', name: '婚恋情感' }
+])
+
+// 课程列表
+const courseList = ref([])
+
+// 加载状态
+const loading = ref(false)
+const loadMoreStatus = ref('loadmore')
+
+// 分页信息
+const pagination = reactive({
+  page: 1,
+  per_page: 10,
+  total: 0,
+  total_pages: 0
+})
+
+// 返回上一页
+const goBack = () => {
+  uni.navigateBack()
+}
+
+// 搜索按钮点击
+const handleSearchClick = () => {
+  uni.navigateTo({
+    url: '/pages/search/index'
+  })
+}
+
+// 设置分类
+const setCategory = (categoryId) => {
+  activeCategory.value = categoryId
+  fetchCourses(true)
+}
+
+// 获取课程列表
+const fetchCourses = async (reset = false) => {
+  if (reset) {
+    pagination.page = 1
+    courseList.value = []
+  }
+
+  loading.value = true
+  loadMoreStatus.value = 'loading'
+
+  try {
+    // 构建查询参数
+    const params = {
+      page: pagination.page,
+      per_page: pagination.per_page
+    }
+
+    // 添加搜索关键词
+    if (searchKeyword.value) {
+      params.keyword = searchKeyword.value
+    }
+
+    // 添加分类筛选
+    if (activeCategory.value !== 'all') {
+      params.category = activeCategory.value
+    }
+
+    console.log('获取课程列表参数:', params)
+
+    const res = await courseAPI.getCourses(params)
+
+    console.log('课程API响应:', res)
+
+    if (res.code === 200 && res.success && res.data) {
+      // 处理课程数据
+      let newList = res.data.list || []
+
+      // 数据处理和字段映射
+      newList = newList.map(item => {
+        const processedItem = {
+          ...item,
+          // 字段映射和默认值处理
+          id: item.id,
+          name: item.name || '课程名称',
+          cover_image: item.cover_image || '/static/images/default-course.png',
+          teacher_name: item.teacher_name || '未知讲师',
+          teacher_title: item.teacher_title || '心理咨询师',
+          rating: parseFloat(item.rating) || 4.8,
+          student_count: parseInt(item.student_count) || 0,
+          price: parseFloat(item.price) || 0,
+          lesson_count: parseInt(item.lesson_count) || 0,
+          duration: item.duration || '60分钟',
+          description: item.description || '专业心理课程，帮助您提升心理健康水平'
+        }
+        return processedItem
+      })
+
+      // 更新列表
+      courseList.value = reset ? newList : [...courseList.value, ...newList]
+
+      // 更新分页信息
+      pagination.total = res.data.total || 0
+      pagination.total_pages = res.data.pages || Math.ceil((res.data.total || 0) / pagination.per_page)
+
+      // 更新加载更多状态
+      loadMoreStatus.value = pagination.page >= pagination.total_pages ? 'nomore' : 'loadmore'
+
+      console.log('课程列表加载成功，共', newList.length, '条数据')
+    } else {
+      console.log('API返回数据格式异常:', res)
+
+      // 设置为空数组，显示空状态
       if (reset) {
-        pagination.page = 1
         courseList.value = []
       }
-      
-      loadMoreStatus.value = 'loading'
-      
-      try {
-        // 构建查询参数
-        const params = {
-          page: pagination.page,
-          per_page: pagination.per_page,
-          keyword: searchKeyword.value
-        }
-        
-        // 根据筛选条件添加排序参数
-        switch (activeFilter.value) {
-          case 'popular':
-            params.sort_by = 'sales'
-            params.sort_order = 'desc'
-            break
-          case 'newest':
-            params.sort_by = 'create_time'
-            params.sort_order = 'desc'
-            break
-          case 'price':
-            params.sort_by = 'price'
-            params.sort_order = 'asc'
-            break
-        }
-        
-        const res = await request({
-          url: '/course',
-          method: 'GET',
-          data: params
-        })
-        
-        if (res.code === 200 && res.success) {
-          // 解析返回的课程列表
-          const newList = res.data.list || []
-          
-          // 更新列表和分页信息
-          courseList.value = reset ? newList : [...courseList.value, ...newList]
-          pagination.total = res.data.total || 0
-          pagination.total_pages = res.data.pages || 0
-          
-          // 更新加载更多状态
-          loadMoreStatus.value = pagination.page >= pagination.total_pages ? 'nomore' : 'loadmore'
-        } else {
-          loadMoreStatus.value = 'loadmore'
-          uni.showToast({
-            title: res.message || '获取课程列表失败',
-            icon: 'none'
-          })
-        }
-      } catch (error) {
-        console.error('获取课程列表失败:', error)
-        loadMoreStatus.value = 'loadmore'
-        uni.showToast({
-          title: '获取课程列表失败，请稍后重试',
-          icon: 'none'
-        })
-      }
+      loadMoreStatus.value = 'nomore'
     }
-    
-    // 搜索处理
-    const handleSearch = () => {
-      fetchCourses(true)
+  } catch (error) {
+    console.error('获取课程列表失败:', error)
+
+    // 设置为空数组，显示空状态
+    if (reset) {
+      courseList.value = []
     }
-    
-    // 筛选处理
-    const setFilter = (filter) => {
-      activeFilter.value = filter
-      fetchCourses(true)
-    }
-    
-    // 跳转到详情页
-    const navigateToDetail = (id) => {
-      uni.navigateTo({
-        url: `/pages/course/detail/index?id=${id}`
-      })
-    }
-    
-    // 页面加载
-    onLoad(() => {
-      fetchCourses()
+
+    loadMoreStatus.value = 'loadmore'
+    uni.showToast({
+      title: '获取课程列表失败，请稍后重试',
+      icon: 'none'
     })
-    
-    // 下拉加载更多
-    onReachBottom(() => {
-      if (loadMoreStatus.value === 'loadmore') {
-        pagination.page++
-        fetchCourses()
-      }
-    })
-    
-    return {
-      searchKeyword,
-      activeFilter,
-      courseList,
-      loadMoreStatus,
-      handleSearch,
-      setFilter,
-      navigateToDetail
-    }
+  } finally {
+    loading.value = false
   }
 }
+
+// 跳转到详情页
+const navigateToDetail = (id) => {
+  uni.navigateTo({
+    url: `/pages/course/detail/index?id=${id}`
+  })
+}
+
+// 加载更多
+const loadMore = () => {
+  if (loadMoreStatus.value === 'loadmore') {
+    pagination.page++
+    fetchCourses()
+  }
+}
+
+// 页面加载
+onLoad(() => {
+  console.log('页面加载，初始化课程列表')
+  fetchCourses(true)
+})
+
+// 下拉加载更多
+onReachBottom(() => {
+  loadMore()
+})
 </script>
 
 <style lang="scss">
 .container {
   min-height: 100vh;
-  background-color: #f5f7fa;
+  background: #f5f7fa;
   padding-bottom: 30rpx;
 }
 
-.search-bar {
-  padding: 20rpx 30rpx;
-  background-color: #fff;
-}
-
-.filter-bar {
+// 顶部导航栏
+.header {
+  padding: 30rpx;
   display: flex;
-  background-color: #fff;
-  padding: 0 20rpx;
-  margin-bottom: 20rpx;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
   border-bottom: 1rpx solid #f0f0f0;
 }
 
-.filter-item {
-  padding: 20rpx 30rpx;
+.header-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  flex: 1;
+  text-align: center;
+  color: #333;
+}
+
+.back-button, .search-button {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// 标签栏
+.tabs {
+  display: flex;
+  background: #fff;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 24rpx 0;
   font-size: 28rpx;
   color: #666;
   position: relative;
 }
 
-.filter-item.active {
+.tab.active {
   color: #4A90E2;
   font-weight: bold;
 }
 
-.filter-item.active::after {
+.tab.active::after {
   content: '';
   position: absolute;
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
   width: 40rpx;
-  height: 4rpx;
-  background-color: #4A90E2;
+  height: 6rpx;
+  background: #4A90E2;
+  border-radius: 3rpx;
 }
 
-.course-list {
-  padding: 0 30rpx;
+// 分类列表
+.category-list {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  overflow-x: auto;
+  padding: 30rpx 20rpx;
+  background: #fff;
+  scrollbar-width: none; /* Firefox */
+}
+
+.category-list::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
+}
+
+.category-item {
+  flex: 0 0 auto;
+  padding: 12rpx 24rpx;
+  margin-right: 16rpx;
+  background: #f5f5f5;
+  border-radius: 32rpx;
+  font-size: 24rpx;
+  color: #666;
+  white-space: nowrap;
+}
+
+.category-item.active {
+  background: #e6f7ff;
+  color: #4A90E2;
+}
+
+// 课程列表
+.course-list {
+  padding: 20rpx 30rpx;
 }
 
 .course-card {
-  width: calc(50% - 15rpx);
-  background-color: #fff;
-  border-radius: 20rpx;
-  overflow: hidden;
+  display: flex;
   margin-bottom: 30rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.05);
+  background: #fff;
+  transition: all 0.3s ease;
 }
 
-.course-image {
-  width: 100%;
-  height: 200rpx;
-  background-color: #f0f0f0;
+.course-card:active {
+  transform: translateY(-2rpx);
+  box-shadow: 0 6rpx 20rpx rgba(0, 0, 0, 0.12);
 }
 
+// 课程图片
+.course-img {
+  width: 240rpx;
+  height: 160rpx;
+  flex-shrink: 0;
+}
+
+// 课程信息
 .course-info {
+  flex: 1;
   padding: 20rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.course-content {
+  flex: 1;
 }
 
 .course-name {
   font-size: 28rpx;
   font-weight: bold;
   color: #333;
-  margin-bottom: 10rpx;
-  display: block;
-  white-space: nowrap;
+  margin-bottom: 8rpx;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+  line-height: 1.4;
 }
 
 .course-teacher {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10rpx;
-}
-
-.teacher-name {
   font-size: 24rpx;
   color: #666;
-  margin-left: 10rpx;
+  margin-bottom: 8rpx;
 }
 
+// 课程统计
 .course-stats {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 10rpx;
+  align-items: center;
+  margin-bottom: 8rpx;
 }
 
-.course-sales, .course-lessons {
+.course-rating {
+  display: flex;
+  align-items: center;
+}
+
+.rating-text {
+  font-size: 24rpx;
+  color: #ff9800;
+  margin-left: 8rpx;
+}
+
+.course-count {
   font-size: 24rpx;
   color: #999;
 }
 
-.course-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
+// 课程价格
 .course-price {
-  font-size: 32rpx;
-  color: #f5222d;
+  font-size: 28rpx;
+  color: #ff4d4f;
   font-weight: bold;
 }
 
-.buy-btn {
-  background-color: #4A90E2;
-  color: #fff;
+.course-free {
+  font-size: 28rpx;
+  color: #52c41a;
+  font-weight: bold;
+}
+
+// 空状态
+.empty-state {
+  padding: 100rpx 60rpx;
+  text-align: center;
+}
+
+.empty-content {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 60rpx 40rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.empty-title {
+  font-size: 28rpx;
+  color: #333;
+  margin: 20rpx 0 8rpx;
+  display: block;
+}
+
+.empty-subtitle {
   font-size: 24rpx;
-  padding: 8rpx 20rpx;
-  border-radius: 30rpx;
-  border: none;
+  color: #999;
+  display: block;
+}
+
+// 加载更多
+.load-more-container {
+  padding: 0 30rpx 20rpx;
 }
 </style> 

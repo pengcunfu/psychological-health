@@ -51,7 +51,8 @@
 		{
 			"path": "pages/course/index",
 			"style": {
-				"navigationBarTitleText": "课程"
+				"navigationBarTitleText": "课程",
+				"navigationStyle": "custom"
 			}
 		},
 		{
