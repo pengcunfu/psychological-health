@@ -18,22 +18,32 @@
 
     <!-- 轮播图 -->
     <view class="banner">
-      <u-swiper
-        :list="bannerList"
-        keyName="image_url"
+      <swiper 
         :autoplay="true"
         :interval="3000"
         :duration="300"
         :circular="true"
-        :indicator="true"
-        indicatorActiveColor="#4A90E2"
-        indicatorInactiveColor="rgba(255, 255, 255, 0.5)"
-        indicatorStyle="bottom: 20rpx; right: 20rpx;"
-        :height="160"
-        :showTitle="true"
-        @click="handleBannerClick"
+        indicator-dots
+        indicator-active-color="#4A90E2"
+        indicator-color="rgba(255, 255, 255, 0.5)"
+        class="swiper-container"
         @change="handleBannerChange"
-      ></u-swiper>
+      >
+        <swiper-item 
+          v-for="(item, index) in bannerList" 
+          :key="item.id || index"
+          @tap="() => handleBannerClick(index)"
+        >
+          <view class="swiper-item">
+            <image 
+              :src="item.image_url" 
+              mode="aspectFill"
+              class="swiper-image"
+            />
+            <view v-if="item.title" class="swiper-title">{{ item.title }}</view>
+          </view>
+        </swiper-item>
+      </swiper>
       <view v-if="bannerList.length === 0" class="banner-loading">
         <text>轮播图加载中...</text>
       </view>
@@ -398,9 +408,9 @@ const getDefaultBanners = () => {
     },
     { 
       id: 'default-3',
-      title: '心灵成长课程',
-      image_url: 'https://via.placeholder.com/750x320/faad14/FFFFFF?text=心灵成长课程',
-      link_url: '/pages/assessment/index',
+      title: '心理健康资讯',
+      image_url: 'https://via.placeholder.com/750x320/faad14/FFFFFF?text=心理健康资讯',
+      link_url: 'https://www.who.int/zh/news-room/fact-sheets/detail/mental-disorders',
       sort_order: 2,
       status: 1
     }
@@ -409,19 +419,215 @@ const getDefaultBanners = () => {
 
 // 轮播图点击处理
 const handleBannerClick = (index) => {
+  console.log('轮播图点击事件触发，索引:', index)
+  console.log('轮播图数据:', bannerList.value)
+  
   const banner = bannerList.value[index]
+  console.log('当前点击的轮播图:', banner)
+  
   if (banner && banner.link_url) {
-    // 判断是否是外部链接
-    if (banner.link_url.startsWith('http')) {
-      // 外部链接，在webview中打开
-      uni.navigateTo({
-        url: `/pages/webview/index?url=${encodeURIComponent(banner.link_url)}&title=${encodeURIComponent(banner.title || '')}`
-      })
-    } else {
-      // 内部页面跳转
-      uni.navigateTo({ url: banner.link_url })
-    }
+    console.log('准备跳转到:', banner.link_url)
+    
+    // 预处理链接URL
+    const processedUrl = preprocessUrl(banner.link_url)
+    console.log('处理后的URL:', processedUrl)
+    
+    // 判断链接类型并执行相应的跳转逻辑
+    handleUrlNavigation(processedUrl, banner.title || '加载中...')
+  } else {
+    console.log('轮播图数据无效或缺少链接')
+    uni.showToast({
+      title: '链接无效',
+      icon: 'none'
+    })
   }
+}
+
+// URL预处理函数
+const preprocessUrl = (url) => {
+  if (!url) return ''
+  
+  // 去除首尾空格
+  url = url.trim()
+  
+  // 如果是相对路径，确保以 / 开头
+  if (!url.startsWith('http') && !url.startsWith('/')) {
+    url = '/' + url
+  }
+  
+  return url
+}
+
+// 统一的URL导航处理函数
+const handleUrlNavigation = (url, title = '') => {
+  // 判断是否是外部链接
+  if (isExternalUrl(url)) {
+    handleExternalUrl(url, title)
+  } else {
+    handleInternalUrl(url)
+  }
+}
+
+// 判断是否是外部链接
+const isExternalUrl = (url) => {
+  return url.startsWith('http://') || url.startsWith('https://')
+}
+
+// 处理外部链接
+const handleExternalUrl = (url, title) => {
+  console.log('处理外部链接:', url)
+  
+  // #ifdef H5
+  // 浏览器环境下，可以直接打开新窗口
+  if (typeof window !== 'undefined') {
+    window.open(url, '_blank')
+    return
+  }
+  // #endif
+  
+  // #ifdef MP-WEIXIN
+  // 微信小程序环境下，使用webview页面
+  uni.navigateTo({
+    url: `/pages/webview/index?url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`,
+    fail: (err) => {
+      console.error('外部链接跳转失败:', err)
+      // 微信小程序可能不支持某些外部链接，提示用户复制链接
+      uni.showModal({
+        title: '提示',
+        content: '无法直接打开链接，是否复制到剪贴板？',
+        success: (res) => {
+          if (res.confirm) {
+            uni.setClipboardData({
+              data: url,
+              success: () => {
+                uni.showToast({
+                  title: '链接已复制',
+                  icon: 'success'
+                })
+              }
+            })
+          }
+        }
+      })
+    }
+  })
+  // #endif
+  
+  // #ifndef H5 || MP-WEIXIN
+  // 其他平台使用webview页面
+  uni.navigateTo({
+    url: `/pages/webview/index?url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`,
+    fail: (err) => {
+      console.error('外部链接跳转失败:', err)
+      uni.showToast({
+        title: '链接打开失败',
+        icon: 'none'
+      })
+    }
+  })
+  // #endif
+}
+
+// 处理内部链接
+const handleInternalUrl = (url) => {
+  console.log('处理内部链接:', url)
+  
+  // 验证内部路径是否有效
+  if (!isValidInternalPath(url)) {
+    console.error('无效的内部路径:', url)
+    uni.showToast({
+      title: '页面不存在',
+      icon: 'none'
+    })
+    return
+  }
+  
+  // 判断是否是tabbar页面
+  if (isTabBarPage(url)) {
+    uni.switchTab({
+      url: url,
+      success: () => {
+        console.log('TabBar页面跳转成功:', url)
+      },
+      fail: (err) => {
+        console.error('TabBar页面跳转失败:', err, url)
+        uni.showToast({
+          title: '页面跳转失败',
+          icon: 'none'
+        })
+      }
+    })
+  } else {
+    uni.navigateTo({
+      url: url,
+      success: () => {
+        console.log('内部页面跳转成功:', url)
+      },
+      fail: (err) => {
+        console.error('内部页面跳转失败:', err, url)
+        // 如果navigateTo失败，尝试使用redirectTo
+        uni.redirectTo({
+          url: url,
+          fail: (redirectErr) => {
+            console.error('页面重定向也失败:', redirectErr, url)
+            uni.showToast({
+              title: '页面跳转失败',
+              icon: 'none'
+            })
+          }
+        })
+      }
+    })
+  }
+}
+
+// 验证内部路径是否有效
+const isValidInternalPath = (url) => {
+  // 基本的路径格式验证
+  if (!url || typeof url !== 'string') return false
+  
+  // 移除查询参数进行路径验证
+  const pathOnly = url.split('?')[0]
+  
+  // 定义有效的页面路径列表（基于pages.json）
+  const validPaths = [
+    '/pages/index/index',
+    '/pages/login/index',
+    '/pages/register/index',
+    '/pages/forgot-password/index',
+    '/pages/counselor/index',
+    '/pages/counselor/detail/index',
+    '/pages/course/index',
+    '/pages/course/detail/index',
+    '/pages/profile/index',
+    '/pages/profile/edit/index',
+    '/pages/profile/security/index',
+    '/pages/profile/BecomeCounselor/index',
+    '/pages/profile/ContactUs/index',
+    '/pages/profile/agreement/index',
+    '/pages/profile/privacy/index',
+    '/pages/profile/MyCourse/index',
+    '/pages/profile/MyFavorite/index',
+    '/pages/order/index',
+    '/pages/appointment/index',
+    '/pages/search/index',
+    '/pages/webview/index'
+  ]
+  
+  return validPaths.includes(pathOnly)
+}
+
+// 判断是否是tabbar页面
+const isTabBarPage = (url) => {
+  const pathOnly = url.split('?')[0]
+  const tabBarPaths = [
+    '/pages/index/index',
+    '/pages/counselor/index',
+    '/pages/course/index',
+    '/pages/profile/index'
+  ]
+  
+  return tabBarPaths.includes(pathOnly)
 }
 
 // 轮播图变化处理
@@ -536,6 +742,34 @@ onShow(() => {
 // 轮播图样式
 .banner {
   height: 320rpx;
+}
+
+.swiper-container {
+  height: 320rpx;
+}
+
+.swiper-item {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.swiper-image {
+  width: 100%;
+  height: 100%;
+}
+
+.swiper-title {
+  position: absolute;
+  bottom: 20rpx;
+  left: 20rpx;
+  right: 20rpx;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 10rpx 20rpx;
+  border-radius: 10rpx;
+  font-size: 28rpx;
+  text-align: center;
 }
 
 .banner-loading {

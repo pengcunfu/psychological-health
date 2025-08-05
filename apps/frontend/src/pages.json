@@ -129,6 +129,14 @@
 				"navigationBarTitleText": "搜索",
 				"navigationStyle": "custom"
 			}
+		},
+		{
+			"path": "pages/webview/index",
+			"style": {
+				"navigationBarTitleText": "加载中...",
+				"navigationBarBackgroundColor": "#ffffff",
+				"navigationBarTextStyle": "black"
+			}
 		}
 	],
 	"globalStyle": {
