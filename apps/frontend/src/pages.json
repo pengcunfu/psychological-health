@@ -141,26 +141,26 @@
 			{
 				"pagePath": "pages/index/index",
 				"text": "首页",
-				"iconPath": "static/images/tabbar/home.svg",
-				"selectedIconPath": "static/images/tabbar/home-active.svg"
+				"iconPath": "static/icons/tabbar/home.svg",
+				"selectedIconPath": "static/icons/tabbar/home-active.svg"
 			},
 			{
 				"pagePath": "pages/counselor/index",
 				"text": "咨询",
-				"iconPath": "static/images/tabbar/counselor.svg",
-				"selectedIconPath": "static/images/tabbar/counselor-active.svg"
+				"iconPath": "static/icons/tabbar/counselor.svg",
+				"selectedIconPath": "static/icons/tabbar/counselor-active.svg"
 			},
 			{
 				"pagePath": "pages/course/index",
 				"text": "课程",
-				"iconPath": "static/images/tabbar/course.svg",
-				"selectedIconPath": "static/images/tabbar/course-active.svg"
+				"iconPath": "static/icons/tabbar/course.svg",
+				"selectedIconPath": "static/icons/tabbar/course-active.svg"
 			},
 			{
 				"pagePath": "pages/profile/index",
 				"text": "我的",
-				"iconPath": "static/images/tabbar/profile.svg",
-				"selectedIconPath": "static/images/tabbar/profile-active.svg"
+				"iconPath": "static/icons/tabbar/profile.svg",
+				"selectedIconPath": "static/icons/tabbar/profile-active.svg"
 			}
 		]
 	}
