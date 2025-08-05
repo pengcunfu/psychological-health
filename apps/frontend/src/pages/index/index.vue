@@ -85,12 +85,12 @@
           :key="index"
           @click="navigateTo(`/pages/counselor/detail/index?id=${item.id}`)"
         >
-          <image class="counselor-img" :src="item.avatar || '/static/images/default-avatar.png'" mode="aspectFill"></image>
+          <image class="counselor-avatar" :src="item.avatar || '/static/images/default-avatar.png'" mode="aspectFill"></image>
           <view class="counselor-info">
             <text class="counselor-name">{{ item.name }}</text>
             <text class="counselor-title">{{ item.title }}</text>
             <view class="counselor-rating">
-              <u-icon name="star-fill" color="#ff9800" size="24"></u-icon>
+              <u-icon name="star-fill" color="#ff9800" size="16"></u-icon>
               <text class="rating-text">{{ item.rating }} ({{ item.consultation_count }})</text>
             </view>
             <text class="counselor-price">¥{{ item.price }}<text class="price-unit">/次</text></text>
@@ -674,26 +674,39 @@ onShow(() => {
 // 咨询师列表样式
 .counselor-list {
   display: flex;
+  flex-direction: row;
+  width: 100%;
   white-space: nowrap;
+  padding: 0 30rpx 0 0;
 }
 
 .counselor-card {
-  flex: 0 0 auto;
+  flex: 0 0 280rpx;
   width: 280rpx;
   margin-right: 24rpx;
   border-radius: 16rpx;
-  overflow: hidden;
   box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.05);
   background-color: #fff;
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: top;
 }
 
-.counselor-img {
-  width: 100%;
-  height: 280rpx;
+.counselor-card:last-child {
+  margin-right: 30rpx;
+}
+
+.counselor-avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  margin: 20rpx auto 16rpx auto;
+  display: block;
 }
 
 .counselor-info {
-  padding: 16rpx;
+  padding: 0 16rpx 20rpx 16rpx;
+  text-align: center;
 }
 
 .counselor-name {
@@ -720,23 +733,27 @@ onShow(() => {
 .counselor-rating {
   display: flex;
   align-items: center;
-  font-size: 24rpx;
+  justify-content: center;
+  font-size: 22rpx;
   color: #ff9800;
   margin-bottom: 8rpx;
 }
 
 .rating-text {
-  margin-left: 8rpx;
+  margin-left: 6rpx;
+  font-size: 22rpx;
 }
 
 .counselor-price {
   font-size: 24rpx;
   color: #ff4d4f;
+  font-weight: bold;
 }
 
 .price-unit {
   font-size: 20rpx;
   color: #999;
+  font-weight: normal;
 }
 
 // 课程列表样式
