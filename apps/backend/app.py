@@ -2,6 +2,7 @@ from flask import Flask
 from flask_cors import CORS
 from api.announcement import announcements_bp
 from api.appointment import appointment_bp
+from api.assessment import assessment_bp
 from api.disease_tags import disease_tags_bp
 from api.counselor import counselor_bp
 from api.course import course_bp
@@ -46,6 +47,7 @@ db.init_app(app)
 # 注册蓝图
 app.register_blueprint(announcements_bp)
 app.register_blueprint(appointment_bp)
+app.register_blueprint(assessment_bp)
 app.register_blueprint(disease_tags_bp)
 app.register_blueprint(counselor_bp)
 app.register_blueprint(course_bp)

@@ -1,6 +1,7 @@
 from .base import *
 from .announcement import *
 from .appointment import *
+from .assessment import *
 from .banner import *
 from .category import *
 from .course import *
