@@ -119,15 +119,15 @@
           :key="index" 
           @click="navigateTo(`/pages/course/detail/index?id=${item.id}`)"
         >
-          <image class="course-img" :src="item.cover || '/static/images/default-course.png'" mode="aspectFill"></image>
+          <image class="course-img" :src="item.cover_image || '/static/images/default-course.png'" mode="aspectFill"></image>
           <view class="course-info">
-            <text class="course-name">{{ item.name }}</text>
+            <text class="course-name">{{ item.title }}</text>
             <view class="course-stats">
               <view class="course-rating">
                 <u-icon name="star-fill" color="#ff9800" size="24"></u-icon>
                 <text class="rating-text">{{ item.rating || '4.8' }}</text>
               </view>
-              <text class="course-count">{{ item.sales || 0 }}人学习</text>
+              <text class="course-count">{{ item.student_count || 0 }}人学习</text>
             </view>
             <text class="course-price" v-if="item.price > 0">¥{{ item.price }}</text>
             <text class="course-free" v-else>免费</text>
@@ -328,46 +328,63 @@ const fetchCourses = async () => {
       per_page: 4
     })
     
-    if (res.code === 200 && res.success) {
-      courseList.value = res.data.list || []
+    console.log('课程API响应:', res)
+    
+    if (res.code === 200 && res.success && res.data && res.data.list) {
+      // 处理课程数据，确保rating有默认值
+      courseList.value = res.data.list.map(course => ({
+        ...course,
+        rating: course.rating || 4.8, // 如果rating为0，使用默认值4.8
+        student_count: course.student_count || 0
+      }))
+      console.log('处理后的课程列表:', courseList.value)
+    } else {
+      console.log('API返回数据格式异常，使用模拟数据')
+      courseList.value = getDefaultCourses()
     }
   } catch (error) {
+    console.error('获取课程列表失败:', error)
     // 如果API调用失败，使用模拟数据作为后备
-    courseList.value = [
-    {
-      id: 1,
-      name: '情绪管理：如何应对日常压力与焦虑',
-      rating: 4.8,
-      sales: 2345,
-      price: 99,
-      cover: 'https://via.placeholder.com/240x160/4A90E2/FFFFFF?text=情绪管理'
-    },
-    {
-      id: 2,
-      name: '人际关系：构建健康社交圈的技巧',
-      rating: 4.7,
-      sales: 1876,
-      price: 89,
-      cover: 'https://via.placeholder.com/240x160/52C41A/FFFFFF?text=人际关系'
-    },
-    {
-      id: 3,
-      name: '自我成长：发现内在力量的旅程',
-      rating: 4.9,
-      sales: 2103,
-      price: 129,
-      cover: 'https://via.placeholder.com/240x160/FA8C16/FFFFFF?text=自我成长'
-    },
-    {
-      id: 4,
-      name: '冥想入门：21天正念练习指南',
-      rating: 4.6,
-      sales: 3421,
-      price: 0,
-      cover: 'https://via.placeholder.com/240x160/EB2F96/FFFFFF?text=冥想入门'
-    }
-    ]
+    courseList.value = getDefaultCourses()
   }
+}
+
+// 获取默认课程数据
+const getDefaultCourses = () => {
+  return [
+    {
+      id: 'default-1',
+      title: '情绪管理：如何应对日常压力与焦虑',
+      rating: 4.8,
+      student_count: 2345,
+      price: 99,
+      cover_image: 'https://via.placeholder.com/240x160/4A90E2/FFFFFF?text=情绪管理'
+    },
+    {
+      id: 'default-2',
+      title: '人际关系：构建健康社交圈的技巧',
+      rating: 4.7,
+      student_count: 1876,
+      price: 89,
+      cover_image: 'https://via.placeholder.com/240x160/52C41A/FFFFFF?text=人际关系'
+    },
+    {
+      id: 'default-3',
+      title: '自我成长：发现内在力量的旅程',
+      rating: 4.9,
+      student_count: 2103,
+      price: 129,
+      cover_image: 'https://via.placeholder.com/240x160/FA8C16/FFFFFF?text=自我成长'
+    },
+    {
+      id: 'default-4',
+      title: '冥想入门：21天正念练习指南',
+      rating: 4.6,
+      student_count: 3421,
+      price: 0,
+      cover_image: 'https://via.placeholder.com/240x160/EB2F96/FFFFFF?text=冥想入门'
+    }
+  ]
 }
 
 // 获取轮播图数据

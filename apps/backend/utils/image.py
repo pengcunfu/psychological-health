@@ -170,7 +170,7 @@ def process_course_images(data: Union[Dict[str, Any], List[Dict[str, Any]]],
     Returns:
         dict or list: 处理后的课程数据
     """
-    image_fields = ['cover', 'thumbnail']  # 课程的图片字段
+    image_fields = ['cover_image', 'thumbnail']  # 课程的图片字段
     
     if isinstance(data, list):
         return process_image_urls_in_list(data, image_fields, base_url)
