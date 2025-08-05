@@ -66,7 +66,6 @@ const showSvg = ref(true)
 const iconPath = computed(() => {
   const suffix = props.active ? '-active' : ''
   const path = `/static/icons/${props.path}/${props.name}${suffix}.svg`
-  console.log('SvgIcon 路径:', path)
   return path
 })
 
@@ -99,14 +98,12 @@ const fallbackTextSize = computed(() => {
 })
 
 const onError = (e) => {
-  console.error('SVG图标加载失败:', iconPath.value, e)
   loadError.value = true
   showSvg.value = false
   emit('error', e)
 }
 
 const onLoad = (e) => {
-  console.log('SVG图标加载成功:', iconPath.value)
   loadError.value = false
   emit('load', e)
 }
@@ -118,12 +115,7 @@ watch([() => props.name, () => props.path, () => props.active], () => {
 })
 
 onMounted(() => {
-  console.log('SvgIcon mounted:', {
-    name: props.name,
-    path: props.path,
-    iconPath: iconPath.value,
-    fallbackIcon: props.fallbackIcon
-  })
+  // 组件挂载完成
 })
 </script>
 
