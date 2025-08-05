@@ -80,6 +80,9 @@
             <div class="menu-item sub-item" :class="{ active: activePath === '/admin/appointments' }" @click="navigateTo('/admin/appointments')">
               <span class="menu-text">预约管理</span>
             </div>
+            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/assessments' }" @click="navigateTo('/admin/assessments')">
+              <span class="menu-text">心理测评</span>
+            </div>
             <div class="menu-item sub-item" :class="{ active: activePath === '/admin/reviews' }" @click="navigateTo('/admin/reviews')">
               <span class="menu-text">评价管理</span>
             </div>

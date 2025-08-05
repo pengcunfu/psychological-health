@@ -512,6 +512,46 @@ export const deleteCourseOutline = (id) => {
     return api.delete(`/course-outline/${id}`)
 }
 
+
+// 心理测评管理API
+export const assessmentAPI = {
+    // 获取测评列表
+    getAssessments: (params) => api.get('/assessment', {params}),
+
+    // 获取测评详情
+    getAssessment: (id) => api.get(`/assessment/${id}`),
+
+    // 创建测评
+    createAssessment: (data) => api.post('/assessment', data),
+
+    // 更新测评
+    updateAssessment: (id, data) => api.put(`/assessment/${id}`, data),
+
+    // 删除测评
+    deleteAssessment: (id) => api.delete(`/assessment/${id}`),
+
+    // 获取测评题目列表
+    getQuestions: (assessmentId) => api.get(`/assessment/${assessmentId}/questions`),
+
+    // 创建测评题目
+    createQuestion: (assessmentId, data) => api.post(`/assessment/${assessmentId}/questions`, data),
+
+    // 更新测评题目
+    updateQuestion: (assessmentId, questionId, data) => api.put(`/assessment/${assessmentId}/questions/${questionId}`, data),
+
+    // 删除测评题目
+    deleteQuestion: (assessmentId, questionId) => api.delete(`/assessment/${assessmentId}/questions/${questionId}`),
+
+    // 获取测评记录列表
+    getRecords: (params) => api.get('/assessment/records', {params}),
+
+    // 获取测评记录详情
+    getRecord: (recordId) => api.get(`/assessment/records/${recordId}`),
+
+    // 获取测评统计数据
+    getStats: (assessmentId) => api.get(`/assessment/${assessmentId}/stats`)
+}
+
 export default {
     userAPI,
     counselorAPI,
@@ -529,5 +569,6 @@ export default {
     statsAPI,
     settingAPI,
     uploadAPI,
-    authAPI
+    authAPI,
+    assessmentAPI
 } 

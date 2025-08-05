@@ -16,6 +16,7 @@ import RoleManagement from '@/views/admin/RoleManagement.vue'
 import DiseaseTagsManagement from '@/views/admin/DiseaseTagsManagement.vue'
 import WorkspaceManagement from '@/views/admin/WorkspaceManagement.vue'
 import CourseOutlineManagement from '@/views/admin/CourseOutlineManagement.vue'
+import AssessmentManagement from '@/views/admin/AssessmentManagement.vue'
 import NotFound from '@/views/common/404.vue'
 import Unauthorized from '@/views/common/401.vue'
 
@@ -175,6 +176,15 @@ const routes = [
                 component: CourseOutlineManagement,
                 meta: {
                     title: '课程大纲管理',
+                    requiresAuth: true
+                }
+            },
+            {
+                path: 'admin/assessments',
+                name: 'AssessmentManagement',
+                component: AssessmentManagement,
+                meta: {
+                    title: '心理测评管理',
                     requiresAuth: true
                 }
             }

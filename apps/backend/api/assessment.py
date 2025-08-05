@@ -11,7 +11,6 @@ from form.assessment import (
 )
 from utils.json_result import JsonResult
 from utils.validate import validate_args
-from middleware.auth import auth_required
 import json
 
 assessment_bp = Blueprint('assessment', __name__, url_prefix='/assessment')
@@ -112,7 +111,6 @@ def get_assessment_detail(assessment_id):
 
 
 @assessment_bp.route('', methods=['POST'])
-@auth_required
 def create_assessment():
     """创建测评"""
     form = validate_args(AssessmentCreateForm)
@@ -155,7 +153,6 @@ def create_assessment():
 
 
 @assessment_bp.route('/<assessment_id>', methods=['PUT'])
-@auth_required
 def update_assessment(assessment_id):
     """更新测评"""
     assessment = Assessment.query.filter_by(id=assessment_id).first()
@@ -206,7 +203,6 @@ def update_assessment(assessment_id):
 
 
 @assessment_bp.route('/<assessment_id>', methods=['DELETE'])
-@auth_required
 def delete_assessment(assessment_id):
     """删除测评"""
     assessment = Assessment.query.filter_by(id=assessment_id).first()
@@ -223,7 +219,6 @@ def delete_assessment(assessment_id):
 
 
 @assessment_bp.route('/<assessment_id>/questions', methods=['POST'])
-@auth_required
 def create_question(assessment_id):
     """创建测评题目"""
     assessment = Assessment.query.filter_by(id=assessment_id).first()
@@ -263,7 +258,6 @@ def create_question(assessment_id):
 
 
 @assessment_bp.route('/<assessment_id>/questions/<question_id>', methods=['PUT'])
-@auth_required
 def update_question(assessment_id, question_id):
     """更新测评题目"""
     question = AssessmentQuestion.query.filter_by(
@@ -299,7 +293,6 @@ def update_question(assessment_id, question_id):
 
 
 @assessment_bp.route('/<assessment_id>/questions/<question_id>', methods=['DELETE'])
-@auth_required
 def delete_question(assessment_id, question_id):
     """删除测评题目"""
     question = AssessmentQuestion.query.filter_by(
@@ -324,7 +317,6 @@ def delete_question(assessment_id, question_id):
 
 
 @assessment_bp.route('/start', methods=['POST'])
-@auth_required
 def start_assessment():
     """开始测评"""
     form = validate_args(AssessmentStartForm)
@@ -365,7 +357,6 @@ def start_assessment():
 
 
 @assessment_bp.route('/submit', methods=['POST'])
-@auth_required
 def submit_assessment():
     """提交测评"""
     form = validate_args(AssessmentSubmitForm)
@@ -463,7 +454,6 @@ def submit_assessment():
 
 
 @assessment_bp.route('/records', methods=['GET'])
-@auth_required
 def get_assessment_records():
     """获取测评记录列表"""
     form = validate_args(AssessmentRecordQueryForm)
@@ -538,7 +528,6 @@ def get_assessment_records():
 
 
 @assessment_bp.route('/records/<record_id>', methods=['GET'])
-@auth_required
 def get_assessment_record_detail(record_id):
     """获取测评记录详情"""
     user_id = g.current_user.id
