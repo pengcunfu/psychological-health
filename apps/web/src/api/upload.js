@@ -59,6 +59,25 @@ export const uploadCourseCover = async (file) => {
   }
 }
 
+// 上传课程视频
+export const uploadCourseVideo = async (file) => {
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const response = await fetch('/api/upload/course-video', {
+      method: 'POST',
+      body: formData
+    })
+
+    const result = await response.json()
+    return result
+  } catch (error) {
+    console.error('上传课程视频失败:', error)
+    throw error
+  }
+}
+
 // 通用文件上传
 export const uploadFile = async (file, fileType = null, useUniqueName = true) => {
   try {
@@ -108,6 +127,20 @@ export class FileUploader {
     return `${window.location.origin}/api/${imageUrl}`
   }
 
+  static getFullVideoUrl(videoUrl) {
+    if (!videoUrl) return ''
+    // 如果是http或https开头的完整URL，直接返回
+    if (videoUrl.startsWith('http://') || videoUrl.startsWith('https://')) {
+      return videoUrl
+    }
+    // 如果以/开头，说明是绝对路径，直接拼接域名
+    if (videoUrl.startsWith('/')) {
+      return `${window.location.origin}/api${videoUrl}`
+    }
+    // 否则添加当前域名前缀和api路径
+    return `${window.location.origin}/api/${videoUrl}`
+  }
+
   // 验证图片文件
   static validateImage(file, maxSizeMB = 5) {
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
@@ -147,12 +180,40 @@ export class FileUploader {
     
     return true
   }
+
+  // 验证视频文件
+  static validateVideo(file, maxSizeMB = 50) {
+    const allowedTypes = [
+      'video/mp4',
+      'video/avi',
+      'video/mov',
+      'video/wmv',
+      'video/flv',
+      'video/mkv',
+      'video/webm'
+    ]
+    
+    if (!file.type.startsWith('video/')) {
+      throw new Error('只能上传视频文件!')
+    }
+    
+    if (!this.validateFileType(file, allowedTypes)) {
+      throw new Error('只支持 MP4、AVI、MOV、WMV、FLV、MKV、WebM 格式的视频!')
+    }
+    
+    if (!this.validateFileSize(file, maxSizeMB)) {
+      throw new Error(`视频大小不能超过 ${maxSizeMB}MB!`)
+    }
+    
+    return true
+  }
 }
 
 export default {
   uploadAvatar,
   uploadBanner,
   uploadCourseCover,
+  uploadCourseVideo,
   uploadFile,
   FileUploader
 }

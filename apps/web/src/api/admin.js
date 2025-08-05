@@ -470,7 +470,28 @@ export const deleteWorkspace = (id) => {
     return api.delete(`/workspace/${id}`)
 }
 
-// 课程大纲管理接口
+// 课程大纲管理API
+export const courseOutlineAPI = {
+    // 获取课程大纲列表
+    getCourseOutlines: (params) => api.get('/course-outline', {params}),
+
+    // 获取课程大纲详情
+    getCourseOutline: (id) => api.get(`/course-outline/${id}`),
+
+    // 创建课程大纲
+    createCourseOutline: (data) => api.post('/course-outline', data),
+
+    // 更新课程大纲
+    updateCourseOutline: (id, data) => api.put(`/course-outline/${id}`, data),
+
+    // 删除课程大纲
+    deleteCourseOutline: (id) => api.delete(`/course-outline/${id}`),
+
+    // 获取课程列表（用于下拉选择）
+    getCourses: (params) => api.get('/course-outline/courses', {params})
+}
+
+// 课程大纲管理接口（保持向后兼容）
 export const getCourseOutlines = (params) => {
     return api.get('/course-outline', {params})
 }
@@ -504,6 +525,7 @@ export default {
     menuAPI,
     bannerAPI,
     groupAPI,  // 添加群组API到默认导出
+    courseOutlineAPI,  // 添加课程大纲API到默认导出
     statsAPI,
     settingAPI,
     uploadAPI,
