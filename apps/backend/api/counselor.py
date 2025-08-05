@@ -34,15 +34,48 @@ def get_counselors():
 
     query = Counselor.query
 
+    # 搜索条件
     if form.name.data:
         query = query.filter(Counselor.name.like(f'%{form.name.data}%'))
     if form.title.data:
         query = query.filter(Counselor.title.like(f'%{form.title.data}%'))
+    if form.keyword.data:
+        # 关键词搜索：在姓名、职称、介绍中搜索
+        keyword = f'%{form.keyword.data}%'
+        query = query.filter(
+            (Counselor.name.like(keyword)) |
+            (Counselor.title.like(keyword)) |
+            (Counselor.introduction.like(keyword))
+        )
     if form.status.data is not None:
         query = query.filter(Counselor.status == form.status.data)
 
+    # 排序逻辑
+    sort_by = form.sort_by.data or 'create_time'
+    sort_order = form.sort_order.data or 'desc'
+    
+    # 验证排序字段
+    valid_sort_fields = {
+        'create_time': Counselor.create_time,
+        'rating': Counselor.rating,
+        'price': Counselor.price,
+        'consultation_count': Counselor.consultation_count,
+        'name': Counselor.name
+    }
+    
+    if sort_by not in valid_sort_fields:
+        sort_by = 'create_time'
+    
+    sort_column = valid_sort_fields[sort_by]
+    
+    # 应用排序
+    if sort_order.lower() == 'asc':
+        query = query.order_by(sort_column.asc())
+    else:
+        query = query.order_by(sort_column.desc())
+
     # 分页查询
-    pagination = query.order_by(Counselor.create_time.desc()).paginate(
+    pagination = query.paginate(
         page=form.page.data, per_page=form.per_page.data, error_out=False
     )
 
@@ -55,7 +88,9 @@ def get_counselors():
         'total': pagination.total,
         'page': form.page.data,
         'per_page': form.per_page.data,
-        'pages': pagination.pages
+        'pages': pagination.pages,
+        'sort_by': sort_by,
+        'sort_order': sort_order
     })
 
 

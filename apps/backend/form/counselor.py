@@ -9,6 +9,9 @@ class CounselorQueryForm(BaseForm):
     per_page = IntegerField('每页数量', [Optional()], default=10)
     name = StringField('咨询师姓名', [Optional()])
     title = StringField('职称', [Optional()])
+    keyword = StringField('搜索关键词', [Optional()])
+    sort_by = StringField('排序字段', [Optional()], default='create_time')
+    sort_order = StringField('排序方向', [Optional()], default='desc')
     status = IntegerField('状态', [Optional()])
 
 

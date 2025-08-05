@@ -7,11 +7,11 @@
         <view class="logo-text">心理健康</view>
       </view>
       <view class="search-bar" @click="navigateTo('/pages/search/index')">
-        <u-icon name="search" size="22" color="#999"></u-icon>
+        <up-icon name="search" size="22" color="#999"></up-icon>
         <text class="search-text">搜索咨询师、课程</text>
       </view>
       <view class="message-icon" @click="navigateTo('/pages/message/index')">
-        <u-icon name="bell" size="22" color="#333"></u-icon>
+        <up-icon name="bell" size="22" color="#333"></up-icon>
         <view class="message-dot"></view>
       </view>
     </view>
@@ -82,7 +82,7 @@
         </view>
         <view class="section-more" @click="navigateTo('/pages/counselor/index')">
           <text>查看全部</text>
-          <u-icon name="arrow-right" size="16" color="#999"></u-icon>
+          <up-icon name="arrow-right" size="16" color="#999"></up-icon>
         </view>
       </view>
       
@@ -98,7 +98,7 @@
             <text class="counselor-name">{{ item.name }}</text>
             <text class="counselor-title">{{ item.title }}</text>
             <view class="counselor-rating">
-              <u-icon name="star-fill" color="#ff9800" size="16"></u-icon>
+              <up-icon name="star-fill" color="#ff9800" size="16"></up-icon>
               <text class="rating-text">{{ item.rating }} ({{ item.consultation_count }})</text>
             </view>
             <text class="counselor-price">¥{{ item.price }}<text class="price-unit">/次</text></text>
@@ -126,7 +126,7 @@
         </view>
         <view class="section-more" @click="navigateTo('/pages/course/index')">
           <text>查看全部</text>
-          <u-icon name="arrow-right" size="16" color="#999"></u-icon>
+          <up-icon name="arrow-right" size="16" color="#999"></up-icon>
         </view>
       </view>
       
@@ -142,7 +142,7 @@
             <text class="course-name">{{ item.title }}</text>
             <view class="course-stats">
               <view class="course-rating">
-                <u-icon name="star-fill" color="#ff9800" size="24"></u-icon>
+                <up-icon name="star-fill" color="#ff9800" size="24"></up-icon>
                 <text class="rating-text">{{ item.rating || '4.8' }}</text>
               </view>
               <text class="course-count">{{ item.student_count || 0 }}人学习</text>
@@ -173,7 +173,7 @@
         </view>
         <view class="section-more" @click="navigateTo('/pages/assessment/index')">
           <text>查看全部</text>
-          <u-icon name="arrow-right" size="16" color="#999"></u-icon>
+          <up-icon name="arrow-right" size="16" color="#999"></up-icon>
         </view>
       </view>
       

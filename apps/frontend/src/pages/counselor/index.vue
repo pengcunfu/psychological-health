@@ -1,118 +1,126 @@
 <template>
   <view class="container tab-page">
-    <view class="search-bar">
-      <up-search
-          v-model="searchKeyword"
-          placeholder="搜索咨询师"
-          :show-action="false"
-          @search="handleSearch"
-          @custom="handleSearch"
-      ></up-search>
+    <!-- 顶部导航栏 -->
+    <view class="header">
+      <view class="back-button" @click="goBack">
+        <up-icon name="arrow-left" size="20" color="#333"></up-icon>
+      </view>
+      <view class="header-title">咨询预约</view>
+      <view class="search-button" @click="handleSearchClick">
+        <up-icon name="search" size="20" color="#333"></up-icon>
+      </view>
     </view>
 
-    <!-- 使用uViewPlus Tabs组件 -->
-    <up-tabs
-        :list="tabList"
-        :current="currentTab"
-        @change="handleTabChange"
-        :activeStyle="{
-        color: '#4A90E2',
-        fontWeight: 'bold',
-        transform: 'scale(1.05)'
-      }"
-        :inactiveStyle="{
-        color: '#666666'
-      }"
-        lineWidth="30"
-        lineColor="#4A90E2"
-        lineHeight="4"
-        itemStyle="padding-left: 15px; padding-right: 15px; height: 50px;"
-    />
+    <!-- 标签栏 -->
+    <view class="tabs">
+      <view class="tab active">全部咨询师</view>
+      <view class="tab">我的预约</view>
+    </view>
+
+    <!-- 筛选栏 -->
+    <view class="filter-bar">
+      <view class="filter-item">
+        <text>专业领域</text>
+        <up-icon name="arrow-down" size="12" color="#999"></up-icon>
+      </view>
+      <view class="filter-item">
+        <text>价格区间</text>
+        <up-icon name="arrow-down" size="12" color="#999"></up-icon>
+      </view>
+      <view class="filter-item">
+        <text>综合排序</text>
+        <up-icon name="arrow-down" size="12" color="#999"></up-icon>
+      </view>
+    </view>
 
     <!-- 咨询师列表 -->
-    <up-list v-if="!loading && counselorList.length > 0">
-      <up-list-item
-          v-for="(item, index) in counselorList"
-          :key="item.id || index"
-          @click="navigateToDetail(item.id)"
+    <view class="counselor-list">
+      <view 
+        v-for="(item, index) in counselorList" 
+        :key="item.id || index"
+        class="counselor-card" 
+        @click="navigateToDetail(item.id)"
       >
-        <view class="counselor-card">
-          <view class="counselor-header">
-            <up-avatar :src="item.avatar || '/static/images/default-avatar.png'" size="120"></up-avatar>
-            <view class="counselor-info">
-              <view class="counselor-name-row">
-                <text class="counselor-name">{{ item.name || '未知咨询师' }}</text>
-                <text class="counselor-title">{{ item.title || item.professional_title || '心理咨询师' }}</text>
-              </view>
-              <view class="counselor-rating">
-                <up-icon name="star-fill" color="#faad14" size="24"></up-icon>
-                <text class="rating-text">{{ item.rating || '4.8' }}</text>
-                <text class="consultation-count">{{ item.consultation_count || 0 }}次咨询</text>
-              </view>
-              <view class="counselor-tags" v-if="item.specialties && item.specialties.length > 0">
-                <text class="tag" v-for="(tag, tagIndex) in item.specialties.slice(0, 3)" :key="tagIndex">{{
-                    tag
-                  }}
-                </text>
-              </view>
-              <view class="counselor-tags" v-else>
-                <text class="tag">心理咨询</text>
-                <text class="tag">情感支持</text>
-              </view>
-            </view>
+        <!-- 咨询师头像 -->
+        <image 
+          :src="item.avatar || '/static/images/default-avatar.png'" 
+          class="counselor-avatar"
+          mode="aspectFill"
+        ></image>
+        
+        <!-- 咨询师信息 -->
+        <view class="counselor-info">
+          <!-- 姓名和职称 -->
+          <view class="counselor-name-row">
+            <text class="counselor-name">{{ item.name || '未知咨询师' }}</text>
+            <text class="counselor-title">{{ item.title || item.professional_title || '心理咨询师' }}</text>
           </view>
-          <view class="counselor-content">
-            <text class="counselor-intro text-ellipsis-2">
-              {{ item.introduction || item.description || '专业心理咨询师，致力于为您提供优质的心理健康服务' }}
+          
+          <!-- 专长描述 -->
+          <view class="counselor-specialty">
+            擅长：{{ getSpecialtyText(item) }}
+          </view>
+          
+          <!-- 专业标签 -->
+          <view class="counselor-tags">
+            <text 
+              class="counselor-tag" 
+              v-for="(tag, tagIndex) in getSpecialties(item).slice(0, 3)" 
+              :key="tagIndex"
+            >
+              {{ tag }}
             </text>
           </view>
-          <view class="counselor-footer">
-            <text class="price">¥{{ item.price || item.consultation_fee || 300 }}/次</text>
-            <up-button
-                text="立即预约"
-                type="primary"
-                size="small"
-                @click.stop="handleAppointment(item)"
-                :customStyle="{
-                backgroundColor: '#4A90E2',
-                borderColor: '#4A90E2',
-                borderRadius: '30rpx',
-                height: '60rpx',
-                fontSize: '28rpx'
-              }"
-            ></up-button>
+          
+          <!-- 评分和价格 -->
+          <view class="counselor-stats">
+            <view class="rating-section">
+              <view class="counselor-rating">
+                <up-icon name="star-fill" color="#ff9800" size="12"></up-icon>
+                <text class="rating-text">{{ item.rating || '4.8' }}</text>
+                <text class="counselor-count">({{ item.consultation_count || 0 }})</text>
+              </view>
+            </view>
+            <view class="counselor-price">
+              ¥{{ item.price || item.consultation_fee || 300 }}<text class="price-unit">/次</text>
+            </view>
           </view>
         </view>
-      </up-list-item>
-    </up-list>
+      </view>
+    </view>
 
     <!-- 空状态 -->
     <view v-if="!loading && counselorList.length === 0" class="empty-state">
-      <up-empty
-          text="暂无咨询师数据"
-          icon="https://cdn.uviewui.com/uview/empty/list.png"
-          iconSize="120"
-          textSize="14"
-          textColor="#999999"
-          marginTop="80"
-      >
-        <template v-slot:bottom>
-          <up-button
-              text="刷新重试"
-              type="primary"
-              size="small"
-              @click="fetchCounselors(true)"
-              :customStyle="{
-              marginTop: '20rpx',
-              width: '200rpx'
+      <view class="empty-content">
+        <up-icon name="search" size="60" color="#ccc"></up-icon>
+        <text class="empty-title">暂未找到合适的咨询师</text>
+        <text class="empty-subtitle">试试调整搜索条件或筛选选项</text>
+        <up-button
+            text="重新搜索"
+            type="primary"
+            size="normal"
+            @click="fetchCounselors(true)"
+            :customStyle="{
+              marginTop: '30rpx',
+              width: '160rpx',
+              borderRadius: '22rpx',
+              background: '#4A90E2'
             }"
-          ></up-button>
-        </template>
-      </up-empty>
+        ></up-button>
+      </view>
     </view>
 
     <!-- 加载更多 -->
-    <up-loadmore :status="loadMoreStatus" @loadmore="loadMore"/>
+    <view class="load-more-container">
+      <up-loadmore :status="loadMoreStatus" @loadmore="loadMore" 
+        :loading-text="'正在加载更多咨询师...'"
+        :loadmore-text="'上拉加载更多'"
+        :nomore-text="'已加载全部咨询师'"
+        icon-size="20"
+        :margin-top="20"
+        :margin-bottom="20"
+      />
+    </view>
   </view>
 </template>
 
@@ -124,10 +132,10 @@ import {counselorAPI} from '@/api/counselor'
 // 搜索关键词
 const searchKeyword = ref('')
 
-// 当前选中的标签页
+// 当前选中的标签页 - 确保是数字类型
 const currentTab = ref(0)
 
-// 标签页列表
+// 标签页列表 - 确保正确的数据结构
 const tabList = ref([
   {name: '全部'},
   {name: '评分最高'},
@@ -153,8 +161,35 @@ const pagination = reactive({
 // 当前筛选条件
 const currentFilter = computed(() => {
   const filters = ['all', 'rating', 'price-asc', 'price-desc']
-  return filters[currentTab.value] || 'all'
+  const index = Math.max(0, Math.min(currentTab.value || 0, filters.length - 1))
+  return filters[index] || 'all'
 })
+
+// 获取专业领域
+const getSpecialties = (item) => {
+  if (item.specialties && item.specialties.length > 0) {
+    return item.specialties
+  }
+  return ['心理咨询', '情感支持', '焦虑抑郁', '人际关系']
+}
+
+// 获取专长描述文本
+const getSpecialtyText = (item) => {
+  const specialties = getSpecialties(item)
+  return specialties.slice(0, 3).join('、')
+}
+
+// 返回上一页
+const goBack = () => {
+  uni.navigateBack()
+}
+
+// 搜索按钮点击
+const handleSearchClick = () => {
+  uni.navigateTo({
+    url: '/pages/search/index'
+  })
+}
 
 // 获取咨询师列表
 const fetchCounselors = async (reset = false) => {
@@ -192,6 +227,11 @@ const fetchCounselors = async (reset = false) => {
         params.sort_by = 'price'
         params.sort_order = 'desc'
         break
+      default:
+        // 默认按创建时间排序
+        params.sort_by = 'created_at'
+        params.sort_order = 'desc'
+        break
     }
 
     console.log('获取咨询师列表参数:', params)
@@ -214,10 +254,10 @@ const fetchCounselors = async (reset = false) => {
           avatar: item.avatar || '/static/images/default-avatar.png',
           title: item.title || '心理咨询师',
           professional_title: item.title || '心理咨询师',
-          rating: item.rating || 4.8,
-          consultation_count: item.consultation_count || 0,
-          price: item.price || 300,
-          consultation_fee: item.price || 300,
+          rating: parseFloat(item.rating) || 4.8,
+          consultation_count: parseInt(item.consultation_count) || 0,
+          price: parseFloat(item.price) || 300,
+          consultation_fee: parseFloat(item.price) || 300,
           introduction: item.introduction || '专业心理咨询师，致力于为您提供优质的心理健康服务',
           description: item.introduction || '专业心理咨询师，致力于为您提供优质的心理健康服务',
           // 处理专业领域 - 将tags字段映射为specialties
@@ -227,6 +267,11 @@ const fetchCounselors = async (reset = false) => {
         }
         return processedItem
       })
+
+      // 如果后端不支持排序，前端进行排序
+      if (currentFilter.value !== 'all') {
+        newList = sortCounselors(newList, currentFilter.value)
+      }
 
       // 更新列表
       counselorList.value = reset ? newList : [...counselorList.value, ...newList]
@@ -266,6 +311,34 @@ const fetchCounselors = async (reset = false) => {
   }
 }
 
+// 前端排序函数（作为后端排序的备选方案）
+const sortCounselors = (list, sortType) => {
+  const sortedList = [...list]
+  
+  switch (sortType) {
+    case 'rating':
+      return sortedList.sort((a, b) => {
+        const ratingA = parseFloat(a.rating) || 0
+        const ratingB = parseFloat(b.rating) || 0
+        return ratingB - ratingA // 降序：评分高的在前
+      })
+    case 'price-asc':
+      return sortedList.sort((a, b) => {
+        const priceA = parseFloat(a.price) || 0
+        const priceB = parseFloat(b.price) || 0
+        return priceA - priceB // 升序：价格低的在前
+      })
+    case 'price-desc':
+      return sortedList.sort((a, b) => {
+        const priceA = parseFloat(a.price) || 0
+        const priceB = parseFloat(b.price) || 0
+        return priceB - priceA // 降序：价格高的在前
+      })
+    default:
+      return sortedList
+  }
+}
+
 // 处理专业领域数据
 const processSpecialties = (tags) => {
   if (Array.isArray(tags) && tags.length > 0) {
@@ -280,7 +353,11 @@ const processSpecialties = (tags) => {
 
 // 标签页切换处理
 const handleTabChange = (index) => {
-  currentTab.value = index
+  console.log('切换到标签页:', index, tabList.value[index]?.name)
+  // 确保index是数字类型
+  const tabIndex = typeof index === 'object' ? index.index : index
+  currentTab.value = Number(tabIndex)
+  console.log('当前筛选条件:', currentFilter.value)
   fetchCounselors(true)
 }
 
@@ -315,7 +392,10 @@ const loadMore = () => {
 
 // 页面加载
 onLoad(() => {
-  fetchCounselors()
+  console.log('页面加载，初始化咨询师列表')
+  // 确保初始状态正确
+  currentTab.value = 0
+  fetchCounselors(true)
 })
 
 // 下拉加载更多
@@ -327,136 +407,234 @@ onReachBottom(() => {
 <style lang="scss">
 .container {
   min-height: 100vh;
-  background-color: #f5f7fa;
+  background: #f5f7fa;
   padding-bottom: 30rpx;
 }
 
-.search-bar {
-  padding: 20rpx 30rpx;
-  background-color: #fff;
-  margin-bottom: 20rpx;
+// 顶部导航栏
+.header {
+  padding: 30rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border-bottom: 1rpx solid #f0f0f0;
 }
 
+.header-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  flex: 1;
+  text-align: center;
+  color: #333;
+}
+
+.back-button, .search-button {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// 标签栏
+.tabs {
+  display: flex;
+  background: #fff;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 24rpx 0;
+  font-size: 28rpx;
+  color: #666;
+  position: relative;
+}
+
+.tab.active {
+  color: #4A90E2;
+  font-weight: bold;
+}
+
+.tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40rpx;
+  height: 6rpx;
+  background: #4A90E2;
+  border-radius: 3rpx;
+}
+
+// 筛选栏
+.filter-bar {
+  display: flex;
+  padding: 20rpx 30rpx;
+  background: #fff;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.filter-item {
+  display: flex;
+  align-items: center;
+  margin-right: 30rpx;
+  font-size: 24rpx;
+  color: #666;
+}
+
+.filter-item text {
+  margin-right: 8rpx;
+}
+
+// 咨询师列表
 .counselor-list {
-  padding: 0 30rpx;
+  padding: 20rpx 30rpx;
 }
 
 .counselor-card {
-  background-color: #fff;
-  border-radius: 20rpx;
+  display: flex;
+  margin-bottom: 30rpx;
   padding: 30rpx;
-  margin-bottom: 20rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s ease;
+  border-radius: 16rpx;
+  background: #fff;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
 }
 
 .counselor-card:active {
-  transform: scale(0.98);
+  transform: translateY(-2rpx);
+  box-shadow: 0 6rpx 20rpx rgba(0, 0, 0, 0.12);
 }
 
-.counselor-header {
-  display: flex;
-  margin-bottom: 20rpx;
+// 咨询师头像 - 圆角矩形
+.counselor-avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 12rpx;
+  margin-right: 24rpx;
+  flex-shrink: 0;
 }
 
+// 咨询师信息
 .counselor-info {
   flex: 1;
-  margin-left: 20rpx;
+  min-width: 0;
 }
 
 .counselor-name-row {
   display: flex;
   align-items: center;
-  margin-bottom: 10rpx;
+  margin-bottom: 8rpx;
 }
 
 .counselor-name {
   font-size: 32rpx;
   font-weight: bold;
   color: #333;
-  margin-right: 10rpx;
+  margin-right: 16rpx;
 }
 
 .counselor-title {
   font-size: 24rpx;
   color: #666;
-  background-color: #f5f7fa;
-  padding: 4rpx 10rpx;
-  border-radius: 4rpx;
+  background: #f5f5f5;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
 }
 
-.counselor-rating {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10rpx;
-}
-
-.rating-text {
+.counselor-specialty {
   font-size: 24rpx;
-  color: #faad14;
-  margin: 0 10rpx;
+  color: #666;
+  margin-bottom: 8rpx;
 }
 
-.consultation-count {
-  font-size: 24rpx;
-  color: #999;
-}
-
+// 专业标签
 .counselor-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 8rpx;
+  margin-bottom: 16rpx;
 }
 
-.tag {
-  font-size: 22rpx;
+.counselor-tag {
+  font-size: 20rpx;
   color: #4A90E2;
-  background-color: rgba(74, 144, 226, 0.1);
-  padding: 4rpx 8rpx;
-  border-radius: 4rpx;
+  background: #e6f7ff;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  margin-right: 12rpx;
+  margin-bottom: 8rpx;
 }
 
-.counselor-content {
-  margin-bottom: 20rpx;
-}
-
-.counselor-intro {
-  font-size: 28rpx;
-  color: #666;
-  line-height: 1.6;
-}
-
-.text-ellipsis-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.counselor-footer {
+// 评分和价格
+.counselor-stats {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.price {
-  font-size: 36rpx;
-  color: #f5222d;
+.rating-section {
+  flex: 1;
+}
+
+.counselor-rating {
+  display: flex;
+  align-items: center;
+}
+
+.rating-text {
+  font-size: 24rpx;
+  color: #ff9800;
+  margin: 0 8rpx;
+}
+
+.counselor-count {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.counselor-price {
+  font-size: 28rpx;
+  color: #ff4d4f;
   font-weight: bold;
 }
 
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 100rpx 50rpx;
+.price-unit {
+  font-size: 20rpx;
+  color: #999;
 }
 
-.empty-text {
+// 空状态
+.empty-state {
+  padding: 100rpx 60rpx;
+  text-align: center;
+}
+
+.empty-content {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 60rpx 40rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.empty-title {
   font-size: 28rpx;
+  color: #333;
+  margin: 20rpx 0 8rpx;
+  display: block;
+}
+
+.empty-subtitle {
+  font-size: 24rpx;
   color: #999;
-  margin-top: 20rpx;
+  display: block;
+}
+
+// 加载更多
+.load-more-container {
+  padding: 0 30rpx 20rpx;
 }
 </style> 
