@@ -36,6 +36,8 @@ def get_categories():
 
     if form.name.data:
         query = query.filter(Category.name.like(f'%{form.name.data}%'))
+    if form.type.data:
+        query = query.filter(Category.type == form.type.data)
     if form.status.data is not None:
         query = query.filter(Category.status == form.status.data)
 
@@ -72,6 +74,7 @@ def create_category():
     category = Category(
         id=str(uuid.uuid4()),
         name=form.name.data,
+        type=form.type.data or 'course',
         icon=form.icon.data or '',
         path=form.path.data or '',
         description=form.description.data or '',

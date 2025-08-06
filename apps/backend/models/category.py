@@ -3,14 +3,15 @@ from .base import BaseModel
 
 
 class Category(BaseModel):
-    """咨询类型实体"""
+    """分类实体"""
     __tablename__ = 'categories'
 
-    id = Column(String(50), primary_key=True)  # 类型ID
-    name = Column(String(100), nullable=False)  # 类型名称
+    id = Column(String(50), primary_key=True)  # 分类ID
+    name = Column(String(100), nullable=False)  # 分类名称
+    type = Column(String(50), default='course')  # 分类类型（course-课程分类，counselor-咨询师分类，article-文章分类）
     icon = Column(String(255))  # 图标URL
     path = Column(String(255))  # 跳转路径
-    description = Column(String(500))  # 类型描述
+    description = Column(String(500))  # 分类描述
     sort_order = Column(Integer, default=0)  # 排序顺序
     status = Column(Integer, default=1)  # 状态（0-禁用，1-启用）
 
@@ -19,6 +20,7 @@ class Category(BaseModel):
         return {
             'id': self.id,
             'name': self.name,
+            'type': self.type,
             'icon': self.icon,
             'path': self.path,
             'description': self.description,

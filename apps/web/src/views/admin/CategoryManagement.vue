@@ -47,59 +47,61 @@
         @change="handleTableChange"
         row-key="id"
     >
-      <template #icon="{ record }">
-        <div class="category-icon">
-          <span v-if="record.icon" class="icon-preview">
-            <component :is="record.icon"/>
-          </span>
-          <span v-else class="no-icon">-</span>
-        </div>
-      </template>
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.key === 'icon'">
+          <div class="category-icon">
+            <span v-if="record.icon" class="icon-preview">
+              <component :is="record.icon"/>
+            </span>
+            <span v-else class="no-icon">-</span>
+          </div>
+        </template>
 
-      <template #type="{ record }">
-        <a-tag :color="getTypeColor(record.type)">
-          {{ getTypeText(record.type) }}
-        </a-tag>
-      </template>
+        <template v-if="column.key === 'type'">
+          <a-tag :color="getTypeColor(record.type)">
+            {{ getTypeText(record.type) }}
+          </a-tag>
+        </template>
 
-      <template #status="{ record }">
-        <a-tag :color="record.status === 1 ? 'green' : 'default'">
-          {{ record.status === 1 ? '启用' : '禁用' }}
-        </a-tag>
-      </template>
+        <template v-if="column.key === 'status'">
+          <a-tag :color="record.status === 1 ? 'green' : 'default'">
+            {{ record.status === 1 ? '启用' : '禁用' }}
+          </a-tag>
+        </template>
 
-      <template #description="{ record }">
-        <div class="description-cell">
-          <span class="description-text">{{ record.description || '-' }}</span>
-        </div>
-      </template>
+        <template v-if="column.key === 'description'">
+          <div class="description-cell">
+            <span class="description-text">{{ record.description || '-' }}</span>
+          </div>
+        </template>
 
-      <template #createTime="{ record }">
-        {{ formatDate(record.create_time) }}
-      </template>
+        <template v-if="column.key === 'create_time'">
+          {{ formatDate(record.create_time) }}
+        </template>
 
-      <template #action="{ record }">
-        <a-space>
-          <a-button type="link" size="small" @click="editCategory(record)">
-            编辑
-          </a-button>
-          <a-button
-              type="link"
-              size="small"
-              @click="toggleStatus(record)"
-              :style="{ color: record.status === 1 ? '#ff4d4f' : '#52c41a' }"
-          >
-            {{ record.status === 1 ? '禁用' : '启用' }}
-          </a-button>
-          <a-popconfirm
-              title="确定要删除该分类吗？"
-              @confirm="deleteCategory(record.id)"
-          >
-            <a-button type="link" size="small" danger>
-              删除
+        <template v-if="column.key === 'action'">
+          <a-space>
+            <a-button type="link" size="small" @click="editCategory(record)">
+              编辑
             </a-button>
-          </a-popconfirm>
-        </a-space>
+            <a-button
+                type="link"
+                size="small"
+                @click="toggleStatus(record)"
+                :style="{ color: record.status === 1 ? '#ff4d4f' : '#52c41a' }"
+            >
+              {{ record.status === 1 ? '禁用' : '启用' }}
+            </a-button>
+            <a-popconfirm
+                title="确定要删除该分类吗？"
+                @confirm="deleteCategory(record.id)"
+            >
+              <a-button type="link" size="small" danger>
+                删除
+              </a-button>
+            </a-popconfirm>
+          </a-space>
+        </template>
       </template>
     </a-table>
 
@@ -161,18 +163,11 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import {ref, reactive, onMounted, computed} from 'vue'
 import {message} from 'ant-design-vue'
 import {PlusOutlined} from '@ant-design/icons-vue'
 import {categoryAPI} from '@/api/admin'
-
-export default {
-  name: 'CategoryManagement',
-  components: {
-    PlusOutlined
-  },
-  setup() {
     const loading = ref(false)
     const categories = ref([])
     const modalVisible = ref(false)
@@ -203,60 +198,54 @@ export default {
     })
 
     const columns = [
-      {
-        title: '分类名称',
-        dataIndex: 'name',
-        key: 'name',
-        width: 150
-      },
-      {
-        title: '图标',
-        dataIndex: 'icon',
-        key: 'icon',
-        slots: {customRender: 'icon'},
-        width: 80
-      },
-      {
-        title: '类型',
-        dataIndex: 'type',
-        key: 'type',
-        slots: {customRender: 'type'},
-        width: 120
-      },
-      {
-        title: '排序',
-        dataIndex: 'sort_order',
-        key: 'sort_order',
-        width: 80
-      },
-      {
-        title: '状态',
-        dataIndex: 'status',
-        key: 'status',
-        slots: {customRender: 'status'},
-        width: 100
-      },
-      {
-        title: '描述',
-        dataIndex: 'description',
-        key: 'description',
-        slots: {customRender: 'description'},
-        width: 200
-      },
-      {
-        title: '创建时间',
-        dataIndex: 'create_time',
-        key: 'create_time',
-        slots: {customRender: 'createTime'},
-        width: 150
-      },
-      {
-        title: '操作',
-        key: 'action',
-        slots: {customRender: 'action'},
-        width: 180
-      }
-    ]
+  {
+    title: '分类名称',
+    dataIndex: 'name',
+    key: 'name',
+    width: 150
+  },
+  {
+    title: '图标',
+    dataIndex: 'icon',
+    key: 'icon',
+    width: 80
+  },
+  {
+    title: '类型',
+    dataIndex: 'type',
+    key: 'type',
+    width: 120
+  },
+  {
+    title: '排序',
+    dataIndex: 'sort_order',
+    key: 'sort_order',
+    width: 80
+  },
+  {
+    title: '状态',
+    dataIndex: 'status',
+    key: 'status',
+    width: 100
+  },
+  {
+    title: '描述',
+    dataIndex: 'description',
+    key: 'description',
+    width: 200
+  },
+  {
+    title: '创建时间',
+    dataIndex: 'create_time',
+    key: 'create_time',
+    width: 150
+  },
+  {
+    title: '操作',
+    key: 'action',
+    width: 180
+  }
+]
 
     const categoryFormRules = {
       name: [
@@ -449,41 +438,12 @@ export default {
 
     const modalTitle = computed(() => isEdit.value ? '编辑分类' : '添加分类')
 
-    onMounted(() => {
-      fetchCategories()
-    })
-
-    return {
-      loading,
-      categories,
-      searchForm,
-      categoryForm,
-      categoryFormRef,
-      categoryFormRules,
-      modalVisible,
-      isEdit,
-      pagination,
-      columns,
-      modalTitle,
-      fetchCategories,
-      handleSearch,
-      resetSearch,
-      handleTableChange,
-      showAddModal,
-      editCategory,
-      toggleStatus,
-      deleteCategory,
-      handleModalOk,
-      handleModalCancel,
-      getTypeColor,
-      getTypeText,
-      formatDate
-    }
-  }
-}
+onMounted(() => {
+  fetchCategories()
+})
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .category-management {
   padding: 0;
 }
@@ -506,12 +466,14 @@ export default {
   min-width: 0;
 }
 
-.search-form .ant-form-item {
-  margin-bottom: 0;
-}
+.search-form {
+  .ant-form-item {
+    margin-bottom: 0;
 
-.search-form .ant-form-item:last-child {
-  margin-bottom: 0;
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
 }
 
 .action-buttons {
@@ -560,24 +522,28 @@ export default {
     align-items: stretch;
   }
 
-  .search-form .ant-form {
-    flex-direction: column;
-  }
+  .search-form {
+    .ant-form {
+      flex-direction: column;
+    }
 
-  .search-form .ant-form-item {
-    margin-bottom: 8px;
-  }
+    .ant-form-item {
+      margin-bottom: 8px;
 
-  .search-form .ant-form-item:last-child {
-    margin-bottom: 0;
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
   }
 
   .action-buttons {
     width: 100%;
   }
 
-  .action-buttons .ant-btn {
-    width: 100%;
+  .action-buttons {
+    .ant-btn {
+      width: 100%;
+    }
   }
 
   .description-cell {
@@ -590,13 +556,15 @@ export default {
     padding: 6px;
   }
 
-  .search-form .ant-form-item label {
-    font-size: 13px;
-  }
+  .search-form {
+    .ant-form-item label {
+      font-size: 13px;
+    }
 
-  .search-form .ant-input,
-  .search-form .ant-select {
-    font-size: 13px;
+    .ant-input,
+    .ant-select {
+      font-size: 13px;
+    }
   }
 
   .description-cell {
