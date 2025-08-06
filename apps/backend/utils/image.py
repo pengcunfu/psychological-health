@@ -37,7 +37,7 @@ def get_base_url() -> str:
         str: 基础URL，例如 'http://localhost:5000'
     """
     # return request.url_root.rstrip('/')
-    return 'http://192.168.185.4:5000'
+    return 'http://192.168.137.4:5000'
 
 
 def process_image_url(image_url: Optional[str], base_url: Optional[str] = None) -> Optional[str]:
@@ -53,24 +53,24 @@ def process_image_url(image_url: Optional[str], base_url: Optional[str] = None) 
     """
     if not image_url:
         return image_url
-    
+
     # 如果已经是完整的URL，直接返回
     if image_url.startswith(('http://', 'https://')):
         return image_url
-    
+
     # 获取基础URL
     if base_url is None:
         base_url = get_base_url()
-    
+
     # 确保路径以/开头
     if not image_url.startswith('/'):
         image_url = '/' + image_url
-    
+
     return base_url + image_url
 
 
-def process_image_urls_in_dict(data: Dict[str, Any], image_fields: Union[str, List[str]], 
-                              base_url: Optional[str] = None) -> Dict[str, Any]:
+def process_image_urls_in_dict(data: Dict[str, Any], image_fields: Union[str, List[str]],
+                               base_url: Optional[str] = None) -> Dict[str, Any]:
     """
     处理字典中指定字段的图片URL
     
@@ -84,28 +84,28 @@ def process_image_urls_in_dict(data: Dict[str, Any], image_fields: Union[str, Li
     """
     if not isinstance(data, dict):
         return data
-    
+
     # 统一处理为列表
     if isinstance(image_fields, str):
         image_fields = [image_fields]
-    
+
     # 获取基础URL
     if base_url is None:
         base_url = get_base_url()
-    
+
     # 复制数据避免修改原始数据
     processed_data = data.copy()
-    
+
     # 处理每个指定的图片字段
     for field in image_fields:
         if field in processed_data:
             processed_data[field] = process_image_url(processed_data[field], base_url)
-    
+
     return processed_data
 
 
-def process_image_urls_in_list(data_list: List[Dict[str, Any]], image_fields: Union[str, List[str]], 
-                              base_url: Optional[str] = None) -> List[Dict[str, Any]]:
+def process_image_urls_in_list(data_list: List[Dict[str, Any]], image_fields: Union[str, List[str]],
+                               base_url: Optional[str] = None) -> List[Dict[str, Any]]:
     """
     处理列表中每个字典的指定图片字段
     
@@ -119,11 +119,11 @@ def process_image_urls_in_list(data_list: List[Dict[str, Any]], image_fields: Un
     """
     if not isinstance(data_list, list):
         return data_list
-    
+
     # 获取基础URL
     if base_url is None:
         base_url = get_base_url()
-    
+
     # 处理列表中的每个项目
     processed_list = []
     for item in data_list:
@@ -132,12 +132,12 @@ def process_image_urls_in_list(data_list: List[Dict[str, Any]], image_fields: Un
             processed_list.append(processed_item)
         else:
             processed_list.append(item)
-    
+
     return processed_list
 
 
-def process_counselor_images(data: Union[Dict[str, Any], List[Dict[str, Any]]], 
-                           base_url: Optional[str] = None) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
+def process_counselor_images(data: Union[Dict[str, Any], List[Dict[str, Any]]],
+                             base_url: Optional[str] = None) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
     """
     专门处理咨询师数据中的图片字段
     
@@ -149,7 +149,7 @@ def process_counselor_images(data: Union[Dict[str, Any], List[Dict[str, Any]]],
         dict or list: 处理后的咨询师数据
     """
     image_fields = ['avatar']  # 咨询师的图片字段
-    
+
     if isinstance(data, list):
         return process_image_urls_in_list(data, image_fields, base_url)
     elif isinstance(data, dict):
@@ -158,8 +158,8 @@ def process_counselor_images(data: Union[Dict[str, Any], List[Dict[str, Any]]],
         return data
 
 
-def process_course_images(data: Union[Dict[str, Any], List[Dict[str, Any]]], 
-                         base_url: Optional[str] = None) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
+def process_course_images(data: Union[Dict[str, Any], List[Dict[str, Any]]],
+                          base_url: Optional[str] = None) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
     """
     专门处理课程数据中的图片字段
     
@@ -171,7 +171,7 @@ def process_course_images(data: Union[Dict[str, Any], List[Dict[str, Any]]],
         dict or list: 处理后的课程数据
     """
     image_fields = ['cover_image', 'thumbnail']  # 课程的图片字段
-    
+
     if isinstance(data, list):
         return process_image_urls_in_list(data, image_fields, base_url)
     elif isinstance(data, dict):
@@ -180,8 +180,8 @@ def process_course_images(data: Union[Dict[str, Any], List[Dict[str, Any]]],
         return data
 
 
-def process_banner_images(data: Union[Dict[str, Any], List[Dict[str, Any]]], 
-                         base_url: Optional[str] = None) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
+def process_banner_images(data: Union[Dict[str, Any], List[Dict[str, Any]]],
+                          base_url: Optional[str] = None) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
     """
     专门处理轮播图数据中的图片字段
     
@@ -193,12 +193,10 @@ def process_banner_images(data: Union[Dict[str, Any], List[Dict[str, Any]]],
         dict or list: 处理后的轮播图数据
     """
     image_fields = ['image_url']  # 轮播图的图片字段
-    
+
     if isinstance(data, list):
         return process_image_urls_in_list(data, image_fields, base_url)
     elif isinstance(data, dict):
         return process_image_urls_in_dict(data, image_fields, base_url)
     else:
         return data
-
-

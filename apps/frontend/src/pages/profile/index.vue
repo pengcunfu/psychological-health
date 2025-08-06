@@ -143,8 +143,9 @@
 
 <script setup>
 import { computed } from 'vue'
-import { onLoad } from '@dcloudio/uni-app'
+import { onLoad, onShow } from '@dcloudio/uni-app'
 import { useUserStore } from '@/store/user'
+import { checkLogin, redirectToLogin } from '@/utils/auth'
 
 const userStore = useUserStore()
 
@@ -153,6 +154,23 @@ const userInfo = computed(() => userStore.userInfo || {})
 
 // 是否已登录
 const isLoggedIn = computed(() => userStore.isLoggedIn)
+
+// 检查登录状态并处理重定向
+const checkLoginStatus = () => {
+  if (!isLoggedIn.value) {
+    // 显示提示并跳转到登录页
+    uni.showToast({
+      title: '请先登录',
+      icon: 'none'
+    })
+    
+    setTimeout(() => {
+      redirectToLogin('/pages/profile/index')
+    }, 1500)
+    return false
+  }
+  return true
+}
 
 // 页面跳转
 const navigateTo = (url) => {
@@ -233,10 +251,21 @@ const handleLogout = () => {
 
 // 页面加载
 onLoad(() => {
+  // 检查登录状态
+  if (!checkLoginStatus()) {
+    return
+  }
+  
   // 获取用户信息
   if (isLoggedIn.value) {
     userStore.getUserInfo()
   }
+})
+
+// 页面显示时也检查登录状态
+onShow(() => {
+  // 每次页面显示时都检查登录状态
+  checkLoginStatus()
 })
 </script>
 

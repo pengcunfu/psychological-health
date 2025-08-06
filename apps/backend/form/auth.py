@@ -1,8 +1,95 @@
 from wtforms import StringField, IntegerField, BooleanField
-from wtforms.validators import Optional, NumberRange, Length, DataRequired
+from wtforms.validators import Optional, NumberRange, Length, DataRequired, Email, Regexp
 from wtforms.fields import FieldList
 
 from .base import BaseForm
+
+
+class LoginForm(BaseForm):
+    """用户登录表单"""
+    username = StringField('用户名', [
+        DataRequired(message='用户名不能为空'),
+        Length(max=50, message='用户名长度不能超过50个字符')
+    ])
+    password = StringField('密码', [
+        DataRequired(message='密码不能为空'),
+        Length(min=6, max=20, message='密码长度必须在6-20个字符之间')
+    ])
+    verify_code = StringField('验证码', [
+        Optional(),
+        Length(min=4, max=6, message='验证码长度必须在4-6个字符之间')
+    ])
+
+
+class PhoneLoginForm(BaseForm):
+    """手机号登录表单"""
+    phone = StringField('手机号', [
+        DataRequired(message='手机号不能为空'),
+        Regexp(r'^1[3-9]\d{9}$', message='手机号格式不正确')
+    ])
+    password = StringField('密码', [
+        DataRequired(message='密码不能为空'),
+        Length(min=6, max=20, message='密码长度必须在6-20个字符之间')
+    ])
+    verify_code = StringField('验证码', [
+        Optional(),
+        Length(min=4, max=6, message='验证码长度必须在4-6个字符之间')
+    ])
+
+
+class RegisterForm(BaseForm):
+    """用户注册表单"""
+    username = StringField('用户名', [
+        DataRequired(message='用户名不能为空'),
+        Length(min=2, max=50, message='用户名长度必须在2-50个字符之间'),
+        Regexp(r'^[a-zA-Z0-9_\u4e00-\u9fa5]+$', message='用户名只能包含字母、数字、下划线和中文')
+    ])
+    password = StringField('密码', [
+        DataRequired(message='密码不能为空'),
+        Length(min=6, max=20, message='密码长度必须在6-20个字符之间')
+    ])
+    phone = StringField('手机号', [
+        Optional(),
+        Regexp(r'^1[3-9]\d{9}$', message='手机号格式不正确')
+    ])
+    email = StringField('邮箱', [
+        Optional(),
+        Email(message='邮箱格式不正确'),
+        Length(max=100, message='邮箱长度不能超过100个字符')
+    ])
+    avatar = StringField('头像', [
+        Optional(),
+        Length(max=255, message='头像路径长度不能超过255个字符')
+    ])
+
+
+class UpdateProfileForm(BaseForm):
+    """更新用户信息表单"""
+    avatar = StringField('头像', [
+        Optional(),
+        Length(max=255, message='头像路径长度不能超过255个字符')
+    ])
+    phone = StringField('手机号', [
+        Optional(),
+        Regexp(r'^1[3-9]\d{9}$', message='手机号格式不正确')
+    ])
+    email = StringField('邮箱', [
+        Optional(),
+        Email(message='邮箱格式不正确'),
+        Length(max=100, message='邮箱长度不能超过100个字符')
+    ])
+
+
+class ChangePasswordForm(BaseForm):
+    """修改密码表单"""
+    old_password = StringField('旧密码', [
+        DataRequired(message='旧密码不能为空'),
+        Length(min=6, max=20, message='旧密码长度必须在6-20个字符之间')
+    ])
+    new_password = StringField('新密码', [
+        DataRequired(message='新密码不能为空'),
+        Length(min=6, max=20, message='新密码长度必须在6-20个字符之间')
+    ])
 
 
 class UserQueryForm(BaseForm):

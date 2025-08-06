@@ -1,8 +1,10 @@
 <template>
   <view class="login-container">
     <view class="header">
-      <view class="logo">心理</view>
-      <text class="title">心理健康平台</text>
+      <view class="logo">
+        <image src="/static/logo/3.png" mode="widthFix" style="width: 100%;"></image>
+      </view>
+      <text class="title">美光心理</text>
       <text class="subtitle">专业的心理健康服务，为您的心灵护航</text>
     </view>
     
@@ -73,6 +75,9 @@ export default {
       password: ''
     })
     
+    // 重定向路径
+    const redirectPath = ref('')
+    
     const handleLogin = async () => {
       // 表单验证
       if (!form.value.username) {
@@ -110,11 +115,32 @@ export default {
             icon: 'success'
           })
           
-          // 跳转到首页
+          // 根据重定向路径决定跳转目标
           setTimeout(() => {
-            uni.switchTab({
-              url: '/pages/index/index'
-            })
+            if (redirectPath.value) {
+              // 如果有重定向路径，且是tabBar页面，使用switchTab
+              const tabBarPaths = [
+                '/pages/index/index',
+                '/pages/counselor/index',
+                '/pages/course/index',
+                '/pages/profile/index'
+              ]
+              
+              if (tabBarPaths.includes(redirectPath.value)) {
+                uni.switchTab({
+                  url: redirectPath.value
+                })
+              } else {
+                uni.navigateTo({
+                  url: redirectPath.value
+                })
+              }
+            } else {
+              // 默认跳转到首页
+              uni.switchTab({
+                url: '/pages/index/index'
+              })
+            }
           }, 1500)
         } else {
           uni.showToast({
@@ -146,12 +172,36 @@ export default {
       })
     }
     
-    onLoad(() => {
+    onLoad((options) => {
+      // 获取重定向参数
+      if (options.redirect) {
+        redirectPath.value = decodeURIComponent(options.redirect)
+      }
+      
       // 检查是否已登录
       if (userStore.isLoggedIn) {
-        uni.switchTab({
-          url: '/pages/index/index'
-        })
+        if (redirectPath.value) {
+          const tabBarPaths = [
+            '/pages/index/index',
+            '/pages/counselor/index',
+            '/pages/course/index',
+            '/pages/profile/index'
+          ]
+          
+          if (tabBarPaths.includes(redirectPath.value)) {
+            uni.switchTab({
+              url: redirectPath.value
+            })
+          } else {
+            uni.navigateTo({
+              url: redirectPath.value
+            })
+          }
+        } else {
+          uni.switchTab({
+            url: '/pages/index/index'
+          })
+        }
       }
     })
     
