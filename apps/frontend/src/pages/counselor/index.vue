@@ -82,7 +82,7 @@
 import {ref, reactive, computed} from 'vue'
 import {onLoad, onReachBottom} from '@dcloudio/uni-app'
 import {counselorAPI} from '@/api/counselor'
-import CounselorCard from '@/components/CounselorCard/index.vue'
+import CounselorCard from '@/components/CounselorCard.vue'
 
 // 搜索关键词
 const searchKeyword = ref('')

@@ -8,7 +8,7 @@
 import { ref, computed } from 'vue'
 import { onLaunch, onShow, onHide } from '@dcloudio/uni-app'
 import { useUserStore } from './store/user'
-import TabBar from '@/components/TabBar/index.vue'
+import TabBar from '@/components/TabBar.vue'
 
 export default {
   components: {

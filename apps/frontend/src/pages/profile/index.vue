@@ -143,7 +143,7 @@ import { computed } from 'vue'
 import { onLoad, onShow } from '@dcloudio/uni-app'
 import { useUserStore } from '@/store/user'
 import { checkLogin, redirectToLogin } from '@/utils/auth'
-import SvgIcon from '@/components/SvgIcon/index.vue'
+import SvgIcon from '@/components/SvgIcon.vue'
 
 const userStore = useUserStore()
 

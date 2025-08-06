@@ -73,7 +73,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { navigateTo } from '@/utils/link'
-import TabBar from '@/components/TabBar/index.vue'
+import TabBar from '@/components/TabBar.vue'
 
 // 选项卡数据
 const tabs = ref(['全部', '系统通知', '咨询消息', '课程提醒'])

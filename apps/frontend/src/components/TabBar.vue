@@ -37,7 +37,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import SvgIcon from '../SvgIcon/index.vue'
+import SvgIcon from './SvgIcon.vue'
 
 const currentIndex = ref(0)
 

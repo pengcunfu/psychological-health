@@ -86,7 +86,7 @@
 import { ref, reactive } from 'vue'
 import { onLoad, onReachBottom } from '@dcloudio/uni-app'
 import { courseAPI } from '@/api/course'
-import CourseCard from '@/components/CourseCard/index.vue'
+import CourseCard from '@/components/CourseCard.vue'
 
 // 搜索关键词
 const searchKeyword = ref('')

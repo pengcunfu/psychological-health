@@ -186,11 +186,11 @@ import { counselorAPI } from '@/api/counselor'
 import { courseAPI } from '@/api/course'
 import { preprocessUrl, handleUrlNavigation, navigateTo } from '@/utils/link'
 
-import TabBar from '@/components/TabBar/index.vue'
-import SvgIcon from '@/components/SvgIcon/index.vue'
-import CounselorCard from '@/components/CounselorCard/index.vue'
-import CourseCard from '@/components/CourseCard/index.vue'
-import AssessmentCard from '@/components/AssessmentCard/index.vue'
+import TabBar from '@/components/TabBar.vue'
+import SvgIcon from '@/components/SvgIcon.vue'
+import CounselorCard from '@/components/CounselorCard.vue'
+import CourseCard from '@/components/CourseCard.vue'
+import AssessmentCard from '@/components/AssessmentCard.vue'
 
 const userStore = useUserStore()
 
