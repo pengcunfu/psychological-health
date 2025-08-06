@@ -8,6 +8,7 @@
 - POST /upload/banner - 上传横幅图（保存到static/uploads/banner目录，UUID命名）
 - POST /upload/course-cover - 上传课程封面（保存到static/uploads/course_cover目录，UUID命名）
 - POST /upload/course-video - 上传课程视频（保存到static/uploads/course_video目录，UUID命名）
+- POST /upload/assessment - 上传测评封面（保存到static/uploads/assessment目录，UUID命名）
 """
 import os
 import uuid
@@ -314,6 +315,70 @@ def upload_course_video():
         }
         
         return JsonResult.success(file_info, '课程视频上传成功')
+
+    except ValueError as e:
+        return JsonResult.error(str(e))
+    except RequestEntityTooLarge:
+        return JsonResult.error('文件大小超过限制')
+    except Exception as e:
+        return JsonResult.error(f'上传失败: {str(e)}')
+
+
+@file_upload_bp.route('/assessment', methods=['POST'])
+def upload_assessment():
+    """
+    上传测评封面接口
+    将测评封面保存到 static/uploads/assessment 目录
+    使用 UUID + 原文件后缀名作为文件名
+    支持的图片格式: jpg, jpeg, png, gif, webp
+    """
+    try:
+        # 检查是否有文件
+        if 'file' not in request.files:
+            return JsonResult.error('没有选择文件')
+
+        file = request.files['file']
+        if file.filename == '':
+            return JsonResult.error('没有选择文件')
+
+        # 获取原文件名和后缀
+        original_filename = file.filename
+        if '.' not in original_filename:
+            return JsonResult.error('文件必须包含后缀名')
+        
+        file_ext = original_filename.rsplit('.', 1)[1].lower()
+        
+        # 检查文件类型（仅允许图片）
+        allowed_extensions = {'jpg', 'jpeg', 'png', 'gif', 'webp'}
+        if file_ext not in allowed_extensions:
+            return JsonResult.error(f'不支持的文件格式，仅支持: {", ".join(allowed_extensions)}')
+
+        # 生成唯一文件名：UUID + 后缀
+        unique_filename = f"{str(uuid.uuid4())}.{file_ext}"
+        
+        # 确保目录存在
+        assessment_dir = os.path.join(
+            current_app.root_path, 'static', 'uploads', 'assessment')
+        os.makedirs(assessment_dir, exist_ok=True)
+        
+        # 保存文件
+        file_path = os.path.join(assessment_dir, unique_filename)
+        file.save(file_path)
+        
+        # 生成可访问的URL路径
+        url_path = f"/static/uploads/assessment/{unique_filename}"
+        
+        # 返回文件信息
+        file_info = {
+            'filename': unique_filename,
+            'original_filename': original_filename,
+            'url': url_path,
+            'file_size': os.path.getsize(file_path),
+            'file_type': file_ext,
+            'upload_path': f"uploads/assessment/{unique_filename}"
+        }
+        
+        return JsonResult.success(file_info, '测评封面上传成功')
 
     except ValueError as e:
         return JsonResult.error(str(e))

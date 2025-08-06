@@ -40,83 +40,85 @@
     <!-- 测评列表 -->
     <a-table :columns="columns" :data-source="assessments" :loading="loading" :pagination="pagination"
       @change="handleTableChange" row-key="id">
-      <template #cover="{ record }">
-        <a-image :src="FileUploader.getFullImageUrl(record?.cover_image)" :alt="record?.name || ''" width="60"
-          height="40" style="object-fit: cover; border-radius: 4px;" :preview="false" />
-      </template>
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.key === 'cover'">
+          <a-image :src="FileUploader.getFullImageUrl(record?.cover_image)" :alt="record?.name || ''" width="60"
+            height="40" style="object-fit: cover; border-radius: 4px;" :preview="false" />
+        </template>
 
-      <template #name="{ record }">
-        <div class="assessment-name">
-          <div class="name-text">{{ record?.name || '' }}</div>
-          <div class="name-subtitle">{{ record?.subtitle || '' }}</div>
-        </div>
-      </template>
+        <template v-else-if="column.key === 'name'">
+          <div class="assessment-name">
+            <div class="name-text">{{ record?.name || '' }}</div>
+            <div class="name-subtitle">{{ record?.subtitle || '' }}</div>
+          </div>
+        </template>
 
-      <template #difficulty="{ record }">
-        <a-tag :color="getDifficultyColor(record?.difficulty)">
-          {{ getDifficultyText(record?.difficulty) }}
-        </a-tag>
-      </template>
+        <template v-else-if="column.key === 'difficulty'">
+          <a-tag :color="getDifficultyColor(record?.difficulty)">
+            {{ getDifficultyText(record?.difficulty) }}
+          </a-tag>
+        </template>
 
-      <template #status="{ record }">
-        <a-tag :color="getStatusColor(record?.status)">
-          {{ getStatusText(record?.status) }}
-        </a-tag>
-      </template>
+        <template v-else-if="column.key === 'status'">
+          <a-tag :color="getStatusColor(record?.status)">
+            {{ getStatusText(record?.status) }}
+          </a-tag>
+        </template>
 
-      <template #price="{ record }">
-        <span class="price">
-          <span v-if="record?.price > 0">¥{{ record?.price }}</span>
-          <span v-else class="free">免费</span>
-        </span>
-      </template>
+        <template v-else-if="column.key === 'price'">
+          <span class="price">
+            <span v-if="record?.price > 0">¥{{ record?.price }}</span>
+            <span v-else class="free">免费</span>
+          </span>
+        </template>
 
-      <template #stats="{ record }">
-        <div class="stats">
-          <div>题目: {{ record?.question_count || 0 }}</div>
-          <div>参与: {{ record?.participant_count || 0 }}</div>
-        </div>
-      </template>
+        <template v-else-if="column.key === 'stats'">
+          <div class="stats">
+            <div>题目: {{ record?.question_count || 0 }}</div>
+            <div>参与: {{ record?.participant_count || 0 }}</div>
+          </div>
+        </template>
 
-      <template #createTime="{ record }">
-        {{ formatDate(record?.create_time) }}
-      </template>
+        <template v-else-if="column.key === 'createTime'">
+          {{ formatDate(record?.create_time) }}
+        </template>
 
-      <template #action="{ record }">
-        <a-space>
-          <a-button type="link" size="small" @click="editAssessment(record)">
-            编辑
-          </a-button>
-          <a-button type="link" size="small" @click="manageQuestions(record)">
-            题目管理
-          </a-button>
-          <a-dropdown>
-            <a-button type="link" size="small">
-              更多
-              <DownOutlined />
+        <template v-else-if="column.key === 'action'">
+          <a-space>
+            <a-button type="link" size="small" @click="editAssessment(record)">
+              编辑
             </a-button>
-            <template #overlay>
-              <a-menu @click="({ key }) => handleMenuAction(record, key)">
-                <a-menu-item v-if="record.status === 'draft'" key="publish">
-                  发布测评
-                </a-menu-item>
-                <a-menu-item v-if="record.status === 'published'" key="archive">
-                  归档测评
-                </a-menu-item>
-                <a-menu-item key="view-records">
-                  查看记录
-                </a-menu-item>
-                <a-menu-item key="stats">
-                  统计分析
-                </a-menu-item>
-                <a-menu-divider />
-                <a-menu-item key="delete" class="danger-item">
-                  删除测评
-                </a-menu-item>
-              </a-menu>
-            </template>
-          </a-dropdown>
-        </a-space>
+            <a-button type="link" size="small" @click="manageQuestions(record)">
+              题目管理
+            </a-button>
+            <a-dropdown>
+              <a-button type="link" size="small">
+                更多
+                <DownOutlined />
+              </a-button>
+              <template #overlay>
+                <a-menu @click="({ key }) => handleMenuAction(record, key)">
+                  <a-menu-item v-if="record.status === 'draft'" key="publish">
+                    发布测评
+                  </a-menu-item>
+                  <a-menu-item v-if="record.status === 'published'" key="archive">
+                    归档测评
+                  </a-menu-item>
+                  <a-menu-item key="view-records">
+                    查看记录
+                  </a-menu-item>
+                  <a-menu-item key="stats">
+                    统计分析
+                  </a-menu-item>
+                  <a-menu-divider />
+                  <a-menu-item key="delete" class="danger-item">
+                    删除测评
+                  </a-menu-item>
+                </a-menu>
+              </template>
+            </a-dropdown>
+          </a-space>
+        </template>
       </template>
     </a-table>
 
@@ -125,12 +127,7 @@
       @cancel="handleModalCancel" :confirm-loading="modalLoading">
       <a-form ref="formRef" :model="form" :rules="rules" layout="vertical">
         <a-row :gutter="16">
-          <a-col :span="12">
-            <a-form-item label="测评ID" name="id" v-if="!isEdit">
-              <a-input v-model:value="form.id" placeholder="请输入测评ID" />
-            </a-form-item>
-          </a-col>
-          <a-col :span="12">
+          <a-col :span="24">
             <a-form-item label="测评名称" name="name">
               <a-input v-model:value="form.name" placeholder="请输入测评名称" />
             </a-form-item>
@@ -198,8 +195,19 @@
         </a-form-item>
 
         <a-form-item label="封面图片" name="cover_image">
-          <FileUploaderComponent v-model:value="form.cover_image" accept="image/*" :max-size="5"
-            list-type="picture-card" :max-count="1" />
+          <a-upload
+            v-model:file-list="coverFileList"
+            :before-upload="beforeUpload"
+            :custom-request="uploadCover"
+            :on-remove="handleRemove"
+            list-type="picture-card"
+            :max-count="1"
+          >
+            <div v-if="coverFileList.length < 1">
+              <PlusOutlined />
+              <div style="margin-top: 8px">上传封面</div>
+            </div>
+          </a-upload>
         </a-form-item>
 
         <a-row :gutter="16">
@@ -231,7 +239,7 @@ import { ref, reactive, onMounted, computed } from 'vue'
 import { message, Modal } from 'ant-design-vue'
 import { PlusOutlined, DownOutlined } from '@ant-design/icons-vue'
 import { assessmentAPI } from '@/api/admin'
-import { FileUploader } from '@/api/upload'
+import { FileUploader, uploadAssessment } from '@/api/upload'
 import FileUploaderComponent from '@/components/FileUploader.vue'
 import QuestionManager from './components/QuestionManager.vue'
 
@@ -241,8 +249,10 @@ const modalVisible = ref(false)
 const modalLoading = ref(false)
 const questionModalVisible = ref(false)
 const currentAssessmentId = ref('')
+const currentEditingAssessment = ref(null)
 const isEdit = ref(false)
 const formRef = ref()
+const coverFileList = ref([])
 
 const searchForm = reactive({
   name: '',
@@ -252,7 +262,6 @@ const searchForm = reactive({
 })
 
 const form = reactive({
-  id: '',
   name: '',
   subtitle: '',
   description: '',
@@ -283,15 +292,13 @@ const columns = [
     title: '封面',
     dataIndex: 'cover_image',
     key: 'cover',
-    width: 80,
-    slots: { customRender: 'cover' }
+    width: 80
   },
   {
     title: '测评名称',
     dataIndex: 'name',
     key: 'name',
-    width: 200,
-    slots: { customRender: 'name' }
+    width: 200
   },
   {
     title: '分类',
@@ -303,50 +310,40 @@ const columns = [
     title: '难度',
     dataIndex: 'difficulty',
     key: 'difficulty',
-    width: 80,
-    slots: { customRender: 'difficulty' }
+    width: 80
   },
   {
     title: '状态',
     dataIndex: 'status',
     key: 'status',
-    width: 80,
-    slots: { customRender: 'status' }
+    width: 80
   },
   {
     title: '价格',
     dataIndex: 'price',
     key: 'price',
-    width: 80,
-    slots: { customRender: 'price' }
+    width: 80
   },
   {
     title: '统计',
     key: 'stats',
-    width: 100,
-    slots: { customRender: 'stats' }
+    width: 100
   },
   {
     title: '创建时间',
     dataIndex: 'create_time',
     key: 'createTime',
-    width: 140,
-    slots: { customRender: 'createTime' }
+    width: 140
   },
   {
     title: '操作',
     key: 'action',
     fixed: 'right',
-    width: 180,
-    slots: { customRender: 'action' }
+    width: 180
   }
 ]
 
 const rules = {
-  id: [
-    { required: true, message: '请输入测评ID', trigger: 'blur' },
-    { min: 1, max: 50, message: 'ID长度应在1-50个字符', trigger: 'blur' }
-  ],
   name: [
     { required: true, message: '请输入测评名称', trigger: 'blur' },
     { min: 1, max: 200, message: '名称长度应在1-200个字符', trigger: 'blur' }
@@ -413,6 +410,7 @@ const handleTableChange = (paginationData) => {
 // 显示添加模态框
 const showAddModal = () => {
   isEdit.value = false
+  currentEditingAssessment.value = null
   resetForm()
   modalVisible.value = true
 }
@@ -420,10 +418,23 @@ const showAddModal = () => {
 // 编辑测评
 const editAssessment = (record) => {
   isEdit.value = true
+  currentEditingAssessment.value = record
   Object.assign(form, {
     ...record,
     tags: Array.isArray(record.tags) ? record.tags.join(',') : (record.tags || '')
   })
+  // 处理封面图片显示
+  if (record.cover_image) {
+    coverFileList.value = [{
+      uid: record.id, // 使用记录ID作为UID
+      name: record.name,
+      status: 'done',
+      url: FileUploader.getFullImageUrl(record.cover_image),
+      response: { data: { url: FileUploader.getFullImageUrl(record.cover_image) } }
+    }]
+  } else {
+    coverFileList.value = []
+  }
   modalVisible.value = true
 }
 
@@ -436,7 +447,6 @@ const manageQuestions = (record) => {
 // 重置表单
 const resetForm = () => {
   Object.assign(form, {
-    id: '',
     name: '',
     subtitle: '',
     description: '',
@@ -455,6 +465,7 @@ const resetForm = () => {
   if (formRef.value) {
     formRef.value.resetFields()
   }
+  coverFileList.value = [] // 重置封面文件列表
 }
 
 // 模态框确定
@@ -469,7 +480,7 @@ const handleModalOk = async () => {
     }
 
     if (isEdit.value) {
-      await assessmentAPI.updateAssessment(form.id, data)
+      await assessmentAPI.updateAssessment(currentEditingAssessment.value.id, data)
       message.success('更新成功')
     } else {
       await assessmentAPI.createAssessment(data)
@@ -488,6 +499,7 @@ const handleModalOk = async () => {
 // 模态框取消
 const handleModalCancel = () => {
   modalVisible.value = false
+  currentEditingAssessment.value = null
   resetForm()
 }
 
@@ -598,6 +610,83 @@ const getStatusText = (status) => {
 const formatDate = (dateStr) => {
   if (!dateStr) return '-'
   return new Date(dateStr).toLocaleString('zh-CN')
+}
+
+// 上传前校验
+const beforeUpload = (file) => {
+  try {
+    FileUploader.validateImage(file, 5) // 验证图片，最大5MB
+    return true
+  } catch (error) {
+    message.error(error.message)
+    return false
+  }
+}
+
+// 上传封面
+const uploadCover = async ({ file, onSuccess, onError, onProgress }) => {
+  try {
+    // 显示上传中状态
+    coverFileList.value = [{
+      uid: file.uid,
+      name: file.name,
+      status: 'uploading',
+      percent: 0
+    }]
+    
+    // 调用上传接口
+    const result = await uploadAssessment(file)
+    
+    if (result.success) {
+      // 上传成功，获取完整的图片URL
+      const imageUrl = FileUploader.getFullImageUrl(result.data.url)
+      
+      // 更新表单数据
+      form.cover_image = result.data.url // 保存相对路径到数据库
+      
+      // 更新文件列表状态
+      coverFileList.value = [{
+        uid: file.uid,
+        name: file.name,
+        status: 'done',
+        url: imageUrl, // 显示完整URL用于预览
+        response: result
+      }]
+      
+      // 调用成功回调
+      onSuccess && onSuccess(result, file)
+      message.success('封面上传成功!')
+    } else {
+      throw new Error(result.message || '上传失败')
+    }
+  } catch (error) {
+    console.error('上传封面失败:', error)
+    
+    // 更新文件列表状态为失败
+    coverFileList.value = [{
+      uid: file.uid,
+      name: file.name,
+      status: 'error'
+    }]
+    
+    // 调用失败回调
+    onError && onError(error)
+    message.error(error.message || '上传封面失败!')
+  }
+}
+
+// 预览
+const handlePreview = (file) => {
+  previewImage.value = file.url || file.thumbUrl
+  previewTitle.value = file.name || ''
+  previewVisible.value = true
+}
+
+// 移除封面
+const handleRemove = (file) => {
+  form.cover_image = ''
+  coverFileList.value = []
+  return true
 }
 
 onMounted(() => {

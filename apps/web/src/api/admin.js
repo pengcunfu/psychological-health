@@ -551,6 +551,15 @@ export const assessmentAPI = {
     // 删除测评题目
     deleteQuestion: (assessmentId, questionId) => api.delete(`/assessment/${assessmentId}/questions/${questionId}`),
 
+    // 获取题目选项列表
+    getOptions: (assessmentId, questionId) => api.get(`/assessment/${assessmentId}/questions/${questionId}/options`),
+
+    // 批量保存题目选项
+    saveOptions: (assessmentId, questionId, options) => api.post(`/assessment/${assessmentId}/questions/${questionId}/options`, options),
+
+    // 删除选项
+    deleteOption: (assessmentId, questionId, optionId) => api.delete(`/assessment/${assessmentId}/questions/${questionId}/options/${optionId}`),
+
     // 获取测评记录列表
     getRecords: (params) => api.get('/assessment/records', {params}),
 

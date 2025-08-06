@@ -29,7 +29,6 @@ class AssessmentQueryForm(BaseForm):
 
 class AssessmentCreateForm(BaseForm):
     """创建测评表单"""
-    id = StringField('测评ID', [DataRequired(), Length(1, 50)])
     name = StringField('测评名称', [DataRequired(), Length(1, 200)])
     subtitle = StringField('测评副标题', [Optional(), Length(0, 300)])
     description = TextAreaField('测评描述', [Optional()])
@@ -107,7 +106,6 @@ class AssessmentQuestionForm(BaseForm):
 
 class AssessmentQuestionCreateForm(BaseForm):
     """创建测评题目表单"""
-    id = StringField('题目ID', [DataRequired(), Length(1, 50)])
     assessment_id = StringField('测评ID', [DataRequired(), Length(1, 50)])
     question_text = TextAreaField('题目内容', [DataRequired()])
     question_type = SelectField('题目类型', [DataRequired()], choices=[

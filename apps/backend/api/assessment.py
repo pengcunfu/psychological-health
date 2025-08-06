@@ -32,14 +32,12 @@ def get_assessments():
     if form.difficulty.data:
         query = query.filter(Assessment.difficulty == form.difficulty.data)
     
-    if form.is_free.data is not None:
+    if form.is_free.data:
         query = query.filter(Assessment.is_free == form.is_free.data)
     
     if form.status.data:
         query = query.filter(Assessment.status == form.status.data)
-    else:
-        # 默认只显示已发布的测评
-        query = query.filter(Assessment.status == 'published')
+    # 管理后台显示所有状态的测评，不做默认过滤
     
     if form.keyword.data:
         keyword = f'%{form.keyword.data}%'
@@ -115,10 +113,8 @@ def create_assessment():
     """创建测评"""
     form = validate_args(AssessmentCreateForm)
     
-    # 检查ID是否已存在
-    existing = Assessment.query.filter_by(id=form.id.data).first()
-    if existing:
-        return JsonResult.error('测评ID已存在')
+    # 生成唯一ID
+    assessment_id = str(uuid.uuid4())
     
     # 处理标签
     tags = []
@@ -126,7 +122,7 @@ def create_assessment():
         tags = [tag.strip() for tag in form.tags.data.split(',') if tag.strip()]
     
     assessment = Assessment(
-        id=form.id.data,
+        id=assessment_id,
         name=form.name.data,
         subtitle=form.subtitle.data,
         description=form.description.data,
@@ -227,13 +223,11 @@ def create_question(assessment_id):
     
     form = validate_args(AssessmentQuestionCreateForm)
     
-    # 检查题目ID是否已存在
-    existing = AssessmentQuestion.query.filter_by(id=form.id.data).first()
-    if existing:
-        return JsonResult.error('题目ID已存在')
+    # 生成唯一ID
+    question_id = str(uuid.uuid4())
     
     question = AssessmentQuestion(
-        id=form.id.data,
+        id=question_id,
         assessment_id=assessment_id,
         question_text=form.question_text.data,
         question_type=form.question_type.data,
@@ -309,6 +303,91 @@ def delete_question(assessment_id, question_id):
         if assessment:
             assessment.question_count = AssessmentQuestion.query.filter_by(assessment_id=assessment_id).count() - 1
         
+        db.session.commit()
+        return JsonResult.success(None, '删除成功')
+    except Exception as e:
+        db.session.rollback()
+        return JsonResult.error(f'删除失败: {str(e)}')
+
+
+@assessment_bp.route('/<assessment_id>/questions/<question_id>/options', methods=['GET'])
+def get_question_options(assessment_id, question_id):
+    """获取题目选项列表"""
+    # 检查题目是否存在
+    question = AssessmentQuestion.query.filter_by(
+        id=question_id, assessment_id=assessment_id
+    ).first()
+    if not question:
+        return JsonResult.error('题目不存在', 404)
+    
+    # 获取选项列表（按顺序）
+    options = AssessmentOption.query.filter_by(question_id=question_id)\
+        .order_by(AssessmentOption.option_order.asc()).all()
+    
+    options_data = [option.to_dict() for option in options]
+    return JsonResult.success(options_data)
+
+
+@assessment_bp.route('/<assessment_id>/questions/<question_id>/options', methods=['POST'])
+def save_question_options(assessment_id, question_id):
+    """批量保存题目选项"""
+    # 检查题目是否存在
+    question = AssessmentQuestion.query.filter_by(
+        id=question_id, assessment_id=assessment_id
+    ).first()
+    if not question:
+        return JsonResult.error('题目不存在', 404)
+    
+    options_data = request.get_json()
+    if not options_data or not isinstance(options_data, list):
+        return JsonResult.error('选项数据格式错误')
+    
+    try:
+        # 删除现有选项
+        AssessmentOption.query.filter_by(question_id=question_id).delete()
+        
+        # 创建新选项
+        for i, option_data in enumerate(options_data):
+            if not option_data.get('option_text'):
+                continue
+                
+            option = AssessmentOption(
+                id=str(uuid.uuid4()),
+                question_id=question_id,
+                option_text=option_data['option_text'],
+                option_value=option_data.get('option_value', ''),
+                score=float(option_data.get('score', 0)),
+                option_order=i
+            )
+            db.session.add(option)
+        
+        db.session.commit()
+        return JsonResult.success(None, '选项保存成功')
+        
+    except Exception as e:
+        db.session.rollback()
+        return JsonResult.error(f'保存失败: {str(e)}')
+
+
+@assessment_bp.route('/<assessment_id>/questions/<question_id>/options/<option_id>', methods=['DELETE'])
+def delete_option(assessment_id, question_id, option_id):
+    """删除选项"""
+    # 检查题目是否存在
+    question = AssessmentQuestion.query.filter_by(
+        id=question_id, assessment_id=assessment_id
+    ).first()
+    if not question:
+        return JsonResult.error('题目不存在', 404)
+    
+    # 检查选项是否存在
+    option = AssessmentOption.query.filter_by(
+        id=option_id, question_id=question_id
+    ).first()
+    if not option:
+        return JsonResult.error('选项不存在', 404)
+    
+    try:
+        db.session.delete(option)
         db.session.commit()
         return JsonResult.success(None, '删除成功')
     except Exception as e:

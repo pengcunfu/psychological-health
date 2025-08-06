@@ -6,26 +6,32 @@
     <view class="assessment-left">
       <image 
         class="assessment-img" 
-        :src="assessment.cover || assessment.cover_image || '/static/images/default-assessment.png'" 
+        :src="getAssessmentCover()" 
         mode="aspectFill"
+        @error="onImageError"
       />
     </view>
     
     <view class="assessment-right">
       <view class="assessment-header">
-        <text class="assessment-title">{{ assessment.title || assessment.name }}</text>
-        <text class="assessment-subtitle" v-if="assessment.subtitle || assessment.description">
-          {{ assessment.subtitle || assessment.description }}
+        <text class="assessment-title">{{ assessment.name || assessment.title }}</text>
+        <text class="assessment-subtitle" v-if="assessment.subtitle">
+          {{ assessment.subtitle }}
         </text>
       </view>
       
       <view class="assessment-info">
-        <text>{{ formatParticipantCount(assessment.participant_count || assessment.test_count) }}已测</text>
+        <view class="info-row">
+          <text class="info-item">{{ formatParticipantCount(assessment.participant_count) }}人已测</text>
+          <text class="info-item" v-if="assessment.difficulty">{{ getDifficultyText(assessment.difficulty) }}</text>
+        </view>
+        <text class="assessment-desc" v-if="assessment.description">{{ assessment.description }}</text>
       </view>
       
       <view class="assessment-footer">
-        <view class="assessment-stats">
-          <!-- 可以放置其他统计信息 -->
+        <view class="assessment-price">
+          <text class="price-text" v-if="assessment.price > 0">¥{{ assessment.price }}</text>
+          <text class="price-text free" v-else>免费</text>
         </view>
         <view class="assessment-action">
           <text class="action-btn">立即测试</text>
@@ -69,6 +75,46 @@ const formatParticipantCount = (count) => {
   }
   return num.toString()
 }
+
+// 获取评估封面图片
+const getAssessmentCover = () => {
+  const coverImage = props.assessment.cover_image || props.assessment.cover
+  if (!coverImage) {
+    return '/static/images/default-assessment.png'
+  }
+  
+  // 如果是完整的URL，直接返回
+  if (coverImage.startsWith('http://') || coverImage.startsWith('https://')) {
+    return coverImage
+  }
+  
+  // 如果是相对路径，需要拼接API基础URL
+  if (coverImage.startsWith('/static/')) {
+    return `${import.meta.env.VITE_APP_API_URL || '/api'}${coverImage}`
+  }
+  
+  // 处理其他格式的路径
+  return `${import.meta.env.VITE_APP_API_URL || '/api'}/static/uploads/${coverImage}`
+}
+
+// 图片加载失败处理
+const onImageError = () => {
+  console.error('Assessment cover image failed to load')
+}
+
+// 获取难度文本
+const getDifficultyText = (difficulty) => {
+  switch (difficulty) {
+    case 'easy':
+      return '简单'
+    case 'medium':
+      return '中等'
+    case 'hard':
+      return '困难'
+    default:
+      return ''
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -79,34 +125,35 @@ const formatParticipantCount = (count) => {
   background-color: #fff;
   overflow: hidden;
   margin-bottom: 12rpx;
-  height: 160rpx;
+  min-height: 160rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
 }
 
 .assessment-left {
   position: relative;
   width: 180rpx;
-  height: 100%;
+  height: 120rpx;
   margin-right: 20rpx;
   flex-shrink: 0;
 }
 
 .assessment-img {
   width: 180rpx;
-  height: 100%;
+  height: 120rpx;
   border-radius: 12rpx;
   object-fit: cover;
 }
 
 .assessment-right {
   flex: 1;
-  height: 120rpx;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  min-height: 120rpx;
 }
 
 .assessment-header {
-  margin-bottom: 0;
+  margin-bottom: 8rpx;
 }
 
 .assessment-title {
@@ -124,9 +171,8 @@ const formatParticipantCount = (count) => {
 
 .assessment-subtitle {
   font-size: 24rpx;
-  color: #333;
+  color: #666;
   line-height: 1.3;
-  margin-bottom: 6rpx;
   display: -webkit-box;
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
@@ -135,14 +181,28 @@ const formatParticipantCount = (count) => {
 }
 
 .assessment-info {
+  flex: 1;
+  margin-bottom: 8rpx;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
   margin-bottom: 6rpx;
 }
 
-.assessment-info text {
-  font-size: 24rpx;
+.info-item {
+  font-size: 22rpx;
   color: #999;
+  margin-right: 20rpx;
+}
+
+.assessment-desc {
+  font-size: 22rpx;
+  color: #666;
+  line-height: 1.3;
   display: -webkit-box;
-  -webkit-line-clamp: 1;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -154,8 +214,18 @@ const formatParticipantCount = (count) => {
   align-items: center;
 }
 
-.assessment-stats {
+.assessment-price {
   flex: 1;
+}
+
+.price-text {
+  font-size: 26rpx;
+  font-weight: bold;
+  color: #ff6b35;
+  
+  &.free {
+    color: #52c41a;
+  }
 }
 
 .assessment-action {

@@ -78,6 +78,25 @@ export const uploadCourseVideo = async (file) => {
   }
 }
 
+// 上传测评封面
+export const uploadAssessment = async (file) => {
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const response = await fetch('/api/upload/assessment', {
+      method: 'POST',
+      body: formData
+    })
+
+    const result = await response.json()
+    return result
+  } catch (error) {
+    console.error('上传测评封面失败:', error)
+    throw error
+  }
+}
+
 // 通用文件上传
 export const uploadFile = async (file, fileType = null, useUniqueName = true) => {
   try {
@@ -214,6 +233,7 @@ export default {
   uploadBanner,
   uploadCourseCover,
   uploadCourseVideo,
+  uploadAssessment,
   uploadFile,
   FileUploader
 }

@@ -184,6 +184,7 @@ import { useUserStore } from '@/store/user'
 import { bannerAPI } from '@/api/banner'
 import { counselorAPI } from '@/api/counselor'
 import { courseAPI } from '@/api/course'
+import { assessmentAPI } from '@/api/assessment'
 import { preprocessUrl, handleUrlNavigation, navigateTo } from '@/utils/link'
 
 import TabBar from '@/components/TabBar.vue'
@@ -316,6 +317,36 @@ const fetchBanners = async () => {
   }
 }
 
+// 获取测评数据
+const fetchAssessments = async () => {
+  try {
+    const res = await assessmentAPI.getAssessments({
+      page: 1,
+      per_page: 5,
+      status: 'published' // 只获取已发布的测评
+    })
+    
+    console.log('测评API响应:', res)
+    
+    if (res.success && res.data) {
+      // 处理测评数据，确保所有字段都有默认值
+      assessmentList.value = (res.data.list || []).map(assessment => ({
+        ...assessment,
+        participant_count: assessment.participant_count || 0,
+        price: assessment.price || 0,
+        difficulty: assessment.difficulty || 'medium'
+      }))
+      console.log('处理后的测评列表:', assessmentList.value)
+    } else {
+      console.log('测评API返回数据格式异常')
+      assessmentList.value = []
+    }
+  } catch (error) {
+    console.error('获取测评列表失败:', error)
+    assessmentList.value = []
+  }
+}
+
 // 轮播图点击处理
 const handleBannerClick = (index) => {
   console.log('轮播图点击事件触发，索引:', index)
@@ -360,6 +391,16 @@ const handleCourseClick = (course) => {
 // 心理测评卡片点击处理
 const handleAssessmentClick = (assessment) => {
   console.log('心理测评卡片点击:', assessment)
+  
+  if (assessment && assessment.id) {
+    // 导航到测评详情页
+    navigateTo(`/pages/assessment/detail?id=${assessment.id}`)
+  } else {
+    uni.showToast({
+      title: '测评数据异常',
+      icon: 'none'
+    })
+  }
 }
 
 
@@ -378,6 +419,7 @@ onLoad(() => {
   fetchBanners()
   fetchCounselors()
   fetchCourses()
+  fetchAssessments()
 })
 
 onShow(() => {
