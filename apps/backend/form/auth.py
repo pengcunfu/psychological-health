@@ -13,7 +13,7 @@ class LoginForm(BaseForm):
     ])
     password = StringField('密码', [
         DataRequired(message='密码不能为空'),
-        Length(min=6, max=20, message='密码长度必须在6-20个字符之间')
+        # Length(min=6, max=20, message='密码长度必须在6-20个字符之间')
     ])
     verify_code = StringField('验证码', [
         Optional(),

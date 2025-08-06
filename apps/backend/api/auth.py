@@ -78,7 +78,7 @@ def login():
     user_data = {
         'id': user.id,
         'username': user.username,
-        'avatar': user.avatar,
+        'avatar': process_image_url(user.avatar),
         'phone': user.phone,
         'email': user.email,
         'roles': [{
