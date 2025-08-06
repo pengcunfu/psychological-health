@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { request } from '@/utils/request'
 import { setToken, getToken, removeToken } from '@/utils/auth'
+import { logout as logoutApi } from '@/api/auth'
 
 export const useUserStore = defineStore('user', () => {
   // 状态
@@ -9,7 +10,22 @@ export const useUserStore = defineStore('user', () => {
   const userInfo = ref(null)
   const isLoggedIn = ref(!!getToken())
 
-  // 登录
+  // 设置登录信息
+  const setLoginInfo = async (loginData) => {
+    token.value = loginData.token
+    userInfo.value = loginData.user
+    isLoggedIn.value = true
+    
+    // 保存token到本地存储
+    setToken(loginData.token)
+    
+    return {
+      success: true,
+      message: '登录成功'
+    }
+  }
+
+  // 登录（保持兼容性）
   const login = async (data) => {
     try {
       const res = await request({
@@ -19,17 +35,7 @@ export const useUserStore = defineStore('user', () => {
       })
 
       if (res.code === 200 && res.success) {
-        token.value = res.data.token
-        userInfo.value = res.data.user
-        isLoggedIn.value = true
-        
-        // 保存token到本地存储
-        setToken(res.data.token)
-        
-        return {
-          success: true,
-          message: '登录成功'
-        }
+        return await setLoginInfo(res.data)
       }
       
       return {
@@ -48,10 +54,7 @@ export const useUserStore = defineStore('user', () => {
   // 退出登录
   const logout = async () => {
     try {
-      await request({
-        url: '/auth/logout',
-        method: 'POST'
-      })
+      await logoutApi()
     } catch (error) {
       console.error('登出请求失败:', error)
     } finally {
@@ -171,6 +174,7 @@ export const useUserStore = defineStore('user', () => {
     token,
     userInfo,
     isLoggedIn,
+    setLoginInfo,
     login,
     logout,
     getUserInfo,
