@@ -142,7 +142,7 @@
             </a>
             <template #overlay>
               <a-menu>
-                <a-menu-item key="profile">
+                <a-menu-item key="profile" @click="navigateToProfile">
                   <user-outlined/>
                   个人资料
                 </a-menu-item>
@@ -350,6 +350,10 @@ export default {
       router.push(path)
     }
 
+    const navigateToProfile = () => {
+      router.push('/profile')
+    }
+
     const getPageTitle = () => {
       if (route.path === '/') {
         return '首页'
@@ -383,6 +387,7 @@ export default {
       toggleCollapse,
       toggleCategory,
       navigateTo,
+      navigateToProfile,
       getPageTitle
     }
   }

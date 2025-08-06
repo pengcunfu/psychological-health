@@ -1,6 +1,7 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import Login from '@/views/Login.vue'
 import Home from '@/views/Home.vue'
+import UserProfile from '@/views/UserProfile.vue'
 import UserManagement from '@/views/admin/UserManagement.vue'
 import CounselorManagement from '@/views/admin/CounselorManagement.vue'
 import OrderManagement from '@/views/admin/OrderManagement.vue'
@@ -41,6 +42,15 @@ const routes = [
                 name: 'Dashboard',
                 meta: {
                     title: '首页',
+                    requiresAuth: true
+                }
+            },
+            {
+                path: 'profile',
+                name: 'UserProfile',
+                component: UserProfile,
+                meta: {
+                    title: '个人资料',
                     requiresAuth: true
                 }
             },
