@@ -1,5 +1,5 @@
-from wtforms import StringField, IntegerField, FloatField
-from wtforms.validators import DataRequired, Optional, Length, NumberRange
+from wtforms import StringField, IntegerField, FloatField, TextAreaField
+from wtforms.validators import DataRequired, Optional, Length, NumberRange, Email, Regexp
 from .base import BaseForm
 
 
@@ -20,22 +20,46 @@ class CounselorCreateForm(BaseForm):
                                            Length(max=100, message='姓名长度不能超过100个字符')])
     avatar = StringField('头像', validators=[Optional(), Length(max=255, message='头像URL长度不能超过255个字符')])
     title = StringField('职称', validators=[Optional(), Length(max=100, message='职称长度不能超过100个字符')])
+    phone = StringField('手机号', validators=[
+        Optional(), 
+        Length(max=20, message='手机号长度不能超过20个字符'),
+        Regexp(r'^1[3-9]\d{9}$', message='请输入正确的手机号格式')
+    ])
+    email = StringField('邮箱', validators=[
+        Optional(), 
+        Email(message='请输入正确的邮箱格式'),
+        Length(max=100, message='邮箱长度不能超过100个字符')
+    ])
     price = FloatField('价格', validators=[Optional(), NumberRange(min=0, message='价格不能为负数')])
     rating = FloatField('评分', validators=[Optional(), NumberRange(min=0, max=5, message='评分必须在0到5之间')])
     consultation_count = IntegerField('咨询次数',
                                       validators=[Optional(), NumberRange(min=0, message='咨询次数不能为负数')])
     introduction = StringField('介绍', validators=[Optional()])
     tags = StringField('标签', validators=[Optional()])
+    specialty = TextAreaField('专业领域', validators=[Optional()])
+    bio = TextAreaField('个人简介', validators=[Optional()])
 
 
 class CounselorUpdateForm(BaseForm):
     name = StringField('姓名', validators=[Optional(), Length(max=100, message='姓名长度不能超过100个字符')])
     avatar = StringField('头像', validators=[Optional(), Length(max=255, message='头像URL长度不能超过255个字符')])
     title = StringField('职称', validators=[Optional(), Length(max=100, message='职称长度不能超过100个字符')])
+    phone = StringField('手机号', validators=[
+        Optional(), 
+        Length(max=20, message='手机号长度不能超过20个字符'),
+        Regexp(r'^1[3-9]\d{9}$', message='请输入正确的手机号格式')
+    ])
+    email = StringField('邮箱', validators=[
+        Optional(), 
+        Email(message='请输入正确的邮箱格式'),
+        Length(max=100, message='邮箱长度不能超过100个字符')
+    ])
     price = FloatField('价格', validators=[Optional(), NumberRange(min=0, message='价格不能为负数')])
     rating = FloatField('评分', validators=[Optional(), NumberRange(min=0, max=5, message='评分必须在0到5之间')])
     consultation_count = IntegerField('咨询次数',
                                       validators=[Optional(), NumberRange(min=0, message='咨询次数不能为负数')])
     introduction = StringField('介绍', validators=[Optional()])
     tags = StringField('标签', validators=[Optional()])
+    specialty = TextAreaField('专业领域', validators=[Optional()])
+    bio = TextAreaField('个人简介', validators=[Optional()])
     status = IntegerField('状态', validators=[Optional()])

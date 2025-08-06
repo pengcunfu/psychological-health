@@ -21,8 +21,9 @@ from models.counselor import Counselor
 from models.base import db
 from utils.json_result import JsonResult
 from form.counselor import CounselorCreateForm, CounselorUpdateForm, CounselorQueryForm
-from utils.validate import validate_args
+from utils.validate import validate_args, validate_data
 from utils.image import process_counselor_images
+from utils.model_helper import update_model_from_form
 
 counselor_bp = Blueprint('counselor', __name__, url_prefix='/counselor')
 
@@ -109,12 +110,8 @@ def get_counselor(counselor_id):
 @counselor_bp.route('', methods=['POST'])
 def create_counselor():
     """创建咨询师"""
-    data = request.get_json()
-    if not data:
-        return JsonResult.error('请求数据不能为空', 400)
-
-    # 使用表单验证
-    form = validate_args(CounselorCreateForm)
+    # 使用统一的验证方式
+    form = validate_data(CounselorCreateForm)
 
     # 创建咨询师
     counselor = Counselor(
@@ -122,11 +119,15 @@ def create_counselor():
         name=form.name.data,
         avatar=form.avatar.data or '',
         title=form.title.data or '',
+        phone=form.phone.data or '',
+        email=form.email.data or '',
         price=form.price.data or 0.0,
         rating=form.rating.data or 0.0,
         consultation_count=form.consultation_count.data or 0,
         introduction=form.introduction.data or '',
         tags=form.tags.data or '',
+        specialty=form.specialty.data or '',
+        bio=form.bio.data or '',
     )
 
     db.session.add(counselor)
@@ -142,35 +143,9 @@ def update_counselor(counselor_id):
     if not counselor:
         return JsonResult.error('咨询师不存在', 404)
 
-    data = request.get_json()
-    if not data:
-        return JsonResult.error('请求数据不能为空', 400)
-
-    # 使用表单验证
-    form = CounselorUpdateForm(data=data)
-    if not form.validate():
-        return JsonResult.error(f'参数验证失败: {form.get_first_error()}', 400)
-
-    # 更新咨询师信息
-    if form.name.data is not None:
-        counselor.name = form.name.data
-    if form.avatar.data is not None:
-        counselor.avatar = form.avatar.data
-    if form.title.data is not None:
-        counselor.title = form.title.data
-    if form.price.data is not None:
-        counselor.price = form.price.data
-    if form.rating.data is not None:
-        counselor.rating = form.rating.data
-    if form.consultation_count.data is not None:
-        counselor.consultation_count = form.consultation_count.data
-    if form.introduction.data is not None:
-        counselor.introduction = form.introduction.data
-    if form.tags.data is not None:
-        counselor.tags = form.tags.data
-    if form.status.data is not None:
-        counselor.status = form.status.data
-
+    # 使用统一的验证和更新函数
+    form = validate_data(CounselorUpdateForm)
+    update_model_from_form(counselor, form)
     db.session.commit()
 
     return JsonResult.success(counselor.to_dict(), '咨询师信息更新成功')
