@@ -61,6 +61,9 @@ export const userAPI = {
     // 重置密码
     resetPassword: (id) => api.post(`/user/${id}/reset-password`),
 
+    // 分配用户角色
+    assignUserRoles: (id, roleIds) => api.put(`/user/${id}/roles`, {role_ids: roleIds}),
+
     // 上传头像
     uploadAvatar: (id, formData) => api.post(`/user/${id}/avatar`, formData, {
         headers: {
