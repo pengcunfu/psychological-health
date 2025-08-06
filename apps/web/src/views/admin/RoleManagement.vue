@@ -15,21 +15,15 @@
           </a-button>
         </a-form-item>
       </a-form>
-      
+
       <a-button type="primary" @click="showAddModal">
         <plus-outlined /> 添加角色
       </a-button>
     </div>
 
     <!-- 数据表格 -->
-    <a-table
-      :columns="columns"
-      :data-source="roles"
-      :loading="loading"
-      :pagination="pagination"
-      @change="handleTableChange"
-      rowKey="id"
-    >
+    <a-table :columns="columns" :data-source="roles" :loading="loading" :pagination="pagination"
+      @change="handleTableChange" rowKey="id">
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'status'">
           <a-tag :color="record.status === 1 ? 'green' : 'red'">
@@ -45,12 +39,7 @@
           <a-space>
             <a @click="showEditModal(record)">编辑</a>
             <a-divider type="vertical" />
-            <a-popconfirm
-              title="确定要删除该角色吗?"
-              ok-text="确定"
-              cancel-text="取消"
-              @confirm="handleDelete(record.id)"
-            >
+            <a-popconfirm title="确定要删除该角色吗?" ok-text="确定" cancel-text="取消" @confirm="handleDelete(record.id)">
               <a class="danger-link">删除</a>
             </a-popconfirm>
           </a-space>
@@ -59,20 +48,9 @@
     </a-table>
 
     <!-- 添加/编辑角色弹窗 -->
-    <a-modal
-      v-model:visible="modalVisible"
-      :title="modalTitle"
-      @ok="handleModalOk"
-      @cancel="handleModalCancel"
-      width="700px"
-    >
-      <a-form
-        ref="roleForm"
-        :model="roleForm"
-        :rules="rules"
-        :label-col="{ span: 4 }"
-        :wrapper-col="{ span: 20 }"
-      >
+    <a-modal v-model:visible="modalVisible" :title="modalTitle" @ok="handleModalOk" @cancel="handleModalCancel"
+      width="700px">
+      <a-form ref="roleFormRef" :model="roleForm" :rules="rules" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }">
         <a-form-item label="角色名称" name="name">
           <a-input v-model:value="roleForm.name" placeholder="请输入角色名称" />
         </a-form-item>
@@ -93,13 +71,8 @@
           </a-select>
         </a-form-item>
         <a-form-item label="菜单权限" name="menu_ids">
-          <a-tree
-            v-model:checkedKeys="roleForm.menu_ids"
-            :tree-data="menuTree"
-            checkable
-            :check-strictly="false"
-            :default-expand-all="true"
-          />
+          <a-tree v-model:checkedKeys="roleForm.menu_ids" :tree-data="menuTree" checkable :check-strictly="false"
+            :default-expand-all="true" />
         </a-form-item>
         <a-form-item label="状态" name="status">
           <a-radio-group v-model:value="roleForm.status">
@@ -118,299 +91,272 @@
   </div>
 </template>
 
-<script>
-import { defineComponent, ref, reactive, onMounted } from 'vue'
+<script setup>
+import { ref, reactive, onMounted } from 'vue'
 import { message } from 'ant-design-vue'
 import { PlusOutlined, SearchOutlined, ReloadOutlined } from '@ant-design/icons-vue'
 import { getRoles, createRole, updateRole, deleteRole, menuAPI } from '@/api/admin'
 
-export default defineComponent({
-  name: 'RoleManagement',
-  components: {
-    PlusOutlined,
-    SearchOutlined,
-    ReloadOutlined
+defineOptions({
+  name: 'RoleManagement'
+})
+
+// 表格列定义
+const columns = [
+  {
+    title: '角色名称',
+    dataIndex: 'name',
+    key: 'name'
   },
-  setup() {
-    // 表格列定义
-    const columns = [
-      {
-        title: '角色名称',
-        dataIndex: 'name',
-        key: 'name'
-      },
-      {
-        title: '角色代码',
-        dataIndex: 'code',
-        key: 'code'
-      },
-      {
-        title: '描述',
-        dataIndex: 'description',
-        key: 'description',
-        ellipsis: true
-      },
-      {
-        title: '排序',
-        dataIndex: 'sort_order',
-        key: 'sort_order',
-        width: 80
-      },
-      {
-        title: '数据范围',
-        dataIndex: 'data_scope_name',
-        key: 'data_scope_name',
-        width: 100
-      },
-      {
-        title: '状态',
-        dataIndex: 'status',
-        key: 'status',
-        width: 80
-      },
-      {
-        title: '默认角色',
-        dataIndex: 'is_default',
-        key: 'is_default',
-        width: 90
-      },
-      {
-        title: '创建时间',
-        dataIndex: 'create_time',
-        key: 'create_time',
-        width: 180
-      },
-      {
-        title: '操作',
-        key: 'action',
-        width: 120
-      }
-    ]
+  {
+    title: '角色代码',
+    dataIndex: 'code',
+    key: 'code'
+  },
+  {
+    title: '描述',
+    dataIndex: 'description',
+    key: 'description',
+    ellipsis: true
+  },
+  {
+    title: '排序',
+    dataIndex: 'sort_order',
+    key: 'sort_order',
+    width: 80
+  },
+  {
+    title: '数据范围',
+    dataIndex: 'data_scope_name',
+    key: 'data_scope_name',
+    width: 100
+  },
+  {
+    title: '状态',
+    dataIndex: 'status',
+    key: 'status',
+    width: 80
+  },
+  {
+    title: '默认角色',
+    dataIndex: 'is_default',
+    key: 'is_default',
+    width: 90
+  },
+  {
+    title: '创建时间',
+    dataIndex: 'create_time',
+    key: 'create_time',
+    width: 180
+  },
+  {
+    title: '操作',
+    key: 'action',
+    width: 120
+  }
+]
 
-    // 数据状态
-    const roles = ref([])
-    const loading = ref(false)
-    const pagination = reactive({
-      current: 1,
-      pageSize: 10,
-      total: 0,
-      showTotal: (total) => `共 ${total} 条数据`
+// 数据状态
+const roles = ref([])
+const loading = ref(false)
+const pagination = reactive({
+  current: 1,
+  pageSize: 10,
+  total: 0,
+  showTotal: (total) => `共 ${total} 条数据`
+})
+
+// 搜索表单
+const searchForm = reactive({
+  keyword: '',
+  page: 1,
+  per_page: 10
+})
+
+// 角色表单
+const roleForm = reactive({
+  id: '',
+  name: '',
+  code: '',
+  description: '',
+  sort_order: 0,
+  data_scope: 1,
+  menu_ids: [],
+  status: 1,
+  is_default: false,
+  remark: ''
+})
+
+// 表单校验规则
+const rules = {
+  name: [
+    { required: true, message: '请输入角色名称', trigger: 'blur' },
+    { max: 50, message: '角色名称不能超过50个字符', trigger: 'blur' }
+  ],
+  code: [
+    { required: true, message: '请输入角色代码', trigger: 'blur' },
+    { max: 50, message: '角色代码不能超过50个字符', trigger: 'blur' }
+  ],
+  sort_order: [
+    { required: true, message: '请输入排序值', trigger: 'blur' }
+  ]
+}
+
+// 弹窗控制
+const modalVisible = ref(false)
+const modalTitle = ref('添加角色')
+const isEdit = ref(false)
+const roleFormRef = ref(null)
+
+// 菜单树
+const menuTree = ref([])
+
+// 获取角色列表
+const fetchRoles = async () => {
+  loading.value = true
+  try {
+    const res = await getRoles({
+      keyword: searchForm.keyword,
+      page: pagination.current,
+      per_page: pagination.pageSize
     })
+    roles.value = res.data.roles
+    pagination.total = res.data.total
+  } catch (error) {
+    message.error('获取角色列表失败：' + error.message)
+  } finally {
+    loading.value = false
+  }
+}
 
-    // 搜索表单
-    const searchForm = reactive({
-      keyword: '',
-      page: 1,
-      per_page: 10
-    })
-
-    // 角色表单
-    const roleForm = reactive({
-      id: '',
-      name: '',
-      code: '',
-      description: '',
-      sort_order: 0,
-      data_scope: 1,
-      menu_ids: [],
-      status: 1,
-      is_default: false,
-      remark: ''
-    })
-
-    // 表单校验规则
-    const rules = {
-      name: [
-        { required: true, message: '请输入角色名称', trigger: 'blur' },
-        { max: 50, message: '角色名称不能超过50个字符', trigger: 'blur' }
-      ],
-      code: [
-        { required: true, message: '请输入角色代码', trigger: 'blur' },
-        { max: 50, message: '角色代码不能超过50个字符', trigger: 'blur' }
-      ],
-      sort_order: [
-        { required: true, message: '请输入排序值', trigger: 'blur' }
-      ]
+// 获取菜单树
+const fetchMenuTree = async () => {
+  try {
+    const res = await menuAPI.getMenuTree()
+    if (res.code === 200) {
+      menuTree.value = res.data
     }
+  } catch (error) {
+    message.error('获取菜单树失败：' + error.message)
+  }
+}
 
-    // 弹窗控制
-    const modalVisible = ref(false)
-    const modalTitle = ref('添加角色')
-    const isEdit = ref(false)
-    const roleFormRef = ref(null)
+// 搜索
+const handleSearch = () => {
+  pagination.current = 1
+  fetchRoles()
+}
 
-    // 菜单树
-    const menuTree = ref([])
+// 重置搜索
+const handleReset = () => {
+  searchForm.keyword = ''
+  pagination.current = 1
+  fetchRoles()
+}
 
-    // 获取角色列表
-    const fetchRoles = async () => {
-      loading.value = true
-      try {
-        const res = await getRoles({
-          keyword: searchForm.keyword,
-          page: pagination.current,
-          per_page: pagination.pageSize
-        })
-        roles.value = res.data.roles
-        pagination.total = res.data.total
-      } catch (error) {
-        message.error('获取角色列表失败：' + error.message)
-      } finally {
-        loading.value = false
-      }
+// 表格变化
+const handleTableChange = (pag) => {
+  pagination.current = pag.current
+  pagination.pageSize = pag.pageSize
+  fetchRoles()
+}
+
+// 显示添加弹窗
+const showAddModal = () => {
+  isEdit.value = false
+  modalTitle.value = '添加角色'
+  resetForm()
+  modalVisible.value = true
+}
+
+// 显示编辑弹窗
+const showEditModal = (record) => {
+  isEdit.value = true
+  modalTitle.value = '编辑角色'
+  resetForm()
+
+  // 填充表单数据
+  Object.keys(roleForm).forEach(key => {
+    if (key in record) {
+      roleForm[key] = record[key]
     }
+  })
 
-    // 获取菜单树
-    const fetchMenuTree = async () => {
-      try {
-        const res = await menuAPI.getMenuTree()
-        if (res.code === 200) {
-          menuTree.value = res.data
-        }
-      } catch (error) {
-        message.error('获取菜单树失败：' + error.message)
-      }
-    }
-
-    // 搜索
-    const handleSearch = () => {
-      pagination.current = 1
-      fetchRoles()
-    }
-
-    // 重置搜索
-    const handleReset = () => {
-      searchForm.keyword = ''
-      pagination.current = 1
-      fetchRoles()
-    }
-
-    // 表格变化
-    const handleTableChange = (pag) => {
-      pagination.current = pag.current
-      pagination.pageSize = pag.pageSize
-      fetchRoles()
-    }
-
-    // 显示添加弹窗
-    const showAddModal = () => {
-      isEdit.value = false
-      modalTitle.value = '添加角色'
-      resetForm()
-      modalVisible.value = true
-    }
-
-    // 显示编辑弹窗
-    const showEditModal = (record) => {
-      isEdit.value = true
-      modalTitle.value = '编辑角色'
-      resetForm()
-      
-      // 填充表单数据
-      Object.keys(roleForm).forEach(key => {
-        if (key in record) {
-          roleForm[key] = record[key]
-        }
-      })
-      
-      // 处理菜单ID
-      if (record.menu_ids && typeof record.menu_ids === 'string') {
-        roleForm.menu_ids = record.menu_ids.split(',').filter(id => id)
-      }
-      
-      modalVisible.value = true
-    }
-
-    // 重置表单
-    const resetForm = () => {
-      roleForm.id = ''
-      roleForm.name = ''
-      roleForm.code = ''
-      roleForm.description = ''
-      roleForm.sort_order = 0
-      roleForm.data_scope = 1
-      roleForm.menu_ids = []
-      roleForm.status = 1
-      roleForm.is_default = false
-      roleForm.remark = ''
-      
-      if (roleFormRef.value) {
-        roleFormRef.value.resetFields()
-      }
-    }
-
-    // 提交表单
-    const handleModalOk = () => {
-      roleFormRef.value.validate().then(async () => {
-        try {
-          // 处理菜单ID，转为字符串
-          const formData = { ...roleForm }
-          if (Array.isArray(formData.menu_ids)) {
-            formData.menu_ids = formData.menu_ids.join(',')
-          }
-          
-          if (isEdit.value) {
-            await updateRole(formData.id, formData)
-            message.success('角色更新成功')
-          } else {
-            await createRole(formData)
-            message.success('角色创建成功')
-          }
-          
-          modalVisible.value = false
-          fetchRoles()
-        } catch (error) {
-          message.error('操作失败：' + error.message)
-        }
-      }).catch(error => {
-        console.log('表单校验失败', error)
-      })
-    }
-
-    // 取消弹窗
-    const handleModalCancel = () => {
-      modalVisible.value = false
-      resetForm()
-    }
-
-    // 删除角色
-    const handleDelete = async (id) => {
-      try {
-        await deleteRole(id)
-        message.success('角色删除成功')
-        fetchRoles()
-      } catch (error) {
-        message.error('删除失败：' + error.message)
-      }
-    }
-
-    onMounted(() => {
-      fetchRoles()
-      fetchMenuTree()
-    })
-
-    return {
-      columns,
-      roles,
-      loading,
-      pagination,
-      searchForm,
-      roleForm,
-      rules,
-      modalVisible,
-      modalTitle,
-      menuTree,
-      roleFormRef,
-      handleSearch,
-      handleReset,
-      handleTableChange,
-      showAddModal,
-      showEditModal,
-      handleModalOk,
-      handleModalCancel,
-      handleDelete
+  // 处理菜单ID
+  if (record.menu_ids) {
+    if (Array.isArray(record.menu_ids)) {
+      roleForm.menu_ids = record.menu_ids
+    } else if (typeof record.menu_ids === 'string') {
+      roleForm.menu_ids = record.menu_ids.split(',').filter(id => id)
     }
   }
+
+  modalVisible.value = true
+}
+
+// 重置表单
+const resetForm = () => {
+  roleForm.id = ''
+  roleForm.name = ''
+  roleForm.code = ''
+  roleForm.description = ''
+  roleForm.sort_order = 0
+  roleForm.data_scope = 1
+  roleForm.menu_ids = []
+  roleForm.status = 1
+  roleForm.is_default = false
+  roleForm.remark = ''
+
+  if (roleFormRef.value) {
+    roleFormRef.value.resetFields()
+  }
+}
+
+// 提交表单
+const handleModalOk = () => {
+  roleFormRef.value.validate().then(async () => {
+    try {
+      // 准备表单数据（保持菜单ID为数组格式）
+      const formData = { ...roleForm }
+
+      if (isEdit.value) {
+        await updateRole(formData.id, formData)
+        message.success('角色更新成功')
+      } else {
+        await createRole(formData)
+        message.success('角色创建成功')
+      }
+
+      modalVisible.value = false
+      fetchRoles()
+    } catch (error) {
+      message.error('操作失败：' + error.message)
+    }
+  }).catch(error => {
+    console.log('表单校验失败', error)
+  })
+}
+
+// 取消弹窗
+const handleModalCancel = () => {
+  modalVisible.value = false
+  resetForm()
+}
+
+// 删除角色
+const handleDelete = async (id) => {
+  try {
+    await deleteRole(id)
+    message.success('角色删除成功')
+    fetchRoles()
+  } catch (error) {
+    message.error('删除失败：' + error.message)
+  }
+}
+
+onMounted(() => {
+  fetchRoles()
+  fetchMenuTree()
 })
 </script>
 
@@ -467,4 +413,4 @@ export default defineComponent({
     margin-right: 0;
   }
 }
-</style> 
+</style>

@@ -74,11 +74,20 @@ def create_role():
         description=form.description.data or '',
         sort_order=form.sort_order.data or 0,
         data_scope=form.data_scope.data or 1,
-        menu_ids=form.menu_ids.data or '',
         status=form.status.data or 1,
         is_default=form.is_default.data or False,
         remark=form.remark.data or ''
     )
+    
+    # 处理菜单权限
+    if form.menu_ids.data:
+        if isinstance(form.menu_ids.data, str):
+            # 如果是字符串，分割为列表
+            menu_id_list = [mid.strip() for mid in form.menu_ids.data.split(',') if mid.strip()]
+        else:
+            # 如果已经是列表，直接使用
+            menu_id_list = form.menu_ids.data
+        role.menu_ids = menu_id_list
 
     db.session.add(role)
     db.session.commit()
@@ -98,7 +107,17 @@ def update_role(role_id):
 
     # 使用统一的验证和更新函数
     form = validate_data(RoleUpdateForm)
-    update_model_from_form(role, form)
+    update_model_from_form(role, form, exclude_fields=['menu_ids'])
+
+    # 特殊处理菜单权限
+    if form.menu_ids.data is not None:
+        if isinstance(form.menu_ids.data, str):
+            # 如果是字符串，分割为列表
+            menu_id_list = [mid.strip() for mid in form.menu_ids.data.split(',') if mid.strip()]
+        else:
+            # 如果已经是列表，直接使用
+            menu_id_list = form.menu_ids.data
+        role.menu_ids = menu_id_list
 
     db.session.commit()
     return JsonResult.success(role.to_dict(), '角色更新成功')
