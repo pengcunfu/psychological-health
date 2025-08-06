@@ -4,98 +4,93 @@
       <view class="avatar-upload">
         <image class="avatar" :src="form.avatar || '/static/images/default-avatar.png'" mode="aspectFill"></image>
         <view class="upload-btn" @click="chooseAvatar">
-          <u-icon name="camera-fill" color="#fff" size="40"></u-icon>
+          <up-icon name="camera-fill" color="#fff" size="40"></up-icon>
         </view>
       </view>
       
       <view class="form-group">
         <view class="form-item">
           <text class="form-label">用户名</text>
-          <u--input
+          <up-input
             v-model="form.username"
             placeholder="请输入用户名"
             border="bottom"
             disabled
-          ></u--input>
+          ></up-input>
         </view>
         
         <view class="form-item">
           <text class="form-label">昵称</text>
-          <u--input
+          <up-input
             v-model="form.nickname"
             placeholder="请输入昵称"
             border="bottom"
-          ></u--input>
+          ></up-input>
         </view>
         
         <view class="form-item">
           <text class="form-label">性别</text>
-          <u-radio-group v-model="form.gender">
-            <u-radio :customStyle="{marginRight: '16px'}" v-for="(item, index) in genderOptions" :key="index" :name="item.value" :label="item.label"></u-radio>
-          </u-radio-group>
+          <radio-group @change="onGenderChange">
+            <label class="radio-item" v-for="(item, index) in genderOptions" :key="index">
+              <radio :value="item.value" :checked="form.gender === item.value" />
+              <text>{{ item.label }}</text>
+            </label>
+          </radio-group>
         </view>
         
         <view class="form-item">
           <text class="form-label">手机号</text>
-          <u--input
+          <up-input
             v-model="form.phone"
             placeholder="请输入手机号"
             border="bottom"
             type="number"
-          ></u--input>
+          ></up-input>
         </view>
         
         <view class="form-item">
           <text class="form-label">邮箱</text>
-          <u--input
+          <up-input
             v-model="form.email"
             placeholder="请输入邮箱"
             border="bottom"
             type="email"
-          ></u--input>
+          ></up-input>
         </view>
         
         <view class="form-item">
           <text class="form-label">生日</text>
-          <view class="date-picker" @click="showDatePicker = true">
-            <text class="date-text">{{ form.birthday || '请选择生日' }}</text>
-            <u-icon name="calendar" size="30" color="#999"></u-icon>
-          </view>
+          <picker mode="date" :value="form.birthday" @change="onDateChange">
+            <view class="date-picker">
+              <text class="date-text">{{ form.birthday || '请选择生日' }}</text>
+              <up-icon name="calendar" size="30" color="#999"></up-icon>
+            </view>
+          </picker>
         </view>
         
         <view class="form-item">
           <text class="form-label">个人简介</text>
-          <u--textarea
+          <textarea
             v-model="form.bio"
             placeholder="请输入个人简介"
-            height="150"
-            count
+            class="bio-textarea"
             maxlength="200"
-          ></u--textarea>
+          ></textarea>
+          <view class="char-count">{{ (form.bio || '').length }}/200</view>
         </view>
       </view>
       
       <button class="submit-btn" @click="handleSubmit">保存修改</button>
     </view>
     
-    <u-datetime-picker
-      :show="showDatePicker"
-      v-model="form.birthday"
-      mode="date"
-      @confirm="showDatePicker = false"
-      @cancel="showDatePicker = false"
-    ></u-datetime-picker>
+
   </view>
 </template>
 
-<script>
+<script setup>
 import { ref, reactive } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { useUserStore } from '@/store/user'
-import { request } from '@/utils/request'
-
-export default {
-  setup() {
     const userStore = useUserStore()
     
     const form = reactive({
@@ -115,7 +110,7 @@ export default {
       { value: 0, label: '保密' }
     ]
     
-    const showDatePicker = ref(false)
+    
     
     // 获取用户信息
     const getUserInfo = async () => {
@@ -143,6 +138,16 @@ export default {
       }
     }
     
+    // 日期选择处理
+    const onDateChange = (e) => {
+      form.birthday = e.detail.value
+    }
+    
+    // 性别选择处理
+    const onGenderChange = (e) => {
+      form.gender = parseInt(e.detail.value)
+    }
+    
     // 选择头像
     const chooseAvatar = () => {
       uni.chooseImage({
@@ -165,12 +170,9 @@ export default {
       })
       
       uni.uploadFile({
-        url: '/api/file/upload',
+        url: '/api/upload/avatar',
         filePath: filePath,
         name: 'file',
-        formData: {
-          type: 'avatar'
-        },
         header: {
           Authorization: `Bearer ${userStore.token}`
         },
@@ -281,20 +283,10 @@ export default {
       }
     }
     
-    // 页面加载
-    onLoad(() => {
-      getUserInfo()
-    })
-    
-    return {
-      form,
-      genderOptions,
-      showDatePicker,
-      chooseAvatar,
-      handleSubmit
-    }
-  }
-}
+// 页面加载
+onLoad(() => {
+  getUserInfo()
+})
 </script>
 
 <style lang="scss">
@@ -364,6 +356,41 @@ export default {
 .date-text {
   font-size: 28rpx;
   color: #333;
+}
+
+.radio-item {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 32rpx;
+  margin-bottom: 16rpx;
+}
+
+.radio-item radio {
+  margin-right: 8rpx;
+}
+
+.radio-item text {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.bio-textarea {
+  width: 100%;
+  height: 150rpx;
+  padding: 20rpx;
+  border: 1rpx solid #eee;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  color: #333;
+  background-color: #fff;
+  resize: none;
+}
+
+.char-count {
+  text-align: right;
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 8rpx;
 }
 
 .submit-btn {

@@ -4,67 +4,64 @@
     <view class="header">
       <view class="header-title">个人中心</view>
       <view class="header-icon" @click="goToSettings">
-        <up-icon name="setting" size="20" color="#333"></up-icon>
+        <SvgIcon name="setting" path="profile" :size="32" color="#333" />
       </view>
     </view>
 
     <!-- 用户资料 -->
     <view class="user-profile" @click="goToEditProfile">
-      <image 
-        class="user-avatar" 
-        :src="userInfo.avatar || '/static/images/default-avatar.png'" 
-        mode="aspectFill"
-      ></image>
+      <image class="user-avatar" :src="userInfo.avatar || '/static/images/default-avatar.png'" mode="aspectFill">
+      </image>
       <view class="user-info">
         <view class="user-name">{{ userInfo.username || userInfo.name || '张三' }}</view>
         <view class="user-id">ID: {{ userInfo.id || '12345678' }}</view>
       </view>
       <view class="profile-arrow">
-        <up-icon name="arrow-right" size="16" color="#999"></up-icon>
+        <SvgIcon name="arrow-right" path="profile" :size="28" color="#999" />
       </view>
     </view>
 
     <!-- 心理服务 -->
     <view class="menu-section">
       <view class="section-title">心理服务</view>
-      
+
       <view class="menu-item" @click="navigateTo('/pages/appointment/index')">
         <view class="item-icon">
-          <up-icon name="calendar" size="20" color="#4A90E2"></up-icon>
+          <SvgIcon name="calendar" path="profile" :size="32" color="#4A90E2" />
         </view>
         <view class="item-text">我的预约</view>
         <view class="item-arrow">
-          <up-icon name="arrow-right" size="16" color="#999"></up-icon>
+          <SvgIcon name="arrow-right" path="profile" :size="28" color="#999" />
         </view>
       </view>
-      
+
       <view class="menu-item" @click="navigateTo('/pages/profile/MyCourse/index')">
         <view class="item-icon">
-          <up-icon name="book" size="20" color="#52C41A"></up-icon>
+          <SvgIcon name="book" path="profile" :size="32" color="#52C41A" />
         </view>
         <view class="item-text">我的课程</view>
         <view class="item-arrow">
-          <up-icon name="arrow-right" size="16" color="#999"></up-icon>
+          <SvgIcon name="arrow-right" path="profile" :size="28" color="#999" />
         </view>
       </view>
-      
+
       <view class="menu-item" @click="navigateTo('/pages/profile/evaluation/index')">
         <view class="item-icon">
-          <up-icon name="checkmark-circle" size="20" color="#FA8C16"></up-icon>
+          <SvgIcon name="checkmark-circle" path="profile" :size="32" color="#FA8C16" />
         </view>
         <view class="item-text">我的测评</view>
         <view class="item-arrow">
-          <up-icon name="arrow-right" size="16" color="#999"></up-icon>
+          <SvgIcon name="arrow-right" path="profile" :size="28" color="#999" />
         </view>
       </view>
-      
+
       <view class="menu-item" @click="navigateTo('/pages/profile/MyFavorite/index')">
         <view class="item-icon">
-          <up-icon name="bookmark" size="20" color="#EB2F96"></up-icon>
+          <SvgIcon name="bookmark" path="profile" :size="32" color="#EB2F96" />
         </view>
         <view class="item-text">我的收藏</view>
         <view class="item-arrow">
-          <up-icon name="arrow-right" size="16" color="#999"></up-icon>
+          <SvgIcon name="arrow-right" path="profile" :size="28" color="#999" />
         </view>
       </view>
     </view>
@@ -72,24 +69,24 @@
     <!-- 账户管理 -->
     <view class="menu-section">
       <view class="section-title">账户管理</view>
-      
+
       <view class="menu-item" @click="navigateTo('/pages/profile/edit/index')">
         <view class="item-icon">
-          <up-icon name="account" size="20" color="#722ED1"></up-icon>
+          <SvgIcon name="account" path="profile" :size="32" color="#722ED1" />
         </view>
         <view class="item-text">个人资料</view>
         <view class="item-arrow">
-          <up-icon name="arrow-right" size="16" color="#999"></up-icon>
+          <SvgIcon name="arrow-right" path="profile" :size="28" color="#999" />
         </view>
       </view>
-      
+
       <view class="menu-item" @click="navigateTo('/pages/profile/security/index')">
         <view class="item-icon">
-          <up-icon name="shield" size="20" color="#F5222D"></up-icon>
+          <SvgIcon name="shield" path="profile" :size="32" color="#F5222D" />
         </view>
         <view class="item-text">安全设置</view>
         <view class="item-arrow">
-          <up-icon name="arrow-right" size="16" color="#999"></up-icon>
+          <SvgIcon name="arrow-right" path="profile" :size="28" color="#999" />
         </view>
       </view>
     </view>
@@ -97,34 +94,34 @@
     <!-- 其他 -->
     <view class="menu-section">
       <view class="section-title">其他</view>
-      
+
       <view class="menu-item" @click="navigateTo('/pages/profile/help/index')">
         <view class="item-icon">
-          <up-icon name="help-circle" size="20" color="#1890FF"></up-icon>
+          <SvgIcon name="help-circle" path="profile" :size="32" color="#1890FF" />
         </view>
         <view class="item-text">帮助中心</view>
         <view class="item-arrow">
-          <up-icon name="arrow-right" size="16" color="#999"></up-icon>
+          <SvgIcon name="arrow-right" path="profile" :size="28" color="#999" />
         </view>
       </view>
-      
+
       <view class="menu-item" @click="navigateTo('/pages/profile/ContactUs/index')">
         <view class="item-icon">
-          <up-icon name="info-circle" size="20" color="#13C2C2"></up-icon>
+          <SvgIcon name="info-circle" path="profile" :size="32" color="#13C2C2" />
         </view>
         <view class="item-text">关于我们</view>
         <view class="item-arrow">
-          <up-icon name="arrow-right" size="16" color="#999"></up-icon>
+          <SvgIcon name="arrow-right" path="profile" :size="28" color="#999" />
         </view>
       </view>
-      
+
       <view class="menu-item" @click="navigateTo('/pages/profile/settings/index')">
         <view class="item-icon">
-          <up-icon name="setting" size="20" color="#999"></up-icon>
+          <SvgIcon name="setting" path="profile" :size="32" color="#999" />
         </view>
         <view class="item-text">设置</view>
         <view class="item-arrow">
-          <up-icon name="arrow-right" size="16" color="#999"></up-icon>
+          <SvgIcon name="arrow-right" path="profile" :size="28" color="#999" />
         </view>
       </view>
     </view>
@@ -146,6 +143,7 @@ import { computed } from 'vue'
 import { onLoad, onShow } from '@dcloudio/uni-app'
 import { useUserStore } from '@/store/user'
 import { checkLogin, redirectToLogin } from '@/utils/auth'
+import SvgIcon from '@/components/SvgIcon/index.vue'
 
 const userStore = useUserStore()
 
@@ -163,7 +161,7 @@ const checkLoginStatus = () => {
       title: '请先登录',
       icon: 'none'
     })
-    
+
     setTimeout(() => {
       redirectToLogin('/pages/profile/index')
     }, 1500)
@@ -175,16 +173,16 @@ const checkLoginStatus = () => {
 // 页面跳转
 const navigateTo = (url) => {
   // 检查是否需要登录
-  if (!isLoggedIn.value && 
-      url !== '/pages/profile/agreement/index' && 
-      url !== '/pages/profile/privacy/index' && 
-      url !== '/pages/profile/ContactUs/index' &&
-      url !== '/pages/profile/help/index') {
+  if (!isLoggedIn.value &&
+    url !== '/pages/profile/agreement/index' &&
+    url !== '/pages/profile/privacy/index' &&
+    url !== '/pages/profile/ContactUs/index' &&
+    url !== '/pages/profile/help/index') {
     uni.showToast({
       title: '请先登录',
       icon: 'none'
     })
-    
+
     setTimeout(() => {
       uni.navigateTo({
         url: '/pages/login/index'
@@ -192,7 +190,7 @@ const navigateTo = (url) => {
     }, 1500)
     return
   }
-  
+
   uni.navigateTo({ url })
 }
 
@@ -204,7 +202,7 @@ const goToEditProfile = () => {
     })
     return
   }
-  
+
   uni.navigateTo({
     url: '/pages/profile/edit/index'
   })
@@ -232,12 +230,12 @@ const handleLogout = () => {
     success: async (res) => {
       if (res.confirm) {
         await userStore.logout()
-        
+
         uni.showToast({
           title: '已退出登录',
           icon: 'success'
         })
-        
+
         // 刷新页面
         setTimeout(() => {
           uni.reLaunch({
@@ -255,7 +253,7 @@ onLoad(() => {
   if (!checkLoginStatus()) {
     return
   }
-  
+
   // 获取用户信息
   if (isLoggedIn.value) {
     userStore.getUserInfo()
@@ -403,7 +401,8 @@ onShow(() => {
   padding: 40rpx 30rpx;
 }
 
-.logout-btn, .login-btn {
+.logout-btn,
+.login-btn {
   width: 100%;
   height: 88rpx;
   line-height: 88rpx;
@@ -429,4 +428,4 @@ onShow(() => {
 .login-btn:active {
   background: #357abd;
 }
-</style> 
+</style>
