@@ -77,7 +77,20 @@ def create_group():
     group = Group(
         id=str(uuid.uuid4()),
         title=form.title.data,
-        description=form.description.data or ''
+        cover_image=form.cover_image.data or '',
+        counselor_id=form.counselor_id.data,
+        counselor_name=form.counselor_name.data,
+        price=form.price.data or 0.0,
+        capacity=form.capacity.data or 0,
+        enrolled=0,  # 新建群组已报名人数为0
+        location=form.location.data or '',
+        city=form.city.data or '',
+        type=form.type.data or '',
+        start_date=form.start_date.data or '',
+        duration=form.duration.data or '',
+        schedule=form.schedule.data or '',
+        description=form.description.data or '',
+        status=form.status.data if form.status.data is not None else 1  # 默认状态为1（报名中）
     )
 
     db.session.add(group)
@@ -103,6 +116,9 @@ def update_group(group_id):
 
     # 更新字段
     update_model_from_form(group, form)
+    
+    # 确保enrolled字段不会被表单更新（应该通过其他业务逻辑控制）
+    # enrolled字段应该通过报名/取消报名的API来管理，而不是直接更新
 
     db.session.commit()
 
