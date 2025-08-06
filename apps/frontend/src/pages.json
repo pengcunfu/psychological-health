@@ -49,6 +49,13 @@
 			}
 		},
 		{
+			"path": "pages/counselor/appointment-now",
+			"style": {
+				"navigationBarTitleText": "预约咨询",
+				"navigationStyle": "custom"
+			}
+		},
+		{
 			"path": "pages/course/index",
 			"style": {
 				"navigationBarTitleText": "课程",
