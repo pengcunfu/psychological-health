@@ -4,7 +4,7 @@
     <view class="header">
       <view class="logo">
         <view class="logo-icon">心</view>
-        <view class="logo-text">心理健康</view>
+        <view class="logo-text">美光心理</view>
       </view>
       <view class="search-bar" @click="navigateTo('/pages/search/index')">
         <up-icon name="search" size="22" color="#999"></up-icon>
