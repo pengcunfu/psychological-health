@@ -22,6 +22,7 @@ class Counselor(BaseModel):
     rating = Column(Float, default=0.0)  # 评分
     consultation_count = Column(Integer, default=0)  # 咨询次数
     introduction = Column(Text)  # 简介
+    status = Column(Integer, default=1)  # 状态（0-离职，1-在职）
 
     @property
     def tags(self) -> List[str]:
