@@ -35,70 +35,89 @@
         @change="handleTableChange"
         row-key="id"
         :scroll="{ x: 1200 }"
+        :childrenColumnName="'children'"
+        :defaultExpandAllRows="false"
+        :expandRowByClick="false"
     >
-      <template #icon="{ record }">
-        <div class="menu-icon">
-          <span v-if="record.icon" class="icon-preview">
-            <component :is="getIconComponent(record.icon)"/>
-            <span class="icon-text">{{ record.icon }}</span>
-          </span>
-          <span v-else class="no-icon">-</span>
-        </div>
-      </template>
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.key === 'name'">
+          <div class="menu-name" :style="{ paddingLeft: (record.level - 1) * 20 + 'px' }">
+            <span class="menu-name-text">{{ record.name }}</span>
+            <a-tag 
+              v-if="record.level > 1" 
+              size="small" 
+              color="blue" 
+              style="margin-left: 8px; font-size: 10px;"
+            >
+              L{{ record.level }}
+            </a-tag>
+          </div>
+        </template>
+        
+        <template v-else-if="column.key === 'icon'">
+          <div class="menu-icon">
+            <span v-if="record.icon" class="icon-preview">
+              <component :is="getIconComponent(record.icon)"/>
+              <span class="icon-text">{{ record.icon }}</span>
+            </span>
+            <span v-else class="no-icon">-</span>
+          </div>
+        </template>
 
-      <template #menuType="{ record }">
-        <a-tag :color="getMenuTypeColor(record.menu_type)">
-          {{ getMenuTypeText(record.menu_type) }}
-        </a-tag>
-      </template>
+        <template v-else-if="column.key === 'menu_type'">
+          <a-tag :color="getMenuTypeColor(record.menu_type)">
+            {{ getMenuTypeText(record.menu_type) }}
+          </a-tag>
+        </template>
 
-      <template #status="{ record }">
-        <a-tag :color="record.status === 1 ? 'green' : 'red'">
-          {{ record.status === 1 ? '启用' : '禁用' }}
-        </a-tag>
-      </template>
+        <template v-else-if="column.key === 'status'">
+          <a-tag :color="record.status === 1 ? 'green' : 'red'">
+            {{ record.status === 1 ? '启用' : '禁用' }}
+          </a-tag>
+        </template>
 
-      <template #visible="{ record }">
-        <a-tag :color="record.is_visible === 1 ? 'blue' : 'orange'">
-          {{ record.is_visible === 1 ? '显示' : '隐藏' }}
-        </a-tag>
-      </template>
+        <template v-else-if="column.key === 'is_visible'">
+          <a-tag :color="record.is_visible === 1 ? 'blue' : 'orange'">
+            {{ record.is_visible === 1 ? '显示' : '隐藏' }}
+          </a-tag>
+        </template>
 
-      <template #path="{ record }">
-        <div class="path-cell">
-          <span class="path-text">{{ record.path || '-' }}</span>
-        </div>
-      </template>
+        <template v-else-if="column.key === 'path'">
+          <div class="path-cell">
+            <span class="path-text">{{ record.path || '-' }}</span>
+          </div>
+        </template>
 
-      <template #component="{ record }">
-        <div class="component-cell">
-          <span class="component-text">{{ record.component || '-' }}</span>
-        </div>
-      </template>
+        <template v-else-if="column.key === 'component'">
+          <div class="component-cell">
+            <span class="component-text">{{ record.component || '-' }}</span>
+          </div>
+        </template>
 
-      <template #permission="{ record }">
-        <div class="permission-cell">
-          <span class="permission-text">{{ record.permission || '-' }}</span>
-        </div>
-      </template>
+        <template v-else-if="column.key === 'permission'">
+          <div class="permission-cell">
+            <span class="permission-text">{{ record.permission || '-' }}</span>
+          </div>
+        </template>
 
-      <template #action="{ record }">
-        <a-space>
-          <a-button type="link" size="small" @click="editMenu(record)">
-            编辑
-          </a-button>
-          <a-button type="link" size="small" @click="viewMenu(record)">
-            查看
-          </a-button>
-          <a-popconfirm
-              title="确定要删除这个菜单吗？"
-              @confirm="deleteMenu(record.id)"
-          >
-            <a-button type="link" size="small" danger>
-              删除
+        <template v-else-if="column.key === 'action'">
+          <a-space>
+            <a-button type="link" size="small" @click="editMenu(record)">
+              编辑
             </a-button>
-          </a-popconfirm>
-        </a-space>
+            <a-button type="link" size="small" @click="viewMenu(record)">
+              查看
+            </a-button>
+            <a-popconfirm
+                title="确定要删除这个菜单吗？"
+                @confirm="deleteMenu(record.id)"
+            >
+              <a-button type="link" size="small" danger>
+                删除
+              </a-button>
+            </a-popconfirm>
+          </a-space>
+        </template>
       </template>
     </a-table>
 
@@ -359,14 +378,13 @@ export default {
         title: '菜单名称',
         dataIndex: 'name',
         key: 'name',
-        width: 150,
+        width: 200,
         fixed: 'left'
       },
       {
         title: '图标',
         dataIndex: 'icon',
         key: 'icon',
-        slots: {customRender: 'icon'},
         width: 120
       },
       {
@@ -379,48 +397,41 @@ export default {
         title: '权限标识',
         dataIndex: 'permission',
         key: 'permission',
-        slots: {customRender: 'permission'},
         width: 150
       },
       {
         title: '路由路径',
         dataIndex: 'path',
         key: 'path',
-        slots: {customRender: 'path'},
         width: 150
       },
       {
         title: '组件路径',
         dataIndex: 'component',
         key: 'component',
-        slots: {customRender: 'component'},
         width: 150
       },
       {
         title: '类型',
         dataIndex: 'menu_type',
         key: 'menu_type',
-        slots: {customRender: 'menuType'},
         width: 80
       },
       {
         title: '状态',
         dataIndex: 'status',
         key: 'status',
-        slots: {customRender: 'status'},
         width: 80
       },
       {
         title: '可见',
         dataIndex: 'is_visible',
         key: 'is_visible',
-        slots: {customRender: 'visible'},
         width: 80
       },
       {
         title: '操作',
         key: 'action',
-        slots: {customRender: 'action'},
         width: 150,
         fixed: 'right'
       }
@@ -450,8 +461,17 @@ export default {
 
         const result = await menuAPI.getMenus(params)
         if (result.code === 200) {
-          menus.value = result.data.items || result.data.list || []
+          menus.value = result.data.list || []
           pagination.total = result.data.total || 0
+          
+          // 如果是树形结构，调整分页显示
+          if (result.data.is_tree) {
+            // 树形结构时显示总的菜单项数量
+            pagination.showTotal = (total) => `共 ${result.data.total_items || total} 条记录`
+          } else {
+            // 搜索时显示搜索结果数量
+            pagination.showTotal = (total) => `共 ${total} 条搜索结果`
+          }
         }
       } catch (error) {
         console.error('获取菜单列表失败:', error)
@@ -464,12 +484,28 @@ export default {
     // 获取父级菜单列表（用于下拉选择）
     const fetchParentMenus = async () => {
       try {
-        const result = await menuAPI.getMenus({per_page: 100})
+        const result = await menuAPI.getMenuTree()
         if (result.code === 200) {
-          // 只获取目录和菜单类型作为父级菜单选项
-          parentMenus.value = (result.data.items || result.data.list || []).filter(item =>
-              item.menu_type === 0 || item.menu_type === 1
-          )
+          // 扁平化菜单树，只获取目录和菜单类型作为父级菜单选项
+          const flattenMenus = (menus, level = 1) => {
+            let result = []
+            menus.forEach(menu => {
+              if (menu.menu_type === 0 || menu.menu_type === 1) { // 目录或菜单
+                result.push({
+                  id: menu.id,
+                  name: '　'.repeat(level - 1) + menu.name, // 使用全角空格缩进
+                  level: level,
+                  menu_type: menu.menu_type
+                })
+              }
+              if (menu.children && menu.children.length > 0) {
+                result = result.concat(flattenMenus(menu.children, level + 1))
+              }
+            })
+            return result
+          }
+          
+          parentMenus.value = flattenMenus(result.data)
         }
       } catch (error) {
         console.error('获取父级菜单列表失败:', error)
@@ -750,6 +786,16 @@ export default {
   font-size: 12px;
   line-height: 1.4;
   color: #666;
+}
+
+.menu-name {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.menu-name-text {
+  font-weight: 500;
 }
 
 .menu-detail {

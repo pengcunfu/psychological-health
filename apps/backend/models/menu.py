@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, Boolean
+from sqlalchemy import Column, String, Integer
 from .base import BaseModel
 
 
@@ -16,9 +16,9 @@ class Menu(BaseModel):
     menu_type = Column(Integer, default=2)  # 菜单类型（1-目录，2-菜单，3-按钮）
     permission = Column(String(100))  # 权限标识
     component = Column(String(255))  # 组件路径
-    is_external = Column(Boolean, default=False)  # 是否外链
-    is_visible = Column(Boolean, default=True)  # 是否显示
-    is_cache = Column(Boolean, default=False)  # 是否缓存
+    is_external = Column(Integer, default=0)  # 是否外链（0-否，1-是）
+    is_visible = Column(Integer, default=1)  # 是否显示（0-隐藏，1-显示）
+    is_cache = Column(Integer, default=0)  # 是否缓存（0-否，1-是）
     status = Column(Integer, default=1)  # 状态（0-禁用，1-启用）
     remark = Column(String(500))  # 备注
 

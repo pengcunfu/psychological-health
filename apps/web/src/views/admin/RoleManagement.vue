@@ -122,7 +122,7 @@
 import { defineComponent, ref, reactive, onMounted } from 'vue'
 import { message } from 'ant-design-vue'
 import { PlusOutlined, SearchOutlined, ReloadOutlined } from '@ant-design/icons-vue'
-import { getRoles, createRole, updateRole, deleteRole } from '@/api/admin'
+import { getRoles, createRole, updateRole, deleteRole, menuAPI } from '@/api/admin'
 
 export default defineComponent({
   name: 'RoleManagement',
@@ -263,30 +263,10 @@ export default defineComponent({
     // 获取菜单树
     const fetchMenuTree = async () => {
       try {
-        // 这里应该调用获取菜单树的API
-        // const res = await getMenuTree()
-        // menuTree.value = res.data
-        
-        // 临时使用假数据
-        menuTree.value = [
-          {
-            title: '系统管理',
-            key: '1',
-            children: [
-              { title: '用户管理', key: '1-1' },
-              { title: '角色管理', key: '1-2' },
-              { title: '菜单管理', key: '1-3' }
-            ]
-          },
-          {
-            title: '内容管理',
-            key: '2',
-            children: [
-              { title: '公告管理', key: '2-1' },
-              { title: '课程管理', key: '2-2' }
-            ]
-          }
-        ]
+        const res = await menuAPI.getMenuTree()
+        if (res.code === 200) {
+          menuTree.value = res.data
+        }
       } catch (error) {
         message.error('获取菜单树失败：' + error.message)
       }

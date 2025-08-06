@@ -46,18 +46,58 @@ def get_menus():
     # 添加排序
     query = query.order_by(Menu.sort_order.asc(), Menu.create_time.desc())
 
-    # 分页查询
-    pagination = query.paginate(
-        page=page,
-        per_page=size,
-        error_out=False
-    )
+    # 如果有搜索关键词，返回平铺列表用于搜索
+    if keyword:
+        # 分页查询
+        pagination = query.paginate(
+            page=page,
+            per_page=size,
+            error_out=False
+        )
 
+        return JsonResult.success({
+            'list': [menu.to_dict() for menu in pagination.items],
+            'total': pagination.total,
+            'page': page,
+            'per_page': size,
+            'is_tree': False
+        })
+    
+    # 没有搜索关键词时，返回树形结构
+    all_menus = query.all()
+    
+    def build_menu_tree(parent_id=""):
+        """构建菜单树"""
+        children = []
+        for menu in all_menus:
+            if menu.parent_id == parent_id:
+                menu_dict = menu.to_dict()
+                # 递归获取子菜单
+                menu_dict['children'] = build_menu_tree(menu.id)
+                children.append(menu_dict)
+        
+        # 按排序字段排序
+        children.sort(key=lambda x: x['sort_order'])
+        return children
+    
+    # 构建树形结构
+    tree_data = build_menu_tree()
+    
+    # 计算总数（扁平化计算）
+    total_count = len(all_menus)
+    
+    # 对树形数据进行分页（只对顶级菜单分页，子菜单全部返回）
+    start = (page - 1) * size
+    end = start + size
+    paginated_tree = tree_data[start:end]
+    
     return JsonResult.success({
-        'list': [menu.to_dict() for menu in pagination.items],
-        'total': pagination.total,
+        'list': paginated_tree,
+        'total': len(tree_data),  # 顶级菜单数量作为分页基数
+        'total_items': total_count,  # 总菜单数量
         'page': page,
-        'per_page': size
+        'per_page': size,
+        'is_tree': True
     })
 
 
@@ -167,7 +207,7 @@ def get_user_permissions(user_id):
     def build_permission_tree(parent_id=""):
         children = []
         for menu in user_menus:
-            if menu.parent_id == parent_id and menu.status == 1 and menu.is_visible:
+            if menu.parent_id == parent_id and menu.status == 1 and menu.is_visible == 1:
                 menu_dict = {
                     'id': menu.id,
                     'name': menu.name,
@@ -188,3 +228,34 @@ def get_user_permissions(user_id):
 
     result = build_permission_tree()
     return JsonResult.success(result, "获取用户权限成功")
+
+
+@menu_bp.route('/tree', methods=['GET'])
+def get_menu_tree():
+    """获取完整的菜单树结构（用于角色权限配置等）"""
+    # 获取所有启用的菜单
+    all_menus = Menu.query.filter_by(status=1).order_by(Menu.sort_order.asc(), Menu.create_time.desc()).all()
+    
+    def build_tree(parent_id=""):
+        """构建菜单树"""
+        children = []
+        for menu in all_menus:
+            if menu.parent_id == parent_id:
+                menu_node = {
+                    'id': menu.id,
+                    'key': menu.id,
+                    'title': menu.name,
+                    'name': menu.name,
+                    'level': menu.level,
+                    'menu_type': menu.menu_type,
+                    'sort_order': menu.sort_order,
+                    'children': build_tree(menu.id)
+                }
+                children.append(menu_node)
+        
+        # 按排序字段排序
+        children.sort(key=lambda x: x['sort_order'])
+        return children
+    
+    tree_data = build_tree()
+    return JsonResult.success(tree_data, "获取菜单树成功")

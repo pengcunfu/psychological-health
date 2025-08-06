@@ -287,6 +287,9 @@ export const menuAPI = {
     // 删除菜单
     deleteMenu: (id) => api.delete(`/menu/${id}`),
 
+    // 获取菜单树结构
+    getMenuTree: () => api.get('/menu/tree'),
+
     // 获取用户权限菜单
     getUserPermissions: (userId) => api.get(`/menu/user/${userId}/permissions`)
 }
