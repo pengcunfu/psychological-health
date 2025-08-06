@@ -29,6 +29,7 @@ from utils.verify_code import VerifyCodeGenerator
 from utils.validate import validate_data, validate_args
 from utils.auth import hash_password, generate_token, verify_password
 from form.auth import LoginForm, PhoneLoginForm, RegisterForm, UpdateProfileForm, ChangePasswordForm
+from utils.image import process_image_url
 
 login_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -203,7 +204,7 @@ def register():
     new_user = User(
         id=user_id,
         username=username,
-        avatar=form.avatar.data or '/static/images/default_avatar.png',
+        avatar=form.avatar.data or process_image_url('/static/images/default_avatar.png') ,
         phone=phone or '',
         email=email or ''
     )

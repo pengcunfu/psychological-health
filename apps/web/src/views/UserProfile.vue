@@ -145,7 +145,7 @@
                       <a-input 
                         v-model:value="profileForm.phone" 
                         placeholder="请输入手机号"
-                        maxlength="11"
+                        :maxlength="11"
                         size="large"
                         class="form-input"
                       />
