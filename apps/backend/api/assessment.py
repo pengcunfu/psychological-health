@@ -11,6 +11,7 @@ from form.assessment import (
 )
 from utils.json_result import JsonResult
 from utils.validate import validate_args
+from utils.image import process_assessment_images
 import json
 
 assessment_bp = Blueprint('assessment', __name__, url_prefix='/assessment')
@@ -80,6 +81,9 @@ def get_assessments():
     
     assessments_data = [assessment.to_dict() for assessment in pagination.items]
     
+    # 处理图片URL
+    assessments_data = process_assessment_images(assessments_data)
+    
     return JsonResult.success({
         'list': assessments_data,
         'total': pagination.total,
@@ -104,6 +108,9 @@ def get_assessment_detail(assessment_id):
     
     assessment_data = assessment.to_dict()
     assessment_data['questions'] = [q.to_dict() for q in questions]
+    
+    # 处理图片URL
+    assessment_data = process_assessment_images(assessment_data)
     
     return JsonResult.success(assessment_data)
 
@@ -595,6 +602,8 @@ def get_assessment_records():
                 'cover_image': record.assessment.cover_image,
                 'duration': record.assessment.duration
             }
+            # 处理测评信息中的图片URL
+            record_dict['assessment_info'] = process_assessment_images(record_dict['assessment_info'])
         records_data.append(record_dict)
     
     return JsonResult.success({
@@ -623,6 +632,8 @@ def get_assessment_record_detail(record_id):
     # 添加测评信息
     if record.assessment:
         record_data['assessment_info'] = record.assessment.to_dict()
+        # 处理测评信息中的图片URL
+        record_data['assessment_info'] = process_assessment_images(record_data['assessment_info'])
     
     # 添加答案详情
     answers = AssessmentAnswer.query.filter_by(record_id=record_id).all()

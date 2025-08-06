@@ -200,3 +200,25 @@ def process_banner_images(data: Union[Dict[str, Any], List[Dict[str, Any]]],
         return process_image_urls_in_dict(data, image_fields, base_url)
     else:
         return data
+
+
+def process_assessment_images(data: Union[Dict[str, Any], List[Dict[str, Any]]],
+                              base_url: Optional[str] = None) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
+    """
+    专门处理测评数据中的图片字段
+    
+    Args:
+        data (dict or list): 测评数据，可以是单个字典或字典列表
+        base_url (str, optional): 基础URL，如果不提供则自动获取
+        
+    Returns:
+        dict or list: 处理后的测评数据
+    """
+    image_fields = ['cover_image']  # 测评的图片字段
+
+    if isinstance(data, list):
+        return process_image_urls_in_list(data, image_fields, base_url)
+    elif isinstance(data, dict):
+        return process_image_urls_in_dict(data, image_fields, base_url)
+    else:
+        return data

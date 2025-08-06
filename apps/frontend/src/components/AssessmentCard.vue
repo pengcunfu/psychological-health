@@ -78,23 +78,7 @@ const formatParticipantCount = (count) => {
 
 // 获取评估封面图片
 const getAssessmentCover = () => {
-  const coverImage = props.assessment.cover_image || props.assessment.cover
-  if (!coverImage) {
-    return '/static/images/default-assessment.png'
-  }
-  
-  // 如果是完整的URL，直接返回
-  if (coverImage.startsWith('http://') || coverImage.startsWith('https://')) {
-    return coverImage
-  }
-  
-  // 如果是相对路径，需要拼接API基础URL
-  if (coverImage.startsWith('/static/')) {
-    return `${import.meta.env.VITE_APP_API_URL || '/api'}${coverImage}`
-  }
-  
-  // 处理其他格式的路径
-  return `${import.meta.env.VITE_APP_API_URL || '/api'}/static/uploads/${coverImage}`
+  return props.assessment.cover_image || props.assessment.cover || '/static/images/default-assessment.png'
 }
 
 // 图片加载失败处理
@@ -125,21 +109,21 @@ const getDifficultyText = (difficulty) => {
   background-color: #fff;
   overflow: hidden;
   margin-bottom: 12rpx;
-  min-height: 160rpx;
+  height: 240rpx;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
 }
 
 .assessment-left {
   position: relative;
   width: 180rpx;
-  height: 120rpx;
+  height: 240rpx;
   margin-right: 20rpx;
   flex-shrink: 0;
 }
 
 .assessment-img {
   width: 180rpx;
-  height: 120rpx;
+  height: calc(100% - 10rpx);
   border-radius: 12rpx;
   object-fit: cover;
 }
