@@ -62,6 +62,19 @@
 			}
 		},
 		{
+			"path": "pages/assessment/index",
+			"style": {
+				"navigationBarTitleText": "心理测评",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/assessment/detail",
+			"style": {
+				"navigationBarTitleText": "测评详情"
+			}
+		},
+		{
 			"path": "pages/profile/index",
 			"style": {
 				"navigationBarTitleText": "我的",

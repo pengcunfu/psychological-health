@@ -61,7 +61,7 @@ const handleCardClick = () => {
   emit('click', props.assessment)
   const assessmentId = props.assessment.id
   if (assessmentId) {
-    navigateTo(`/pages/assessment/detail/index?id=${assessmentId}`)
+    navigateTo(`/pages/assessment/detail?id=${assessmentId}`)
   }
 }
 
