@@ -16,6 +16,8 @@ from models.user_role import UserRole
 from models.base import db
 from form.role import RoleQueryForm, RoleCreateForm, RoleUpdateForm
 from utils.json_result import JsonResult
+from utils.validate import validate_data, validate_args
+from utils.model_helper import update_model_from_form
 
 role_bp = Blueprint("role", __name__, url_prefix="/role")
 
@@ -23,9 +25,7 @@ role_bp = Blueprint("role", __name__, url_prefix="/role")
 @role_bp.route('', methods=['GET'])
 def get_roles():
     """获取角色列表"""
-    form = RoleQueryForm(data=request.args)
-    if not form.validate():
-        return JsonResult.error(f'参数验证失败: {form.get_first_error()}', 400)
+    form = validate_args(RoleQueryForm)
 
     page = form.page.data
     per_page = form.per_page.data
@@ -65,13 +65,7 @@ def get_roles():
 @role_bp.route('', methods=['POST'])
 def create_role():
     """创建角色"""
-    data = request.get_json()
-    if not data:
-        return JsonResult.error('请求数据不能为空', 400)
-
-    form = RoleCreateForm(data=data)
-    if not form.validate():
-        return JsonResult.error(f'参数验证失败: {form.get_first_error()}', 400)
+    form = validate_data(RoleCreateForm)
 
     role = Role(
         id=str(uuid.uuid4()),
@@ -102,33 +96,9 @@ def update_role(role_id):
     if not role:
         return JsonResult.error('角色不存在', 404)
 
-    data = request.get_json()
-    if not data:
-        return JsonResult.error('请求数据不能为空', 400)
-
-    form = RoleUpdateForm(role_id=role_id, data=data)
-    if not form.validate():
-        return JsonResult.error(f'参数验证失败: {form.get_first_error()}', 400)
-
-    # 更新角色信息
-    if form.name.data is not None:
-        role.name = form.name.data
-    if form.code.data is not None:
-        role.code = form.code.data
-    if form.description.data is not None:
-        role.description = form.description.data
-    if form.sort_order.data is not None:
-        role.sort_order = form.sort_order.data
-    if form.data_scope.data is not None:
-        role.data_scope = form.data_scope.data
-    if form.menu_ids.data is not None:
-        role.menu_ids = form.menu_ids.data
-    if form.status.data is not None:
-        role.status = form.status.data
-    if form.is_default.data is not None:
-        role.is_default = form.is_default.data
-    if form.remark.data is not None:
-        role.remark = form.remark.data
+    # 使用统一的验证和更新函数
+    form = validate_data(RoleUpdateForm)
+    update_model_from_form(role, form)
 
     db.session.commit()
     return JsonResult.success(role.to_dict(), '角色更新成功')
