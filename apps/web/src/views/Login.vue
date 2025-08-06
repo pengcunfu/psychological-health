@@ -2,7 +2,7 @@
   <div class="login-container">
     <div class="login-form-wrapper">
       <div class="login-header">
-        <h1>心理健康平台</h1>
+        <h1>美光心理管理后台</h1>
         <p>管理系统登录</p>
       </div>
 
@@ -37,7 +37,7 @@
           </a-input-password>
         </a-form-item>
 
-        <a-form-item name="verifyCode" v-if="showVerifyCode">
+        <a-form-item name="verifyCode">
           <div class="verify-code-container">
             <a-input
                 v-model:value="formState.verifyCode"
@@ -78,7 +78,7 @@
 </template>
 
 <script>
-import {defineComponent, reactive, ref} from 'vue';
+import {defineComponent, reactive, ref, onMounted} from 'vue';
 import {UserOutlined, LockOutlined} from '@ant-design/icons-vue';
 import {message} from 'ant-design-vue';
 import {useRouter} from 'vue-router';
@@ -93,7 +93,6 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const loading = ref(false);
-    const showVerifyCode = ref(false);
     const verifyCodeUrl = ref('');
 
     const formState = reactive({
@@ -113,7 +112,7 @@ export default defineComponent({
         // { min: 6, max: 20, message: '密码长度必须在6-20个字符之间', trigger: 'blur' },
       ],
       verifyCode: [
-        {required: showVerifyCode.value, message: '请输入验证码', trigger: 'blur'},
+        {required: true, message: '请输入验证码', trigger: 'blur'},
       ],
     };
 
@@ -132,8 +131,8 @@ export default defineComponent({
           password: formState.password
         };
 
-        // 如果显示了验证码，则添加验证码参数
-        if (showVerifyCode.value && formState.verifyCode) {
+        // 添加验证码参数
+        if (formState.verifyCode) {
           loginData.verify_code = formState.verifyCode;
         }
 
@@ -160,18 +159,20 @@ export default defineComponent({
         } else {
           // 处理错误响应
           message.error(result.message || '登录失败');
-          // 显示验证码
-          showVerifyCode.value = true;
+          // 刷新验证码
           refreshVerifyCode();
+          // 清空验证码输入
+          formState.verifyCode = '';
         }
       } catch (error) {
         console.error('Login error:', error);
         const errorMsg = error.response?.data?.message || '登录失败，请稍后再试';
         message.error(errorMsg);
 
-        // 显示验证码
-        showVerifyCode.value = true;
+        // 刷新验证码
         refreshVerifyCode();
+        // 清空验证码输入
+        formState.verifyCode = '';
       } finally {
         loading.value = false;
       }
@@ -186,14 +187,16 @@ export default defineComponent({
       }
     };
 
-    // 初始化
-    initForm();
+    // 页面挂载时初始化
+    onMounted(() => {
+      initForm();
+      refreshVerifyCode(); // 页面加载时就获取验证码
+    });
 
     return {
       formState,
       rules,
       loading,
-      showVerifyCode,
       verifyCodeUrl,
       handleSubmit,
       refreshVerifyCode,
@@ -208,15 +211,33 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: linear-gradient(135deg, #1890ff 0%, #722ed1 100%);
+  background-image: url('@/assets/background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+.login-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 1;
 }
 
 .login-form-wrapper {
   width: 400px;
   padding: 40px;
-  background: white;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  position: relative;
+  z-index: 2;
 }
 
 .login-header {
@@ -226,11 +247,14 @@ export default defineComponent({
 
 .login-header h1 {
   margin-bottom: 8px;
-  color: #1890ff;
+  color: #ffffff;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .login-header p {
-  color: #666;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .login-form-button {
@@ -239,6 +263,59 @@ export default defineComponent({
 
 .login-form-forgot {
   float: right;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.login-form-forgot:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+:deep(.ant-form-item-label > label) {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 500;
+}
+
+:deep(.ant-checkbox-wrapper) {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+:deep(.ant-checkbox-wrapper .ant-checkbox-inner) {
+  background-color: rgba(255, 255, 255, 0.9);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+:deep(.ant-checkbox-wrapper:hover .ant-checkbox-inner) {
+  border-color: #1890ff;
+}
+
+:deep(.ant-input) {
+  background-color: rgba(255, 255, 255, 0.9);
+  border-color: rgba(255, 255, 255, 0.6);
+  color: #333;
+}
+
+:deep(.ant-input:focus) {
+  background-color: rgba(255, 255, 255, 0.95);
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+:deep(.ant-input-affix-wrapper) {
+  background-color: rgba(255, 255, 255, 0.9);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+:deep(.ant-input-affix-wrapper:focus-within) {
+  background-color: rgba(255, 255, 255, 0.95);
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+:deep(.ant-input-prefix) {
+  color: rgba(0, 0, 0, 0.6);
 }
 
 .verify-code-container {
@@ -251,16 +328,17 @@ export default defineComponent({
   width: 28%;
   height: 40px;
   cursor: pointer;
-  border: 1px solid #d9d9d9;
+  border: 1px solid rgba(255, 255, 255, 0.6);
   border-radius: 4px;
   overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: rgba(255, 255, 255, 0.9);
 }
 
 .verify-code-placeholder {
-  color: #999;
+  color: #666;
   font-size: 12px;
 }
 </style> 
