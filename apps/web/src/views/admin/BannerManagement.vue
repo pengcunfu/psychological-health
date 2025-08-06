@@ -79,7 +79,7 @@
               <div style="margin-top: 8px;">上传图片</div>
               <div style="color: #999; font-size: 12px; margin-top: 4px;">
                 支持 JPG、PNG、GIF、WebP<br />
-                文件大小不超过 5MB
+                文件大小不超过 10MB
               </div>
             </div>
           </a-upload>
@@ -361,7 +361,7 @@ const resetBannerForm = () => {
 const beforeUpload = (file) => {
   try {
     // 使用封装的验证方法
-    FileUploader.validateImage(file, 5)
+    FileUploader.validateImage(file, 10)
     return true // 允许上传
   } catch (error) {
     message.error(error.message)

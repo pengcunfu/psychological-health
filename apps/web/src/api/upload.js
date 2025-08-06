@@ -142,7 +142,7 @@ export class FileUploader {
   }
 
   // 验证图片文件
-  static validateImage(file, maxSizeMB = 5) {
+  static validateImage(file, maxSizeMB = 10) {
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
     
     if (!file.type.startsWith('image/')) {
