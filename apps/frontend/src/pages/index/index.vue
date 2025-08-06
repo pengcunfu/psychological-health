@@ -86,25 +86,14 @@
         </view>
       </view>
       
-      <scroll-view class="counselor-list" scroll-x="true" show-scrollbar="false" v-if="counselorList.length > 0">
-        <view 
-          class="counselor-card" 
+      <view class="counselor-list" v-if="counselorList.length > 0">
+        <CounselorCard 
           v-for="(item, index) in counselorList" 
           :key="index"
-          @click="navigateTo(`/pages/counselor/detail/index?id=${item.id}`)"
-        >
-          <image class="counselor-avatar" :src="item.avatar || '/static/images/default-avatar.png'" mode="aspectFill"></image>
-          <view class="counselor-info">
-            <text class="counselor-name">{{ item.name }}</text>
-            <text class="counselor-title">{{ item.title }}</text>
-            <view class="counselor-rating">
-              <up-icon name="star-fill" color="#ff9800" size="16"></up-icon>
-              <text class="rating-text">{{ item.rating }} ({{ item.consultation_count }})</text>
-            </view>
-            <text class="counselor-price">¥{{ item.price }}<text class="price-unit">/次</text></text>
-          </view>
-        </view>
-      </scroll-view>
+          :counselor="item"
+          @click="handleCounselorClick"
+        />
+      </view>
       <view v-else class="section-empty">
         <u-empty 
           text="暂无推荐咨询师"
@@ -131,26 +120,12 @@
       </view>
       
       <view class="course-list" v-if="courseList.length > 0">
-        <view 
-          class="course-card" 
+        <CourseCard 
           v-for="(item, index) in courseList" 
-          :key="index" 
-          @click="navigateTo(`/pages/course/detail/index?id=${item.id}`)"
-        >
-          <image class="course-img" :src="item.cover_image || '/static/images/default-course.png'" mode="aspectFill"></image>
-          <view class="course-info">
-            <text class="course-name">{{ item.title }}</text>
-            <view class="course-stats">
-              <view class="course-rating">
-                <up-icon name="star-fill" color="#ff9800" size="24"></up-icon>
-                <text class="rating-text">{{ item.rating || '4.8' }}</text>
-              </view>
-              <text class="course-count">{{ item.student_count || 0 }}人学习</text>
-            </view>
-            <text class="course-price" v-if="item.price > 0">¥{{ item.price }}</text>
-            <text class="course-free" v-else>免费</text>
-          </view>
-        </view>
+          :key="index"
+          :course="item"
+          @click="handleCourseClick"
+        />
       </view>
       <view v-else class="section-empty">
         <u-empty 
@@ -177,23 +152,13 @@
         </view>
       </view>
       
-      <view class="course-list" v-if="assessmentList.length > 0">
-        <view 
-          class="course-card" 
+      <view class="assessment-list" v-if="assessmentList.length > 0">
+        <AssessmentCard 
           v-for="(item, index) in assessmentList" 
-          :key="index" 
-          @click="navigateTo(`/pages/assessment/detail/index?id=${item.id}`)"
-        >
-          <image class="course-img" :src="item.cover || '/static/images/default-assessment.png'" mode="aspectFill"></image>
-          <view class="course-info">
-            <text class="course-name">{{ item.name }}</text>
-            <view class="course-stats">
-              <text class="course-count">时长约{{ item.duration || 5 }}分钟</text>
-            </view>
-            <text class="course-price" v-if="item.price > 0">¥{{ item.price }}</text>
-            <text class="course-free" v-else>免费</text>
-          </view>
-        </view>
+          :key="index"
+          :assessment="item"
+          @click="handleAssessmentClick"
+        />
       </view>
       <view v-else class="section-empty">
         <u-empty 
@@ -223,6 +188,9 @@ import { preprocessUrl, handleUrlNavigation, navigateTo } from '@/utils/link'
 
 import TabBar from '@/components/TabBar/index.vue'
 import SvgIcon from '@/components/SvgIcon/index.vue'
+import CounselorCard from '@/components/CounselorCard/index.vue'
+import CourseCard from '@/components/CourseCard/index.vue'
+import AssessmentCard from '@/components/AssessmentCard/index.vue'
 
 const userStore = useUserStore()
 
@@ -377,6 +345,21 @@ const handleBannerClick = (index) => {
 // 轮播图变化处理
 const handleBannerChange = (index) => {
   // 轮播图变化处理
+}
+
+// 咨询师卡片点击处理
+const handleCounselorClick = (counselor) => {
+  console.log('咨询师卡片点击:', counselor)
+}
+
+// 课程卡片点击处理
+const handleCourseClick = (course) => {
+  console.log('课程卡片点击:', course)
+}
+
+// 心理测评卡片点击处理
+const handleAssessmentClick = (assessment) => {
+  console.log('心理测评卡片点击:', assessment)
 }
 
 
@@ -623,156 +606,19 @@ onShow(() => {
 // 咨询师列表样式
 .counselor-list {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   width: 100%;
-  white-space: nowrap;
-  padding: 0 30rpx 0 0;
-}
-
-.counselor-card {
-  flex: 0 0 280rpx;
-  width: 280rpx;
-  margin-right: 24rpx;
-  border-radius: 16rpx;
-  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.05);
-  background-color: #fff;
-  overflow: hidden;
-  display: inline-block;
-  vertical-align: top;
-}
-
-.counselor-card:last-child {
-  margin-right: 30rpx;
-}
-
-.counselor-avatar {
-  width: 120rpx;
-  height: 120rpx;
-  border-radius: 50%;
-  margin: 20rpx auto 16rpx auto;
-  display: block;
-}
-
-.counselor-info {
-  padding: 0 16rpx 20rpx 16rpx;
-  text-align: center;
-}
-
-.counselor-name {
-  font-size: 28rpx;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 8rpx;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: block;
-}
-
-.counselor-title {
-  font-size: 24rpx;
-  color: #666;
-  margin-bottom: 8rpx;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: block;
-}
-
-.counselor-rating {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 22rpx;
-  color: #ff9800;
-  margin-bottom: 8rpx;
-}
-
-.rating-text {
-  margin-left: 6rpx;
-  font-size: 22rpx;
-}
-
-.counselor-price {
-  font-size: 24rpx;
-  color: #ff4d4f;
-  font-weight: bold;
-}
-
-.price-unit {
-  font-size: 20rpx;
-  color: #999;
-  font-weight: normal;
 }
 
 // 课程列表样式
 .course-list {
   display: flex;
   flex-direction: column;
-  gap: 24rpx;
 }
 
-.course-card {
-  display: flex;
-  border-radius: 16rpx;
-  overflow: hidden;
-  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.05);
-  background-color: #fff;
-}
-
-.course-img {
-  width: 240rpx;
-  height: 160rpx;
-}
-
-.course-info {
-  flex: 1;
-  padding: 20rpx;
+// 心理测评列表样式
+.assessment-list {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-}
-
-.course-name {
-  font-size: 28rpx;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 8rpx;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.course-stats {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8rpx;
-}
-
-.course-rating {
-  display: flex;
-  align-items: center;
-  font-size: 24rpx;
-  color: #ff9800;
-}
-
-.course-count {
-  font-size: 24rpx;
-  color: #999;
-}
-
-.course-price {
-  font-size: 28rpx;
-  color: #ff4d4f;
-  font-weight: bold;
-}
-
-.course-free {
-  font-size: 28rpx;
-  color: #52c41a;
-  font-weight: bold;
 }
 </style>

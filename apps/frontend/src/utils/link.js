@@ -53,6 +53,9 @@ export const isValidInternalPath = (url) => {
     '/pages/counselor/detail/index',
     '/pages/course/index',
     '/pages/course/detail/index',
+    '/pages/assessment/index',
+    '/pages/assessment/detail/index',
+    '/pages/community/index',
     '/pages/profile/index',
     '/pages/profile/edit/index',
     '/pages/profile/security/index',
@@ -221,9 +224,10 @@ export const handleUrlNavigation = (url, title = '') => {
 
 
 /**
- * 简单的页面跳转函数
+ * 智能的页面跳转函数
  * @param {string} url - 页面路径
  */
 export const navigateTo = (url) => {
-  uni.navigateTo({ url })
+  // 使用智能导航，自动判断是否为tabbar页面
+  handleInternalUrl(url)
 }

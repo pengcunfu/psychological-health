@@ -39,49 +39,12 @@
 
     <!-- 课程列表 -->
     <view class="course-list">
-      <view 
-        class="course-card" 
+      <CourseCard 
         v-for="(item, index) in courseList" 
         :key="item.id || index"
-        @click="navigateToDetail(item.id)"
-      >
-        <!-- 课程图片 -->
-        <image 
-          class="course-img" 
-          :src="item.cover_image || '/static/images/default-course.png'" 
-          mode="aspectFill"
-        ></image>
-        
-        <!-- 课程信息 -->
-        <view class="course-info">
-          <view class="course-content">
-            <!-- 课程名称 -->
-            <view class="course-name">{{ item.name || '课程名称' }}</view>
-            
-            <!-- 讲师信息 -->
-            <view class="course-teacher">
-              讲师：{{ item.teacher_name || '未知讲师' }} | {{ item.teacher_title || '心理咨询师' }}
-            </view>
-          </view>
-          
-          <!-- 课程统计 -->
-          <view class="course-stats">
-            <view class="course-rating">
-              <up-icon name="star-fill" color="#ff9800" size="12"></up-icon>
-              <text class="rating-text">{{ item.rating || '4.8' }}</text>
-            </view>
-            <view class="course-count">{{ item.student_count || 0 }}人学习</view>
-          </view>
-          
-          <!-- 课程价格 -->
-          <view class="course-price" v-if="item.price && item.price > 0">
-            ¥{{ item.price }}
-          </view>
-          <view class="course-free" v-else>
-            免费
-          </view>
-        </view>
-      </view>
+        :course="item"
+        @click="handleCourseClick"
+      />
     </view>
 
     <!-- 空状态 -->
@@ -123,6 +86,7 @@
 import { ref, reactive } from 'vue'
 import { onLoad, onReachBottom } from '@dcloudio/uni-app'
 import { courseAPI } from '@/api/course'
+import CourseCard from '@/components/CourseCard/index.vue'
 
 // 搜索关键词
 const searchKeyword = ref('')
@@ -268,6 +232,13 @@ const fetchCourses = async (reset = false) => {
   }
 }
 
+// 处理课程卡片点击
+const handleCourseClick = (course) => {
+  uni.navigateTo({
+    url: `/pages/course/detail/index?id=${course.id}`
+  })
+}
+
 // 跳转到详情页
 const navigateToDetail = (id) => {
   uni.navigateTo({
@@ -392,98 +363,7 @@ onReachBottom(() => {
 
 // 课程列表
 .course-list {
-  padding: 20rpx 30rpx;
-}
-
-.course-card {
-  display: flex;
-  margin-bottom: 30rpx;
-  border-radius: 16rpx;
-  overflow: hidden;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.05);
-  background: #fff;
-  transition: all 0.3s ease;
-}
-
-.course-card:active {
-  transform: translateY(-2rpx);
-  box-shadow: 0 6rpx 20rpx rgba(0, 0, 0, 0.12);
-}
-
-// 课程图片
-.course-img {
-  width: 240rpx;
-  height: 160rpx;
-  flex-shrink: 0;
-}
-
-// 课程信息
-.course-info {
-  flex: 1;
-  padding: 20rpx;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.course-content {
-  flex: 1;
-}
-
-.course-name {
-  font-size: 28rpx;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 8rpx;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  line-height: 1.4;
-}
-
-.course-teacher {
-  font-size: 24rpx;
-  color: #666;
-  margin-bottom: 8rpx;
-}
-
-// 课程统计
-.course-stats {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8rpx;
-}
-
-.course-rating {
-  display: flex;
-  align-items: center;
-}
-
-.rating-text {
-  font-size: 24rpx;
-  color: #ff9800;
-  margin-left: 8rpx;
-}
-
-.course-count {
-  font-size: 24rpx;
-  color: #999;
-}
-
-// 课程价格
-.course-price {
-  font-size: 28rpx;
-  color: #ff4d4f;
-  font-weight: bold;
-}
-
-.course-free {
-  font-size: 28rpx;
-  color: #52c41a;
-  font-weight: bold;
+  padding: 0;
 }
 
 // 空状态

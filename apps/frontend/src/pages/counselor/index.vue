@@ -35,58 +35,12 @@
 
     <!-- 咨询师列表 -->
     <view class="counselor-list">
-      <view 
+      <CounselorCard 
         v-for="(item, index) in counselorList" 
         :key="item.id || index"
-        class="counselor-card" 
-        @click="navigateToDetail(item.id)"
-      >
-        <!-- 咨询师头像 -->
-        <image 
-          :src="item.avatar || '/static/images/default-avatar.png'" 
-          class="counselor-avatar"
-          mode="aspectFill"
-        ></image>
-        
-        <!-- 咨询师信息 -->
-        <view class="counselor-info">
-          <!-- 姓名和职称 -->
-          <view class="counselor-name-row">
-            <text class="counselor-name">{{ item.name || '未知咨询师' }}</text>
-            <text class="counselor-title">{{ item.title || item.professional_title || '心理咨询师' }}</text>
-          </view>
-          
-          <!-- 专长描述 -->
-          <view class="counselor-specialty">
-            擅长：{{ getSpecialtyText(item) }}
-          </view>
-          
-          <!-- 专业标签 -->
-          <view class="counselor-tags">
-            <text 
-              class="counselor-tag" 
-              v-for="(tag, tagIndex) in getSpecialties(item).slice(0, 3)" 
-              :key="tagIndex"
-            >
-              {{ tag }}
-            </text>
-          </view>
-          
-          <!-- 评分和价格 -->
-          <view class="counselor-stats">
-            <view class="rating-section">
-              <view class="counselor-rating">
-                <up-icon name="star-fill" color="#ff9800" size="12"></up-icon>
-                <text class="rating-text">{{ item.rating || '4.8' }}</text>
-                <text class="counselor-count">({{ item.consultation_count || 0 }})</text>
-              </view>
-            </view>
-            <view class="counselor-price">
-              ¥{{ item.price || item.consultation_fee || 300 }}<text class="price-unit">/次</text>
-            </view>
-          </view>
-        </view>
-      </view>
+        :counselor="item"
+        @click="handleCounselorClick"
+      />
     </view>
 
     <!-- 空状态 -->
@@ -128,6 +82,7 @@
 import {ref, reactive, computed} from 'vue'
 import {onLoad, onReachBottom} from '@dcloudio/uni-app'
 import {counselorAPI} from '@/api/counselor'
+import CounselorCard from '@/components/CounselorCard/index.vue'
 
 // 搜索关键词
 const searchKeyword = ref('')
@@ -366,6 +321,13 @@ const handleSearch = () => {
   fetchCounselors(true)
 }
 
+// 处理咨询师卡片点击
+const handleCounselorClick = (counselor) => {
+  uni.navigateTo({
+    url: `/pages/counselor/detail/index?id=${counselor.id}`
+  })
+}
+
 // 跳转到详情页
 const navigateToDetail = (id) => {
   uni.navigateTo({
@@ -492,132 +454,19 @@ onReachBottom(() => {
 
 // 咨询师列表
 .counselor-list {
-  padding: 20rpx 30rpx;
-}
-
-.counselor-card {
-  display: flex;
-  margin-bottom: 30rpx;
-  padding: 30rpx;
-  border-radius: 16rpx;
-  background: #fff;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
-}
-
-.counselor-card:active {
-  transform: translateY(-2rpx);
-  box-shadow: 0 6rpx 20rpx rgba(0, 0, 0, 0.12);
-}
-
-// 咨询师头像 - 圆角矩形
-.counselor-avatar {
-  width: 120rpx;
-  height: 120rpx;
-  border-radius: 12rpx;
-  margin-right: 24rpx;
-  flex-shrink: 0;
-}
-
-// 咨询师信息
-.counselor-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.counselor-name-row {
-  display: flex;
-  align-items: center;
-  margin-bottom: 8rpx;
-}
-
-.counselor-name {
-  font-size: 32rpx;
-  font-weight: bold;
-  color: #333;
-  margin-right: 16rpx;
-}
-
-.counselor-title {
-  font-size: 24rpx;
-  color: #666;
-  background: #f5f5f5;
-  padding: 4rpx 12rpx;
-  border-radius: 8rpx;
-}
-
-.counselor-specialty {
-  font-size: 24rpx;
-  color: #666;
-  margin-bottom: 8rpx;
-}
-
-// 专业标签
-.counselor-tags {
-  display: flex;
-  flex-wrap: wrap;
-  margin-bottom: 16rpx;
-}
-
-.counselor-tag {
-  font-size: 20rpx;
-  color: #4A90E2;
-  background: #e6f7ff;
-  padding: 4rpx 12rpx;
-  border-radius: 8rpx;
-  margin-right: 12rpx;
-  margin-bottom: 8rpx;
-}
-
-// 评分和价格
-.counselor-stats {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.rating-section {
-  flex: 1;
-}
-
-.counselor-rating {
-  display: flex;
-  align-items: center;
-}
-
-.rating-text {
-  font-size: 24rpx;
-  color: #ff9800;
-  margin: 0 8rpx;
-}
-
-.counselor-count {
-  font-size: 24rpx;
-  color: #999;
-}
-
-.counselor-price {
-  font-size: 28rpx;
-  color: #ff4d4f;
-  font-weight: bold;
-}
-
-.price-unit {
-  font-size: 20rpx;
-  color: #999;
+  padding: 0;
 }
 
 // 空状态
 .empty-state {
-  padding: 100rpx 60rpx;
+  padding: 80rpx 40rpx;
   text-align: center;
 }
 
 .empty-content {
   background: #fff;
-  border-radius: 16rpx;
-  padding: 60rpx 40rpx;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+  border-radius: 12rpx;
+  padding: 40rpx 30rpx;
 }
 
 .empty-title {
@@ -635,6 +484,6 @@ onReachBottom(() => {
 
 // 加载更多
 .load-more-container {
-  padding: 0 30rpx 20rpx;
+  padding: 0 0 20rpx;
 }
 </style> 
