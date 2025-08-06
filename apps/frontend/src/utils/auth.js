@@ -38,9 +38,9 @@ export const redirectToLogin = (redirect) => {
   const currentPath = currentPage ? currentPage.route : ''
   
   // 如果当前不是登录页，则跳转到登录页
-  if (currentPath !== 'pages/login/index') {
+  if (currentPath !== 'pages/login') {
     uni.navigateTo({
-      url: `/pages/login/index${redirect ? '?redirect=' + encodeURIComponent(redirect) : ''}`
+      url: `/pages/login${redirect ? '?redirect=' + encodeURIComponent(redirect) : ''}`
     })
   }
 }

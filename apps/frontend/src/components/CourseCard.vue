@@ -59,7 +59,7 @@ const handleCardClick = () => {
   emit('click', props.course)
   const courseId = props.course.id
   if (courseId) {
-    navigateTo(`/pages/course/detail/index?id=${courseId}`)
+    navigateTo(`/pages/course/detail?id=${courseId}`)
   }
 }
 

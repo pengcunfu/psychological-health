@@ -189,7 +189,7 @@ export default {
       } else {
         // 查看课程详情
         uni.navigateTo({
-          url: `/pages/course/detail/index?id=${course.id}`
+          url: `/pages/course/detail?id=${course.id}`
         })
       }
     }

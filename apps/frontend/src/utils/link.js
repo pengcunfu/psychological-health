@@ -45,31 +45,31 @@ export const isValidInternalPath = (url) => {
   
   // 定义有效的页面路径列表（基于pages.json）
   const validPaths = [
-    '/pages/index/index',
-    '/pages/login/index',
-    '/pages/register/index',
-    '/pages/forgot-password/index',
+    '/pages/index',
+    '/pages/login',
+    '/pages/register',
+    '/pages/forgot-password',
     '/pages/counselor/index',
-    '/pages/counselor/detail/index',
+    '/pages/counselor/detail',
     '/pages/course/index',
-    '/pages/course/detail/index',
+    '/pages/course/detail',
     '/pages/assessment/index',
     '/pages/assessment/detail/index',
     '/pages/community/index',
     '/pages/profile/index',
-    '/pages/profile/edit/index',
-    '/pages/profile/security/index',
-    '/pages/profile/BecomeCounselor/index',
-    '/pages/profile/ContactUs/index',
-    '/pages/profile/agreement/index',
-    '/pages/profile/privacy/index',
-    '/pages/profile/MyCourse/index',
-    '/pages/profile/MyFavorite/index',
-    '/pages/order/index',
-    '/pages/appointment/index',
-    '/pages/search/index',
-    '/pages/webview/index',
-    '/pages/message/index'
+    '/pages/profile/edit',
+    '/pages/profile/security',
+    '/pages/profile/BecomeCounselor',
+    '/pages/profile/ContactUs',
+    '/pages/profile/agreement',
+    '/pages/profile/privacy',
+    '/pages/profile/MyCourse',
+    '/pages/profile/MyFavorite',
+    '/pages/order',
+    '/pages/appointment',
+    '/pages/search',
+    '/pages/webview',
+    '/pages/message'
   ]
   
   return validPaths.includes(pathOnly)
@@ -83,7 +83,7 @@ export const isValidInternalPath = (url) => {
 export const isTabBarPage = (url) => {
   const pathOnly = url.split('?')[0]
   const tabBarPaths = [
-    '/pages/index/index',
+    '/pages/index',
     '/pages/counselor/index',
     '/pages/course/index',
     '/pages/profile/index'
@@ -111,7 +111,7 @@ export const handleExternalUrl = (url, title = '') => {
   // #ifdef MP-WEIXIN
   // 微信小程序环境下，使用webview页面
   uni.navigateTo({
-    url: `/pages/webview/index?url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`,
+    url: `/pages/webview?url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`,
     fail: (err) => {
       console.error('外部链接跳转失败:', err)
       // 微信小程序可能不支持某些外部链接，提示用户复制链接
@@ -139,7 +139,7 @@ export const handleExternalUrl = (url, title = '') => {
   // #ifndef H5 || MP-WEIXIN
   // 其他平台使用webview页面
   uni.navigateTo({
-    url: `/pages/webview/index?url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`,
+    url: `/pages/webview?url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`,
     fail: (err) => {
       console.error('外部链接跳转失败:', err)
       uni.showToast({

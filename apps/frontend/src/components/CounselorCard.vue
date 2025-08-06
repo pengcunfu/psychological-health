@@ -65,7 +65,7 @@ const emit = defineEmits(['click'])
 // Methods
 const handleCardClick = () => {
   emit('click', props.counselor)
-  navigateTo(`/pages/counselor/detail/index?id=${props.counselor.id}`)
+  navigateTo(`/pages/counselor/detail?id=${props.counselor.id}`)
 }
 
 // 获取专业领域

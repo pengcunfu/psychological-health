@@ -6,11 +6,11 @@
         <view class="logo-icon">心</view>
         <view class="logo-text">美光心理</view>
       </view>
-      <view class="search-bar" @click="navigateTo('/pages/search/index')">
+      <view class="search-bar" @click="navigateTo('/pages/search')">
         <up-icon name="search" size="22" color="#999"></up-icon>
         <text class="search-text">搜索咨询师、课程</text>
       </view>
-      <view class="message-icon" @click="navigateTo('/pages/message/index')">
+      <view class="message-icon" @click="navigateTo('/pages/message')">
         <up-icon name="bell" size="22" color="#333"></up-icon>
         <view class="message-dot"></view>
       </view>

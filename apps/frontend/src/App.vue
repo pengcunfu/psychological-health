@@ -27,7 +27,7 @@ export default {
         
         // tabBar页面路径
         const tabBarPaths = [
-          '/pages/index/index',
+          '/pages/index',
           '/pages/counselor/index',
           '/pages/course/index',
           '/pages/profile/index'

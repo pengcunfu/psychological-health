@@ -304,14 +304,14 @@ export default {
     // 跳转到咨询师详情
     const navigateToCounselor = (id) => {
       uni.navigateTo({
-        url: `/pages/counselor/detail/index?id=${id}`
+        url: `/pages/counselor/detail?id=${id}`
       })
     }
     
     // 跳转到课程详情
     const navigateToCourse = (id) => {
       uni.navigateTo({
-        url: `/pages/course/detail/index?id=${id}`
+        url: `/pages/course/detail?id=${id}`
       })
     }
     

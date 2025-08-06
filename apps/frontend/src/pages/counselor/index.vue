@@ -142,7 +142,7 @@ const goBack = () => {
 // 搜索按钮点击
 const handleSearchClick = () => {
   uni.navigateTo({
-    url: '/pages/search/index'
+    url: '/pages/search'
   })
 }
 
@@ -324,14 +324,14 @@ const handleSearch = () => {
 // 处理咨询师卡片点击
 const handleCounselorClick = (counselor) => {
   uni.navigateTo({
-    url: `/pages/counselor/detail/index?id=${counselor.id}`
+    url: `/pages/counselor/detail?id=${counselor.id}`
   })
 }
 
 // 跳转到详情页
 const navigateToDetail = (id) => {
   uni.navigateTo({
-    url: `/pages/counselor/detail/index?id=${id}`
+    url: `/pages/counselor/detail?id=${id}`
   })
 }
 

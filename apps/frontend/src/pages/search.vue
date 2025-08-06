@@ -275,11 +275,11 @@ export default {
       // 根据类型跳转到不同的详情页
       if (item.type === '课程') {
         uni.navigateTo({
-          url: `/pages/course/detail/index?id=${item.id}`
+          url: `/pages/course/detail?id=${item.id}`
         })
       } else if (item.type === '咨询师') {
         uni.navigateTo({
-          url: `/pages/counselor/detail/index?id=${item.id}`
+          url: `/pages/counselor/detail?id=${item.id}`
         })
       }
     }

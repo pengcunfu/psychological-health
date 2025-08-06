@@ -58,7 +58,7 @@ const responseInterceptor = (response, options) => {
     // 延迟跳转到登录页
     setTimeout(() => {
       uni.navigateTo({
-        url: '/pages/login/index'
+        url: '/pages/login'
       })
     }, 1500)
   }

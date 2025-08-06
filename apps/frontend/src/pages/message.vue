@@ -4,7 +4,7 @@
     <view class="header">
       <view class="header-title">消息</view>
       <view class="header-actions">
-        <u-icon name="search" size="40" color="#333" @click="navigateTo('/pages/search/index')"></u-icon>
+        <u-icon name="search" size="40" color="#333" @click="navigateTo('/pages/search')"></u-icon>
       </view>
     </view>
 
@@ -190,7 +190,7 @@ const handleMessageClick = (message) => {
       break
     case 'course':
       // 跳转到课程详情页
-      navigateTo(`/pages/course/detail/index?id=${message.id}`)
+      navigateTo(`/pages/course/detail?id=${message.id}`)
       break
     case 'system':
       // 根据系统消息类型进行不同处理

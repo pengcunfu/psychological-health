@@ -104,8 +104,8 @@
       <button class="login-btn" @click="handleLogin">登 录</button>
       
       <view class="form-footer">
-        <navigator url="/pages/register/index" class="form-link">注册账号</navigator>
-        <navigator url="/pages/forgot-password/index" class="form-link">忘记密码?</navigator>
+        <navigator url="/pages/register" class="form-link">注册账号</navigator>
+        <navigator url="/pages/forgot-password" class="form-link">忘记密码?</navigator>
       </view>
     </view>
     
@@ -281,7 +281,7 @@ export default {
             if (redirectPath.value) {
               // 如果有重定向路径，且是tabBar页面，使用switchTab
               const tabBarPaths = [
-                '/pages/index/index',
+                '/pages/index',
                 '/pages/counselor/index',
                 '/pages/course/index',
                 '/pages/profile/index'
@@ -299,7 +299,7 @@ export default {
             } else {
               // 默认跳转到首页
               uni.switchTab({
-                url: '/pages/index/index'
+                url: '/pages/index'
               })
             }
           }, 1500)
@@ -353,7 +353,7 @@ export default {
       if (userStore.isLoggedIn) {
         if (redirectPath.value) {
           const tabBarPaths = [
-            '/pages/index/index',
+            '/pages/index',
             '/pages/counselor/index',
             '/pages/course/index',
             '/pages/profile/index'
@@ -370,7 +370,7 @@ export default {
           }
         } else {
           uni.switchTab({
-            url: '/pages/index/index'
+            url: '/pages/index'
           })
         }
       }

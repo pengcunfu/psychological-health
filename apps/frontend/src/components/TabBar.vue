@@ -43,7 +43,7 @@ const currentIndex = ref(0)
 
 const tabList = [
   {
-    pagePath: '/pages/index/index',
+    pagePath: '/pages/index',
     iconName: 'home',
     text: '首页',
     fallbackIcon: 'home'

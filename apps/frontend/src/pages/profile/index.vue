@@ -25,7 +25,7 @@
     <view class="menu-section">
       <view class="section-title">心理服务</view>
 
-      <view class="menu-item" @click="navigateTo('/pages/appointment/index')">
+      <view class="menu-item" @click="navigateTo('/pages/appointment')">
         <view class="item-icon">
           <SvgIcon name="calendar" path="profile" :size="32" color="#4A90E2" />
         </view>
@@ -35,7 +35,7 @@
         </view>
       </view>
 
-      <view class="menu-item" @click="navigateTo('/pages/profile/MyCourse/index')">
+      <view class="menu-item" @click="navigateTo('/pages/profile/MyCourse')">
         <view class="item-icon">
           <SvgIcon name="book" path="profile" :size="32" color="#52C41A" />
         </view>
@@ -55,7 +55,7 @@
         </view>
       </view>
 
-      <view class="menu-item" @click="navigateTo('/pages/profile/MyFavorite/index')">
+      <view class="menu-item" @click="navigateTo('/pages/profile/MyFavorite')">
         <view class="item-icon">
           <SvgIcon name="bookmark" path="profile" :size="32" color="#EB2F96" />
         </view>
@@ -70,7 +70,7 @@
     <view class="menu-section">
       <view class="section-title">账户管理</view>
 
-      <view class="menu-item" @click="navigateTo('/pages/profile/edit/index')">
+      <view class="menu-item" @click="navigateTo('/pages/profile/edit')">
         <view class="item-icon">
           <SvgIcon name="account" path="profile" :size="32" color="#722ED1" />
         </view>
@@ -80,7 +80,7 @@
         </view>
       </view>
 
-      <view class="menu-item" @click="navigateTo('/pages/profile/security/index')">
+      <view class="menu-item" @click="navigateTo('/pages/profile/security')">
         <view class="item-icon">
           <SvgIcon name="shield" path="profile" :size="32" color="#F5222D" />
         </view>
@@ -105,7 +105,7 @@
         </view>
       </view>
 
-      <view class="menu-item" @click="navigateTo('/pages/profile/ContactUs/index')">
+      <view class="menu-item" @click="navigateTo('/pages/profile/ContactUs')">
         <view class="item-icon">
           <SvgIcon name="info-circle" path="profile" :size="32" color="#13C2C2" />
         </view>
@@ -174,9 +174,9 @@ const checkLoginStatus = () => {
 const navigateTo = (url) => {
   // 检查是否需要登录
   if (!isLoggedIn.value &&
-    url !== '/pages/profile/agreement/index' &&
-    url !== '/pages/profile/privacy/index' &&
-    url !== '/pages/profile/ContactUs/index' &&
+    url !== '/pages/profile/agreement' &&
+    url !== '/pages/profile/privacy' &&
+    url !== '/pages/profile/ContactUs' &&
     url !== '/pages/profile/help/index') {
     uni.showToast({
       title: '请先登录',
@@ -185,7 +185,7 @@ const navigateTo = (url) => {
 
     setTimeout(() => {
       uni.navigateTo({
-        url: '/pages/login/index'
+        url: '/pages/login'
       })
     }, 1500)
     return
@@ -198,13 +198,13 @@ const navigateTo = (url) => {
 const goToEditProfile = () => {
   if (!isLoggedIn.value) {
     uni.navigateTo({
-      url: '/pages/login/index'
+      url: '/pages/login'
     })
     return
   }
 
   uni.navigateTo({
-    url: '/pages/profile/edit/index'
+    url: '/pages/profile/edit'
   })
 }
 
@@ -218,7 +218,7 @@ const goToSettings = () => {
 // 跳转到登录页
 const goToLogin = () => {
   uni.navigateTo({
-    url: '/pages/login/index'
+    url: '/pages/login'
   })
 }
 
@@ -239,7 +239,7 @@ const handleLogout = () => {
         // 刷新页面
         setTimeout(() => {
           uni.reLaunch({
-            url: '/pages/index/index'
+            url: '/pages/index'
           })
         }, 1500)
       }

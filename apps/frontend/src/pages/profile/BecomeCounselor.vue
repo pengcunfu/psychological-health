@@ -122,7 +122,7 @@ export default {
     // 跳转到协议页
     const navigateToAgreement = () => {
       uni.navigateTo({
-        url: '/pages/profile/agreement/index?type=counselor'
+        url: '/pages/profile/agreement?type=counselor'
       })
     }
     

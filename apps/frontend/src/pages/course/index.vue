@@ -127,7 +127,7 @@ const goBack = () => {
 // 搜索按钮点击
 const handleSearchClick = () => {
   uni.navigateTo({
-    url: '/pages/search/index'
+    url: '/pages/search'
   })
 }
 
@@ -235,14 +235,14 @@ const fetchCourses = async (reset = false) => {
 // 处理课程卡片点击
 const handleCourseClick = (course) => {
   uni.navigateTo({
-    url: `/pages/course/detail/index?id=${course.id}`
+    url: `/pages/course/detail?id=${course.id}`
   })
 }
 
 // 跳转到详情页
 const navigateToDetail = (id) => {
   uni.navigateTo({
-    url: `/pages/course/detail/index?id=${id}`
+    url: `/pages/course/detail?id=${id}`
   })
 }
 
