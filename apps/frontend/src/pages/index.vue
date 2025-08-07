@@ -58,20 +58,7 @@
     </view>
 
     <!-- 功能导航 -->
-    <view class="nav-grid">
-      <view class="nav-item" v-for="(item, index) in menuList" :key="index" @click="navigateTo(item.url)">
-        <view class="nav-icon" :style="{ backgroundColor: item.bgColor }">
-          <SvgIcon 
-            :name="item.iconName" 
-            path="index"
-            :size="48"
-            :color="item.color"
-            :fallbackIcon="item.fallbackIcon"
-          />
-        </view>
-        <text class="nav-text">{{ item.name }}</text>
-      </view>
-    </view>
+    <NavigationMenu @menuClick="handleMenuClick" />
 
     <!-- 推荐咨询师 -->
     <view class="section">
@@ -192,6 +179,7 @@ import SvgIcon from '@/components/SvgIcon.vue'
 import CounselorCard from '@/components/CounselorCard.vue'
 import CourseCard from '@/components/CourseCard.vue'
 import AssessmentCard from '@/components/AssessmentCard.vue'
+import NavigationMenu from '@/components/NavigationMenu.vue'
 
 const userStore = useUserStore()
 
@@ -205,42 +193,6 @@ const userInfo = computed(() => {
 
 // 轮播图数据
 const bannerList = ref([])
-
-// 菜单数据 - 使用本地SVG图标和uview图标作为备用
-const menuList = ref([
-  { 
-    name: '咨询预约', 
-    color: '#1890ff', 
-    bgColor: '#e6f7ff',
-    url: '/pages/counselor/index',
-    iconName: 'counselor',
-    fallbackIcon: 'calendar-fill'
-  },
-  { 
-    name: '课程学习', 
-    color: '#eb2f96', 
-    bgColor: '#fff0f6',
-    url: '/pages/course/index',
-    iconName: 'course',
-    fallbackIcon: 'play-circle-fill'
-  },
-  { 
-    name: '心理测评', 
-    color: '#52c41a', 
-    bgColor: '#f6ffed',
-    url: '/pages/assessment/index',
-    iconName: 'evaluate',
-    fallbackIcon: 'checkmark-circle-fill'
-  },
-  { 
-    name: '互动社区', 
-    color: '#fa8c16', 
-    bgColor: '#fff7e6',
-    url: '/pages/community/index',
-    iconName: 'community',
-    fallbackIcon: 'account-fill'
-  }
-])
 
 // 咨询师数据
 const counselorList = ref([])
@@ -376,6 +328,12 @@ const handleBannerClick = (index) => {
 // 轮播图变化处理
 const handleBannerChange = (index) => {
   // 轮播图变化处理
+}
+
+// 菜单点击处理
+const handleMenuClick = (menuItem) => {
+  console.log('菜单点击:', menuItem)
+  // 这里可以添加额外的点击处理逻辑，比如统计、权限检查等
 }
 
 // 咨询师卡片点击处理
@@ -557,35 +515,7 @@ onShow(() => {
   border-radius: 12rpx;
 }
 
-// 功能导航样式
-.nav-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  padding: 40rpx 20rpx;
-  background-color: #fff;
-}
-
-.nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20rpx;
-}
-
-.nav-icon {
-  width: 100rpx;
-  height: 100rpx;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 16rpx;
-}
-
-.nav-text {
-  font-size: 24rpx;
-  color: #333;
-}
+// 功能导航样式 - 已移至 NavigationMenu 组件
 
 // 区块样式
 .section {
