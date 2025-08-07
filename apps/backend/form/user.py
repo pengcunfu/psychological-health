@@ -29,6 +29,26 @@ class UserCreateForm(BaseForm):
         Length(max=100, message='邮箱长度不能超过100个字符')
     ])
 
+    real_name = StringField('真实姓名', [
+        Optional(),
+        Length(max=100, message='真实姓名长度不能超过100个字符')
+    ])
+
+    nick_name = StringField('昵称', [
+        Optional(),
+        Length(max=100, message='昵称长度不能超过100个字符')
+    ])
+
+    password = StringField('密码', [
+        DataRequired(message='密码不能为空'),
+        Length(min=6, max=50, message='密码长度必须在6-50个字符之间')
+    ])
+
+    status = IntegerField('状态', [
+        Optional(),
+        NumberRange(min=0, max=1, message='状态值必须为0或1')
+    ], default=1)
+
 
 class UserUpdateForm(BaseForm):
     """用户更新表单"""
@@ -52,6 +72,26 @@ class UserUpdateForm(BaseForm):
         Optional(),
         Email(message='请输入正确的邮箱格式'),
         Length(max=100, message='邮箱长度不能超过100个字符')
+    ])
+
+    real_name = StringField('真实姓名', [
+        Optional(),
+        Length(max=100, message='真实姓名长度不能超过100个字符')
+    ])
+
+    nick_name = StringField('昵称', [
+        Optional(),
+        Length(max=100, message='昵称长度不能超过100个字符')
+    ])
+
+    password = StringField('密码', [
+        Optional(),
+        Length(min=6, max=50, message='密码长度必须在6-50个字符之间')
+    ])
+
+    status = IntegerField('状态', [
+        Optional(),
+        NumberRange(min=0, max=1, message='状态值必须为0或1')
     ])
 
 
@@ -80,6 +120,16 @@ class UserQueryForm(BaseForm):
     email = StringField('邮箱搜索', [
         Optional(),
         Length(max=100, message='邮箱长度不能超过100个字符')
+    ])
+
+    real_name = StringField('真实姓名搜索', [
+        Optional(),
+        Length(max=100, message='真实姓名长度不能超过100个字符')
+    ])
+
+    nick_name = StringField('昵称搜索', [
+        Optional(),
+        Length(max=100, message='昵称长度不能超过100个字符')
     ])
     
     status = IntegerField('状态', [

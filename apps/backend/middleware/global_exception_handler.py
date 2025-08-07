@@ -2,6 +2,7 @@ from flask import Flask, request, g
 from sqlalchemy.exc import SQLAlchemyError
 from utils.json_result import JsonResult
 from utils.logger_client import get_logger
+from utils.exceptions import UnauthorizedError, PermissionDeniedError, ValidationError, ResourceNotFoundError
 from models.base import db
 import traceback
 
@@ -25,6 +26,10 @@ class GlobalExceptionHandler:
         app.register_error_handler(KeyError, self.handle_key_error)
         app.register_error_handler(PermissionError, self.handle_permission_error)
         app.register_error_handler(FileNotFoundError, self.handle_not_found_error)
+        app.register_error_handler(UnauthorizedError, self.handle_unauthorized_error)
+        app.register_error_handler(PermissionDeniedError, self.handle_permission_denied_error)
+        app.register_error_handler(ValidationError, self.handle_validation_error)
+        app.register_error_handler(ResourceNotFoundError, self.handle_resource_not_found_error)
         app.register_error_handler(Exception, self.handle_general_error)
         
         # 注册请求前后处理
@@ -66,6 +71,26 @@ class GlobalExceptionHandler:
         """处理资源不存在异常"""
         self._log_error(error, "资源不存在")
         return JsonResult.error(f'资源不存在: {str(error)}', 404)
+    
+    def handle_unauthorized_error(self, error: UnauthorizedError):
+        """处理用户未登录异常"""
+        self._log_error(error, "用户未登录")
+        return JsonResult.error(error.message, error.code)
+    
+    def handle_permission_denied_error(self, error: PermissionDeniedError):
+        """处理权限不足异常"""
+        self._log_error(error, "权限不足")
+        return JsonResult.error(error.message, error.code)
+    
+    def handle_validation_error(self, error: ValidationError):
+        """处理数据验证异常"""
+        self._log_error(error, "数据验证异常")
+        return JsonResult.error(error.message, error.code)
+    
+    def handle_resource_not_found_error(self, error: ResourceNotFoundError):
+        """处理资源不存在异常"""
+        self._log_error(error, "资源不存在")
+        return JsonResult.error(error.message, error.code)
     
     def handle_general_error(self, error: Exception):
         """处理通用异常"""

@@ -4,7 +4,19 @@
     <div class="search-and-action-bar">
       <a-form layout="inline" :model="searchForm" @submit="handleSearch" class="search-form">
         <a-form-item label="用户名">
-          <a-input v-model:value="searchForm.username" placeholder="请输入用户名" style="width: 200px;" />
+          <a-input v-model:value="searchForm.username" placeholder="请输入用户名" style="width: 160px;" />
+        </a-form-item>
+        <a-form-item label="手机号">
+          <a-input v-model:value="searchForm.phone" placeholder="请输入手机号" style="width: 160px;" />
+        </a-form-item>
+        <a-form-item label="真实姓名">
+          <a-input v-model:value="searchForm.real_name" placeholder="请输入真实姓名" style="width: 160px;" />
+        </a-form-item>
+        <a-form-item label="状态">
+          <a-select v-model:value="searchForm.status" placeholder="请选择状态" style="width: 120px;" allowClear>
+            <a-select-option :value="1">正常</a-select-option>
+            <a-select-option :value="0">禁用</a-select-option>
+          </a-select>
         </a-form-item>
         <a-form-item>
           <a-button type="primary" html-type="submit">搜索</a-button>
@@ -30,10 +42,17 @@
           </a-avatar>
         </template>
         
+        <template v-if="column.key === 'status'">
+          <a-tag :color="record.status === 1 ? 'green' : 'red'">
+            {{ record.status === 1 ? '正常' : '禁用' }}
+          </a-tag>
+        </template>
+        
         <template v-if="column.key === 'roles'">
           <a-tag v-for="role in record.roles" :key="role.id" color="blue">
             {{ role.name }}
           </a-tag>
+          <span v-if="!record.roles || record.roles.length === 0" class="no-data">未分配</span>
         </template>
         
         <template v-if="column.key === 'create_time'">
@@ -78,13 +97,41 @@
           </a-col>
         </a-row>
 
+        <a-row :gutter="16">
+          <a-col :span="12">
+            <a-form-item label="真实姓名" name="real_name">
+              <a-input v-model:value="userForm.real_name" placeholder="请输入真实姓名" />
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">
+            <a-form-item label="昵称" name="nick_name">
+              <a-input v-model:value="userForm.nick_name" placeholder="请输入昵称" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+
         <a-form-item label="邮箱" name="email">
           <a-input v-model:value="userForm.email" placeholder="请输入邮箱" />
         </a-form-item>
 
-        <a-form-item v-if="!isEdit" label="密码" name="password">
-          <a-input-password v-model:value="userForm.password" placeholder="请输入密码" />
-        </a-form-item>
+        <a-row :gutter="16">
+          <a-col :span="12">
+            <a-form-item :label="isEdit ? '新密码' : '密码'" name="password">
+              <a-input-password 
+                v-model:value="userForm.password" 
+                :placeholder="isEdit ? '留空则不修改密码' : '请输入密码'" 
+              />
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">
+            <a-form-item label="状态" name="status">
+              <a-select v-model:value="userForm.status" placeholder="请选择状态">
+                <a-select-option :value="1">正常</a-select-option>
+                <a-select-option :value="0">禁用</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+        </a-row>
 
         <a-form-item label="头像" name="avatar">
           <a-upload 
@@ -183,6 +230,20 @@
           <span>{{ currentUser.email || '未设置' }}</span>
         </div>
         <div class="detail-item">
+          <span class="label">真实姓名：</span>
+          <span>{{ currentUser.real_name || '未设置' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="label">昵称：</span>
+          <span>{{ currentUser.nick_name || '未设置' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="label">状态：</span>
+          <a-tag :color="currentUser.status === 1 ? 'green' : 'red'">
+            {{ currentUser.status === 1 ? '正常' : '禁用' }}
+          </a-tag>
+        </div>
+        <div class="detail-item">
           <span class="label">角色：</span>
           <a-tag v-for="role in currentUser.roles" :key="role.id" color="blue">
             {{ role.name }}
@@ -218,15 +279,21 @@ const fileList = ref([])
 const selectedRoleIds = ref([])
 
 const searchForm = reactive({
-  username: ''
+  username: '',
+  phone: '',
+  real_name: '',
+  status: undefined
 })
 
 const userForm = reactive({
   username: '',
   phone: '',
   email: '',
+  real_name: '',
+  nick_name: '',
   password: '',
-  avatar: ''
+  avatar: '',
+  status: 1
 })
 
 const pagination = reactive({
@@ -248,27 +315,50 @@ const columns = [
   {
     title: '用户名',
     dataIndex: 'username',
-    key: 'username'
+    key: 'username',
+    width: 120
+  },
+  {
+    title: '真实姓名',
+    dataIndex: 'real_name',
+    key: 'real_name',
+    width: 100
+  },
+  {
+    title: '昵称',
+    dataIndex: 'nick_name',
+    key: 'nick_name',
+    width: 100
   },
   {
     title: '手机号',
     dataIndex: 'phone',
-    key: 'phone'
+    key: 'phone',
+    width: 120
   },
   {
     title: '邮箱',
     dataIndex: 'email',
-    key: 'email'
+    key: 'email',
+    width: 150
+  },
+  {
+    title: '状态',
+    dataIndex: 'status',
+    key: 'status',
+    width: 80
   },
   {
     title: '角色',
     dataIndex: 'roles',
-    key: 'roles'
+    key: 'roles',
+    width: 120
   },
   {
     title: '创建时间',
     dataIndex: 'create_time',
-    key: 'create_time'
+    key: 'create_time',
+    width: 150
   },
   {
     title: '操作',
@@ -286,8 +376,11 @@ const userFormRules = {
     { type: 'email', message: '请输入正确的邮箱格式', trigger: 'blur' }
   ],
   password: [
-    { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 3, message: '密码长度至少6个字符', trigger: 'blur' }
+    { required: false, message: '请输入密码', trigger: 'blur' },
+    { min: 6, message: '密码长度至少6个字符', trigger: 'blur' }
+  ],
+  status: [
+    { required: true, message: '请选择状态', trigger: 'change' }
   ]
 }
 
@@ -300,7 +393,10 @@ const fetchUsers = async () => {
     const params = {
       page: pagination.current,
       per_page: pagination.pageSize,
-      username: searchForm.username
+      username: searchForm.username,
+      phone: searchForm.phone,
+      real_name: searchForm.real_name,
+      status: searchForm.status
     }
 
     const result = await userAPI.getUsers(params)
@@ -342,7 +438,10 @@ const handleSearch = () => {
 // 重置搜索
 const resetSearch = () => {
   Object.assign(searchForm, {
-    username: ''
+    username: '',
+    phone: '',
+    real_name: '',
+    status: undefined
   })
   pagination.current = 1
   fetchUsers()
@@ -371,7 +470,11 @@ const editUser = (user) => {
     username: user.username,
     phone: user.phone,
     email: user.email,
-    avatar: user.avatar
+    real_name: user.real_name,
+    nick_name: user.nick_name,
+    avatar: user.avatar,
+    status: user.status,
+    password: '' // 编辑时密码为空
   })
   if (user.avatar) {
     // 使用封装的方法获取完整URL进行显示
@@ -434,6 +537,8 @@ const handleModalOk = async () => {
         message.success('更新成功')
         modalVisible.value = false
         fetchUsers()
+      }else{
+        message.error(result.message || '更新失败')
       }
     } else {
       const result = await userAPI.createUser(data)
@@ -441,6 +546,8 @@ const handleModalOk = async () => {
         message.success('创建成功')
         modalVisible.value = false
         fetchUsers()
+      }else{
+        message.error(result.message || '创建失败')
       }
     }
   } catch (error) {
@@ -481,8 +588,11 @@ const resetUserForm = () => {
     username: '',
     phone: '',
     email: '',
+    real_name: '',
+    nick_name: '',
     password: '',
-    avatar: ''
+    avatar: '',
+    status: 1
   })
   fileList.value = []
   userFormRef.value?.resetFields()

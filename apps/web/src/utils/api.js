@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { message } from 'ant-design-vue'
 
 // 创建axios实例
 const api = axios.create({
@@ -30,9 +31,9 @@ api.interceptors.response.use(
         
         // 检查业务状态码，如果code为401，直接跳转到登录页面
         if (data.code === 401) {
-            localStorage.removeItem('token')
-            localStorage.removeItem('user')
-            window.location.href = '/login'
+            // localStorage.removeItem('token')
+            // localStorage.removeItem('user')
+            window.location.href = '/401'
             return Promise.reject(new Error(data.message || '未授权访问'))
         }
         
@@ -41,6 +42,7 @@ api.interceptors.response.use(
             const errorMessage = data.message || '操作失败'
             // 这里可以使用全局的消息提示组件
             console.error('API Error:', errorMessage)
+            message.error(data.message || '操作失败')
             return Promise.reject(new Error(errorMessage))
         }
         
@@ -53,9 +55,9 @@ api.interceptors.response.use(
             
             if (status === 401) {
                 // HTTP 401未授权，清除token并跳转到登录页
-                localStorage.removeItem('token')
-                localStorage.removeItem('user')
-                window.location.href = '/login'
+                // localStorage.removeItem('token')
+                // localStorage.removeItem('user')
+                window.location.href = '/401'
                 return Promise.reject(new Error('未授权访问'))
             }
             

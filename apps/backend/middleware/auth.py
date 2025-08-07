@@ -7,11 +7,6 @@ from utils.logger_client import get_logger
 
 logger = get_logger(__name__)
 
-
-# 移除内存会话存储，改用Redis
-# user_sessions = {}
-
-
 class AuthMiddleware:
     """权限中间件"""
 
