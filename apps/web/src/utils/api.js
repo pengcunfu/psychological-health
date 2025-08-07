@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { message } from 'ant-design-vue'
+import router from '@/router'
 
 // 创建axios实例
 const api = axios.create({
@@ -28,15 +29,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
     response => {
         const data = response.data
-        
-        // 检查业务状态码，如果code为401，直接跳转到登录页面
-        if (data.code === 401) {
-            // localStorage.removeItem('token')
-            // localStorage.removeItem('user')
-            window.location.href = '/401'
-            return Promise.reject(new Error(data.message || '未授权访问'))
-        }
-        
+
         // 检查success字段，如果为false，提示错误消息
         if (data.success === false) {
             const errorMessage = data.message || '操作失败'
@@ -44,6 +37,14 @@ api.interceptors.response.use(
             console.error('API Error:', errorMessage)
             message.error(data.message || '操作失败')
             return Promise.reject(new Error(errorMessage))
+        }
+        
+        // 检查业务状态码，如果code为401，直接跳转到登录页面
+        if (data.code === 401) {
+            localStorage.removeItem('token')
+            localStorage.removeItem('user')
+            router.push('/login')
+            return Promise.reject(new Error(data.message || '未授权访问'))
         }
         
         return data
@@ -55,22 +56,25 @@ api.interceptors.response.use(
             
             if (status === 401) {
                 // HTTP 401未授权，清除token并跳转到登录页
-                // localStorage.removeItem('token')
-                // localStorage.removeItem('user')
-                window.location.href = '/401'
+                localStorage.removeItem('token')
+                localStorage.removeItem('user')
+                router.push('/login')
                 return Promise.reject(new Error('未授权访问'))
             }
             
             // 其他HTTP错误
             const errorMessage = data?.message || `请求失败 (${status})`
+            message.error(errorMessage)
             return Promise.reject(new Error(errorMessage))
         }
         
         // 网络错误或超时
         if (error.code === 'ECONNABORTED') {
+            message.error('请求超时')
             return Promise.reject(new Error('请求超时'))
         }
         
+        message.error('网络错误，请检查网络连接')
         return Promise.reject(new Error('网络错误，请检查网络连接'))
     }
 )

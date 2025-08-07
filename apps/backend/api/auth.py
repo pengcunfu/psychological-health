@@ -13,23 +13,20 @@
 - GET /user/info - 获取当前用户信息
 - POST /refresh-token - 刷新访问令牌
 """
-from flask import Blueprint, request, jsonify, session, send_file, current_app, g
-from datetime import datetime
-import hashlib
+from flask import Blueprint, request, send_file, make_response
 import uuid
-from sqlalchemy.exc import SQLAlchemyError
 from models.user import User
 from models.role import Role
 from models.user_role import UserRole
-from models.user_password import UserPassword
 from utils.json_result import JsonResult
-from middleware.auth import AuthMiddleware, login_required
+from middleware.auth import AuthMiddleware
 from models.base import db
 from utils.verify_code import VerifyCodeGenerator
-from utils.validate import validate_data, validate_args
+from utils.validate import validate_form
 from utils.auth import hash_password, generate_token, verify_password
 from form.auth import LoginForm, PhoneLoginForm, RegisterForm, UpdateProfileForm, ChangePasswordForm
 from utils.image import process_image_url
+from utils.cache.verify_code_cache import verify_code_cache
 
 login_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -37,31 +34,26 @@ login_bp = Blueprint('auth', __name__, url_prefix='/auth')
 @login_bp.route('/login', methods=['POST'])
 def login():
     """用户登录"""
-    form = validate_data(LoginForm)
+    form = validate_form(LoginForm)
 
     username = form.username.data
     password = form.password.data
     verify_code = form.verify_code.data
 
-    # 如果提供了验证码，则验证它
-    if verify_code:
-        stored_code = session.get('verify_code')
-        if not stored_code or stored_code.lower() != verify_code.lower():
-            return JsonResult.error("验证码错误", 400)
-        # 验证成功后清除会话中的验证码，防止重复使用
-        session.pop('verify_code', None)
+    # 从cookie中获取验证码UUID
+    verify_code_uuid = request.cookies.get('verify_code_uuid')
+    if not verify_code_uuid:
+        return JsonResult.error("验证码已过期，请重新获取", 400)
+
+    if not verify_code_cache.verify_code(verify_code_uuid, verify_code):
+        return JsonResult.error("验证码错误", 400)
 
     # 查找用户
     user = User.query.filter_by(username=username).first()
     if not user:
         return JsonResult.error("用户名或密码错误", 401)
 
-    # 验证密码
-    user_password = UserPassword.query.filter_by(user_id=user.id).first()
-    if not user_password:
-        return JsonResult.error("用户名或密码错误", 401)
-
-    if not verify_password(password, user_password.password_hash):
+    if not verify_password(password, user.password_hash):
         return JsonResult.error("用户名或密码错误", 401)
 
     # 生成访问令牌
@@ -93,41 +85,42 @@ def login():
     if not session_created:
         return JsonResult.error("会话创建失败，请重试", 500)
 
-    return JsonResult.success({
+    # 创建响应并清除验证码cookie
+    response = make_response(JsonResult.success({
         'token': token,
         'user': user_data,
         'expires_in': 7200  # 2小时
-    }, "登录成功")
+    }, "登录成功"))
+
+    # 登录成功后清除验证码cookie
+    response.set_cookie('verify_code_uuid', '', expires=0)
+
+    return response
 
 
 @login_bp.route('/phone-login', methods=['POST'])
 def phone_login():
     """手机号登录"""
-    form = validate_data(PhoneLoginForm)
+    form = validate_form(PhoneLoginForm)
 
     phone = form.phone.data
     password = form.password.data
     verify_code = form.verify_code.data
 
-    # 如果提供了验证码，则验证它
-    if verify_code:
-        stored_code = session.get('verify_code')
-        if not stored_code or stored_code.lower() != verify_code.lower():
-            return JsonResult.error("验证码错误", 400)
-        # 验证成功后清除会话中的验证码，防止重复使用
-        session.pop('verify_code', None)
+    # 从cookie中获取验证码UUID
+    verify_code_uuid = request.cookies.get('verify_code_uuid')
+    if not verify_code_uuid:
+        return JsonResult.error("验证码已过期，请重新获取", 400)
+
+    if not verify_code_cache.verify_code(verify_code_uuid, verify_code):
+        return JsonResult.error("验证码错误", 400)
 
     # 通过手机号查找用户
     user = User.query.filter_by(phone=phone).first()
     if not user:
         return JsonResult.error("手机号或密码错误", 401)
 
-    # 验证密码
-    user_password = UserPassword.query.filter_by(user_id=user.id).first()
-    if not user_password:
-        return JsonResult.error("手机号或密码错误", 401)
-
-    if not verify_password(password, user_password.password_hash):
+    if not verify_password(password, user.password_hash):
         return JsonResult.error("手机号或密码错误", 401)
 
     # 生成访问令牌
@@ -159,15 +152,20 @@ def phone_login():
     if not session_created:
         return JsonResult.error("会话创建失败，请重试", 500)
 
-    return JsonResult.success({
+    # 创建响应并清除验证码cookie
+    response = make_response(JsonResult.success({
         'token': token,
         'user': user_data,
         'expires_in': 7200  # 2小时
-    }, "登录成功")
+    }, "登录成功"))
+
+    # 登录成功后清除验证码cookie
+    response.set_cookie('verify_code_uuid', '', expires=0)
+
+    return response
 
 
 @login_bp.route('/logout', methods=['POST'])
-@login_required
 def logout():
     """用户登出"""
     token = request.headers.get('Authorization')
@@ -181,7 +179,7 @@ def logout():
 @login_bp.route('/register', methods=['POST'])
 def register():
     """用户注册"""
-    form = validate_data(RegisterForm)
+    form = validate_form(RegisterForm)
 
     username = form.username.data
     password = form.password.data
@@ -210,22 +208,16 @@ def register():
     new_user = User(
         id=user_id,
         username=username,
-        avatar=form.avatar.data or process_image_url('/static/images/default_avatar.png'),
+        avatar=form.avatar.data or process_image_url(
+            '/static/images/default_avatar.png'),
         phone=phone or '',
-        email=email or ''
+        email=email or '',
+        password_hash=hash_password(password)
     )
 
     # 保存用户
     db.session.add(new_user)
     db.session.flush()  # 获取用户ID
-
-    # 保存密码
-    user_password = UserPassword(
-        id=str(uuid.uuid4()),
-        user_id=user_id,
-        password_hash=hash_password(password)
-    )
-    db.session.add(user_password)
 
     # 分配默认角色（普通用户）
     default_role = Role.query.filter_by(code='user', is_default=True).first()
@@ -249,7 +241,6 @@ def register():
 
 
 @login_bp.route('/profile', methods=['GET'])
-@login_required
 def get_profile():
     """获取当前用户信息"""
     current_user = AuthMiddleware.get_current_user()
@@ -260,10 +251,9 @@ def get_profile():
 
 
 @login_bp.route('/profile', methods=['PUT'])
-@login_required
 def update_profile():
     """更新当前用户信息"""
-    form = validate_data(UpdateProfileForm)
+    form = validate_form(UpdateProfileForm)
 
     current_user = AuthMiddleware.get_current_user()
     if not current_user:
@@ -308,10 +298,9 @@ def update_profile():
 
 
 @login_bp.route('/change-password', methods=['PUT'])
-@login_required
 def change_password():
     """修改密码"""
-    form = validate_data(ChangePasswordForm)
+    form = validate_form(ChangePasswordForm)
 
     current_user = AuthMiddleware.get_current_user()
     if not current_user:
@@ -321,23 +310,26 @@ def change_password():
     old_password = form.old_password.data
     new_password = form.new_password.data
 
+    # 获取用户信息
+    user = User.query.filter_by(id=user_id).first()
+    if not user:
+        return JsonResult.error("用户不存在", 404)
+
     # 验证旧密码
-    user_password = UserPassword.query.filter_by(user_id=user_id).first()
-    if not user_password:
+    if not user.password_hash:
         return JsonResult.error("用户密码信息不存在", 404)
 
-    if not verify_password(old_password, user_password.password_hash):
+    if not verify_password(old_password, user.password_hash):
         return JsonResult.error("旧密码错误", 400)
 
     # 更新密码
-    user_password.password_hash = hash_password(new_password)
+    user.password_hash = hash_password(new_password)
     db.session.commit()
 
     return JsonResult.success(None, "密码修改成功")
 
 
 @login_bp.route('/refresh-token', methods=['POST'])
-@login_required
 def refresh_token():
     """刷新访问令牌"""
     current_user = AuthMiddleware.get_current_user()
@@ -370,21 +362,35 @@ def refresh_token():
 @login_bp.route('/verify-code', methods=['GET'])
 def get_verify_code():
     """获取验证码"""
+    # 生成验证码UUID
+    verify_code_uuid = str(uuid.uuid4())
+
     # 创建验证码生成器
     generator = VerifyCodeGenerator()
     # 生成验证码
     code, image_stream = generator.generate()
 
-    # 将验证码存储在会话中，以便后续验证
-    session['verify_code'] = code
+    # 将验证码存储到Redis中，使用UUID作为标识符，过期时间5分钟
+    verify_code_cache.store_verify_code(verify_code_uuid, code)
 
     # 返回验证码图片
     response = send_file(
         image_stream,
         mimetype='image/png'
     )
+
+    # 设置验证码UUID到cookie，过期时间5分钟
+    response.set_cookie(
+        'verify_code_uuid',
+        verify_code_uuid,
+        max_age=300,  # 5分钟
+        httponly=True,  # 防止XSS攻击
+        samesite='Lax'  # 跨域兼容性
+    )
+
     # 禁用缓存
     response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
     response.headers['Pragma'] = 'no-cache'
     response.headers['Expires'] = '0'
+
     return response

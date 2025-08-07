@@ -11,8 +11,8 @@
 - PUT /user/<user_id>/roles - 分配用户角色
 """
 from flask import Blueprint, request
-from werkzeug.security import generate_password_hash
 from sqlalchemy import or_
+import uuid
 
 from models import db
 from models.user import User
@@ -23,7 +23,7 @@ from utils.json_result import JsonResult
 from utils.auth_helper import get_user_id, is_manager_user
 from utils.validate import validate_form, check_id
 from utils.model_helper import update_model_from_form
-import uuid
+from utils.auth import hash_password
 
 user_bp = Blueprint('user', __name__, url_prefix='/user')
 
@@ -157,7 +157,7 @@ def create_user():
         email=form.email.data or '',
         real_name=form.real_name.data or '',
         nick_name=form.nick_name.data or '',
-        password_hash=generate_password_hash(form.password.data),
+        password_hash=hash_password(form.password.data),
         status=form.status.data if form.status.data is not None else 1
     )
     db.session.add(user)
@@ -217,7 +217,7 @@ def update_user(user_id):
     if form.nick_name.data is not None:
         user.nick_name = form.nick_name.data
     if form.password.data:
-        user.password_hash = generate_password_hash(form.password.data)
+        user.password_hash = hash_password(form.password.data)
     if form.status.data is not None:
         user.status = form.status.data
     

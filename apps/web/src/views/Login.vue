@@ -150,8 +150,6 @@ const handleSubmit = async () => {
       message.success('登录成功')
       router.push('/')
     } else {
-      // 处理错误响应
-      message.error(result.message || '登录失败')
       // 刷新验证码
       refreshVerifyCode()
       // 清空验证码输入
@@ -159,8 +157,6 @@ const handleSubmit = async () => {
     }
   } catch (error) {
     console.error('Login error:', error)
-    const errorMsg = error.response?.data?.message || '登录失败，请稍后再试'
-    message.error(errorMsg)
 
     // 刷新验证码
     refreshVerifyCode()
@@ -272,6 +268,13 @@ onMounted(() => {
   justify-content: center;
   align-items: center;
   background-color: rgba(255, 255, 255, 0.9);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* 保持原始比例，完整显示图片 */
+    object-position: center;
+  }
 }
 
 .verify-code-placeholder {
