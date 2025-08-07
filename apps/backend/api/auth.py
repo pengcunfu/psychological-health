@@ -104,15 +104,6 @@ def phone_login():
 
     phone = form.phone.data
     password = form.password.data
-    verify_code = form.verify_code.data
-
-    # 从cookie中获取验证码UUID
-    verify_code_uuid = request.cookies.get('verify_code_uuid')
-    if not verify_code_uuid:
-        return JsonResult.error("验证码已过期，请重新获取", 400)
-
-    if not verify_code_cache.verify_code(verify_code_uuid, verify_code):
-        return JsonResult.error("验证码错误", 400)
 
     # 通过手机号查找用户
     user = User.query.filter_by(phone=phone).first()

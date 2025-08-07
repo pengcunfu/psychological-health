@@ -67,40 +67,6 @@
         ></u--input>
       </view>
       
-      <!-- 验证码（可选） -->
-      <view class="form-group" v-if="showVerifyCode">
-        <text class="form-label">验证码</text>
-        <view class="verify-code-group">
-          <u--input
-            v-model="form.verify_code"
-            placeholder="请输入验证码"
-            border="bottom"
-            :clearable="true"
-            maxlength="6"
-          ></u--input>
-          <view class="verify-code-img" @click="refreshVerifyCode">
-            <image 
-              v-if="verifyCodeUrl" 
-              :src="verifyCodeUrl" 
-              mode="aspectFit"
-              style="width: 100%; height: 100%;"
-            />
-            <text v-else>获取验证码</text>
-          </view>
-        </view>
-      </view>
-      
-      <!-- 验证码开关 -->
-      <view class="verify-code-switch">
-        <u-switch 
-          v-model="showVerifyCode" 
-          @change="onVerifyCodeToggle"
-          size="24"
-          activeColor="#4A90E2"
-        ></u-switch>
-        <text class="switch-label">使用验证码</text>
-      </view>
-      
       <button class="login-btn" @click="handleLogin">登 录</button>
       
       <view class="form-footer">
@@ -136,7 +102,7 @@
 import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { useUserStore } from '@/store/user'
-import { login, phoneLogin, getVerifyCode } from '@/api/auth'
+import { login, phoneLogin } from '@/api/auth'
 
 export default {
   setup() {
@@ -148,16 +114,11 @@ export default {
     const form = ref({
       username: '',
       phone: '',
-      password: '',
-      verify_code: ''
+      password: ''
     })
     
     // 重定向路径
     const redirectPath = ref('')
-    
-    // 验证码相关
-    const showVerifyCode = ref(false)
-    const verifyCodeUrl = ref('')
     
     // 切换登录方式
     const switchLoginType = (type) => {
@@ -166,34 +127,7 @@ export default {
       form.value = {
         username: '',
         phone: '',
-        password: '',
-        verify_code: ''
-      }
-    }
-    
-    // 获取验证码
-    const refreshVerifyCode = async () => {
-      try {
-        const response = await getVerifyCode()
-        // 将blob转换为本地URL
-        const blob = new Blob([response])
-        verifyCodeUrl.value = URL.createObjectURL(blob)
-      } catch (error) {
-        console.error('获取验证码失败:', error)
-        uni.showToast({
-          title: '获取验证码失败',
-          icon: 'none'
-        })
-      }
-    }
-    
-    // 验证码开关切换
-    const onVerifyCodeToggle = (value) => {
-      if (value) {
-        refreshVerifyCode()
-      } else {
-        verifyCodeUrl.value = ''
-        form.value.verify_code = ''
+        password: ''
       }
     }
     
@@ -235,14 +169,6 @@ export default {
         return
       }
       
-      if (showVerifyCode.value && !form.value.verify_code) {
-        uni.showToast({
-          title: '请输入验证码',
-          icon: 'none'
-        })
-        return
-      }
-      
       try {
         uni.showLoading({
           title: '登录中...'
@@ -253,15 +179,13 @@ export default {
           // 手机号登录
           result = await phoneLogin({
             phone: form.value.phone,
-            password: form.value.password,
-            verify_code: showVerifyCode.value ? form.value.verify_code : undefined
+            password: form.value.password
           })
         } else {
           // 用户名登录
           result = await login({
             username: form.value.username,
-            password: form.value.password,
-            verify_code: showVerifyCode.value ? form.value.verify_code : undefined
+            password: form.value.password
           })
         }
         
@@ -308,11 +232,6 @@ export default {
             title: result.message || '登录失败',
             icon: 'none'
           })
-          
-          // 如果是验证码错误，刷新验证码
-          if (showVerifyCode.value && result.message?.includes('验证码')) {
-            refreshVerifyCode()
-          }
         }
       } catch (error) {
         uni.hideLoading()
@@ -321,11 +240,6 @@ export default {
           icon: 'none'
         })
         console.error('登录失败:', error)
-        
-        // 刷新验证码
-        if (showVerifyCode.value) {
-          refreshVerifyCode()
-        }
       }
     }
     
@@ -379,11 +293,7 @@ export default {
     return {
       loginType,
       form,
-      showVerifyCode,
-      verifyCodeUrl,
       switchLoginType,
-      refreshVerifyCode,
-      onVerifyCodeToggle,
       handleLogin,
       handleWechatLogin,
       handleQQLogin
@@ -544,43 +454,5 @@ export default {
     font-weight: bold;
     box-shadow: 0 2rpx 8rpx rgba(74, 144, 226, 0.1);
   }
-}
-
-// 验证码组
-.verify-code-group {
-  display: flex;
-  align-items: center;
-  gap: 20rpx;
-}
-
-.verify-code-img {
-  width: 160rpx;
-  height: 80rpx;
-  background: #f5f5f5;
-  border-radius: 8rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24rpx;
-  color: #999;
-  border: 1rpx solid #e5e5e5;
-  cursor: pointer;
-  
-  &:active {
-    background: #e5e5e5;
-  }
-}
-
-// 验证码开关
-.verify-code-switch {
-  display: flex;
-  align-items: center;
-  margin-bottom: 30rpx;
-  gap: 16rpx;
-}
-
-.switch-label {
-  font-size: 28rpx;
-  color: #666;
 }
 </style> 

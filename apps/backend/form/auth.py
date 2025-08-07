@@ -31,10 +31,6 @@ class PhoneLoginForm(BaseForm):
         DataRequired(message='密码不能为空'),
         Length(min=6, max=20, message='密码长度必须在6-20个字符之间')
     ])
-    verify_code = StringField('验证码', [
-        Optional(),
-        Length(min=4, max=6, message='验证码长度必须在4-6个字符之间')
-    ])
 
 
 class RegisterForm(BaseForm):
