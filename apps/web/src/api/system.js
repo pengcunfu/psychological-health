@@ -105,6 +105,24 @@ export const settingAPI = {
   updateSmsSettings: (data) => api.put('/setting/sms', data)
 }
 
+// 工作空间管理API
+export const workspaceAPI = {
+  // 获取工作空间列表
+  getWorkspaces: (params) => api.get('/workspace', { params }),
+
+  // 获取工作空间详情
+  getWorkspace: (id) => api.get(`/workspace/${id}`),
+
+  // 创建工作空间
+  createWorkspace: (data) => api.post('/workspace', data),
+
+  // 更新工作空间
+  updateWorkspace: (id, data) => api.put(`/workspace/${id}`, data),
+
+  // 删除工作空间
+  deleteWorkspace: (id) => api.delete(`/workspace/${id}`)
+}
+
 // 向后兼容的单独导出函数
 export const getRoles = (params) => api.get('/role', { params })
 export const getRole = (id) => api.get(`/role/${id}`)
@@ -119,11 +137,11 @@ export const createDiseaseTag = (data) => api.post('/disease-tag', data)
 export const updateDiseaseTag = (id, data) => api.put(`/disease-tag/${id}`, data)
 export const deleteDiseaseTag = (id) => api.delete(`/disease-tag/${id}`)
 
-// 工作空间管理接口
-export const getWorkspaces = (params) => api.get('/workspace', { params })
-export const getWorkspace = (id) => api.get(`/workspace/${id}`)
-export const createWorkspace = (data) => api.post('/workspace', data)
-export const updateWorkspace = (id, data) => api.put(`/workspace/${id}`, data)
-export const deleteWorkspace = (id) => api.delete(`/workspace/${id}`)
+// 工作空间管理接口（向后兼容）
+export const getWorkspaces = (params) => workspaceAPI.getWorkspaces(params)
+export const getWorkspace = (id) => workspaceAPI.getWorkspace(id)
+export const createWorkspace = (data) => workspaceAPI.createWorkspace(data)
+export const updateWorkspace = (id, data) => workspaceAPI.updateWorkspace(id, data)
+export const deleteWorkspace = (id) => workspaceAPI.deleteWorkspace(id)
 
-export default { roleAPI, menuAPI, groupAPI, statsAPI, settingAPI } 
+export default { roleAPI, menuAPI, groupAPI, statsAPI, settingAPI, workspaceAPI } 

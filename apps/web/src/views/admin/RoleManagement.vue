@@ -95,7 +95,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { message } from 'ant-design-vue'
 import { PlusOutlined, SearchOutlined, ReloadOutlined } from '@ant-design/icons-vue'
-import { getRoles, createRole, updateRole, deleteRole, menuAPI } from '@/api'
+import { roleAPI, menuAPI } from '@/api'
 
 defineOptions({
   name: 'RoleManagement'
@@ -215,7 +215,7 @@ const menuTree = ref([])
 const fetchRoles = async () => {
   loading.value = true
   try {
-    const res = await getRoles({
+    const res = await roleAPI.getRoles({
       keyword: searchForm.keyword,
       page: pagination.current,
       per_page: pagination.pageSize
@@ -233,7 +233,7 @@ const fetchRoles = async () => {
 const fetchMenuTree = async () => {
   try {
     const res = await menuAPI.getMenuTree()
-    if (res.code === 200) {
+    if (res.code === 200 || res.success) {
       menuTree.value = res.data
     }
   } catch (error) {
@@ -320,10 +320,10 @@ const handleModalOk = () => {
       const formData = { ...roleForm }
 
       if (isEdit.value) {
-        await updateRole(formData.id, formData)
+        await roleAPI.updateRole(formData.id, formData)
         message.success('角色更新成功')
       } else {
-        await createRole(formData)
+        await roleAPI.createRole(formData)
         message.success('角色创建成功')
       }
 
@@ -346,7 +346,7 @@ const handleModalCancel = () => {
 // 删除角色
 const handleDelete = async (id) => {
   try {
-    await deleteRole(id)
+    await roleAPI.deleteRole(id)
     message.success('角色删除成功')
     fetchRoles()
   } catch (error) {
@@ -360,7 +360,7 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .role-management {
   padding: 0;
   background: #fff;
@@ -378,17 +378,19 @@ onMounted(() => {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
-.search-form .ant-form {
-  flex: 1;
-  margin-right: 12px;
-}
+.search-form {
+  :deep(.ant-form) {
+    flex: 1;
+    margin-right: 12px;
+  }
 
-.search-form .ant-form-item {
-  margin-bottom: 0;
-}
+  :deep(.ant-form-item) {
+    margin-bottom: 0;
 
-.search-form .ant-form-item:last-child {
-  margin-bottom: 0;
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
 }
 
 .danger-link {
@@ -408,9 +410,11 @@ onMounted(() => {
     margin-bottom: 8px;
   }
 
-  .search-form .ant-form {
-    width: 100%;
-    margin-right: 0;
+  .search-form {
+    :deep(.ant-form) {
+      width: 100%;
+      margin-right: 0;
+    }
   }
 }
 </style>

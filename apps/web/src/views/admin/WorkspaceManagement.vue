@@ -4,20 +4,10 @@
     <div class="search-and-action-bar">
       <a-form layout="inline" :model="searchForm" @submit="handleSearch" class="search-form">
         <a-form-item label="工作室名称">
-          <a-input 
-            v-model:value="searchForm.name" 
-            placeholder="请输入工作室名称" 
-            style="width: 200px;"
-            allow-clear 
-          />
+          <a-input v-model:value="searchForm.name" placeholder="请输入工作室名称" style="width: 200px;" allow-clear />
         </a-form-item>
         <a-form-item label="状态">
-          <a-select 
-            v-model:value="searchForm.status" 
-            style="width: 120px;" 
-            allow-clear 
-            placeholder="请选择状态"
-          >
+          <a-select v-model:value="searchForm.status" style="width: 120px;" allow-clear placeholder="请选择状态">
             <a-select-option :value="1">营业中</a-select-option>
             <a-select-option :value="0">关闭</a-select-option>
           </a-select>
@@ -27,11 +17,11 @@
           <a-button style="margin-left: 8px;" @click="handleReset">重置</a-button>
         </a-form-item>
       </a-form>
-      
+
       <div class="action-buttons">
         <a-button type="primary" @click="showAddModal">
           <template #icon>
-            <PlusOutlined/>
+            <PlusOutlined />
           </template>
           添加工作室
         </a-button>
@@ -39,35 +29,29 @@
     </div>
 
     <!-- 数据表格 -->
-    <a-table
-      :columns="columns"
-      :data-source="workspaces"
-      :loading="loading"
-      :pagination="pagination"
-      @change="handleTableChange"
-      row-key="id"
-    >
+    <a-table :columns="columns" :data-source="workspaces" :loading="loading" :pagination="pagination"
+      @change="handleTableChange" row-key="id">
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'address'">
           <div class="address-cell">
             <span class="address-text">{{ record.address || '-' }}</span>
           </div>
         </template>
-        
+
         <template v-if="column.key === 'business_hours'">
           {{ record.business_hours || '-' }}
         </template>
-        
+
         <template v-if="column.key === 'distance'">
           {{ record.distance ? record.distance.toFixed(1) : '0.0' }}
         </template>
-        
+
         <template v-if="column.key === 'status'">
           <a-tag :color="record.status === 1 ? 'green' : 'red'">
             {{ record.status === 1 ? '营业中' : '关闭' }}
           </a-tag>
         </template>
-        
+
         <template v-if="column.key === 'action'">
           <a-space>
             <a-button type="link" size="small" @click="viewWorkspace(record)">
@@ -76,10 +60,7 @@
             <a-button type="link" size="small" @click="showEditModal(record)">
               编辑
             </a-button>
-            <a-popconfirm
-              title="确定要删除该工作室吗？"
-              @confirm="handleDelete(record.id)"
-            >
+            <a-popconfirm title="确定要删除该工作室吗？" @confirm="handleDelete(record.id)">
               <a-button type="link" size="small" danger>
                 删除
               </a-button>
@@ -90,19 +71,9 @@
     </a-table>
 
     <!-- 添加/编辑工作室弹窗 -->
-    <a-modal
-      v-model:open="modalVisible"
-      :title="modalTitle"
-      @ok="handleModalOk"
-      @cancel="handleModalCancel"
-      width="800px"
-    >
-      <a-form
-        ref="workspaceFormRef"
-        :model="workspaceForm"
-        :rules="rules"
-        layout="vertical"
-      >
+    <a-modal v-model:open="modalVisible" :title="modalTitle" @ok="handleModalOk" @cancel="handleModalCancel"
+      width="800px">
+      <a-form ref="workspaceFormRef" :model="workspaceForm" :rules="rules" layout="vertical">
         <a-row :gutter="16">
           <a-col :span="12">
             <a-form-item label="工作室名称" name="name">
@@ -126,37 +97,20 @@
         <a-row :gutter="16">
           <a-col :span="8">
             <a-form-item label="距离(km)" name="distance">
-              <a-input-number 
-                v-model:value="workspaceForm.distance" 
-                :min="0" 
-                :precision="1"
-                style="width: 100%;" 
-                placeholder="距离"
-              />
+              <a-input-number v-model:value="workspaceForm.distance" :min="0" :precision="1" style="width: 100%;"
+                placeholder="距离" />
             </a-form-item>
           </a-col>
           <a-col :span="8">
             <a-form-item label="纬度" name="latitude">
-              <a-input-number 
-                v-model:value="workspaceForm.latitude" 
-                :min="-90" 
-                :max="90"
-                :precision="6"
-                style="width: 100%;" 
-                placeholder="纬度"
-              />
+              <a-input-number v-model:value="workspaceForm.latitude" :min="-90" :max="90" :precision="6"
+                style="width: 100%;" placeholder="纬度" />
             </a-form-item>
           </a-col>
           <a-col :span="8">
             <a-form-item label="经度" name="longitude">
-              <a-input-number 
-                v-model:value="workspaceForm.longitude" 
-                :min="-180" 
-                :max="180"
-                :precision="6"
-                style="width: 100%;" 
-                placeholder="经度"
-              />
+              <a-input-number v-model:value="workspaceForm.longitude" :min="-180" :max="180" :precision="6"
+                style="width: 100%;" placeholder="经度" />
             </a-form-item>
           </a-col>
         </a-row>
@@ -169,32 +123,20 @@
           </a-col>
           <a-col :span="12">
             <a-form-item label="排序" name="sort_order">
-              <a-input-number 
-                v-model:value="workspaceForm.sort_order" 
-                :min="0" 
-                :max="9999"
-                style="width: 100%;" 
-                placeholder="排序值"
-              />
+              <a-input-number v-model:value="workspaceForm.sort_order" :min="0" :max="9999" style="width: 100%;"
+                placeholder="排序值" />
             </a-form-item>
           </a-col>
         </a-row>
 
         <a-form-item label="封面图片" name="cover_image">
-          <a-upload 
-            v-model:file-list="coverFileList" 
-            :before-upload="beforeUploadCover" 
-            :custom-request="handleUploadCover"
-            @remove="handleRemoveCover"
-            list-type="picture-card" 
-            :max-count="1"
-            accept="image/*"
-            :show-upload-list="{
+          <a-upload v-model:file-list="coverFileList" :before-upload="beforeUploadCover"
+            :custom-request="handleUploadCover" @remove="handleRemoveCover" list-type="picture-card" :max-count="1"
+            accept="image/*" :show-upload-list="{
               showPreviewIcon: true,
               showRemoveIcon: true,
               showDownloadIcon: false
-            }"
-          >
+            }">
             <div v-if="coverFileList.length < 1">
               <upload-outlined />
               <div style="margin-top: 8px;">上传封面</div>
@@ -203,21 +145,13 @@
         </a-form-item>
 
         <a-form-item label="环境照片" name="environment_images">
-          <a-upload 
-            v-model:file-list="environmentFileList" 
-            :before-upload="beforeUploadEnvironment" 
-            :custom-request="handleUploadEnvironment"
-            @remove="handleRemoveEnvironment"
-            list-type="picture-card" 
-            :max-count="6"
-            accept="image/*"
-            multiple
-            :show-upload-list="{
+          <a-upload v-model:file-list="environmentFileList" :before-upload="beforeUploadEnvironment"
+            :custom-request="handleUploadEnvironment" @remove="handleRemoveEnvironment" list-type="picture-card"
+            :max-count="6" accept="image/*" multiple :show-upload-list="{
               showPreviewIcon: true,
               showRemoveIcon: true,
               showDownloadIcon: false
-            }"
-          >
+            }">
             <div v-if="environmentFileList.length < 6">
               <upload-outlined />
               <div style="margin-top: 8px;">上传环境照片</div>
@@ -226,30 +160,17 @@
         </a-form-item>
 
         <a-form-item label="工作室简介" name="introduction">
-          <a-textarea 
-            v-model:value="workspaceForm.introduction" 
-            placeholder="请输入工作室简介（可选）" 
-            :rows="4" 
-          />
+          <a-textarea v-model:value="workspaceForm.introduction" placeholder="请输入工作室简介（可选）" :rows="4" />
         </a-form-item>
 
         <a-form-item label="工作室寄语" name="slogan">
-          <a-textarea 
-            v-model:value="workspaceForm.slogan" 
-            placeholder="请输入工作室寄语（可选）" 
-            :rows="2" 
-          />
+          <a-textarea v-model:value="workspaceForm.slogan" placeholder="请输入工作室寄语（可选）" :rows="2" />
         </a-form-item>
-              </a-form>
+      </a-form>
     </a-modal>
 
     <!-- 查看工作室详情弹窗 -->
-    <a-modal
-      v-model:open="viewModalVisible"
-      title="工作室详情"
-      :footer="null"
-      width="800px"
-    >
+    <a-modal v-model:open="viewModalVisible" title="工作室详情" :footer="null" width="800px">
       <div v-if="currentWorkspace" class="workspace-detail">
         <div class="detail-header">
           <h3>{{ currentWorkspace.name || '' }}</h3>
@@ -258,13 +179,15 @@
           </a-tag>
         </div>
 
-        <a-divider/>
+        <a-divider />
 
         <div class="detail-section">
           <a-descriptions bordered :column="2">
             <a-descriptions-item label="工作室名称" :span="2">{{ currentWorkspace.name || '-' }}</a-descriptions-item>
             <a-descriptions-item label="详细地址" :span="2">{{ currentWorkspace.address || '-' }}</a-descriptions-item>
-            <a-descriptions-item label="距离">{{ currentWorkspace.distance ? currentWorkspace.distance.toFixed(1) + ' km' : '-' }}</a-descriptions-item>
+            <a-descriptions-item label="距离">{{ currentWorkspace.distance ? currentWorkspace.distance.toFixed(1) + ' km'
+              :
+              '-' }}</a-descriptions-item>
             <a-descriptions-item label="营业时间">{{ currentWorkspace.business_hours || '-' }}</a-descriptions-item>
             <a-descriptions-item label="纬度">{{ currentWorkspace.latitude || '-' }}</a-descriptions-item>
             <a-descriptions-item label="经度">{{ currentWorkspace.longitude || '-' }}</a-descriptions-item>
@@ -275,23 +198,17 @@
               </a-tag>
             </a-descriptions-item>
             <a-descriptions-item label="封面图片" :span="2">
-              <img 
-                v-if="currentWorkspace.cover_image" 
-                :src="FileUploader.getFullImageUrl(currentWorkspace.cover_image)"
-                style="max-width: 200px; max-height: 150px; object-fit: cover; border-radius: 4px;"
-                alt="工作室封面"
-              />
+              <img v-if="currentWorkspace.cover_image" :src="FileUploader.getFullImageUrl(currentWorkspace.cover_image)"
+                style="max-width: 200px; max-height: 150px; object-fit: cover; border-radius: 4px;" alt="工作室封面" />
               <span v-else>-</span>
             </a-descriptions-item>
             <a-descriptions-item label="环境照片" :span="2">
-              <div v-if="currentWorkspace.environment_images && currentWorkspace.environment_images.length > 0" class="environment-images">
-                <img 
-                  v-for="(img, index) in currentWorkspace.environment_images" 
-                  :key="index"
+              <div v-if="currentWorkspace.environment_images && currentWorkspace.environment_images.length > 0"
+                class="environment-images">
+                <img v-for="(img, index) in currentWorkspace.environment_images" :key="index"
                   :src="FileUploader.getFullImageUrl(img)"
                   style="width: 100px; height: 75px; object-fit: cover; border-radius: 4px; margin-right: 8px; margin-bottom: 8px;"
-                  :alt="`环境照片${index + 1}`"
-                />
+                  :alt="`环境照片${index + 1}`" />
               </div>
               <span v-else>-</span>
             </a-descriptions-item>
@@ -314,24 +231,25 @@
 import { ref, reactive, onMounted, computed } from 'vue'
 import { message } from 'ant-design-vue'
 import { PlusOutlined, UploadOutlined } from '@ant-design/icons-vue'
-import { getWorkspaces, createWorkspace, updateWorkspace, deleteWorkspace } from '@/api'
-import { FileUploader } from '@/api/upload'
-    const loading = ref(false)
-    const workspaces = ref([])
-    const modalVisible = ref(false)
-    const isEdit = ref(false)
+import { uploadAPI, workspaceAPI } from '@/api'
+import { FileUploader } from '@/utils/FileUploader'
+
+const loading = ref(false)
+const workspaces = ref([])
+const modalVisible = ref(false)
+const isEdit = ref(false)
 const workspaceFormRef = ref()
 const coverFileList = ref([])
 const environmentFileList = ref([])
 const viewModalVisible = ref(false)
 const currentWorkspace = ref(null)
 
-    const searchForm = reactive({
-      name: '',
-      status: undefined
-    })
+const searchForm = reactive({
+  name: '',
+  status: undefined
+})
 
-    const workspaceForm = reactive({
+const workspaceForm = reactive({
   name: '',
   cover_image: '',
   address: '',
@@ -346,14 +264,14 @@ const currentWorkspace = ref(null)
   status: 1
 })
 
-    const pagination = reactive({
-      current: 1,
-      pageSize: 10,
-      total: 0,
-      showSizeChanger: true,
-      showQuickJumper: true,
-      showTotal: (total) => `共 ${total} 条记录`
-    })
+const pagination = reactive({
+  current: 1,
+  pageSize: 10,
+  total: 0,
+  showSizeChanger: true,
+  showQuickJumper: true,
+  showTotal: (total) => `共 ${total} 条记录`
+})
 
 // 表格列定义
 const columns = [
@@ -400,7 +318,7 @@ const columns = [
   }
 ]
 
-    // 表单校验规则
+// 表单校验规则
 const rules = {
   name: [
     { required: true, message: '请输入工作室名称', trigger: 'blur' },
@@ -436,64 +354,64 @@ const rules = {
   ]
 }
 
-    // 获取工作空间列表
-    const fetchWorkspaces = async () => {
-      loading.value = true
-      try {
-        const params = {
-          page: pagination.current,
-          per_page: pagination.pageSize,
-          name: searchForm.name,
-          status: searchForm.status
-        }
-
-        const result = await getWorkspaces(params)
-        if (result.code === 200) {
-          workspaces.value = result.data.list || result.data.workspaces || []
-          pagination.total = result.data.total
-        }
-      } catch (error) {
-        message.error('获取工作空间列表失败')
-      } finally {
-        loading.value = false
-      }
+// 获取工作空间列表
+const fetchWorkspaces = async () => {
+  loading.value = true
+  try {
+    const params = {
+      page: pagination.current,
+      per_page: pagination.pageSize,
+      name: searchForm.name,
+      status: searchForm.status
     }
 
-    // 搜索
-    const handleSearch = () => {
-      pagination.current = 1
-      fetchWorkspaces()
+    const result = await workspaceAPI.getWorkspaces(params)
+    if (result.code === 200 || result.success) {
+      workspaces.value = result.data.list || result.data.workspaces || []
+      pagination.total = result.data.total
     }
+  } catch (error) {
+    message.error('获取工作空间列表失败')
+  } finally {
+    loading.value = false
+  }
+}
 
-    // 重置搜索
-    const handleReset = () => {
-      Object.assign(searchForm, {
-        name: '',
-        status: undefined
-      })
-      pagination.current = 1
-      fetchWorkspaces()
-    }
+// 搜索
+const handleSearch = () => {
+  pagination.current = 1
+  fetchWorkspaces()
+}
 
-    // 表格分页改变
-    const handleTableChange = (pag) => {
-      pagination.current = pag.current
-      pagination.pageSize = pag.pageSize
-      fetchWorkspaces()
-    }
+// 重置搜索
+const handleReset = () => {
+  Object.assign(searchForm, {
+    name: '',
+    status: undefined
+  })
+  pagination.current = 1
+  fetchWorkspaces()
+}
 
-    // 显示添加弹窗
-    const showAddModal = () => {
-      isEdit.value = false
-      modalVisible.value = true
-      resetForm()
-    }
+// 表格分页改变
+const handleTableChange = (pag) => {
+  pagination.current = pag.current
+  pagination.pageSize = pag.pageSize
+  fetchWorkspaces()
+}
+
+// 显示添加弹窗
+const showAddModal = () => {
+  isEdit.value = false
+  modalVisible.value = true
+  resetForm()
+}
 
 // 显示编辑弹窗
 const showEditModal = (record) => {
   isEdit.value = true
   modalVisible.value = true
-  
+
   Object.assign(workspaceForm, {
     id: record.id,
     name: record.name,
@@ -509,7 +427,7 @@ const showEditModal = (record) => {
     sort_order: record.sort_order || 100,
     status: record.status
   })
-  
+
   // 设置封面图片
   if (record.cover_image) {
     const fullImageUrl = FileUploader.getFullImageUrl(record.cover_image)
@@ -523,7 +441,7 @@ const showEditModal = (record) => {
   } else {
     coverFileList.value = []
   }
-  
+
   // 设置环境照片
   if (record.environment_images && record.environment_images.length > 0) {
     environmentFileList.value = record.environment_images.map((img, index) => ({
@@ -559,58 +477,58 @@ const resetForm = () => {
   workspaceFormRef.value?.resetFields()
 }
 
-    // 模态框确定
-    const handleModalOk = async () => {
-      try {
-        await workspaceFormRef.value.validate()
+// 模态框确定
+const handleModalOk = async () => {
+  try {
+    await workspaceFormRef.value.validate()
 
-        const data = { ...workspaceForm }
-        delete data.id
+    const data = { ...workspaceForm }
+    delete data.id
 
-        if (isEdit.value) {
-          const result = await updateWorkspace(workspaceForm.id, data)
-          if (result.code === 200) {
-            message.success('更新成功')
-            modalVisible.value = false
-            fetchWorkspaces()
-          }
-        } else {
-          const result = await createWorkspace(data)
-          if (result.code === 200 || result.code === 201) {
-            message.success('创建成功')
-            modalVisible.value = false
-            fetchWorkspaces()
-          }
-        }
-      } catch (error) {
-        console.error('表单验证失败:', error)
+    if (isEdit.value) {
+      const result = await workspaceAPI.updateWorkspace(workspaceForm.id, data)
+      if (result.code === 200 || result.success) {
+        message.success('更新成功')
+        modalVisible.value = false
+        fetchWorkspaces()
+      }
+    } else {
+      const result = await workspaceAPI.createWorkspace(data)
+      if (result.code === 200 || result.code === 201 || result.success) {
+        message.success('创建成功')
+        modalVisible.value = false
+        fetchWorkspaces()
       }
     }
+  } catch (error) {
+    console.error('表单验证失败:', error)
+  }
+}
 
-    // 模态框取消
-    const handleModalCancel = () => {
-      modalVisible.value = false
-      resetForm()
-    }
+// 模态框取消
+const handleModalCancel = () => {
+  modalVisible.value = false
+  resetForm()
+}
 
-    // 删除工作空间
-    const handleDelete = async (id) => {
-      try {
-        const result = await deleteWorkspace(id)
-        if (result.code === 200) {
-          message.success('删除成功')
-          fetchWorkspaces()
-        }
-      } catch (error) {
-        message.error('删除失败')
-      }
+// 删除工作空间
+const handleDelete = async (id) => {
+  try {
+    const result = await workspaceAPI.deleteWorkspace(id)
+    if (result.code === 200 || result.success) {
+      message.success('删除成功')
+      fetchWorkspaces()
     }
+  } catch (error) {
+    message.error('删除失败')
+  }
+}
 
-    // 格式化日期
-    const formatDate = (dateString) => {
-      if (!dateString) return '-'
-      return new Date(dateString).toLocaleString('zh-CN')
-    }
+// 格式化日期
+const formatDate = (dateString) => {
+  if (!dateString) return '-'
+  return new Date(dateString).toLocaleString('zh-CN')
+}
 
 // 查看工作室
 const viewWorkspace = (record) => {
@@ -646,19 +564,14 @@ const handleUploadCover = async ({ file }) => {
     const formData = new FormData()
     formData.append('file', file)
 
-    const response = await fetch('/api/upload/image', {
-      method: 'POST',
-      body: formData
-    })
+    const result = await uploadAPI.uploadImage(formData)
 
-    const result = await response.json()
-    
     if (result.success && result.data) {
       const imageUrl = result.data.url
       const fullImageUrl = FileUploader.getFullImageUrl(imageUrl)
-      
+
       workspaceForm.cover_image = imageUrl
-      
+
       coverFileList.value = [{
         uid: file.uid,
         name: result.data.original_filename || file.name,
@@ -666,7 +579,7 @@ const handleUploadCover = async ({ file }) => {
         url: fullImageUrl,
         thumbUrl: fullImageUrl
       }]
-      
+
       message.success('封面上传成功')
     } else {
       message.error(result.message || '封面上传失败')
@@ -683,20 +596,15 @@ const handleUploadEnvironment = async ({ file }) => {
     const formData = new FormData()
     formData.append('file', file)
 
-    const response = await fetch('/api/upload/image', {
-      method: 'POST',
-      body: formData
-    })
+    const result = await uploadAPI.uploadImage(formData)
 
-    const result = await response.json()
-    
     if (result.success && result.data) {
       const imageUrl = result.data.url
       const fullImageUrl = FileUploader.getFullImageUrl(imageUrl)
-      
+
       // 添加到环境照片数组
       workspaceForm.environment_images.push(imageUrl)
-      
+
       // 更新环境照片文件列表
       const newFile = {
         uid: file.uid,
@@ -706,7 +614,7 @@ const handleUploadEnvironment = async ({ file }) => {
         thumbUrl: fullImageUrl
       }
       environmentFileList.value.push(newFile)
-      
+
       message.success('环境照片上传成功')
     } else {
       message.error(result.message || '环境照片上传失败')
@@ -819,7 +727,8 @@ onMounted(() => {
   gap: 8px;
 }
 
-.intro-text, .slogan-text {
+.intro-text,
+.slogan-text {
   line-height: 1.6;
   white-space: pre-wrap;
 }
@@ -881,8 +790,8 @@ onMounted(() => {
     }
   }
 
-     .address-cell {
-     max-width: 120px;
-   }
- }
- </style> 
+  .address-cell {
+    max-width: 120px;
+  }
+}
+</style>

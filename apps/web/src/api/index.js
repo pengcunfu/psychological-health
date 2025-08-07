@@ -8,7 +8,7 @@ export { authAPI } from './auth'
 export { orderAPI } from './order'
 export { announcementAPI, categoryAPI, bannerAPI } from './content'
 export { reviewAPI, appointmentAPI, assessmentAPI } from './business'
-export { roleAPI, menuAPI, groupAPI, statsAPI, settingAPI, getRoles, getRole, createRole, updateRole, deleteRole, getDiseaseTags, getDiseaseTag, createDiseaseTag, updateDiseaseTag, deleteDiseaseTag, getWorkspaces, getWorkspace, createWorkspace, updateWorkspace, deleteWorkspace } from './system'
+export { roleAPI, menuAPI, groupAPI, statsAPI, settingAPI, workspaceAPI, getRoles, getRole, createRole, updateRole, deleteRole, getDiseaseTags, getDiseaseTag, createDiseaseTag, updateDiseaseTag, deleteDiseaseTag, getWorkspaces, getWorkspace, createWorkspace, updateWorkspace, deleteWorkspace } from './system'
 export { uploadAPI, uploadAvatar, uploadBanner, uploadCourseCover, uploadCourseVideo, uploadAssessment, uploadFile, FileUploader } from './upload'
 
 // 从原来的 admin.js 导入咨询人API（如果存在的话）
@@ -48,6 +48,7 @@ export default {
   groupAPI: () => import('./system').then(m => m.groupAPI),
   statsAPI: () => import('./system').then(m => m.statsAPI),
   settingAPI: () => import('./system').then(m => m.settingAPI),
+  workspaceAPI: () => import('./system').then(m => m.workspaceAPI),
   
   // 文件上传
   uploadAPI: () => import('./upload').then(m => m.uploadAPI),
