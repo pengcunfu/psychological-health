@@ -31,78 +31,84 @@
     <!-- 预约列表 -->
     <a-table :columns="columns" :data-source="appointments" :loading="loading" :pagination="pagination"
       @change="handleTableChange" row-key="id">
-      <template #counselor_name="{ record }">
-        <div class="counselor-info">
-          <a-avatar v-if="record.counselor_avatar" :src="record.counselor_avatar" size="small" />
-          <span class="counselor-name">{{ record.counselor_name }}</span>
-        </div>
-      </template>
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.key === 'counselor_name'">
+          <div class="counselor-info">
+            <a-avatar v-if="record.counselor_avatar" :src="record.counselor_avatar" size="small" />
+            <span class="counselor-name">{{ record.counselor_name }}</span>
+          </div>
+        </template>
 
-      <template #user_name="{ record }">
-        <div class="user-info">
-          <a-avatar v-if="record.user_avatar" :src="record.user_avatar" size="small" />
-          <span class="user-name">{{ record.user_name }}</span>
-        </div>
-      </template>
+        <template v-if="column.key === 'user_name'">
+          <div class="user-info">
+            <a-avatar v-if="record.user_avatar" :src="record.user_avatar" size="small" />
+            <span class="user-name">{{ record.user_name }}</span>
+          </div>
+        </template>
 
-      <template #appointment_time="{ record }">
-        <div class="time-info">
-          <div>{{ formatDate(record.appointment_date) }}</div>
-          <div class="time-range">{{ record.start_time }} - {{ record.end_time }}</div>
-        </div>
-      </template>
+        <template v-if="column.key === 'appointment_date'">
+          <div class="time-info">
+            <div>{{ formatDate(record.appointment_date) }}</div>
+            <div class="time-range">{{ record.start_time }} - {{ record.end_time }}</div>
+          </div>
+        </template>
 
-      <template #status="{ record }">
-        <a-tag :color="getStatusColor(record.status)">
-          {{ getStatusText(record.status) }}
-        </a-tag>
-      </template>
+        <template v-if="column.key === 'type'">
+          {{ getAppointmentType(record.type) }}
+        </template>
 
-      <template #createTime="{ record }">
-        {{ formatDate(record.create_time) }}
-      </template>
+        <template v-if="column.key === 'status'">
+          <a-tag :color="getStatusColor(record.status)">
+            {{ getStatusText(record.status) }}
+          </a-tag>
+        </template>
 
-      <template #action="{ record }">
-        <a-space>
-          <a-button type="link" size="small" @click="viewAppointment(record)">
-            查看详情
-          </a-button>
-          <a-dropdown v-if="record.status === 'pending'">
-            <a-button type="link" size="small">
-              操作
-              <DownOutlined />
+        <template v-if="column.key === 'create_time'">
+          {{ formatDate(record.create_time) }}
+        </template>
+
+        <template v-if="column.key === 'action'">
+          <a-space>
+            <a-button type="link" size="small" @click="viewAppointment(record)">
+              查看详情
             </a-button>
-            <template #overlay>
-              <a-menu @click="({ key }) => handleStatusChange(record.id, key)">
-                <a-menu-item key="confirmed">
-                  <span style="color: #52c41a;">确认预约</span>
-                </a-menu-item>
-                <a-menu-item key="cancelled">
-                  <span style="color: #ff4d4f;">取消预约</span>
-                </a-menu-item>
-              </a-menu>
-            </template>
-          </a-dropdown>
-          <a-dropdown v-else-if="record.status === 'confirmed'">
-            <a-button type="link" size="small">
-              操作
-              <DownOutlined />
-            </a-button>
-            <template #overlay>
-              <a-menu @click="({ key }) => handleStatusChange(record.id, key)">
-                <a-menu-item key="completed">
-                  <span style="color: #1890ff;">标记完成</span>
-                </a-menu-item>
-                <a-menu-item key="cancelled">
-                  <span style="color: #ff4d4f;">取消预约</span>
-                </a-menu-item>
-                <a-menu-item key="rescheduled">
-                  <span style="color: #faad14;">改期</span>
-                </a-menu-item>
-              </a-menu>
-            </template>
-          </a-dropdown>
-        </a-space>
+            <a-dropdown v-if="record.status === 'pending'">
+              <a-button type="link" size="small">
+                操作
+                <DownOutlined />
+              </a-button>
+              <template #overlay>
+                <a-menu @click="({ key }) => handleStatusChange(record.id, key)">
+                  <a-menu-item key="confirmed">
+                    <span style="color: #52c41a;">确认预约</span>
+                  </a-menu-item>
+                  <a-menu-item key="cancelled">
+                    <span style="color: #ff4d4f;">取消预约</span>
+                  </a-menu-item>
+                </a-menu>
+              </template>
+            </a-dropdown>
+            <a-dropdown v-else-if="record.status === 'confirmed'">
+              <a-button type="link" size="small">
+                操作
+                <DownOutlined />
+              </a-button>
+              <template #overlay>
+                <a-menu @click="({ key }) => handleStatusChange(record.id, key)">
+                  <a-menu-item key="completed">
+                    <span style="color: #1890ff;">标记完成</span>
+                  </a-menu-item>
+                  <a-menu-item key="cancelled">
+                    <span style="color: #ff4d4f;">取消预约</span>
+                  </a-menu-item>
+                  <a-menu-item key="rescheduled">
+                    <span style="color: #faad14;">改期</span>
+                  </a-menu-item>
+                </a-menu>
+              </template>
+            </a-dropdown>
+          </a-space>
+        </template>
       </template>
     </a-table>
 
@@ -250,6 +256,10 @@ import { DownOutlined } from '@ant-design/icons-vue'
 import { appointmentAPI } from '@/api'
 import dayjs from 'dayjs'
 
+defineOptions({
+  name: 'AppointmentManagement'
+})
+
 const loading = ref(false)
 const appointments = ref([])
 const viewModalVisible = ref(false)
@@ -292,48 +302,41 @@ const columns = [
     title: '咨询师',
     dataIndex: 'counselor_name',
     key: 'counselor_name',
-    slots: { customRender: 'counselor_name' },
     width: 150
   },
   {
     title: '用户',
     dataIndex: 'user_name',
     key: 'user_name',
-    slots: { customRender: 'user_name' },
     width: 150
   },
   {
     title: '预约时间',
     dataIndex: 'appointment_date',
     key: 'appointment_date',
-    slots: { customRender: 'appointment_time' },
     width: 200
   },
   {
     title: '类型',
     dataIndex: 'type',
     key: 'type',
-    render: (text) => getAppointmentType(text),
     width: 100
   },
   {
     title: '状态',
     dataIndex: 'status',
     key: 'status',
-    slots: { customRender: 'status' },
     width: 100
   },
   {
     title: '创建时间',
     dataIndex: 'create_time',
     key: 'create_time',
-    slots: { customRender: 'createTime' },
     width: 150
   },
   {
     title: '操作',
     key: 'action',
-    slots: { customRender: 'action' },
     width: 180
   }
 ]
@@ -368,7 +371,7 @@ const fetchAppointments = async () => {
     }
 
     const result = await appointmentAPI.getAppointments(params)
-    if (result.code === 200) {
+    if (result.code === 200 || result.success) {
       appointments.value = result.data.list
       pagination.total = result.data.total
     }
@@ -414,7 +417,7 @@ const viewAppointment = (appointment) => {
 const handleStatusChange = async (appointmentId, status) => {
   try {
     const result = await appointmentAPI.updateAppointmentStatus(appointmentId, status)
-    if (result.code === 200) {
+    if (result.code === 200 || result.success) {
       message.success('状态更新成功')
       fetchAppointments()
       if (viewModalVisible.value) {
@@ -451,7 +454,7 @@ const handleReschedule = async () => {
     }
 
     const result = await appointmentAPI.updateAppointment(rescheduleForm.appointment_id, data)
-    if (result.code === 200) {
+    if (result.code === 200 || result.success) {
       message.success('预约改期成功')
       rescheduleModalVisible.value = false
       fetchAppointments()
@@ -524,7 +527,7 @@ onMounted(() => {
 }
 
 .search-form {
-  .ant-form-item {
+  :deep(.ant-form-item) {
     margin-bottom: 0;
 
     &:last-child {
@@ -647,11 +650,11 @@ onMounted(() => {
   }
 
   .search-form {
-    .ant-form {
+    :deep(.ant-form) {
       flex-direction: column;
     }
 
-    .ant-form-item {
+    :deep(.ant-form-item) {
       margin-bottom: 8px;
 
       &:last-child {
