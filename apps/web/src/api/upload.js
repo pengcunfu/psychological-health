@@ -1,233 +1,159 @@
+import api from '@/utils/api'
+import { FileUploader } from '@/utils/FileUploader'
+
 /**
- * 文件上传相关API
+ * 文件上传API类
  */
+export class uploadAPI {
+  // 上传头像
+  static async uploadAvatar(file) {
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
 
-// 上传头像
-export const uploadAvatar = async (file) => {
-  try {
-    const formData = new FormData()
-    formData.append('file', file)
+      return await api.post('/upload/avatar', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+    } catch (error) {
+      console.error('上传头像失败:', error)
+      throw error
+    }
+  }
 
-    const response = await fetch('/api/upload/avatar', {
-      method: 'POST',
-      body: formData
-    })
+  // 上传横幅图
+  static async uploadBanner(file) {
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
 
-    const result = await response.json()
-    return result
-  } catch (error) {
-    console.error('上传头像失败:', error)
-    throw error
+      return await api.post('/upload/banner', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+    } catch (error) {
+      console.error('上传横幅图失败:', error)
+      throw error
+    }
+  }
+
+  // 上传课程封面
+  static async uploadCourseCover(file) {
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+
+      return await api.post('/upload/course-cover', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+    } catch (error) {
+      console.error('上传课程封面失败:', error)
+      throw error
+    }
+  }
+
+  // 上传课程视频
+  static async uploadCourseVideo(file) {
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+
+      return await api.post('/upload/course-video', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+    } catch (error) {
+      console.error('上传课程视频失败:', error)
+      throw error
+    }
+  }
+
+  // 上传测评封面
+  static async uploadAssessment(file) {
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+
+      return await api.post('/upload/assessment', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+    } catch (error) {
+      console.error('上传测评封面失败:', error)
+      throw error
+    }
+  }
+
+  // 通用图片上传
+  static async uploadImage(formData) {
+    try {
+      return await api.post('/upload/image', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+    } catch (error) {
+      console.error('上传图片失败:', error)
+      throw error
+    }
+  }
+
+  // 通用文件上传
+  static async uploadFile(formData) {
+    try {
+      return await api.post('/upload/file', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+    } catch (error) {
+      console.error('上传文件失败:', error)
+      throw error
+    }
+  }
+
+  // 通用文件上传（带参数）
+  static async upload(file, fileType = null, useUniqueName = true) {
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      
+      if (fileType) {
+        formData.append('file_type', fileType)
+      }
+      
+      formData.append('use_unique_name', useUniqueName.toString())
+
+      return await api.post('/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+    } catch (error) {
+      console.error('上传文件失败:', error)
+      throw error
+    }
   }
 }
 
-// 上传横幅图
-export const uploadBanner = async (file) => {
-  try {
-    const formData = new FormData()
-    formData.append('file', file)
+// 向后兼容的单独导出函数
+export const uploadAvatar = (file) => uploadAPI.uploadAvatar(file)
+export const uploadBanner = (file) => uploadAPI.uploadBanner(file)
+export const uploadCourseCover = (file) => uploadAPI.uploadCourseCover(file)
+export const uploadCourseVideo = (file) => uploadAPI.uploadCourseVideo(file)
+export const uploadAssessment = (file) => uploadAPI.uploadAssessment(file)
+export const uploadFile = (file, fileType, useUniqueName) => uploadAPI.upload(file, fileType, useUniqueName)
 
-    const response = await fetch('/api/upload/banner', {
-      method: 'POST',
-      body: formData
-    })
+// 兼容导出FileUploader类（从utils目录导入）
+export { FileUploader } from '@/utils/FileUploader'
 
-    const result = await response.json()
-    return result
-  } catch (error) {
-    console.error('上传横幅图失败:', error)
-    throw error
-  }
-}
-
-// 上传课程封面
-export const uploadCourseCover = async (file) => {
-  try {
-    const formData = new FormData()
-    formData.append('file', file)
-
-    const response = await fetch('/api/upload/course-cover', {
-      method: 'POST',
-      body: formData
-    })
-
-    const result = await response.json()
-    return result
-  } catch (error) {
-    console.error('上传课程封面失败:', error)
-    throw error
-  }
-}
-
-// 上传课程视频
-export const uploadCourseVideo = async (file) => {
-  try {
-    const formData = new FormData()
-    formData.append('file', file)
-
-    const response = await fetch('/api/upload/course-video', {
-      method: 'POST',
-      body: formData
-    })
-
-    const result = await response.json()
-    return result
-  } catch (error) {
-    console.error('上传课程视频失败:', error)
-    throw error
-  }
-}
-
-// 上传测评封面
-export const uploadAssessment = async (file) => {
-  try {
-    const formData = new FormData()
-    formData.append('file', file)
-
-    const response = await fetch('/api/upload/assessment', {
-      method: 'POST',
-      body: formData
-    })
-
-    const result = await response.json()
-    return result
-  } catch (error) {
-    console.error('上传测评封面失败:', error)
-    throw error
-  }
-}
-
-// 通用文件上传
-export const uploadFile = async (file, fileType = null, useUniqueName = true) => {
-  try {
-    const formData = new FormData()
-    formData.append('file', file)
-    
-    if (fileType) {
-      formData.append('file_type', fileType)
-    }
-    
-    formData.append('use_unique_name', useUniqueName.toString())
-
-    const response = await fetch('/api/upload', {
-      method: 'POST',
-      body: formData
-    })
-
-    const result = await response.json()
-    return result
-  } catch (error) {
-    console.error('上传文件失败:', error)
-    throw error
-  }
-}
-
-// 文件上传工具类
-export class FileUploader {
-  // 验证文件类型
-  static validateFileType(file, allowedTypes) {
-    return allowedTypes.includes(file.type)
-  }
-
-  // 验证文件大小
-  static validateFileSize(file, maxSizeMB) {
-    const maxSizeBytes = maxSizeMB * 1024 * 1024
-    return file.size <= maxSizeBytes
-  }
-
-  // 获取完整的图片URL
-  static getFullImageUrl(imageUrl) {
-    if (!imageUrl) return ''
-    // 如果是http或https开头的完整URL，直接返回
-    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
-      return imageUrl
-    }
-    // 否则添加当前域名前缀
-    return `${window.location.origin}/api/${imageUrl}`
-  }
-
-  static getFullVideoUrl(videoUrl) {
-    if (!videoUrl) return ''
-    // 如果是http或https开头的完整URL，直接返回
-    if (videoUrl.startsWith('http://') || videoUrl.startsWith('https://')) {
-      return videoUrl
-    }
-    // 如果以/开头，说明是绝对路径，直接拼接域名
-    if (videoUrl.startsWith('/')) {
-      return `${window.location.origin}/api${videoUrl}`
-    }
-    // 否则添加当前域名前缀和api路径
-    return `${window.location.origin}/api/${videoUrl}`
-  }
-
-  // 验证图片文件
-  static validateImage(file, maxSizeMB = 10) {
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
-    
-    if (!file.type.startsWith('image/')) {
-      throw new Error('只能上传图片文件!')
-    }
-    
-    if (!this.validateFileType(file, allowedTypes)) {
-      throw new Error('只支持 JPG、PNG、GIF、WebP 格式的图片!')
-    }
-    
-    if (!this.validateFileSize(file, maxSizeMB)) {
-      throw new Error(`图片大小不能超过 ${maxSizeMB}MB!`)
-    }
-    
-    return true
-  }
-
-  // 验证文档文件
-  static validateDocument(file, maxSizeMB = 10) {
-    const allowedTypes = [
-      'application/pdf',
-      'application/msword',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      'application/vnd.ms-excel',
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    ]
-    
-    if (!this.validateFileType(file, allowedTypes)) {
-      throw new Error('只支持 PDF、Word、Excel 格式的文档!')
-    }
-    
-    if (!this.validateFileSize(file, maxSizeMB)) {
-      throw new Error(`文档大小不能超过 ${maxSizeMB}MB!`)
-    }
-    
-    return true
-  }
-
-  // 验证视频文件
-  static validateVideo(file, maxSizeMB = 50) {
-    const allowedTypes = [
-      'video/mp4',
-      'video/avi',
-      'video/mov',
-      'video/wmv',
-      'video/flv',
-      'video/mkv',
-      'video/webm'
-    ]
-    
-    if (!file.type.startsWith('video/')) {
-      throw new Error('只能上传视频文件!')
-    }
-    
-    if (!this.validateFileType(file, allowedTypes)) {
-      throw new Error('只支持 MP4、AVI、MOV、WMV、FLV、MKV、WebM 格式的视频!')
-    }
-    
-    if (!this.validateFileSize(file, maxSizeMB)) {
-      throw new Error(`视频大小不能超过 ${maxSizeMB}MB!`)
-    }
-    
-    return true
-  }
-}
-
+// 默认导出（保持向后兼容）
 export default {
   uploadAvatar,
   uploadBanner,
@@ -235,5 +161,7 @@ export default {
   uploadCourseVideo,
   uploadAssessment,
   uploadFile,
-  FileUploader
+  FileUploader,
+  // 新的API类
+  uploadAPI
 }

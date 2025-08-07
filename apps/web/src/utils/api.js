@@ -3,7 +3,7 @@ import axios from 'axios'
 // 创建axios实例
 const api = axios.create({
     baseURL: import.meta.env.VITE_APP_API_URL || '/api',
-    timeout: 10000,
+    timeout: 5000,
     headers: {
         'Content-Type': 'application/json'
     }
@@ -26,38 +26,51 @@ api.interceptors.request.use(
 // 响应拦截器
 api.interceptors.response.use(
     response => {
-        return response.data
-    },
-    error => {
-        if (error.response && error.response.status === 401) {
-            // 未授权，清除token并跳转到登录页
+        const data = response.data
+        
+        // 检查业务状态码，如果code为401，直接跳转到登录页面
+        if (data.code === 401) {
             localStorage.removeItem('token')
             localStorage.removeItem('user')
             window.location.href = '/login'
+            return Promise.reject(new Error(data.message || '未授权访问'))
         }
-        return Promise.reject(error)
+        
+        // 检查success字段，如果为false，提示错误消息
+        if (data.success === false) {
+            const errorMessage = data.message || '操作失败'
+            // 这里可以使用全局的消息提示组件
+            console.error('API Error:', errorMessage)
+            return Promise.reject(new Error(errorMessage))
+        }
+        
+        return data
+    },
+    error => {
+        // HTTP状态码错误处理
+        if (error.response) {
+            const { status, data } = error.response
+            
+            if (status === 401) {
+                // HTTP 401未授权，清除token并跳转到登录页
+                localStorage.removeItem('token')
+                localStorage.removeItem('user')
+                window.location.href = '/login'
+                return Promise.reject(new Error('未授权访问'))
+            }
+            
+            // 其他HTTP错误
+            const errorMessage = data?.message || `请求失败 (${status})`
+            return Promise.reject(new Error(errorMessage))
+        }
+        
+        // 网络错误或超时
+        if (error.code === 'ECONNABORTED') {
+            return Promise.reject(new Error('请求超时'))
+        }
+        
+        return Promise.reject(new Error('网络错误，请检查网络连接'))
     }
 )
-
-// 认证相关API
-export const authAPI = {
-    // 登录
-    login: (credentials) => api.post('/auth/login', credentials),
-
-    // 登出
-    logout: () => api.post('/auth/logout'),
-
-    // 注册
-    register: (userData) => api.post('/auth/register', userData),
-
-    // 获取验证码
-    getVerifyCode: () => api.get('/auth/verify-code', {responseType: 'blob'}),
-
-    // 获取用户信息
-    getProfile: () => api.get('/auth/profile'),
-
-    // 刷新token
-    refreshToken: () => api.post('/auth/refresh-token')
-}
 
 export default api 

@@ -105,23 +105,6 @@ export const settingAPI = {
   updateSmsSettings: (data) => api.put('/setting/sms', data)
 }
 
-// 文件上传API
-export const uploadAPI = {
-  // 上传图片
-  uploadImage: (formData) => api.post('/upload/image', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    }
-  }),
-
-  // 上传文件
-  uploadFile: (formData) => api.post('/upload/file', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    }
-  })
-}
-
 // 向后兼容的单独导出函数
 export const getRoles = (params) => api.get('/role', { params })
 export const getRole = (id) => api.get(`/role/${id}`)
@@ -143,4 +126,4 @@ export const createWorkspace = (data) => api.post('/workspace', data)
 export const updateWorkspace = (id, data) => api.put(`/workspace/${id}`, data)
 export const deleteWorkspace = (id) => api.delete(`/workspace/${id}`)
 
-export default { roleAPI, menuAPI, groupAPI, statsAPI, settingAPI, uploadAPI } 
+export default { roleAPI, menuAPI, groupAPI, statsAPI, settingAPI } 
