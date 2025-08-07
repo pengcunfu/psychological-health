@@ -485,7 +485,6 @@ const getCurrentUser = async () => {
     }
   } catch (error) {
     console.error('获取用户信息失败:', error)
-    message.error('获取用户信息失败')
   }
 }
 

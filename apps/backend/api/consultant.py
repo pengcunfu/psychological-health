@@ -1,4 +1,4 @@
-from flask import Blueprint, request, g
+from flask import Blueprint
 from sqlalchemy import or_, and_
 from models.consultant import Consultant, GenderEnum, RelationshipEnum
 from models.user import User
@@ -8,8 +8,7 @@ import uuid
 from models.base import db
 from utils.json_result import JsonResult
 from utils.validate import validate_args, validate_data
-from utils.auth_helper import get_roles, get_user_id, is_admin, is_manager, is_manager_user
-from middleware.auth import role_required, Roles
+from utils.auth_helper import get_roles, get_user_id, is_manager_user
 
 consultant_bp = Blueprint('consultant', __name__, url_prefix='/consultant')
 

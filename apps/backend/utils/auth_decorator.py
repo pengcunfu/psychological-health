@@ -7,7 +7,8 @@ from utils.logger_client import get_logger
 
 logger = get_logger(__name__)
 
-class AuthMiddleware:
+
+class AuthDecorator:
     """权限中间件"""
 
     @staticmethod
@@ -63,12 +64,12 @@ class AuthMiddleware:
                     # 如果没有user_id，尝试从user_data中获取
                     user_data = user_info.get('user_data', {})
                     user_id = user_data.get('id')
-                
+
                 if not user_id:
                     return JsonResult.error("用户信息不完整", code=401)
 
                 # 检查权限
-                if not AuthMiddleware._check_user_permission(user_id, permission):
+                if not AuthDecorator._check_user_permission(user_id, permission):
                     return JsonResult.error("权限不足", code=403)
 
                 # 延长会话有效期
@@ -106,12 +107,12 @@ class AuthMiddleware:
                     # 如果没有user_id，尝试从user_data中获取
                     user_data = user_info.get('user_data', {})
                     user_id = user_data.get('id')
-                
+
                 if not user_id:
                     return JsonResult.error("用户信息不完整", code=401)
 
                 # 检查角色
-                if not AuthMiddleware._check_user_roles_from_redis(user_info, roles):
+                if not AuthDecorator._check_user_roles_from_redis(user_info, roles):
                     return JsonResult.error("角色权限不足", code=403)
 
                 # 延长会话有效期
@@ -184,7 +185,7 @@ class AuthMiddleware:
             # 从user_data中获取角色信息
             user_data = user_info.get('user_data', {})
             roles = user_data.get('roles', [])
-            
+
             # 提取角色代码
             user_role_codes = []
             for role in roles:
@@ -194,12 +195,12 @@ class AuthMiddleware:
                         user_role_codes.append(code)
                 elif isinstance(role, str):
                     user_role_codes.append(role)
-            
+
             # 检查是否有匹配的角色
             for required_role in required_roles:
                 if required_role in user_role_codes:
                     return True
-            
+
             return False
         except Exception as e:
             logger.error(f"从Redis检查用户角色失败: {e}")
@@ -242,18 +243,18 @@ class AuthMiddleware:
             token = request.headers.get('Authorization')
             if not token:
                 return None
-                
+
             # 移除Bearer前缀
             if token.startswith('Bearer '):
                 token = token[7:]
-                
+
             # 从Redis获取会话信息
             user_info = session_manager.get_session(token)
             if user_info:
                 # 延长会话有效期
                 session_manager.extend_session(token)
                 return user_info
-                
+
             return None
         except Exception as e:
             logger.error(f"获取当前用户信息失败: {e}")
@@ -268,7 +269,7 @@ class AuthMiddleware:
             if not current_session:
                 logger.warning(f"尝试更新不存在的会话: {token[:8]}...")
                 return False
-            
+
             # 更新用户数据
             updated_session = {
                 'user_id': current_session.get('user_id'),
@@ -276,13 +277,13 @@ class AuthMiddleware:
                 'user_data': user_data,
                 'login_ip': current_session.get('login_ip', '')
             }
-            
+
             success = session_manager.update_session(token, updated_session)
             if success:
                 logger.info(f"用户会话数据已更新: {token[:8]}...")
             else:
                 logger.warning(f"用户会话数据更新失败: {token[:8]}...")
-            
+
             return success
         except Exception as e:
             logger.error(f"更新用户会话失败: {e}")
@@ -306,9 +307,9 @@ class AuthMiddleware:
 
 
 # 便捷的装饰器别名
-login_required = AuthMiddleware.login_required
-permission_required = AuthMiddleware.permission_required
-role_required = AuthMiddleware.role_required
+login_required = AuthDecorator.login_required
+permission_required = AuthDecorator.permission_required
+role_required = AuthDecorator.role_required
 
 
 # 权限常量

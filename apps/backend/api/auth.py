@@ -19,7 +19,7 @@ from models.user import User
 from models.role import Role
 from models.user_role import UserRole
 from utils.json_result import JsonResult
-from middleware.auth import AuthMiddleware
+from utils.auth_decorator import AuthDecorator
 from models.base import db
 from utils.verify_code import VerifyCodeGenerator
 from utils.validate import validate_form
@@ -81,7 +81,7 @@ def login():
     }
 
     # 创建会话并检查结果
-    session_created = AuthMiddleware.create_session(user.id, token, user_data)
+    session_created = AuthDecorator.create_session(user.id, token, user_data)
     if not session_created:
         return JsonResult.error("会话创建失败，请重试", 500)
 
@@ -148,7 +148,7 @@ def phone_login():
     }
 
     # 创建会话并检查结果
-    session_created = AuthMiddleware.create_session(user.id, token, user_data)
+    session_created = AuthDecorator.create_session(user.id, token, user_data)
     if not session_created:
         return JsonResult.error("会话创建失败，请重试", 500)
 
@@ -171,7 +171,7 @@ def logout():
     token = request.headers.get('Authorization')
     if token and token.startswith('Bearer '):
         token = token[7:]
-        AuthMiddleware.destroy_session(token)
+        AuthDecorator.destroy_session(token)
 
     return JsonResult.success(None, "登出成功")
 
@@ -243,7 +243,7 @@ def register():
 @login_bp.route('/profile', methods=['GET'])
 def get_profile():
     """获取当前用户信息"""
-    current_user = AuthMiddleware.get_current_user()
+    current_user = AuthDecorator.get_current_user()
     if not current_user:
         return JsonResult.error("获取用户信息失败")
 
@@ -255,7 +255,7 @@ def update_profile():
     """更新当前用户信息"""
     form = validate_form(UpdateProfileForm)
 
-    current_user = AuthMiddleware.get_current_user()
+    current_user = AuthDecorator.get_current_user()
     if not current_user:
         return JsonResult.error("获取用户信息失败", 401)
 
@@ -302,7 +302,7 @@ def change_password():
     """修改密码"""
     form = validate_form(ChangePasswordForm)
 
-    current_user = AuthMiddleware.get_current_user()
+    current_user = AuthDecorator.get_current_user()
     if not current_user:
         return JsonResult.error("获取用户信息失败", 401)
 
@@ -332,7 +332,7 @@ def change_password():
 @login_bp.route('/refresh-token', methods=['POST'])
 def refresh_token():
     """刷新访问令牌"""
-    current_user = AuthMiddleware.get_current_user()
+    current_user = AuthDecorator.get_current_user()
     if not current_user:
         return JsonResult.error("获取用户信息失败")
 
@@ -341,10 +341,10 @@ def refresh_token():
     old_token = current_user['token']
 
     # 销毁旧会话
-    AuthMiddleware.destroy_session(old_token)
+    AuthDecorator.destroy_session(old_token)
 
     # 创建新会话
-    session_created = AuthMiddleware.create_session(
+    session_created = AuthDecorator.create_session(
         current_user['user_id'],
         new_token,
         current_user['user_data']
