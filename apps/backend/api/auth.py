@@ -113,15 +113,20 @@ def phone_login():
     if not verify_password(password, user.password_hash):
         return JsonResult.error("手机号或密码错误", 401)
 
-    # 生成访问令牌
-    token = generate_token()
-
     # 获取用户角色信息
     user_roles_query = db.session.query(UserRole, Role).join(
         Role, UserRole.role_id == Role.id
     ).filter(UserRole.user_id == user.id)
 
     user_roles = [role for _, role in user_roles_query.all()]
+    
+    # 检查用户是否具有'user'角色
+    has_user_role = any(role.code == 'user' for role in user_roles)
+    if not has_user_role:
+        return JsonResult.error("手机号或密码错误", 401)
+
+    # 生成访问令牌
+    token = generate_token()
 
     # 创建会话 - user_data包含User模型的所有数据（除了密码）
     user_data = user.to_dict()  # 使用User模型的to_dict方法

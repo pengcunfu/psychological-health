@@ -20,23 +20,36 @@
       <view class="section">
         <view class="section-title">咨询人</view>
         
-        <!-- 已选择的咨询人 -->
-        <view v-if="selectedConsultant" class="consultant-card selected" @click="showClientPicker">
-          <view class="consultant-info">
-            <view class="consultant-name">{{ selectedConsultant.name }}</view>
-            <view class="consultant-details">
-              <text class="detail-text">{{ getConsultantAge(selectedConsultant) }}</text>
-              <text class="detail-text">{{ selectedConsultant.phone }}</text>
+        <!-- 显示所有咨询人选项 -->
+        <view v-if="consultantList.length > 0">
+          <view 
+            v-for="consultant in consultantList" 
+            :key="consultant.id"
+            class="consultant-card" 
+            :class="{ selected: selectedConsultant?.id === consultant.id }"
+            @click="selectConsultant(consultant)"
+          >
+            <view class="consultant-info">
+              <view class="consultant-name">{{ consultant.name }}</view>
+              <view class="consultant-details">
+                <text class="detail-text">{{ getConsultantAge(consultant) }}</text>
+                <text class="detail-text">{{ consultant.phone }}</text>
+              </view>
             </view>
+            <up-icon 
+              v-if="selectedConsultant?.id === consultant.id" 
+              name="checkmark" 
+              size="16" 
+              color="#4A90E2"
+            ></up-icon>
           </view>
-          <up-icon name="arrow-right" size="16" color="#999"></up-icon>
         </view>
         
-        <!-- 未选择咨询人时的添加按钮 -->
-        <view v-else class="client-card" @click="showClientPicker">
+        <!-- 添加新咨询人按钮 -->
+        <view class="client-card" @click="showClientPicker">
           <view class="add-client">
             <up-icon name="plus" size="24" color="#999"></up-icon>
-            <text class="add-client-text">新增成人账户</text>
+            <text class="add-client-text">新增咨询人</text>
           </view>
         </view>
       </view>
@@ -248,11 +261,6 @@ const fetchConsultantList = async () => {
     
     if (result.success && result.data) {
       consultantList.value = result.data.list || result.data.consultants || []
-      
-      // 如果有咨询人且还没有选中任何咨询人，自动选择第一个
-      if (consultantList.value.length > 0 && !selectedConsultant.value && !selectedClient.value) {
-        selectedConsultant.value = consultantList.value[0]
-      }
     }
   } catch (error) {
     console.error('获取咨询人列表失败:', error)
@@ -267,6 +275,11 @@ const getConsultantAge = (consultant) => {
     return `${consultant.birth_year}年${consultant.birth_month}月 (${age}岁)`
   }
   return '年龄未知'
+}
+
+// 选择咨询人
+const selectConsultant = (consultant) => {
+  selectedConsultant.value = consultant
 }
 
 const selectType = (type) => {
@@ -305,9 +318,9 @@ const submitOrder = () => {
 
   console.log('提交订单:', orderData)
 
-  // 跳转到订单确认或支付页面
+  // 跳转到订单支付页面
   uni.navigateTo({
-    url: `/pages/payment/confirm?data=${encodeURIComponent(JSON.stringify(orderData))}`
+    url: `/pages/order/submit?data=${encodeURIComponent(JSON.stringify(orderData))}`
   })
 }
 
@@ -429,14 +442,18 @@ onMounted(() => {
   align-items: center;
   justify-content: space-between;
   padding: 20rpx 30rpx;
-  background-color: #f5f7fa;
+  background-color: #fff;
+  border: 1rpx solid #f0f0f0;
   border-radius: 12rpx;
   margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
 }
 
 .consultant-card.selected {
   background-color: #e6f7ff;
   border: 1rpx solid #4a90e2;
+  box-shadow: 0 4rpx 12rpx rgba(74, 144, 226, 0.2);
 }
 
 .consultant-info {

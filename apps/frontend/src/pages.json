@@ -176,6 +176,41 @@
 				"navigationBarTitleText": "消息",
 				"navigationStyle": "custom"
 			}
+		},
+		{
+			"path": "pages/profile/setting",
+			"style": {
+				"navigationBarTitleText": "设置",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/profile/help-center",
+			"style": {
+				"navigationBarTitleText": "帮助中心",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/profile/my-assessment",
+			"style": {
+				"navigationBarTitleText": "我的测评",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/order/submit",
+			"style": {
+				"navigationBarTitleText": "订单支付",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/order/pay-success",
+			"style": {
+				"navigationBarTitleText": "支付成功",
+				"navigationStyle": "custom"
+			}
 		}
 	],
 	"globalStyle": {

@@ -10,7 +10,7 @@
       @load="onLoad"
     />
     <!-- 如果SVG加载失败，显示备用图标 -->
-    <u-icon 
+    <up-icon 
       v-else-if="fallbackIcon"
       :name="fallbackIcon" 
       :size="iconSize"
@@ -33,7 +33,7 @@ const props = defineProps({
   },
   path: {
     type: String,
-    default: 'tabbar' // 默认路径
+    default: '' // 默认路径
   },
   size: {
     type: [String, Number],
@@ -65,7 +65,9 @@ const showSvg = ref(true)
 // 计算图标路径
 const iconPath = computed(() => {
   const suffix = props.active ? '-active' : ''
-  const path = `/static/icons/${props.path}/${props.name}${suffix}.svg`
+  const path = props.path 
+    ? `/static/icons/${props.path}/${props.name}${suffix}.svg`
+    : `/static/icons/${props.name}${suffix}.svg`
   return path
 })
 

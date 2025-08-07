@@ -13,7 +13,7 @@
       <image class="user-avatar" :src="userInfo.avatar || '/static/images/default-avatar.png'" mode="aspectFill">
       </image>
       <view class="user-info">
-        <view class="user-name">{{ userInfo.username || userInfo.name || '张三' }}</view>
+        <view class="user-name">{{ userInfo.phone || userInfo.name || '138****1234' }}</view>
         <view class="user-id">ID: {{ userInfo.id || '12345678' }}</view>
       </view>
       <view class="profile-arrow">
@@ -45,7 +45,7 @@
         </view>
       </view>
 
-      <view class="menu-item" @click="navigateTo('/pages/profile/evaluation/index')">
+      <view class="menu-item" @click="navigateTo('/pages/profile/my-assessment')">
         <view class="item-icon">
           <SvgIcon name="checkmark-circle" path="profile" :size="32" color="#FA8C16" />
         </view>
@@ -95,7 +95,7 @@
     <view class="menu-section">
       <view class="section-title">其他</view>
 
-      <view class="menu-item" @click="navigateTo('/pages/profile/help/index')">
+      <view class="menu-item" @click="navigateTo('/pages/profile/help-center')">
         <view class="item-icon">
           <SvgIcon name="help-circle" path="profile" :size="32" color="#1890FF" />
         </view>
@@ -115,15 +115,7 @@
         </view>
       </view>
 
-      <view class="menu-item" @click="navigateTo('/pages/profile/settings/index')">
-        <view class="item-icon">
-          <SvgIcon name="setting" path="profile" :size="32" color="#999" />
-        </view>
-        <view class="item-text">设置</view>
-        <view class="item-arrow">
-          <SvgIcon name="arrow-right" path="profile" :size="28" color="#999" />
-        </view>
-      </view>
+
     </view>
 
     <!-- 退出登录按钮 -->
@@ -211,7 +203,7 @@ const goToEditProfile = () => {
 // 跳转到设置页
 const goToSettings = () => {
   uni.navigateTo({
-    url: '/pages/profile/settings/index'
+    url: '/pages/profile/setting'
   })
 }
 
@@ -231,17 +223,9 @@ const handleLogout = () => {
       if (res.confirm) {
         await userStore.logout()
 
-        uni.showToast({
-          title: '已退出登录',
-          icon: 'success'
+        uni.reLaunch({
+          url: '/pages/login'
         })
-
-        // 刷新页面
-        setTimeout(() => {
-          uni.reLaunch({
-            url: '/pages/index'
-          })
-        }, 1500)
       }
     }
   })
