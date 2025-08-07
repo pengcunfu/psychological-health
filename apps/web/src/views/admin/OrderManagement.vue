@@ -43,51 +43,53 @@
         @change="handleTableChange"
         row-key="id"
     >
-      <template #type="{ record }">
-        <a-tag :color="record.type === 'consultation' ? 'blue' : 'green'">
-          {{ record.type === 'consultation' ? '咨询订单' : '课程订单' }}
-        </a-tag>
-      </template>
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.key === 'type'">
+          <a-tag :color="record.type === 'consultation' ? 'blue' : 'green'">
+            {{ record.type === 'consultation' ? '咨询订单' : '课程订单' }}
+          </a-tag>
+        </template>
 
-      <template #status="{ record }">
-        <a-tag :color="getStatusColor(record.status)">
-          {{ getStatusText(record.status) }}
-        </a-tag>
-      </template>
+        <template v-if="column.key === 'status'">
+          <a-tag :color="getStatusColor(record.status)">
+            {{ getStatusText(record.status) }}
+          </a-tag>
+        </template>
 
-      <template #amount="{ record }">
-        <span class="amount">¥{{ record.amount || 0 }}</span>
-      </template>
+        <template v-if="column.key === 'amount'">
+          <span class="amount">¥{{ record.amount || 0 }}</span>
+        </template>
 
-      <template #createTime="{ record }">
-        {{ formatDate(record.create_time) }}
-      </template>
+        <template v-if="column.key === 'create_time'">
+          {{ formatDate(record.create_time) }}
+        </template>
 
-      <template #action="{ record }">
-        <a-space>
-          <a-button type="link" size="small" @click="viewOrder(record)">
-            查看详情
-          </a-button>
-          <a-dropdown v-if="record.status !== 'completed' && record.status !== 'cancelled'">
-            <a-button type="link" size="small">
-              更新状态
-              <DownOutlined/>
+        <template v-if="column.key === 'action'">
+          <a-space>
+            <a-button type="link" size="small" @click="viewOrder(record)">
+              查看详情
             </a-button>
-            <template #overlay>
-              <a-menu @click="({ key }) => updateOrderStatus(record.id, key)">
-                <a-menu-item v-if="record.status === 'pending'" key="paid">
-                  标记为已支付
-                </a-menu-item>
-                <a-menu-item v-if="record.status === 'paid'" key="completed">
-                  标记为已完成
-                </a-menu-item>
-                <a-menu-item key="cancelled">
-                  取消订单
-                </a-menu-item>
-              </a-menu>
-            </template>
-          </a-dropdown>
-        </a-space>
+            <a-dropdown v-if="record.status !== 'completed' && record.status !== 'cancelled'">
+              <a-button type="link" size="small">
+                更新状态
+                <DownOutlined/>
+              </a-button>
+              <template #overlay>
+                <a-menu @click="({ key }) => updateOrderStatus(record.id, key)">
+                  <a-menu-item v-if="record.status === 'pending'" key="paid">
+                    标记为已支付
+                  </a-menu-item>
+                  <a-menu-item v-if="record.status === 'paid'" key="completed">
+                    标记为已完成
+                  </a-menu-item>
+                  <a-menu-item key="cancelled">
+                    取消订单
+                  </a-menu-item>
+                </a-menu>
+              </template>
+            </a-dropdown>
+          </a-space>
+        </template>
       </template>
     </a-table>
 
@@ -144,208 +146,180 @@
   </div>
 </template>
 
-<script>
-import {ref, reactive, onMounted} from 'vue'
-import {message} from 'ant-design-vue'
-import {DownOutlined} from '@ant-design/icons-vue'
-import {orderAPI} from '@/api'
+<script setup>
+import { ref, reactive, onMounted } from 'vue'
+import { message } from 'ant-design-vue'
+import { DownOutlined } from '@ant-design/icons-vue'
+import { orderAPI } from '@/api'
 
-export default {
-  name: 'OrderManagement',
-  components: {
-    DownOutlined
+defineOptions({
+  name: 'OrderManagement'
+})
+
+const loading = ref(false)
+const orders = ref([])
+const viewModalVisible = ref(false)
+const currentOrder = ref(null)
+
+const searchForm = reactive({
+  type: undefined,
+  status: undefined
+})
+
+const pagination = reactive({
+  current: 1,
+  pageSize: 10,
+  total: 0,
+  showSizeChanger: true,
+  showQuickJumper: true,
+  showTotal: (total) => `共 ${total} 条记录`
+})
+
+const columns = [
+  {
+    title: '订单号',
+    dataIndex: 'id',
+    key: 'id',
+    width: 200
   },
-  setup() {
-    const loading = ref(false)
-    const orders = ref([])
-    const viewModalVisible = ref(false)
-    const currentOrder = ref(null)
+  {
+    title: '订单类型',
+    dataIndex: 'type',
+    key: 'type'
+  },
+  {
+    title: '用户ID',
+    dataIndex: 'user_id',
+    key: 'user_id',
+    width: 120
+  },
+  {
+    title: '产品ID',
+    dataIndex: 'product_id',
+    key: 'product_id',
+    width: 120
+  },
+  {
+    title: '订单金额',
+    dataIndex: 'amount',
+    key: 'amount'
+  },
+  {
+    title: '订单状态',
+    dataIndex: 'status',
+    key: 'status'
+  },
+  {
+    title: '创建时间',
+    dataIndex: 'create_time',
+    key: 'create_time'
+  },
+  {
+    title: '操作',
+    key: 'action',
+    width: 180
+  }
+]
 
-    const searchForm = reactive({
-      type: undefined,
-      status: undefined
-    })
-
-    const pagination = reactive({
-      current: 1,
-      pageSize: 10,
-      total: 0,
-      showSizeChanger: true,
-      showQuickJumper: true,
-      showTotal: (total) => `共 ${total} 条记录`
-    })
-
-    const columns = [
-      {
-        title: '订单号',
-        dataIndex: 'id',
-        key: 'id',
-        width: 200
-      },
-      {
-        title: '订单类型',
-        dataIndex: 'type',
-        key: 'type',
-        slots: {customRender: 'type'}
-      },
-      {
-        title: '用户ID',
-        dataIndex: 'user_id',
-        key: 'user_id',
-        width: 120
-      },
-      {
-        title: '产品ID',
-        dataIndex: 'product_id',
-        key: 'product_id',
-        width: 120
-      },
-      {
-        title: '订单金额',
-        dataIndex: 'amount',
-        key: 'amount',
-        slots: {customRender: 'amount'}
-      },
-      {
-        title: '订单状态',
-        dataIndex: 'status',
-        key: 'status',
-        slots: {customRender: 'status'}
-      },
-      {
-        title: '创建时间',
-        dataIndex: 'create_time',
-        key: 'create_time',
-        slots: {customRender: 'createTime'}
-      },
-      {
-        title: '操作',
-        key: 'action',
-        slots: {customRender: 'action'},
-        width: 180
-      }
-    ]
-
-    // 获取订单列表
-    const fetchOrders = async () => {
-      loading.value = true
-      try {
-        const params = {
-          page: pagination.current,
-          per_page: pagination.pageSize,
-          type: searchForm.type,
-          status: searchForm.status
-        }
-
-        const result = await orderAPI.getOrders(params)
-        if (result.code === 200) {
-          orders.value = result.data.list
-          pagination.total = result.data.total
-        }
-      } catch (error) {
-        message.error('获取订单列表失败')
-      } finally {
-        loading.value = false
-      }
+// 获取订单列表
+const fetchOrders = async () => {
+  loading.value = true
+  try {
+    const params = {
+      page: pagination.current,
+      per_page: pagination.pageSize,
+      type: searchForm.type,
+      status: searchForm.status
     }
 
-    // 搜索
-    const handleSearch = () => {
-      pagination.current = 1
-      fetchOrders()
+    const result = await orderAPI.getOrders(params)
+    if (result.code === 200 || result.success) {
+      orders.value = result.data.list
+      pagination.total = result.data.total
     }
-
-    // 重置搜索
-    const resetSearch = () => {
-      Object.assign(searchForm, {
-        type: undefined,
-        status: undefined
-      })
-      pagination.current = 1
-      fetchOrders()
-    }
-
-    // 表格分页改变
-    const handleTableChange = (pag) => {
-      pagination.current = pag.current
-      pagination.pageSize = pag.pageSize
-      fetchOrders()
-    }
-
-    // 查看订单详情
-    const viewOrder = (order) => {
-      currentOrder.value = order
-      viewModalVisible.value = true
-    }
-
-    // 更新订单状态
-    const updateOrderStatus = async (orderId, status) => {
-      try {
-        const result = await orderAPI.updateOrderStatus(orderId, status)
-        if (result.code === 200) {
-          message.success('状态更新成功')
-          fetchOrders()
-        }
-      } catch (error) {
-        message.error('状态更新失败')
-      }
-    }
-
-    // 获取状态颜色
-    const getStatusColor = (status) => {
-      const colorMap = {
-        pending: 'orange',
-        paid: 'blue',
-        completed: 'green',
-        cancelled: 'red'
-      }
-      return colorMap[status] || 'default'
-    }
-
-    // 获取状态文本
-    const getStatusText = (status) => {
-      const textMap = {
-        pending: '待支付',
-        paid: '已支付',
-        completed: '已完成',
-        cancelled: '已取消'
-      }
-      return textMap[status] || '未知'
-    }
-
-    // 格式化日期
-    const formatDate = (dateString) => {
-      if (!dateString) return '-'
-      return new Date(dateString).toLocaleString('zh-CN')
-    }
-
-    onMounted(() => {
-      fetchOrders()
-    })
-
-    return {
-      loading,
-      orders,
-      searchForm,
-      pagination,
-      columns,
-      viewModalVisible,
-      currentOrder,
-      fetchOrders,
-      handleSearch,
-      resetSearch,
-      handleTableChange,
-      viewOrder,
-      updateOrderStatus,
-      getStatusColor,
-      getStatusText,
-      formatDate
-    }
+  } catch (error) {
+    message.error('获取订单列表失败')
+  } finally {
+    loading.value = false
   }
 }
+
+// 搜索
+const handleSearch = () => {
+  pagination.current = 1
+  fetchOrders()
+}
+
+// 重置搜索
+const resetSearch = () => {
+  Object.assign(searchForm, {
+    type: undefined,
+    status: undefined
+  })
+  pagination.current = 1
+  fetchOrders()
+}
+
+// 表格分页改变
+const handleTableChange = (pag) => {
+  pagination.current = pag.current
+  pagination.pageSize = pag.pageSize
+  fetchOrders()
+}
+
+// 查看订单详情
+const viewOrder = (order) => {
+  currentOrder.value = order
+  viewModalVisible.value = true
+}
+
+// 更新订单状态
+const updateOrderStatus = async (orderId, status) => {
+  try {
+    const result = await orderAPI.updateOrderStatus(orderId, status)
+    if (result.code === 200 || result.success) {
+      message.success('状态更新成功')
+      fetchOrders()
+    }
+  } catch (error) {
+    message.error('状态更新失败')
+  }
+}
+
+// 获取状态颜色
+const getStatusColor = (status) => {
+  const colorMap = {
+    pending: 'orange',
+    paid: 'blue',
+    completed: 'green',
+    cancelled: 'red'
+  }
+  return colorMap[status] || 'default'
+}
+
+// 获取状态文本
+const getStatusText = (status) => {
+  const textMap = {
+    pending: '待支付',
+    paid: '已支付',
+    completed: '已完成',
+    cancelled: '已取消'
+  }
+  return textMap[status] || '未知'
+}
+
+// 格式化日期
+const formatDate = (dateString) => {
+  if (!dateString) return '-'
+  return new Date(dateString).toLocaleString('zh-CN')
+}
+
+onMounted(() => {
+  fetchOrders()
+})
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .order-management {
   padding: 0;
 }
@@ -358,12 +332,14 @@ export default {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
-.search-form .ant-form-item {
-  margin-bottom: 0;
-}
+.search-form {
+  :deep(.ant-form-item) {
+    margin-bottom: 0;
 
-.search-form .ant-form-item:last-child {
-  margin-bottom: 0;
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
 }
 
 .order-detail {
@@ -374,22 +350,22 @@ export default {
   display: flex;
   align-items: flex-start;
   margin-bottom: 12px;
-}
 
-.detail-item .label {
-  font-weight: 500;
-  width: 100px;
-  color: #666;
-  flex-shrink: 0;
-}
+  .label {
+    font-weight: 500;
+    width: 100px;
+    color: #666;
+    flex-shrink: 0;
+  }
 
-.detail-item p {
-  margin: 0;
-  line-height: 1.6;
-}
+  p {
+    margin: 0;
+    line-height: 1.6;
+  }
 
-.detail-item:last-child {
-  margin-bottom: 0;
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
 .amount {
@@ -407,16 +383,18 @@ export default {
     margin-bottom: 8px;
   }
 
-  .search-form .ant-form {
-    flex-direction: column;
-  }
+  .search-form {
+    :deep(.ant-form) {
+      flex-direction: column;
+    }
 
-  .search-form .ant-form-item {
-    margin-bottom: 8px;
-  }
+    :deep(.ant-form-item) {
+      margin-bottom: 8px;
 
-  .search-form .ant-form-item:last-child {
-    margin-bottom: 0;
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
   }
 }
 </style> 

@@ -38,27 +38,27 @@ def get_orders():
     # 构建查询
     query = Order.query
 
-    if form.get_user_id():
-        query = query.filter(Order.user_id == form.get_user_id())
-    if form.get_product_id():
-        query = query.filter(Order.product_id == form.get_product_id())
-    if form.get_type():
+    if form.user_id.data:
+        query = query.filter(Order.user_id == form.user_id.data)
+    if form.product_id.data:
+        query = query.filter(Order.product_id == form.product_id.data)
+    if form.type.data:
         query = query.filter(Order.type == form.get_type())
-    if form.get_status():
-        query = query.filter(Order.status == form.get_status())
+    if form.status.data:
+        query = query.filter(Order.status == form.status.data)
 
     # 分页查询
     pagination = query.order_by(Order.create_time.desc()).paginate(
-        page=form.get_page(),
-        per_page=form.get_per_page(),
+        page=form.page.data,
+        per_page=form.per_page.data,
         error_out=False
     )
 
     return JsonResult.success({
         'orders': [order.to_dict() for order in pagination.items],
         'total': pagination.total,
-        'page': form.get_page(),
-        'per_page': form.get_per_page(),
+        'page': form.page.data,
+        'per_page': form.per_page.data,
         'pages': pagination.pages
     })
 
