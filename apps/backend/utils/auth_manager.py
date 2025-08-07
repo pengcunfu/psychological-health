@@ -8,7 +8,7 @@ from utils.logger_client import get_logger
 logger = get_logger(__name__)
 
 
-class AuthDecorator:
+class AuthManager:
     """权限中间件"""
 
     @staticmethod
@@ -69,7 +69,7 @@ class AuthDecorator:
                     return JsonResult.error("用户信息不完整", code=401)
 
                 # 检查权限
-                if not AuthDecorator._check_user_permission(user_id, permission):
+                if not AuthManager._check_user_permission(user_id, permission):
                     return JsonResult.error("权限不足", code=403)
 
                 # 延长会话有效期
@@ -112,7 +112,7 @@ class AuthDecorator:
                     return JsonResult.error("用户信息不完整", code=401)
 
                 # 检查角色
-                if not AuthDecorator._check_user_roles_from_redis(user_info, roles):
+                if not AuthManager._check_user_roles_from_redis(user_info, roles):
                     return JsonResult.error("角色权限不足", code=403)
 
                 # 延长会话有效期
@@ -307,9 +307,9 @@ class AuthDecorator:
 
 
 # 便捷的装饰器别名
-login_required = AuthDecorator.login_required
-permission_required = AuthDecorator.permission_required
-role_required = AuthDecorator.role_required
+login_required = AuthManager.login_required
+permission_required = AuthManager.permission_required
+role_required = AuthManager.role_required
 
 
 # 权限常量

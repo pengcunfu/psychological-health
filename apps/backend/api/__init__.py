@@ -18,10 +18,10 @@ def static_files(filename):
 # 会话统计API（用于监控）
 def session_stats():
     """获取会话统计信息"""
-    from utils.auth_decorator import AuthDecorator
+    from utils.auth_manager import AuthManager
     from utils.json_result import JsonResult
 
-    stats = AuthDecorator.get_session_stats()
+    stats = AuthManager.get_session_stats()
     return JsonResult.success(stats)
 
 
