@@ -46,12 +46,16 @@ export const consultantAPI = {
   /**
    * 创建咨询人
    * @param {Object} data - 咨询人数据
-   * @param {string} data.name - 姓名
+   * @param {string} data.real_name - 真实姓名
    * @param {string} data.phone - 电话号码
    * @param {number} data.birth_year - 出生年份（可选）
    * @param {number} data.birth_month - 出生月份（可选）
+   * @param {string} data.gender - 性别 (male/female)
+   * @param {string} data.emergency_name - 紧急联系人姓名
+   * @param {string} data.emergency_relationship - 紧急联系人关系
+   * @param {string} data.emergency_phone - 紧急联系人电话
    * @param {string} data.notes - 备注（可选）
-   * @param {boolean} data.is_default - 是否默认咨询人（可选）
+   * @param {number} data.is_default - 是否默认咨询人（可选）
    * @param {string} data.user_id - 关联用户ID（可选）
    * @returns {Promise} API响应
    */

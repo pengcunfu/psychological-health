@@ -225,13 +225,12 @@ const datePickerEnd = ref(new Date().toISOString().substr(0, 7))
 // 关系选择器
 const relationshipPickerShow = ref(false)
 const relationshipList = ref([
-  { label: '父亲', value: 'father' },
-  { label: '母亲', value: 'mother' },
+  { label: '本人', value: 'self' },
   { label: '配偶', value: 'spouse' },
   { label: '子女', value: 'child' },
+  { label: '父母', value: 'parent' },
   { label: '兄弟姐妹', value: 'sibling' },
   { label: '朋友', value: 'friend' },
-  { label: '同事', value: 'colleague' },
   { label: '其他', value: 'other' }
 ])
 const relationshipIndex = ref(0)
@@ -357,14 +356,14 @@ const saveConsultant = async () => {
 
     // 构建提交数据
     const submitData = {
-      name: formData.name.trim(),
+      real_name: formData.name.trim(),
       birth_year: formData.birth_year,
       birth_month: formData.birth_month,
       gender: formData.gender,
       phone: formData.phone,
-      emergency_contact_name: formData.emergencyContact.name.trim(),
-      emergency_contact_relationship: formData.emergencyContact.relationship,
-      emergency_contact_phone: formData.emergencyContact.phone,
+      emergency_name: formData.emergencyContact.name.trim(),
+      emergency_relationship: formData.emergencyContact.relationship,
+      emergency_phone: formData.emergencyContact.phone,
       notes: `性别：${formData.gender === 'male' ? '男' : '女'}，紧急联系人：${formData.emergencyContact.name}（${getRelationshipText(formData.emergencyContact.relationship)}）`
     }
 
