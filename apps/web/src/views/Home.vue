@@ -252,11 +252,11 @@
   </div>
 </template>
 
-<script>
-import {ref, onMounted, computed} from 'vue'
-import {useRouter, useRoute} from 'vue-router'
-import {message} from 'ant-design-vue'
-import {authAPI} from '@/api/admin'
+<script setup>
+import { ref, onMounted, computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { message } from 'ant-design-vue'
+import { authAPI } from '@/api/admin'
 import {
   UserOutlined, 
   SettingOutlined, 
@@ -271,133 +271,102 @@ import {
   MenuUnfoldOutlined
 } from '@ant-design/icons-vue'
 
-export default {
-  name: 'Home',
-  components: {
-    UserOutlined,
-    SettingOutlined,
-    LogoutOutlined,
-    DownOutlined,
-    RightOutlined,
-    HomeOutlined,
-    TeamOutlined,
-    ReadOutlined,
-    ShoppingOutlined,
-    MenuFoldOutlined,
-    MenuUnfoldOutlined
-  },
-  setup() {
-    const router = useRouter()
-    const route = useRoute()
-    const user = ref(null)
-    const collapsed = ref(false)
-    const activeCategoryKey = ref('')
+const router = useRouter()
+const route = useRoute()
+const user = ref(null)
+const collapsed = ref(false)
+const activeCategoryKey = ref('')
 
-    const activePath = computed(() => {
-      return route.path
-    })
+const activePath = computed(() => {
+  return route.path
+})
 
-    // 根据当前路径自动展开对应的菜单分类
-    const initActiveCategory = () => {
-      const path = route.path
-      if (path.includes('/admin/users') || path.includes('/admin/counselors') || path.includes('/admin/consultants') || path.includes('/admin/roles')) {
-        activeCategoryKey.value = 'user'
-      } else if (path.includes('/admin/courses') || path.includes('/admin/course-outlines') || 
-                path.includes('/admin/announcements') || path.includes('/admin/banners')) {
-        activeCategoryKey.value = 'content'
-      } else if (path.includes('/admin/orders') || path.includes('/admin/appointments') || 
-                path.includes('/admin/reviews')) {
-        activeCategoryKey.value = 'business'
-      } else if (path.includes('/admin/categories') || path.includes('/admin/disease-tags') || 
-                path.includes('/admin/menus') || path.includes('/admin/groups') || 
-                path.includes('/admin/workspaces')) {
-        activeCategoryKey.value = 'system'
-      }
-    }
-
-    const toggleCategory = (key) => {
-      if (collapsed.value) {
-        collapsed.value = false
-        activeCategoryKey.value = key
-      } else {
-        activeCategoryKey.value = activeCategoryKey.value === key ? '' : key
-      }
-    }
-
-    const handleLogout = async () => {
-      try {
-        await authAPI.logout()
-        localStorage.removeItem('token')
-        localStorage.removeItem('user')
-        message.success('退出登录成功')
-        router.push('/login')
-      } catch (error) {
-        console.error('Logout error:', error)
-        // 即使API调用失败，也清除本地存储
-        localStorage.removeItem('token')
-        localStorage.removeItem('user')
-        router.push('/login')
-      }
-    }
-
-    const toggleCollapse = () => {
-      collapsed.value = !collapsed.value
-      if (collapsed.value) {
-        activeCategoryKey.value = ''
-      } else {
-        initActiveCategory()
-      }
-    }
-
-    const navigateTo = (path) => {
-      router.push(path)
-    }
-
-    const navigateToProfile = () => {
-      router.push('/profile')
-    }
-
-    const getPageTitle = () => {
-      if (route.path === '/') {
-        return '首页'
-      }
-
-      const routeMatch = route.matched.find(r => r.meta.title)
-      return routeMatch ? routeMatch.meta.title : '心理健康平台'
-    }
-
-    onMounted(() => {
-      // 从localStorage获取用户信息
-      const userInfo = localStorage.getItem('user')
-      if (userInfo) {
-        try {
-          user.value = JSON.parse(userInfo)
-        } catch (error) {
-          console.error('Parse user info error:', error)
-        }
-      }
-      
-      // 初始化激活的菜单分类
-      initActiveCategory()
-    })
-
-    return {
-      user,
-      collapsed,
-      activePath,
-      activeCategoryKey,
-      handleLogout,
-      toggleCollapse,
-      toggleCategory,
-      navigateTo,
-      navigateToProfile,
-      getPageTitle
-    }
+// 根据当前路径自动展开对应的菜单分类
+const initActiveCategory = () => {
+  const path = route.path
+  if (path.includes('/admin/users') || path.includes('/admin/counselors') || path.includes('/admin/consultants') || path.includes('/admin/roles')) {
+    activeCategoryKey.value = 'user'
+  } else if (path.includes('/admin/courses') || path.includes('/admin/course-outlines') || 
+            path.includes('/admin/announcements') || path.includes('/admin/banners')) {
+    activeCategoryKey.value = 'content'
+  } else if (path.includes('/admin/orders') || path.includes('/admin/appointments') || 
+            path.includes('/admin/reviews')) {
+    activeCategoryKey.value = 'business'
+  } else if (path.includes('/admin/categories') || path.includes('/admin/disease-tags') || 
+            path.includes('/admin/menus') || path.includes('/admin/groups') || 
+            path.includes('/admin/workspaces')) {
+    activeCategoryKey.value = 'system'
   }
 }
+
+const toggleCategory = (key) => {
+  if (collapsed.value) {
+    collapsed.value = false
+    activeCategoryKey.value = key
+  } else {
+    activeCategoryKey.value = activeCategoryKey.value === key ? '' : key
+  }
+}
+
+const handleLogout = async () => {
+  try {
+    await authAPI.logout()
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+    message.success('退出登录成功')
+    router.push('/login')
+  } catch (error) {
+    console.error('Logout error:', error)
+    // 即使API调用失败，也清除本地存储
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+    router.push('/login')
+  }
+}
+
+const toggleCollapse = () => {
+  collapsed.value = !collapsed.value
+  if (collapsed.value) {
+    activeCategoryKey.value = ''
+  } else {
+    initActiveCategory()
+  }
+}
+
+const navigateTo = (path) => {
+  router.push(path)
+}
+
+const navigateToProfile = () => {
+  router.push('/profile')
+}
+
+const getPageTitle = () => {
+  if (route.path === '/') {
+    return '首页'
+  }
+
+  const routeMatch = route.matched.find(r => r.meta.title)
+  return routeMatch ? routeMatch.meta.title : '心理健康平台'
+}
+
+onMounted(() => {
+  // 从localStorage获取用户信息
+  const userInfo = localStorage.getItem('user')
+  if (userInfo) {
+    try {
+      user.value = JSON.parse(userInfo)
+    } catch (error) {
+      console.error('Parse user info error:', error)
+    }
+  }
+  
+  // 初始化激活的菜单分类
+  initActiveCategory()
+})
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .admin-layout {
   display: flex;
   height: 100vh;
@@ -415,10 +384,10 @@ export default {
   position: relative;
   overflow-y: auto;
   overflow-x: hidden;
-}
 
-.sidebar.collapsed {
-  width: 80px;
+  &.collapsed {
+    width: 80px;
+  }
 }
 
 .logo {
@@ -427,13 +396,13 @@ export default {
   align-items: center;
   justify-content: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
 
-.logo h2 {
-  color: white;
-  margin: 0;
-  font-size: 18px;
-  white-space: nowrap;
+  h2 {
+    color: white;
+    margin: 0;
+    font-size: 18px;
+    white-space: nowrap;
+  }
 }
 
 .menu {
@@ -448,14 +417,14 @@ export default {
   cursor: pointer;
   transition: background 0.3s;
   margin-bottom: 4px;
-}
 
-.menu-item:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
 
-.menu-item.active {
-  background: #1890ff;
+  &.active {
+    background: #1890ff;
+  }
 }
 
 .menu-icon {
@@ -486,14 +455,14 @@ export default {
   cursor: pointer;
   transition: background 0.3s;
   position: relative;
-}
 
-.category-header:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
 
-.category-header.active {
-  background: rgba(24, 144, 255, 0.2);
+  &.active {
+    background: rgba(24, 144, 255, 0.2);
+  }
 }
 
 .arrow {
@@ -581,20 +550,20 @@ export default {
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 24px;
-}
 
-.welcome-card h2 {
-  color: #1890ff;
-  margin-bottom: 16px;
+  h2 {
+    color: #1890ff;
+    margin-bottom: 16px;
+  }
 }
 
 .stats-cards {
   margin-bottom: 24px;
-}
 
-.stats-cards h3 {
-  font-size: 24px;
-  margin: 8px 0;
+  h3 {
+    font-size: 24px;
+    margin: 8px 0;
+  }
 }
 
 .quick-actions {
@@ -602,11 +571,11 @@ export default {
   padding: 24px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
 
-.quick-actions h3 {
-  margin-bottom: 20px;
-  color: #333;
+  h3 {
+    margin-bottom: 20px;
+    color: #333;
+  }
 }
 
 .actions-grid {
@@ -623,10 +592,10 @@ export default {
 .action-card {
   cursor: pointer;
   transition: transform 0.2s;
-}
 
-.action-card:hover {
-  transform: translateY(-2px);
+  &:hover {
+    transform: translateY(-2px);
+  }
 }
 
 .action-content {
@@ -654,10 +623,10 @@ export default {
     height: 100vh;
     left: 0;
     top: 0;
-  }
 
-  .sidebar.collapsed {
-    left: -80px;
+    &.collapsed {
+      left: -80px;
+    }
   }
 
   .main-content {

@@ -330,7 +330,7 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
 import { message } from 'ant-design-vue'
 import { authAPI, uploadAPI } from '@/api/admin'
@@ -349,306 +349,268 @@ import {
   ExclamationCircleOutlined
 } from '@ant-design/icons-vue'
 
-export default {
-  name: 'UserProfile',
-  components: {
-    UserOutlined,
-    CameraOutlined,
-    LockOutlined,
-    SecurityScanOutlined,
-    PhoneOutlined,
-    MailOutlined,
-    EyeOutlined,
-    SaveOutlined,
-    ReloadOutlined,
-    KeyOutlined,
-    ExclamationCircleOutlined
+const activeTab = ref('basic')
+const profileLoading = ref(false)
+const passwordLoading = ref(false)
+const profileFormRef = ref()
+const passwordFormRef = ref()
+
+// 个人信息表单
+const profileForm = reactive({
+  username: '',
+  phone: '',
+  email: '',
+  realName: '',
+  gender: 0,
+  birthday: null,
+  bio: '',
+  avatar: ''
+})
+
+// 密码修改表单
+const passwordForm = reactive({
+  oldPassword: '',
+  newPassword: '',
+  confirmPassword: ''
+})
+
+// 个人信息验证规则
+const profileRules = {
+  phone: [
+    { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' }
+  ],
+  email: [
+    { type: 'email', message: '请输入正确的邮箱格式', trigger: 'blur' }
+  ],
+  realName: [
+    { max: 20, message: '真实姓名不能超过20个字符', trigger: 'blur' }
+  ]
+}
+
+// 密码修改验证规则
+const passwordRules = {
+  oldPassword: [
+    { required: true, message: '请输入当前密码', trigger: 'blur' }
+  ],
+  newPassword: [
+    { required: true, message: '请输入新密码', trigger: 'blur' },
+    { min: 6, message: '密码长度至少6位', trigger: 'blur' },
+    { max: 20, message: '密码长度不能超过20位', trigger: 'blur' }
+  ],
+  confirmPassword: [
+    { required: true, message: '请确认新密码', trigger: 'blur' },
+    {
+      validator: (rule, value) => {
+        if (value && value !== passwordForm.newPassword) {
+          return Promise.reject('两次输入的密码不一致')
+        }
+        return Promise.resolve()
+      },
+      trigger: 'blur'
+    }
+  ]
+}
+
+// 账户安全项目
+const securityItems = computed(() => [
+  {
+    icon: LockOutlined,
+    color: '#52c41a',
+    title: '登录密码',
+    status: '正常',
+    statusColor: 'green',
+    description: '定期更换密码可以提高账户安全性',
+    actionText: '修改',
+    action: () => {
+      activeTab.value = 'password'
+    }
   },
-  setup() {
-    const activeTab = ref('basic')
-    const profileLoading = ref(false)
-    const passwordLoading = ref(false)
-    const profileFormRef = ref()
-    const passwordFormRef = ref()
-
-    // 个人信息表单
-    const profileForm = reactive({
-      username: '',
-      phone: '',
-      email: '',
-      realName: '',
-      gender: 0,
-      birthday: null,
-      bio: '',
-      avatar: ''
-    })
-
-    // 密码修改表单
-    const passwordForm = reactive({
-      oldPassword: '',
-      newPassword: '',
-      confirmPassword: ''
-    })
-
-    // 个人信息验证规则
-    const profileRules = {
-      phone: [
-        { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' }
-      ],
-      email: [
-        { type: 'email', message: '请输入正确的邮箱格式', trigger: 'blur' }
-      ],
-      realName: [
-        { max: 20, message: '真实姓名不能超过20个字符', trigger: 'blur' }
-      ]
+  {
+    icon: PhoneOutlined,
+    color: profileForm.phone ? '#52c41a' : '#faad14',
+    title: '手机绑定',
+    status: profileForm.phone ? '已绑定' : '未绑定',
+    statusColor: profileForm.phone ? 'green' : 'orange',
+    description: profileForm.phone ? `已绑定手机：${profileForm.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')}` : '绑定手机号可以提高账户安全性',
+    actionText: profileForm.phone ? '更换' : '绑定',
+    action: () => {
+      activeTab.value = 'basic'
+      message.info('请在基本信息页面修改手机号')
     }
-
-    // 密码修改验证规则
-    const passwordRules = {
-      oldPassword: [
-        { required: true, message: '请输入当前密码', trigger: 'blur' }
-      ],
-      newPassword: [
-        { required: true, message: '请输入新密码', trigger: 'blur' },
-        { min: 6, message: '密码长度至少6位', trigger: 'blur' },
-        { max: 20, message: '密码长度不能超过20位', trigger: 'blur' }
-      ],
-      confirmPassword: [
-        { required: true, message: '请确认新密码', trigger: 'blur' },
-        {
-          validator: (rule, value) => {
-            if (value && value !== passwordForm.newPassword) {
-              return Promise.reject('两次输入的密码不一致')
-            }
-            return Promise.resolve()
-          },
-          trigger: 'blur'
-        }
-      ]
+  },
+  {
+    icon: MailOutlined,
+    color: profileForm.email ? '#52c41a' : '#faad14',
+    title: '邮箱绑定',
+    status: profileForm.email ? '已绑定' : '未绑定',
+    statusColor: profileForm.email ? 'green' : 'orange',
+    description: profileForm.email ? `已绑定邮箱：${profileForm.email}` : '绑定邮箱可以用于密码找回',
+    actionText: profileForm.email ? '更换' : '绑定',
+    action: () => {
+      activeTab.value = 'basic'
+      message.info('请在基本信息页面修改邮箱')
     }
-
-    // 账户安全项目
-    const securityItems = computed(() => [
-      {
-        icon: LockOutlined,
-        color: '#52c41a',
-        title: '登录密码',
-        status: '正常',
-        statusColor: 'green',
-        description: '定期更换密码可以提高账户安全性',
-        actionText: '修改',
-        action: () => {
-          activeTab.value = 'password'
-        }
-      },
-      {
-        icon: PhoneOutlined,
-        color: profileForm.phone ? '#52c41a' : '#faad14',
-        title: '手机绑定',
-        status: profileForm.phone ? '已绑定' : '未绑定',
-        statusColor: profileForm.phone ? 'green' : 'orange',
-        description: profileForm.phone ? `已绑定手机：${profileForm.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')}` : '绑定手机号可以提高账户安全性',
-        actionText: profileForm.phone ? '更换' : '绑定',
-        action: () => {
-          activeTab.value = 'basic'
-          message.info('请在基本信息页面修改手机号')
-        }
-      },
-      {
-        icon: MailOutlined,
-        color: profileForm.email ? '#52c41a' : '#faad14',
-        title: '邮箱绑定',
-        status: profileForm.email ? '已绑定' : '未绑定',
-        statusColor: profileForm.email ? 'green' : 'orange',
-        description: profileForm.email ? `已绑定邮箱：${profileForm.email}` : '绑定邮箱可以用于密码找回',
-        actionText: profileForm.email ? '更换' : '绑定',
-        action: () => {
-          activeTab.value = 'basic'
-          message.info('请在基本信息页面修改邮箱')
-        }
-      },
-      {
-        icon: EyeOutlined,
-        color: '#1890ff',
-        title: '登录日志',
-        status: '功能开发中',
-        statusColor: 'blue',
-        description: '查看最近的登录记录和安全日志',
-        actionText: '查看',
-        disabled: true,
-        action: () => {
-          message.info('功能开发中...')
-        }
-      }
-    ])
-
-    // 获取用户信息
-    const getCurrentUser = async () => {
-      try {
-        const response = await authAPI.getCurrentUser()
-        if (response.code === 200) {
-          const user = response.data
-          Object.assign(profileForm, {
-            username: user.username,
-            phone: user.phone || '',
-            email: user.email || '',
-            realName: user.real_name || '',
-            gender: user.gender || 0,
-            birthday: user.birthday ? dayjs(user.birthday) : null,
-            bio: user.bio || '',
-            avatar: user.avatar || ''
-          })
-        }
-      } catch (error) {
-        console.error('获取用户信息失败:', error)
-        message.error('获取用户信息失败')
-      }
-    }
-
-    // 头像上传前的验证
-    const beforeUpload = (file) => {
-      const isImage = file.type.startsWith('image/')
-      if (!isImage) {
-        message.error('只能上传图片文件!')
-        return false
-      }
-      
-      const isLt2M = file.size / 1024 / 1024 < 2
-      if (!isLt2M) {
-        message.error('图片大小不能超过2MB!')
-        return false
-      }
-      
-      return true
-    }
-
-    // 处理头像上传
-    const handleAvatarUpload = async ({ file, onSuccess, onError }) => {
-      try {
-        const formData = new FormData()
-        formData.append('file', file)
-        
-        const response = await uploadAPI.uploadImage(formData)
-        if (response.code === 200) {
-          profileForm.avatar = response.data.url
-          message.success('头像上传成功')
-          onSuccess()
-        } else {
-          throw new Error(response.message || '上传失败')
-        }
-      } catch (error) {
-        console.error('头像上传失败:', error)
-        message.error('头像上传失败')
-        onError(error)
-      }
-    }
-
-    // 禁用未来日期
-    const disabledDate = (current) => {
-      return current && current > dayjs().endOf('day')
-    }
-
-    // 提交个人信息
-    const handleProfileSubmit = async () => {
-      try {
-        profileLoading.value = true
-        
-        const data = {
-          phone: profileForm.phone,
-          email: profileForm.email,
-          real_name: profileForm.realName,
-          gender: profileForm.gender,
-          birthday: profileForm.birthday ? profileForm.birthday.format('YYYY-MM-DD') : null,
-          bio: profileForm.bio,
-          avatar: profileForm.avatar
-        }
-
-        const response = await authAPI.updateProfile(data)
-        if (response.code === 200) {
-          message.success('个人信息更新成功')
-          // 更新本地存储的用户信息
-          const userInfo = JSON.parse(localStorage.getItem('user') || '{}')
-          Object.assign(userInfo, data)
-          localStorage.setItem('user', JSON.stringify(userInfo))
-        } else {
-          throw new Error(response.message || '更新失败')
-        }
-      } catch (error) {
-        console.error('更新个人信息失败:', error)
-        message.error(error.message || '更新个人信息失败')
-      } finally {
-        profileLoading.value = false
-      }
-    }
-
-    // 提交密码修改
-    const handlePasswordSubmit = async () => {
-      try {
-        passwordLoading.value = true
-        
-        const data = {
-          old_password: passwordForm.oldPassword,
-          new_password: passwordForm.newPassword
-        }
-
-        const response = await authAPI.changePassword(data)
-        if (response.code === 200) {
-          message.success('密码修改成功')
-          resetPasswordForm()
-        } else {
-          throw new Error(response.message || '密码修改失败')
-        }
-      } catch (error) {
-        console.error('密码修改失败:', error)
-        message.error(error.message || '密码修改失败')
-      } finally {
-        passwordLoading.value = false
-      }
-    }
-
-    // 重置个人信息表单
-    const resetProfileForm = () => {
-      getCurrentUser()
-    }
-
-    // 重置密码表单
-    const resetPasswordForm = () => {
-      Object.assign(passwordForm, {
-        oldPassword: '',
-        newPassword: '',
-        confirmPassword: ''
-      })
-      passwordFormRef.value?.clearValidate()
-    }
-
-    onMounted(() => {
-      getCurrentUser()
-    })
-
-    return {
-      activeTab,
-      profileLoading,
-      passwordLoading,
-      profileFormRef,
-      passwordFormRef,
-      profileForm,
-      passwordForm,
-      profileRules,
-      passwordRules,
-      securityItems,
-      beforeUpload,
-      handleAvatarUpload,
-      disabledDate,
-      handleProfileSubmit,
-      handlePasswordSubmit,
-      resetProfileForm,
-      resetPasswordForm
+  },
+  {
+    icon: EyeOutlined,
+    color: '#1890ff',
+    title: '登录日志',
+    status: '功能开发中',
+    statusColor: 'blue',
+    description: '查看最近的登录记录和安全日志',
+    actionText: '查看',
+    disabled: true,
+    action: () => {
+      message.info('功能开发中...')
     }
   }
+])
+
+// 获取用户信息
+const getCurrentUser = async () => {
+  try {
+    const response = await authAPI.getCurrentUser()
+    if (response.code === 200) {
+      const user = response.data
+      Object.assign(profileForm, {
+        username: user.username,
+        phone: user.phone || '',
+        email: user.email || '',
+        realName: user.real_name || '',
+        gender: user.gender || 0,
+        birthday: user.birthday ? dayjs(user.birthday) : null,
+        bio: user.bio || '',
+        avatar: user.avatar || ''
+      })
+    }
+  } catch (error) {
+    console.error('获取用户信息失败:', error)
+    message.error('获取用户信息失败')
+  }
 }
+
+// 头像上传前的验证
+const beforeUpload = (file) => {
+  const isImage = file.type.startsWith('image/')
+  if (!isImage) {
+    message.error('只能上传图片文件!')
+    return false
+  }
+  
+  const isLt2M = file.size / 1024 / 1024 < 2
+  if (!isLt2M) {
+    message.error('图片大小不能超过2MB!')
+    return false
+  }
+  
+  return true
+}
+
+// 处理头像上传
+const handleAvatarUpload = async ({ file, onSuccess, onError }) => {
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+    
+    const response = await uploadAPI.uploadImage(formData)
+    if (response.code === 200) {
+      profileForm.avatar = response.data.url
+      message.success('头像上传成功')
+      onSuccess()
+    } else {
+      throw new Error(response.message || '上传失败')
+    }
+  } catch (error) {
+    console.error('头像上传失败:', error)
+    message.error('头像上传失败')
+    onError(error)
+  }
+}
+
+// 禁用未来日期
+const disabledDate = (current) => {
+  return current && current > dayjs().endOf('day')
+}
+
+// 提交个人信息
+const handleProfileSubmit = async () => {
+  try {
+    profileLoading.value = true
+    
+    const data = {
+      phone: profileForm.phone,
+      email: profileForm.email,
+      real_name: profileForm.realName,
+      gender: profileForm.gender,
+      birthday: profileForm.birthday ? profileForm.birthday.format('YYYY-MM-DD') : null,
+      bio: profileForm.bio,
+      avatar: profileForm.avatar
+    }
+
+    const response = await authAPI.updateProfile(data)
+    if (response.code === 200) {
+      message.success('个人信息更新成功')
+      // 更新本地存储的用户信息
+      const userInfo = JSON.parse(localStorage.getItem('user') || '{}')
+      Object.assign(userInfo, data)
+      localStorage.setItem('user', JSON.stringify(userInfo))
+    } else {
+      throw new Error(response.message || '更新失败')
+    }
+  } catch (error) {
+    console.error('更新个人信息失败:', error)
+    message.error(error.message || '更新个人信息失败')
+  } finally {
+    profileLoading.value = false
+  }
+}
+
+// 提交密码修改
+const handlePasswordSubmit = async () => {
+  try {
+    passwordLoading.value = true
+    
+    const data = {
+      old_password: passwordForm.oldPassword,
+      new_password: passwordForm.newPassword
+    }
+
+    const response = await authAPI.changePassword(data)
+    if (response.code === 200) {
+      message.success('密码修改成功')
+      resetPasswordForm()
+    } else {
+      throw new Error(response.message || '密码修改失败')
+    }
+  } catch (error) {
+    console.error('密码修改失败:', error)
+    message.error(error.message || '密码修改失败')
+  } finally {
+    passwordLoading.value = false
+  }
+}
+
+// 重置个人信息表单
+const resetProfileForm = () => {
+  getCurrentUser()
+}
+
+// 重置密码表单
+const resetPasswordForm = () => {
+  Object.assign(passwordForm, {
+    oldPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  })
+  passwordFormRef.value?.clearValidate()
+}
+
+onMounted(() => {
+  getCurrentUser()
+})
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .profile-page {
   min-height: 100vh;
   background: #f0f2f5;
@@ -657,7 +619,7 @@ export default {
 .profile-banner {
   background: white;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-  padding:16px ;
+  padding: 16px;
   margin-bottom: 12px;
 }
 
@@ -672,19 +634,16 @@ export default {
   display: flex;
   align-items: center;
   gap: 20px;
-  
 }
 
 .avatar-wrapper {
   position: relative;
   cursor: pointer;
-
 }
 
 .user-avatar {
   border: 2px solid #f0f0f0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-
 }
 
 .avatar-edit {
@@ -702,11 +661,11 @@ export default {
   font-size: 12px;
   border: 2px solid white;
   transition: all 0.2s;
-}
 
-.avatar-edit:hover {
-  background: #40a9ff;
-  transform: scale(1.05);
+  &:hover {
+    background: #40a9ff;
+    transform: scale(1.05);
+  }
 }
 
 .user-details {
@@ -799,16 +758,16 @@ export default {
   transition: all 0.2s;
   font-weight: 500;
   color: #333;
-}
 
-.nav-item:hover {
-  background: rgba(24, 144, 255, 0.1);
-  color: #1890ff;
-}
+  &:hover {
+    background: rgba(24, 144, 255, 0.1);
+    color: #1890ff;
+  }
 
-.nav-item.active {
-  background: #1890ff;
-  color: white;
+  &.active {
+    background: #1890ff;
+    color: white;
+  }
 }
 
 .nav-icon {
@@ -837,19 +796,19 @@ export default {
 
 .section-header {
   margin-bottom: 20px;
-}
 
-.section-header h2 {
-  font-size: 20px;
-  font-weight: 600;
-  color: #333;
-  margin: 0 0 4px 0;
-}
+  h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 4px 0;
+  }
 
-.section-header p {
-  font-size: 14px;
-  color: #666;
-  margin: 0;
+  p {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+  }
 }
 
 .form-container {
@@ -868,21 +827,21 @@ export default {
 
 .form-group {
   position: relative;
-}
 
-.form-group.full-width {
-  grid-column: 1 / -1;
+  &.full-width {
+    grid-column: 1 / -1;
+  }
 }
 
 .form-input, .form-textarea {
   border-radius: 4px;
   border: 1px solid #d9d9d9;
   transition: all 0.2s;
-}
 
-.form-input:focus, .form-textarea:focus {
-  border-color: #1890ff;
-  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+  &:focus {
+    border-color: #1890ff;
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+  }
 }
 
 .input-tip {
@@ -908,17 +867,17 @@ export default {
   border-radius: 4px;
   font-weight: 500;
   transition: all 0.2s;
-}
 
-.action-btn.primary {
-  background: #1890ff;
-  border-color: #1890ff;
-}
+  &.primary {
+    background: #1890ff;
+    border-color: #1890ff;
 
-.action-btn.primary:hover {
-  background: #40a9ff;
-  border-color: #40a9ff;
-  transform: translateY(-1px);
+    &:hover {
+      background: #40a9ff;
+      border-color: #40a9ff;
+      transform: translateY(-1px);
+    }
+  }
 }
 
 .password-form-wrapper {
@@ -944,15 +903,15 @@ export default {
   border: 1px solid #f0f0f0;
   border-radius: 4px;
   transition: all 0.2s;
-}
 
-.security-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transform: translateY(-1px);
-}
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+  }
 
-.security-card.disabled {
-  opacity: 0.6;
+  &.disabled {
+    opacity: 0.6;
+  }
 }
 
 .security-icon {

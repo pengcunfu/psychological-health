@@ -77,135 +77,117 @@
   </div>
 </template>
 
-<script>
-import {defineComponent, reactive, ref, onMounted} from 'vue';
-import {UserOutlined, LockOutlined} from '@ant-design/icons-vue';
-import {message} from 'ant-design-vue';
-import {useRouter} from 'vue-router';
-import {authAPI} from '@/api/admin';
+<script setup>
+import { reactive, ref, onMounted } from 'vue'
+import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
+import { message } from 'ant-design-vue'
+import { useRouter } from 'vue-router'
+import { authAPI } from '@/api/admin'
 
-export default defineComponent({
-  name: 'Login',
-  components: {
-    UserOutlined,
-    LockOutlined,
-  },
-  setup() {
-    const router = useRouter();
-    const loading = ref(false);
-    const verifyCodeUrl = ref('');
+const router = useRouter()
+const loading = ref(false)
+const verifyCodeUrl = ref('')
 
-    const formState = reactive({
-      username: '',
-      password: '',
-      verifyCode: '',
-      remember: true,
-    });
+const formState = reactive({
+  username: '',
+  password: '',
+  verifyCode: '',
+  remember: true,
+})
 
-    const rules = {
-      username: [
-        {required: true, message: '请输入用户名', trigger: 'blur'},
-        // {min: 3, max: 20, message: '用户名长度必须在3-20个字符之间', trigger: 'blur'},
-      ],
-      password: [
-        {required: true, message: '请输入密码', trigger: 'blur'},
-        // { min: 6, max: 20, message: '密码长度必须在6-20个字符之间', trigger: 'blur' },
-      ],
-      verifyCode: [
-        {required: true, message: '请输入验证码', trigger: 'blur'},
-      ],
-    };
+const rules = {
+  username: [
+    { required: true, message: '请输入用户名', trigger: 'blur' },
+    // {min: 3, max: 20, message: '用户名长度必须在3-20个字符之间', trigger: 'blur'},
+  ],
+  password: [
+    { required: true, message: '请输入密码', trigger: 'blur' },
+    // { min: 6, max: 20, message: '密码长度必须在6-20个字符之间', trigger: 'blur' },
+  ],
+  verifyCode: [
+    { required: true, message: '请输入验证码', trigger: 'blur' },
+  ],
+}
 
-    const refreshVerifyCode = () => {
-      // 调用后端验证码API
-      verifyCodeUrl.value = authAPI.getVerifyCode();
-    };
+const refreshVerifyCode = () => {
+  // 调用后端验证码API
+  verifyCodeUrl.value = authAPI.getVerifyCode()
+}
 
-    const handleSubmit = async () => {
-      loading.value = true;
+const handleSubmit = async () => {
+  loading.value = true
 
-      try {
-        // 构建登录请求数据
-        const loginData = {
-          username: formState.username,
-          password: formState.password
-        };
+  try {
+    // 构建登录请求数据
+    const loginData = {
+      username: formState.username,
+      password: formState.password
+    }
 
-        // 添加验证码参数
-        if (formState.verifyCode) {
-          loginData.verify_code = formState.verifyCode;
-        }
+    // 添加验证码参数
+    if (formState.verifyCode) {
+      loginData.verify_code = formState.verifyCode
+    }
 
-        // 调用登录API
-        const result = await authAPI.login(loginData);
+    // 调用登录API
+    const result = await authAPI.login(loginData)
 
-        // 检查响应
-        if (result.code === 200) {
-          const {token, user} = result.data;
+    // 检查响应
+    if (result.code === 200) {
+      const { token, user } = result.data
 
-          // 存储token和用户信息
-          localStorage.setItem('token', token);
-          localStorage.setItem('user', JSON.stringify(user));
+      // 存储token和用户信息
+      localStorage.setItem('token', token)
+      localStorage.setItem('user', JSON.stringify(user))
 
-          // 如果记住密码，则存储用户名
-          if (formState.remember) {
-            localStorage.setItem('remembered_username', formState.username);
-          } else {
-            localStorage.removeItem('remembered_username');
-          }
-
-          message.success('登录成功');
-          router.push('/');
-        } else {
-          // 处理错误响应
-          message.error(result.message || '登录失败');
-          // 刷新验证码
-          refreshVerifyCode();
-          // 清空验证码输入
-          formState.verifyCode = '';
-        }
-      } catch (error) {
-        console.error('Login error:', error);
-        const errorMsg = error.response?.data?.message || '登录失败，请稍后再试';
-        message.error(errorMsg);
-
-        // 刷新验证码
-        refreshVerifyCode();
-        // 清空验证码输入
-        formState.verifyCode = '';
-      } finally {
-        loading.value = false;
+      // 如果记住密码，则存储用户名
+      if (formState.remember) {
+        localStorage.setItem('remembered_username', formState.username)
+      } else {
+        localStorage.removeItem('remembered_username')
       }
-    };
 
-    // 初始化时，如果有记住的用户名，则填充
-    const initForm = () => {
-      const rememberedUsername = localStorage.getItem('remembered_username');
-      if (rememberedUsername) {
-        formState.username = rememberedUsername;
-        formState.remember = true;
-      }
-    };
+      message.success('登录成功')
+      router.push('/')
+    } else {
+      // 处理错误响应
+      message.error(result.message || '登录失败')
+      // 刷新验证码
+      refreshVerifyCode()
+      // 清空验证码输入
+      formState.verifyCode = ''
+    }
+  } catch (error) {
+    console.error('Login error:', error)
+    const errorMsg = error.response?.data?.message || '登录失败，请稍后再试'
+    message.error(errorMsg)
 
-    // 页面挂载时初始化
-    onMounted(() => {
-      initForm();
-      refreshVerifyCode(); // 页面加载时就获取验证码
-    });
+    // 刷新验证码
+    refreshVerifyCode()
+    // 清空验证码输入
+    formState.verifyCode = ''
+  } finally {
+    loading.value = false
+  }
+}
 
-    return {
-      formState,
-      rules,
-      loading,
-      verifyCodeUrl,
-      handleSubmit,
-      refreshVerifyCode,
-    };
-  },
-});
+// 初始化时，如果有记住的用户名，则填充
+const initForm = () => {
+  const rememberedUsername = localStorage.getItem('remembered_username')
+  if (rememberedUsername) {
+    formState.username = rememberedUsername
+    formState.remember = true
+  }
+}
+
+// 页面挂载时初始化
+onMounted(() => {
+  initForm()
+  refreshVerifyCode() // 页面加载时就获取验证码
+})
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .login-container {
   display: flex;
   justify-content: center;
@@ -216,17 +198,17 @@ export default defineComponent({
   background-position: center;
   background-repeat: no-repeat;
   position: relative;
-}
 
-.login-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.3);
-  z-index: 1;
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1;
+  }
 }
 
 .login-form-wrapper {
@@ -243,18 +225,18 @@ export default defineComponent({
 .login-header {
   text-align: center;
   margin-bottom: 40px;
-}
 
-.login-header h1 {
-  margin-bottom: 8px;
-  color: #ffffff;
-  font-weight: 600;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
+  h1 {
+    margin-bottom: 8px;
+    color: #ffffff;
+    font-weight: 600;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
 
-.login-header p {
-  color: rgba(255, 255, 255, 0.9);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  p {
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
 }
 
 .login-form-button {
@@ -266,56 +248,11 @@ export default defineComponent({
   color: rgba(255, 255, 255, 0.8);
   text-decoration: none;
   transition: color 0.2s;
-}
 
-.login-form-forgot:hover {
-  color: #ffffff;
-  text-decoration: underline;
-}
-
-:deep(.ant-form-item-label > label) {
-  color: rgba(255, 255, 255, 0.9) !important;
-  font-weight: 500;
-}
-
-:deep(.ant-checkbox-wrapper) {
-  color: rgba(255, 255, 255, 0.9) !important;
-}
-
-:deep(.ant-checkbox-wrapper .ant-checkbox-inner) {
-  background-color: rgba(255, 255, 255, 0.9);
-  border-color: rgba(255, 255, 255, 0.6);
-}
-
-:deep(.ant-checkbox-wrapper:hover .ant-checkbox-inner) {
-  border-color: #1890ff;
-}
-
-:deep(.ant-input) {
-  background-color: rgba(255, 255, 255, 0.9);
-  border-color: rgba(255, 255, 255, 0.6);
-  color: #333;
-}
-
-:deep(.ant-input:focus) {
-  background-color: rgba(255, 255, 255, 0.95);
-  border-color: #1890ff;
-  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
-}
-
-:deep(.ant-input-affix-wrapper) {
-  background-color: rgba(255, 255, 255, 0.9);
-  border-color: rgba(255, 255, 255, 0.6);
-}
-
-:deep(.ant-input-affix-wrapper:focus-within) {
-  background-color: rgba(255, 255, 255, 0.95);
-  border-color: #1890ff;
-  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
-}
-
-:deep(.ant-input-prefix) {
-  color: rgba(0, 0, 0, 0.6);
+  &:hover {
+    color: #ffffff;
+    text-decoration: underline;
+  }
 }
 
 .verify-code-container {
@@ -340,5 +277,51 @@ export default defineComponent({
 .verify-code-placeholder {
   color: #666;
   font-size: 12px;
+}
+
+// 深度选择器样式
+:deep(.ant-form-item-label > label) {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 500;
+}
+
+:deep(.ant-checkbox-wrapper) {
+  color: rgba(255, 255, 255, 0.9) !important;
+
+  .ant-checkbox-inner {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-color: rgba(255, 255, 255, 0.6);
+  }
+
+  &:hover .ant-checkbox-inner {
+    border-color: #1890ff;
+  }
+}
+
+:deep(.ant-input) {
+  background-color: rgba(255, 255, 255, 0.9);
+  border-color: rgba(255, 255, 255, 0.6);
+  color: #333;
+
+  &:focus {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-color: #1890ff;
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+  }
+}
+
+:deep(.ant-input-affix-wrapper) {
+  background-color: rgba(255, 255, 255, 0.9);
+  border-color: rgba(255, 255, 255, 0.6);
+
+  &:focus-within {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-color: #1890ff;
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+  }
+}
+
+:deep(.ant-input-prefix) {
+  color: rgba(0, 0, 0, 0.6);
 }
 </style> 

@@ -4,13 +4,11 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'App'
-}
+<script setup>
+// App.vue 使用 setup 语法糖，无需额外的逻辑
 </script>
 
-<style>
+<style lang="scss">
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -32,18 +30,18 @@ html, body {
 /* 滚动条样式 */
 ::-webkit-scrollbar {
   width: 8px;
-}
 
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
+  &-track {
+    background: #f1f1f1;
+  }
 
-::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 4px;
-}
+  &-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
 
-::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
+    &:hover {
+      background: #a8a8a8;
+    }
+  }
 }
 </style>
