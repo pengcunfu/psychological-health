@@ -1,19 +1,5 @@
 <template>
   <div class="consultant-management">
-    <div class="page-header">
-      <h2>咨询人管理</h2>
-      <a-space>
-        <a-button @click="fetchStats">
-          <reload-outlined />
-          刷新统计
-        </a-button>
-        <a-button type="primary" @click="showCreateModal">
-          <plus-outlined />
-          新增咨询人
-        </a-button>
-      </a-space>
-    </div>
-
     <!-- 统计卡片 -->
     <div class="stats-section">
       <a-row :gutter="16">
@@ -43,48 +29,61 @@
     <!-- 搜索筛选区 -->
     <div class="search-section">
       <a-card>
-        <a-form layout="inline" :model="searchForm" @finish="handleSearch">
-          <a-form-item label="关键词">
-            <a-input 
-              v-model:value="searchForm.keyword" 
-              placeholder="姓名、手机号、用户名" 
-              style="width: 200px"
-              allow-clear
-            />
-          </a-form-item>
-          <a-form-item label="性别">
-            <a-select 
-              v-model:value="searchForm.gender" 
-              placeholder="请选择性别" 
-              style="width: 120px"
-              allow-clear
-            >
-              <a-select-option value="">全部</a-select-option>
-              <a-select-option value="male">男</a-select-option>
-              <a-select-option value="female">女</a-select-option>
-            </a-select>
-          </a-form-item>
-          <a-form-item label="状态">
-            <a-select 
-              v-model:value="searchForm.status" 
-              placeholder="请选择状态" 
-              style="width: 120px"
-              allow-clear
-            >
-              <a-select-option :value="1">启用</a-select-option>
-              <a-select-option :value="0">禁用</a-select-option>
-            </a-select>
-          </a-form-item>
-          <a-form-item>
-            <a-button type="primary" html-type="submit">
-              <search-outlined />
-              搜索
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <a-form layout="inline" :model="searchForm" @finish="handleSearch">
+            <a-form-item label="关键词">
+              <a-input 
+                v-model:value="searchForm.keyword" 
+                placeholder="姓名、手机号、用户名" 
+                style="width: 200px"
+                allow-clear
+              />
+            </a-form-item>
+            <a-form-item label="性别">
+              <a-select 
+                v-model:value="searchForm.gender" 
+                placeholder="请选择性别" 
+                style="width: 120px"
+                allow-clear
+              >
+                <a-select-option value="">全部</a-select-option>
+                <a-select-option value="male">男</a-select-option>
+                <a-select-option value="female">女</a-select-option>
+              </a-select>
+            </a-form-item>
+            <a-form-item label="状态">
+              <a-select 
+                v-model:value="searchForm.status" 
+                placeholder="请选择状态" 
+                style="width: 120px"
+                allow-clear
+              >
+                <a-select-option :value="1">启用</a-select-option>
+                <a-select-option :value="0">禁用</a-select-option>
+              </a-select>
+            </a-form-item>
+            <a-form-item>
+              <a-button type="primary" html-type="submit">
+                <search-outlined />
+                搜索
+              </a-button>
+              <a-button @click="resetSearch" style="margin-left: 8px">
+                重置
+              </a-button>
+            </a-form-item>
+          </a-form>
+          
+          <a-space>
+            <a-button @click="fetchStats">
+              <reload-outlined />
+              刷新统计
             </a-button>
-            <a-button @click="resetSearch" style="margin-left: 8px">
-              重置
+            <a-button type="primary" @click="showCreateModal">
+              <plus-outlined />
+              新增咨询人
             </a-button>
-          </a-form-item>
-        </a-form>
+          </a-space>
+        </div>
       </a-card>
     </div>
 
@@ -727,20 +726,6 @@ onMounted(() => {
 <style scoped>
 .consultant-management {
   padding: 0;
-}
-
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-  padding: 0 4px;
-}
-
-.page-header h2 {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 600;
 }
 
 .stats-section {
