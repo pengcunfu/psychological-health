@@ -105,7 +105,7 @@ class AuthManager:
                 user_id = user_info.get('user_id')
                 if not user_id:
                     # 如果没有user_id，尝试从user_data中获取
-                    user_data = user_info.get('user_data', {})
+                    user_data = user_info.get('user', {})
                     user_id = user_data.get('id')
 
                 if not user_id:
@@ -183,8 +183,8 @@ class AuthManager:
         """从Redis用户信息中检查用户是否有指定角色"""
         try:
             # 从user_data中获取角色信息
-            user_data = user_info.get('user_data', {})
-            roles = user_data.get('roles', [])
+            user_data = user_info.get('user', {})
+            roles = user_info.get('roles', [])
 
             # 提取角色代码
             user_role_codes = []
@@ -207,12 +207,13 @@ class AuthManager:
             return False
 
     @staticmethod
-    def create_session(user_id: str, token: str, user_data: dict):
+    def create_session(user_id: str, token: str, user_data: dict, roles_data: list[dict]):
         """创建用户会话"""
         session_data = {
             'user_id': user_id,
             'token': token,
-            'user_data': user_data,
+            'user': user_data,
+            'roles': roles_data,
             'login_ip': request.remote_addr
         }
 
@@ -261,7 +262,7 @@ class AuthManager:
             return None
 
     @staticmethod
-    def update_user_session(token: str, user_data: dict) -> bool:
+    def update_user_session(token: str, user_data: dict, roles_data: list[dict]) -> bool:
         """更新用户会话中的用户数据"""
         try:
             # 获取当前会话信息
@@ -274,7 +275,8 @@ class AuthManager:
             updated_session = {
                 'user_id': current_session.get('user_id'),
                 'token': token,
-                'user_data': user_data,
+                'user': user_data,
+                'roles': roles_data,
                 'login_ip': current_session.get('login_ip', '')
             }
 

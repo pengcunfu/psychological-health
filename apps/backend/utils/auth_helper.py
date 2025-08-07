@@ -1,4 +1,4 @@
-from flask import request, g
+from flask import request
 from typing import List, Optional, Dict, Any
 from utils.redis_client import session_manager
 from utils.exceptions import UnauthorizedError
@@ -11,26 +11,22 @@ def _get_current_user_from_redis() -> Optional[Dict[Any, Any]]:
         Optional[Dict]: 用户信息字典，如果未登录则返回None
     """
     try:
-        # 首先尝试从Flask的g对象获取（如果已经通过中间件验证）
-        if hasattr(g, 'current_user') and g.current_user:
-            return g.current_user
-            
         # 从请求头获取token
         token = request.headers.get('Authorization')
         if not token:
             return None
-            
+
         # 移除Bearer前缀
         if token.startswith('Bearer '):
             token = token[7:]
-            
+
         # 从Redis获取会话信息
         user_info = session_manager.get_session(token)
         if user_info:
             # 延长会话有效期
             session_manager.extend_session(token)
             return user_info
-            
+
         return None
     except Exception:
         return None
@@ -52,13 +48,13 @@ def get_user_id() -> str:
             user_id = session_info.get('user_id')
             if user_id:
                 return user_id
-            
+
             # 如果没有user_id，尝试从user_data中获取
-            user_data = session_info.get('user_data', {})
+            user_data = session_info.get('user', {})
             user_id = user_data.get('id')
             if user_id:
                 return user_id
-        
+
         # 如果没有获取到用户ID，抛出未登录异常
         raise UnauthorizedError("用户未登录")
     except UnauthorizedError:
@@ -79,36 +75,15 @@ def get_roles() -> List[str]:
         session_info = _get_current_user_from_redis()
         if session_info:
             # 从user_data中获取roles
-            user_data = session_info.get('user_data', {})
-            roles = user_data.get('roles', [])
-            
-            # 如果roles是对象数组，提取code字段
-            if isinstance(roles, list):
-                role_codes = []
-                for role in roles:
-                    if isinstance(role, dict):
-                        # 从角色对象中提取code字段
-                        code = role.get('code')
-                        if code:
-                            role_codes.append(code)
-                    elif isinstance(role, str):
-                        # 如果直接是字符串，直接添加
-                        role_codes.append(role)
-                return role_codes
-            
-            # 如果roles是字符串，转换为列表
-            elif isinstance(roles, str):
-                return [roles]
-                
-            # 兼容旧格式：如果有单个role字段
-            role = user_data.get('role')
-            if role:
-                if isinstance(role, dict):
-                    code = role.get('code')
-                    return [code] if code else []
-                elif isinstance(role, str):
-                    return [role]
-                
+            roles = session_info.get('roles', {})
+
+            role_codes = []
+            for role in roles:
+                code = role.get('code')
+                if code:
+                    role_codes.append(code)
+            return role_codes
+
         return []
     except Exception:
         return []
@@ -122,7 +97,7 @@ def get_current_user() -> Optional[Dict[Any, Any]]:
     """
     session_info = _get_current_user_from_redis()
     if session_info:
-        return session_info.get('user_data', {})
+        return session_info.get('user', {})
     return None
 
 
@@ -144,15 +119,11 @@ def get_role_objects() -> List[Dict[str, Any]]:
     try:
         session_info = _get_current_user_from_redis()
         if session_info:
-            user_data = session_info.get('user_data', {})
-            roles = user_data.get('roles', [])
-            
-            if isinstance(roles, list):
-                return [role for role in roles if isinstance(role, dict)]
-                
-        return []
-    except Exception:
-        return []
+            roles = session_info.get('roles', [])
+            return [role for role in roles if isinstance(role, dict)]
+    except Exception as e:
+        pass
+    return []
 
 
 def get_role_names() -> List[str]:
@@ -223,4 +194,4 @@ def has_any_role(required_roles: List[str]) -> bool:
     """
     user_roles = [role.lower() for role in get_roles()]
     required_roles_lower = [role.lower() for role in required_roles]
-    return any(role in user_roles for role in required_roles_lower) 
+    return any(role in user_roles for role in required_roles_lower)

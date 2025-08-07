@@ -12,6 +12,13 @@
         <a-form-item label="真实姓名">
           <a-input v-model:value="searchForm.real_name" placeholder="请输入真实姓名" style="width: 160px;" />
         </a-form-item>
+        <a-form-item label="性别">
+          <a-select v-model:value="searchForm.gender" placeholder="请选择性别" style="width: 120px;" allowClear>
+            <a-select-option :value="0">未知</a-select-option>
+            <a-select-option :value="1">男</a-select-option>
+            <a-select-option :value="2">女</a-select-option>
+          </a-select>
+        </a-form-item>
         <a-form-item label="状态">
           <a-select v-model:value="searchForm.status" placeholder="请选择状态" style="width: 120px;" allowClear>
             <a-select-option :value="1">正常</a-select-option>
@@ -45,6 +52,12 @@
         <template v-if="column.key === 'status'">
           <a-tag :color="record.status === 1 ? 'green' : 'red'">
             {{ record.status === 1 ? '正常' : '禁用' }}
+          </a-tag>
+        </template>
+        
+        <template v-if="column.key === 'gender'">
+          <a-tag :color="record.gender === 1 ? 'blue' : record.gender === 2 ? 'pink' : 'default'">
+            {{ record.gender === 1 ? '男' : record.gender === 2 ? '女' : '未知' }}
           </a-tag>
         </template>
         
@@ -110,8 +123,41 @@
           </a-col>
         </a-row>
 
+        <a-row :gutter="16">
+          <a-col :span="12">
+            <a-form-item label="性别" name="gender">
+              <a-select v-model:value="userForm.gender" placeholder="请选择性别">
+                <a-select-option :value="0">未知</a-select-option>
+                <a-select-option :value="1">男</a-select-option>
+                <a-select-option :value="2">女</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">
+            <a-form-item label="出生日期" name="birth_date">
+              <a-date-picker 
+                v-model:value="userForm.birth_date" 
+                style="width: 100%"
+                placeholder="请选择出生日期"
+                format="YYYY-MM-DD"
+                value-format="YYYY-MM-DD"
+              />
+            </a-form-item>
+          </a-col>
+        </a-row>
+
         <a-form-item label="邮箱" name="email">
           <a-input v-model:value="userForm.email" placeholder="请输入邮箱" />
+        </a-form-item>
+
+        <a-form-item label="简介" name="brief_introduction">
+          <a-textarea 
+            v-model:value="userForm.brief_introduction" 
+            placeholder="请输入个人简介"
+            :rows="4"
+            :max-length="500"
+            show-count
+          />
         </a-form-item>
 
         <a-row :gutter="16">
@@ -238,6 +284,14 @@
           <span>{{ currentUser.nick_name || '未设置' }}</span>
         </div>
         <div class="detail-item">
+          <span class="label">性别：</span>
+          <span>{{ currentUser.gender === 1 ? '男' : currentUser.gender === 2 ? '女' : '未知' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="label">出生日期：</span>
+          <span>{{ currentUser.birth_date || '未设置' }}</span>
+        </div>
+        <div class="detail-item">
           <span class="label">状态：</span>
           <a-tag :color="currentUser.status === 1 ? 'green' : 'red'">
             {{ currentUser.status === 1 ? '正常' : '禁用' }}
@@ -249,6 +303,10 @@
             {{ role.name }}
           </a-tag>
           <span v-if="!currentUser.roles || currentUser.roles.length === 0" class="no-data">未分配角色</span>
+        </div>
+        <div class="detail-item">
+          <span class="label">简介：</span>
+          <div style="margin-top: 4px;">{{ currentUser.brief_introduction || '未设置' }}</div>
         </div>
         <div class="detail-item">
           <span class="label">创建时间：</span>
@@ -282,7 +340,8 @@ const searchForm = reactive({
   username: '',
   phone: '',
   real_name: '',
-  status: undefined
+  status: undefined,
+  gender: undefined
 })
 
 const userForm = reactive({
@@ -293,7 +352,10 @@ const userForm = reactive({
   nick_name: '',
   password: '',
   avatar: '',
-  status: 1
+  status: 1,
+  gender: 0, // 新增性别字段
+  birth_date: null, // 新增出生日期字段
+  brief_introduction: '' // 新增简介字段
 })
 
 const pagination = reactive({
@@ -323,6 +385,12 @@ const columns = [
     dataIndex: 'real_name',
     key: 'real_name',
     width: 100
+  },
+  {
+    title: '性别',
+    dataIndex: 'gender',
+    key: 'gender',
+    width: 80
   },
   {
     title: '昵称',
@@ -396,7 +464,8 @@ const fetchUsers = async () => {
       username: searchForm.username,
       phone: searchForm.phone,
       real_name: searchForm.real_name,
-      status: searchForm.status
+      status: searchForm.status,
+      gender: searchForm.gender
     }
 
     const result = await userAPI.getUsers(params)
@@ -441,7 +510,8 @@ const resetSearch = () => {
     username: '',
     phone: '',
     real_name: '',
-    status: undefined
+    status: undefined,
+    gender: undefined
   })
   pagination.current = 1
   fetchUsers()
@@ -474,7 +544,10 @@ const editUser = (user) => {
     nick_name: user.nick_name,
     avatar: user.avatar,
     status: user.status,
-    password: '' // 编辑时密码为空
+    password: '', // 编辑时密码为空
+    gender: user.gender || 0, // 编辑时设置性别
+    birth_date: user.birth_date, // 编辑时设置出生日期
+    brief_introduction: user.brief_introduction || '' // 编辑时设置简介
   })
   if (user.avatar) {
     // 使用封装的方法获取完整URL进行显示
@@ -592,7 +665,10 @@ const resetUserForm = () => {
     nick_name: '',
     password: '',
     avatar: '',
-    status: 1
+    status: 1,
+    gender: 0, // 重置性别
+    birth_date: null, // 重置出生日期
+    brief_introduction: '' // 重置简介
   })
   fileList.value = []
   userFormRef.value?.resetFields()

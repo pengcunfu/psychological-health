@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, SelectField
+from wtforms import StringField, IntegerField, SelectField, DateField, TextAreaField
 from wtforms.validators import DataRequired, Length, Email, Optional, Regexp, NumberRange
 from .base import BaseForm
 from models.user import User
@@ -42,6 +42,20 @@ class UserCreateForm(BaseForm):
     password = StringField('密码', [
         DataRequired(message='密码不能为空'),
         Length(min=6, max=50, message='密码长度必须在6-50个字符之间')
+    ])
+
+    gender = IntegerField('性别', [
+        Optional(),
+        NumberRange(min=0, max=2, message='性别值必须为0（未知）、1（男）或2（女）')
+    ], default=0)
+
+    birth_date = DateField('出生日期', [
+        Optional()
+    ])
+
+    brief_introduction = TextAreaField('简介', [
+        Optional(),
+        Length(max=500, message='简介长度不能超过500个字符')
     ])
 
     status = IntegerField('状态', [
@@ -89,6 +103,20 @@ class UserUpdateForm(BaseForm):
         Length(min=6, max=50, message='密码长度必须在6-50个字符之间')
     ])
 
+    gender = IntegerField('性别', [
+        Optional(),
+        NumberRange(min=0, max=2, message='性别值必须为0（未知）、1（男）或2（女）')
+    ])
+
+    birth_date = DateField('出生日期', [
+        Optional()
+    ])
+
+    brief_introduction = TextAreaField('简介', [
+        Optional(),
+        Length(max=500, message='简介长度不能超过500个字符')
+    ])
+
     status = IntegerField('状态', [
         Optional(),
         NumberRange(min=0, max=1, message='状态值必须为0或1')
@@ -130,6 +158,11 @@ class UserQueryForm(BaseForm):
     nick_name = StringField('昵称搜索', [
         Optional(),
         Length(max=100, message='昵称长度不能超过100个字符')
+    ])
+
+    gender = IntegerField('性别', [
+        Optional(),
+        NumberRange(min=0, max=2, message='性别值必须为0（未知）、1（男）或2（女）')
     ])
     
     status = IntegerField('状态', [

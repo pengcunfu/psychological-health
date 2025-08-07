@@ -194,7 +194,7 @@
                       v-model:value="profileForm.bio" 
                       placeholder="请输入个人简介，让别人更好地了解您"
                       :rows="4"
-                      :maxlength="200"
+                      :maxlength="500"
                       show-count
                       size="large"
                       class="form-textarea"
@@ -478,8 +478,8 @@ const getCurrentUser = async () => {
         email: user.email || '',
         realName: user.real_name || '',
         gender: user.gender || 0,
-        birthday: user.birthday ? dayjs(user.birthday) : null,
-        bio: user.bio || '',
+        birthday: user.birth_date ? dayjs(user.birth_date) : null,
+        bio: user.brief_introduction || '',
         avatar: user.avatar || ''
       })
     }
@@ -541,8 +541,8 @@ const handleProfileSubmit = async () => {
       email: profileForm.email,
       real_name: profileForm.realName,
       gender: profileForm.gender,
-      birthday: profileForm.birthday ? profileForm.birthday.format('YYYY-MM-DD') : null,
-      bio: profileForm.bio,
+      birth_date: profileForm.birthday ? profileForm.birthday.format('YYYY-MM-DD') : null,
+      brief_introduction: profileForm.bio,
       avatar: profileForm.avatar
     }
 
@@ -583,7 +583,6 @@ const handlePasswordSubmit = async () => {
     }
   } catch (error) {
     console.error('密码修改失败:', error)
-    message.error(error.message || '密码修改失败')
   } finally {
     passwordLoading.value = false
   }

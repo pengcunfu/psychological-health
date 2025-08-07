@@ -54,6 +54,8 @@ def get_users():
             search_conditions.append(User.real_name.like(f'%{form.real_name.data}%'))
         if form.nick_name.data:
             search_conditions.append(User.nick_name.like(f'%{form.nick_name.data}%'))
+        if form.gender.data is not None:
+            search_conditions.append(User.gender == form.gender.data)
         if form.status.data is not None:
             search_conditions.append(User.status == form.status.data)
             
@@ -158,6 +160,9 @@ def create_user():
         real_name=form.real_name.data or '',
         nick_name=form.nick_name.data or '',
         password_hash=hash_password(form.password.data),
+        gender=form.gender.data if form.gender.data is not None else 0,
+        birth_date=form.birth_date.data,
+        brief_introduction=form.brief_introduction.data or '',
         status=form.status.data if form.status.data is not None else 1
     )
     db.session.add(user)
@@ -218,6 +223,12 @@ def update_user(user_id):
         user.nick_name = form.nick_name.data
     if form.password.data:
         user.password_hash = hash_password(form.password.data)
+    if form.gender.data is not None:
+        user.gender = form.gender.data
+    if form.birth_date.data is not None:
+        user.birth_date = form.birth_date.data
+    if form.brief_introduction.data is not None:
+        user.brief_introduction = form.brief_introduction.data
     if form.status.data is not None:
         user.status = form.status.data
     

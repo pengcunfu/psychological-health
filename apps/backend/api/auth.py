@@ -66,22 +66,21 @@ def login():
 
     user_roles = [role for _, role in user_roles_query.all()]
 
-    # 创建会话
-    user_data = {
-        'id': user.id,
-        'username': user.username,
-        'avatar': process_image_url(user.avatar),
-        'phone': user.phone,
-        'email': user.email,
-        'roles': [{
-            'id': role.id,
-            'name': role.name,
-            'code': role.code
-        } for role in user_roles]
-    }
+    # 创建会话 - user_data包含User模型的所有数据（除了密码）
+    user_data = user.to_dict()  # 使用User模型的to_dict方法
+    # 处理头像URL
+    user_data['avatar'] = process_image_url(user.avatar)
+
+    # 角色信息
+    roles_data = [{
+        'id': role.id,
+        'name': role.name,
+        'code': role.code
+    } for role in user_roles]
+    print("角色信息", roles_data)
 
     # 创建会话并检查结果
-    session_created = AuthManager.create_session(user.id, token, user_data)
+    session_created = AuthManager.create_session(user.id, token, user_data, roles_data)
     if not session_created:
         return JsonResult.error("会话创建失败，请重试", 500)
 
@@ -133,22 +132,20 @@ def phone_login():
 
     user_roles = [role for _, role in user_roles_query.all()]
 
-    # 创建会话
-    user_data = {
-        'id': user.id,
-        'username': user.username,
-        'avatar': process_image_url(user.avatar),
-        'phone': user.phone,
-        'email': user.email,
-        'roles': [{
-            'id': role.id,
-            'name': role.name,
-            'code': role.code
-        } for role in user_roles]
-    }
+    # 创建会话 - user_data包含User模型的所有数据（除了密码）
+    user_data = user.to_dict()  # 使用User模型的to_dict方法
+    # 处理头像URL
+    user_data['avatar'] = process_image_url(user.avatar)
+
+    # 角色信息
+    roles_data = [{
+        'id': role.id,
+        'name': role.name,
+        'code': role.code
+    } for role in user_roles]
 
     # 创建会话并检查结果
-    session_created = AuthManager.create_session(user.id, token, user_data)
+    session_created = AuthManager.create_session(user.id, token, user_data, roles_data)
     if not session_created:
         return JsonResult.error("会话创建失败，请重试", 500)
 
@@ -156,6 +153,7 @@ def phone_login():
     response = make_response(JsonResult.success({
         'token': token,
         'user': user_data,
+        'roles': roles_data,
         'expires_in': 7200  # 2小时
     }, "登录成功"))
 
@@ -247,7 +245,7 @@ def get_profile():
     if not current_user:
         return JsonResult.error("获取用户信息失败")
 
-    return JsonResult.success(current_user['user_data'])
+    return JsonResult.success(current_user['user'])
 
 
 @login_bp.route('/profile', methods=['PUT'])
@@ -265,7 +263,7 @@ def update_profile():
         return JsonResult.error("用户不存在", 404)
 
     # 更新用户信息
-    if form.avatar.data:
+    if form.avatar.data is not None:
         user.avatar = form.avatar.data
     if form.phone.data:
         # 检查手机号是否已被其他用户使用
@@ -285,16 +283,41 @@ def update_profile():
         if existing_email:
             return JsonResult.error("邮箱已被其他用户使用", 400)
         user.email = form.email.data
+    if form.real_name.data is not None:
+        user.real_name = form.real_name.data
+    if form.gender.data is not None:
+        user.gender = form.gender.data
+    if form.birth_date.data is not None:
+        user.birth_date = form.birth_date.data
+    if form.brief_introduction.data is not None:
+        user.brief_introduction = form.brief_introduction.data
 
     db.session.commit()
 
-    return JsonResult.success({
-        'id': user.id,
-        'username': user.username,
-        'avatar': user.avatar,
-        'phone': user.phone,
-        'email': user.email
-    }, "更新成功")
+    # 更新Redis中的用户会话信息
+    updated_user_data = user.to_dict()
+    updated_user_data['avatar'] = user.avatar
+    
+    # 获取用户角色信息
+    user_roles_query = db.session.query(UserRole, Role).join(
+        Role, UserRole.role_id == Role.id
+    ).filter(UserRole.user_id == user.id)
+
+    user_roles = [role for _, role in user_roles_query.all()]
+    roles_data = [{
+        'id': role.id,
+        'name': role.name,
+        'code': role.code
+    } for role in user_roles]
+    
+    # 获取当前用户的token
+    token = request.headers.get('Authorization')
+    if token and token.startswith('Bearer '):
+        token = token[7:]
+        # 更新会话中的用户数据
+        AuthManager.update_user_session(token, updated_user_data, roles_data)
+
+    return JsonResult.success(updated_user_data, "更新成功")
 
 
 @login_bp.route('/change-password', methods=['PUT'])
@@ -322,6 +345,10 @@ def change_password():
     if not verify_password(old_password, user.password_hash):
         return JsonResult.error("旧密码错误", 400)
 
+    # 检查新密码是否与当前密码相同
+    if verify_password(new_password, user.password_hash):
+        return JsonResult.error("新密码不能与当前密码相同", 400)
+
     # 更新密码
     user.password_hash = hash_password(new_password)
     db.session.commit()
@@ -343,11 +370,35 @@ def refresh_token():
     # 销毁旧会话
     AuthManager.destroy_session(old_token)
 
+    # 获取用户最新信息
+    user = User.query.filter_by(id=current_user['user_id']).first()
+    if not user:
+        return JsonResult.error("用户不存在", 404)
+
+    # 获取用户角色信息
+    user_roles_query = db.session.query(UserRole, Role).join(
+        Role, UserRole.role_id == Role.id
+    ).filter(UserRole.user_id == user.id)
+
+    user_roles = [role for _, role in user_roles_query.all()]
+
+    # 创建最新的用户数据
+    user_data = user.to_dict()
+    user_data['avatar'] = process_image_url(user.avatar)
+
+    # 角色信息
+    roles_data = [{
+        'id': role.id,
+        'name': role.name,
+        'code': role.code
+    } for role in user_roles]
+
     # 创建新会话
     session_created = AuthManager.create_session(
-        current_user['user_id'],
+        user.id,
         new_token,
-        current_user['user_data']
+        user_data,
+        roles_data
     )
 
     if not session_created:
@@ -355,6 +406,8 @@ def refresh_token():
 
     return JsonResult.success({
         'token': new_token,
+        'user': user_data,
+        'roles': roles_data,
         'expires_in': 7200  # 2小时
     }, "令牌刷新成功")
 

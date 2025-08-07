@@ -1,4 +1,4 @@
-from wtforms import StringField, IntegerField, BooleanField
+from wtforms import StringField, IntegerField, BooleanField, DateField, TextAreaField
 from wtforms.validators import Optional, NumberRange, Length, DataRequired, Email, Regexp
 from wtforms.fields import FieldList
 
@@ -77,6 +77,21 @@ class UpdateProfileForm(BaseForm):
         Optional(),
         Email(message='邮箱格式不正确'),
         Length(max=100, message='邮箱长度不能超过100个字符')
+    ])
+    real_name = StringField('真实姓名', [
+        Optional(),
+        Length(max=100, message='真实姓名长度不能超过100个字符')
+    ])
+    gender = IntegerField('性别', [
+        Optional(),
+        NumberRange(min=0, max=2, message='性别值必须为0、1或2')
+    ])
+    birth_date = DateField('出生日期', [
+        Optional()
+    ])
+    brief_introduction = TextAreaField('个人简介', [
+        Optional(),
+        Length(max=500, message='个人简介长度不能超过500个字符')
     ])
 
 

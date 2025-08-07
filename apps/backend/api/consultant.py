@@ -19,6 +19,8 @@ def get_consultants():
     # 获取当前用户信息
     current_user_id = get_user_id()
     user_roles = get_roles()
+    print(current_user_id)
+    print(user_roles)
     has_manage_permission = is_manager_user()
 
     form = validate_args(ConsultantListForm)
