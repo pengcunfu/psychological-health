@@ -2,3 +2,22 @@ DEBUG: true
 SECRET_KEY: dev-secret-key
 DATABASE_URI: sqlite:///dev.db
 CORS_ORIGINS: '*'
+
+# Redis配置
+REDIS:
+  HOST: localhost
+  PORT: 6379
+  DB: 0
+  PASSWORD: null
+  DECODE_RESPONSES: true
+  
+# Session配置
+SESSION:
+  TYPE: redis
+  PERMANENT: false
+  USE_SIGNER: true
+  KEY_PREFIX: 'session:'
+  REDIS_KEY_PREFIX: 'session:'
+  COOKIE_HTTPONLY: true
+  COOKIE_SECURE: false
+  EXPIRES: 7200  # 2小时，单位：秒

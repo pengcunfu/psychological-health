@@ -2,9 +2,13 @@ from functools import wraps
 from flask import request, g
 from typing import List, Optional
 from utils.json_result import JsonResult
+from utils.redis_client import session_manager
+import logging
 
-# 模拟会话存储（实际项目中应该使用Redis或数据库）
-user_sessions = {}
+logger = logging.getLogger(__name__)
+
+# 移除内存会话存储，改用Redis
+# user_sessions = {}
 
 
 class AuthMiddleware:
@@ -24,10 +28,13 @@ class AuthMiddleware:
             if token.startswith('Bearer '):
                 token = token[7:]
             
-            # 验证token并获取用户信息
-            user_info = user_sessions.get(token)
+            # 从Redis验证token并获取用户信息
+            user_info = session_manager.get_session(token)
             if not user_info:
                 return JsonResult.error("认证令牌无效或已过期", code=401)
+            
+            # 延长会话有效期（每次访问都刷新）
+            session_manager.extend_session(token)
             
             # 将用户信息存储到g对象中
             g.current_user = user_info
@@ -49,13 +56,17 @@ class AuthMiddleware:
                 if token.startswith('Bearer '):
                     token = token[7:]
                 
-                user_info = user_sessions.get(token)
+                # 从Redis获取用户信息
+                user_info = session_manager.get_session(token)
                 if not user_info:
                     return JsonResult.error("认证令牌无效或已过期", code=401)
                 
                 # 检查权限
                 if not AuthMiddleware._check_user_permission(user_info['user_id'], permission):
                     return JsonResult.error("权限不足", code=403)
+                
+                # 延长会话有效期
+                session_manager.extend_session(token)
                 
                 g.current_user = user_info
                 return f(*args, **kwargs)
@@ -77,13 +88,17 @@ class AuthMiddleware:
                 if token.startswith('Bearer '):
                     token = token[7:]
                 
-                user_info = user_sessions.get(token)
+                # 从Redis获取用户信息
+                user_info = session_manager.get_session(token)
                 if not user_info:
                     return JsonResult.error("认证令牌无效或已过期", code=401)
                 
                 # 检查角色
                 if not AuthMiddleware._check_user_roles(user_info['user_id'], roles):
                     return JsonResult.error("角色权限不足", code=403)
+                
+                # 延长会话有效期
+                session_manager.extend_session(token)
                 
                 g.current_user = user_info
                 return f(*args, **kwargs)
@@ -116,7 +131,8 @@ class AuthMiddleware:
                             return True
             
             return False
-        except Exception:
+        except Exception as e:
+            logger.error(f"检查用户权限失败: {e}")
             return False
     
     @staticmethod
@@ -140,29 +156,59 @@ class AuthMiddleware:
                     return True
             
             return False
-        except Exception:
+        except Exception as e:
+            logger.error(f"检查用户角色失败: {e}")
             return False
     
     @staticmethod
     def create_session(user_id: str, token: str, user_data: dict):
         """创建用户会话"""
-        user_sessions[token] = {
+        session_data = {
             'user_id': user_id,
             'token': token,
             'user_data': user_data,
-            'login_time': request.remote_addr
+            'login_ip': request.remote_addr
         }
+        
+        success = session_manager.create_session(token, session_data)
+        if success:
+            logger.info(f"用户 {user_id} 登录成功，会话已创建")
+        else:
+            logger.error(f"用户 {user_id} 会话创建失败")
+        
+        return success
     
     @staticmethod
     def destroy_session(token: str):
         """销毁用户会话"""
-        if token in user_sessions:
-            del user_sessions[token]
+        success = session_manager.destroy_session(token)
+        if success:
+            logger.info(f"会话已销毁: {token[:8]}...")
+        else:
+            logger.error(f"会话销毁失败: {token[:8]}...")
+        
+        return success
     
     @staticmethod
     def get_current_user() -> Optional[dict]:
         """获取当前登录用户"""
         return getattr(g, 'current_user', None)
+    
+    @staticmethod
+    def get_session_stats() -> dict:
+        """获取会话统计信息"""
+        try:
+            total_sessions = session_manager.get_session_count()
+            return {
+                'total_sessions': total_sessions,
+                'redis_available': session_manager.redis_client.is_available()
+            }
+        except Exception as e:
+            logger.error(f"获取会话统计失败: {e}")
+            return {
+                'total_sessions': 0,
+                'redis_available': False
+            }
 
 
 # 便捷的装饰器别名

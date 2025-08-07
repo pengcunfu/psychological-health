@@ -88,7 +88,10 @@ def login():
         } for role in user_roles]
     }
 
-    AuthMiddleware.create_session(user.id, token, user_data)
+    # 创建会话并检查结果
+    session_created = AuthMiddleware.create_session(user.id, token, user_data)
+    if not session_created:
+        return JsonResult.error("会话创建失败，请重试", 500)
 
     return JsonResult.success({
         'token': token,
@@ -141,7 +144,7 @@ def phone_login():
     user_data = {
         'id': user.id,
         'username': user.username,
-        'avatar': user.avatar,
+        'avatar': process_image_url(user.avatar),
         'phone': user.phone,
         'email': user.email,
         'roles': [{
@@ -151,7 +154,10 @@ def phone_login():
         } for role in user_roles]
     }
 
-    AuthMiddleware.create_session(user.id, token, user_data)
+    # 创建会话并检查结果
+    session_created = AuthMiddleware.create_session(user.id, token, user_data)
+    if not session_created:
+        return JsonResult.error("会话创建失败，请重试", 500)
 
     return JsonResult.success({
         'token': token,
@@ -346,11 +352,14 @@ def refresh_token():
     AuthMiddleware.destroy_session(old_token)
 
     # 创建新会话
-    AuthMiddleware.create_session(
+    session_created = AuthMiddleware.create_session(
         current_user['user_id'],
         new_token,
         current_user['user_data']
     )
+    
+    if not session_created:
+        return JsonResult.error("令牌刷新失败，请重新登录", 500)
 
     return JsonResult.success({
         'token': new_token,

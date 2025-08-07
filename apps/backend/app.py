@@ -1,5 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
+import logging
+import os
 from api.announcement import announcements_bp
 from api.appointment import appointment_bp
 from api.assessment import assessment_bp
@@ -25,6 +27,13 @@ from api.group import group_bp
 from api.menu import menu_bp
 from api.workspace import workspace_bp
 
+# 配置日志
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
 app = Flask(__name__)
 CORS(app)
 
@@ -44,6 +53,19 @@ app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['STATIC_FOLDER'] = 'static'
 
 db.init_app(app)
+
+# 初始化Redis连接
+def init_redis():
+    """初始化Redis连接"""
+    try:
+        from utils.redis_client import session_manager
+        if session_manager.redis_client.is_available():
+            logger.info("Redis连接成功，会话将存储到Redis")
+        else:
+            logger.warning("Redis连接失败，会话将存储到内存（降级模式）")
+    except Exception as e:
+        logger.error(f"Redis初始化失败: {e}")
+        logger.warning("将使用内存存储作为降级方案")
 
 # 注册蓝图
 app.register_blueprint(announcements_bp)
@@ -91,9 +113,50 @@ def static_files(filename):
     return send_from_directory(static_dir, filename)
 
 
+# 会话统计API（用于监控）
+@app.route('/api/session/stats')
+def session_stats():
+    """获取会话统计信息"""
+    from middleware.auth import AuthMiddleware
+    from utils.json_result import JsonResult
+    
+    stats = AuthMiddleware.get_session_stats()
+    return JsonResult.success(stats)
+
+
+# Redis健康检查API
+@app.route('/api/health/redis')
+def redis_health():
+    """Redis健康检查"""
+    from utils.redis_client import session_manager
+    from utils.json_result import JsonResult
+    
+    try:
+        is_available = session_manager.redis_client.is_available()
+        if is_available:
+            return JsonResult.success({
+                'status': 'healthy',
+                'message': 'Redis连接正常',
+                'session_count': session_manager.get_session_count()
+            })
+        else:
+            return JsonResult.error({
+                'status': 'degraded',
+                'message': 'Redis连接失败，使用内存存储降级模式',
+                'session_count': session_manager.get_session_count()
+            }, code=503)
+    except Exception as e:
+        return JsonResult.error({
+            'status': 'error',
+            'message': f'Redis检查失败: {str(e)}'
+        }, code=500)
+
+
 # 创建数据库表
 with app.app_context():
     db.create_all()
+    # 初始化Redis
+    init_redis()
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=config.DEBUG)
