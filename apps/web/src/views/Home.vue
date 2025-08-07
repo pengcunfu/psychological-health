@@ -256,7 +256,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { message } from 'ant-design-vue'
-import { authAPI } from '@/api/admin'
+import { authAPI } from '@/api'
 import {
   UserOutlined, 
   SettingOutlined, 

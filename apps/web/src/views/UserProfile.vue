@@ -333,7 +333,7 @@
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
 import { message } from 'ant-design-vue'
-import { authAPI, uploadAPI } from '@/api/admin'
+import { authAPI, uploadAPI } from '@/api'
 import dayjs from 'dayjs'
 import {
   UserOutlined,

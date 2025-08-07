@@ -202,7 +202,7 @@
 import { ref, reactive, onMounted, computed } from 'vue'
 import { message } from 'ant-design-vue'
 import { PlusOutlined, UploadOutlined } from '@ant-design/icons-vue'
-import { userAPI, roleAPI } from '@/api/admin'
+import { userAPI, roleAPI } from '@/api'
 import { uploadAvatar, FileUploader } from '@/api/upload'
 
 const loading = ref(false)

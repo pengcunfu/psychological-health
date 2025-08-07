@@ -96,7 +96,7 @@
 import { ref, reactive, onMounted, computed } from 'vue'
 import { message } from 'ant-design-vue'
 import { PlusOutlined } from '@ant-design/icons-vue'
-import { getDiseaseTags, createDiseaseTag, updateDiseaseTag, deleteDiseaseTag } from '@/api/admin'
+import { getDiseaseTags, createDiseaseTag, updateDiseaseTag, deleteDiseaseTag } from '@/api'
 
 export default {
   name: 'DiseaseTagsManagement',

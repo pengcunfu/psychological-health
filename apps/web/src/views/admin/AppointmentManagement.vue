@@ -247,7 +247,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { message } from 'ant-design-vue'
 import { DownOutlined } from '@ant-design/icons-vue'
-import { appointmentAPI } from '@/api/admin'
+import { appointmentAPI } from '@/api'
 import dayjs from 'dayjs'
 
 const loading = ref(false)

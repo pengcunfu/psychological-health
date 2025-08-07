@@ -297,7 +297,7 @@
 import {ref, reactive, onMounted, computed} from 'vue'
 import {message} from 'ant-design-vue'
 import {PlusOutlined, UploadOutlined} from '@ant-design/icons-vue'
-import {groupAPI, counselorAPI} from '@/api/admin'
+import {groupAPI, counselorAPI} from '@/api'
 import {FileUploader} from '@/api/upload'
     const loading = ref(false)
     const groups = ref([])

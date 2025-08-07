@@ -238,7 +238,7 @@
 import { ref, reactive, onMounted, computed } from 'vue'
 import { message, Modal } from 'ant-design-vue'
 import { PlusOutlined, DownOutlined } from '@ant-design/icons-vue'
-import { assessmentAPI } from '@/api/admin'
+import { assessmentAPI } from '@/api'
 import { FileUploader, uploadAssessment } from '@/api/upload'
 import FileUploaderComponent from '@/components/FileUploader.vue'
 import QuestionManager from './components/QuestionManager.vue'

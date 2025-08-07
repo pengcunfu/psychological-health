@@ -224,7 +224,7 @@
 import { ref, reactive, onMounted, computed } from 'vue'
 import { message } from 'ant-design-vue'
 import { PlusOutlined, DownOutlined } from '@ant-design/icons-vue'
-import { announcementAPI } from '@/api/admin'
+import { announcementAPI } from '@/api'
 import dayjs from 'dayjs'
 
 const loading = ref(false)

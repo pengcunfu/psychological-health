@@ -148,7 +148,7 @@
 import {ref, reactive, onMounted} from 'vue'
 import {message} from 'ant-design-vue'
 import {DownOutlined} from '@ant-design/icons-vue'
-import {orderAPI} from '@/api/admin'
+import {orderAPI} from '@/api'
 
 export default {
   name: 'OrderManagement',

@@ -144,7 +144,7 @@
 import { ref, reactive, onMounted, computed } from 'vue'
 import { message } from 'ant-design-vue'
 import { PlusOutlined } from '@ant-design/icons-vue'
-import { assessmentAPI } from '@/api/admin'
+import { assessmentAPI } from '@/api'
 import OptionManager from './OptionManager.vue'
 
 const props = defineProps({

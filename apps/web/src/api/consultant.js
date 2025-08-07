@@ -3,7 +3,7 @@ import api from '@/utils/api'
 // 咨询人管理API
 export const consultantAPI = {
     // 获取咨询人列表
-    getConsultants: (params) => api.get('/consultant', {params}),
+    getConsultants: (params) => api.get('/consultant', { params }),
 
     // 获取咨询人详情
     getConsultant: (id) => api.get(`/consultant/${id}`),

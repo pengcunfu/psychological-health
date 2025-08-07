@@ -361,7 +361,7 @@ import {
   ReloadOutlined
 } from '@ant-design/icons-vue'
 import { consultantAPI } from '@/api/consultant'
-import { userAPI } from '@/api/admin'
+import { userAPI } from '@/api'
 
 // 数据状态
 const loading = ref(false)

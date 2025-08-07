@@ -167,7 +167,7 @@
 import {ref, reactive, onMounted, computed} from 'vue'
 import {message} from 'ant-design-vue'
 import {PlusOutlined} from '@ant-design/icons-vue'
-import {categoryAPI} from '@/api/admin'
+import {categoryAPI} from '@/api'
     const loading = ref(false)
     const categories = ref([])
     const modalVisible = ref(false)

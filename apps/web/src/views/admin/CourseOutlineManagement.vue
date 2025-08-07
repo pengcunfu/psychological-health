@@ -136,7 +136,7 @@
 import { ref, reactive, onMounted, watch, computed } from 'vue'
 import { message } from 'ant-design-vue'
 import { PlusOutlined, SearchOutlined, ReloadOutlined, UploadOutlined, VideoCameraOutlined } from '@ant-design/icons-vue'
-import { courseOutlineAPI } from '@/api/admin'
+import { courseOutlineAPI } from '@/api'
 import { uploadCourseVideo, FileUploader } from '@/api/upload'
 
 // 表格列定义

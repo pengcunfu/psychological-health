@@ -314,7 +314,7 @@
 import { ref, reactive, onMounted, computed } from 'vue'
 import { message } from 'ant-design-vue'
 import { PlusOutlined, UploadOutlined } from '@ant-design/icons-vue'
-import { getWorkspaces, createWorkspace, updateWorkspace, deleteWorkspace } from '@/api/admin'
+import { getWorkspaces, createWorkspace, updateWorkspace, deleteWorkspace } from '@/api'
 import { FileUploader } from '@/api/upload'
     const loading = ref(false)
     const workspaces = ref([])

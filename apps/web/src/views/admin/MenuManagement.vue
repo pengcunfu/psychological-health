@@ -326,7 +326,7 @@
 import {ref, reactive, onMounted, computed} from 'vue'
 import {message} from 'ant-design-vue'
 import {PlusOutlined} from '@ant-design/icons-vue'
-import {menuAPI} from '@/api/admin'
+import {menuAPI} from '@/api'
 
 export default {
   name: 'MenuManagement',

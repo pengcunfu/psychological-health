@@ -215,7 +215,7 @@
 import {ref, reactive, onMounted} from 'vue'
 import {message} from 'ant-design-vue'
 import {DownOutlined} from '@ant-design/icons-vue'
-import {reviewAPI} from '@/api/admin'
+import {reviewAPI} from '@/api'
 
 export default {
   name: 'ReviewManagement',

@@ -289,7 +289,7 @@
 import {ref, reactive, onMounted, computed} from 'vue'
 import {message} from 'ant-design-vue'
 import {PlusOutlined, UploadOutlined, DownOutlined} from '@ant-design/icons-vue'
-import {courseAPI} from '@/api/admin'
+import {courseAPI} from '@/api'
 import {uploadCourseCover, FileUploader} from '@/api/upload'
 
 export default {

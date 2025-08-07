@@ -113,7 +113,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { message } from 'ant-design-vue'
 import { PlusOutlined } from '@ant-design/icons-vue'
-import { assessmentAPI } from '@/api/admin'
+import { assessmentAPI } from '@/api'
 
 const props = defineProps({
   assessmentId: {

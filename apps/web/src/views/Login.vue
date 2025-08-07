@@ -82,7 +82,7 @@ import { reactive, ref, onMounted } from 'vue'
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { useRouter } from 'vue-router'
-import { authAPI } from '@/api/admin'
+import { authAPI } from '@/api'
 
 const router = useRouter()
 const loading = ref(false)

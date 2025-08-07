@@ -263,7 +263,7 @@
 import {ref, reactive, onMounted, computed} from 'vue'
 import {message} from 'ant-design-vue'
 import {PlusOutlined, UploadOutlined} from '@ant-design/icons-vue'
-import {counselorAPI} from '@/api/admin'
+import {counselorAPI} from '@/api'
 import {uploadAvatar, FileUploader} from '@/api/upload'
 
 export default {

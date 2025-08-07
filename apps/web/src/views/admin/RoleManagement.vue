@@ -95,7 +95,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { message } from 'ant-design-vue'
 import { PlusOutlined, SearchOutlined, ReloadOutlined } from '@ant-design/icons-vue'
-import { getRoles, createRole, updateRole, deleteRole, menuAPI } from '@/api/admin'
+import { getRoles, createRole, updateRole, deleteRole, menuAPI } from '@/api'
 
 defineOptions({
   name: 'RoleManagement'
