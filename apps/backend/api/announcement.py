@@ -75,13 +75,13 @@ def create_announcement():
     # 解析时间字段
     start_time = None
     end_time = None
-    
+
     if form.start_time.data:
         try:
             start_time = datetime.strptime(form.start_time.data, '%Y-%m-%d %H:%M:%S')
         except ValueError:
             return JsonResult.error('生效时间格式错误，请使用 YYYY-MM-DD HH:MM:SS 格式', 400)
-    
+
     if form.end_time.data:
         try:
             end_time = datetime.strptime(form.end_time.data, '%Y-%m-%d %H:%M:%S')
@@ -116,22 +116,22 @@ def update_announcement(announcement_id):
     announcement = Announcement.query.filter_by(id=announcement_id).first()
     if not announcement:
         return JsonResult.error('公告不存在', 404)
-    
+
     form = validate_data(AnnouncementUpdateForm)
-    
+
     # 处理时间字段
     if form.start_time.data:
         try:
             announcement.start_time = datetime.strptime(form.start_time.data, '%Y-%m-%d %H:%M:%S')
         except ValueError:
             return JsonResult.error('生效时间格式错误，请使用 YYYY-MM-DD HH:MM:SS 格式', 400)
-    
+
     if form.end_time.data:
         try:
             announcement.end_time = datetime.strptime(form.end_time.data, '%Y-%m-%d %H:%M:%S')
         except ValueError:
             return JsonResult.error('失效时间格式错误，请使用 YYYY-MM-DD HH:MM:SS 格式', 400)
-    
+
     # 更新其他字段
     if form.title.data is not None:
         announcement.title = form.title.data
@@ -147,7 +147,7 @@ def update_announcement(announcement_id):
         announcement.content = form.content.data
     if form.is_pinned.data is not None:
         announcement.is_pinned = form.is_pinned.data
-    
+
     db.session.commit()
     return JsonResult.success(announcement.to_dict(), '公告更新成功')
 

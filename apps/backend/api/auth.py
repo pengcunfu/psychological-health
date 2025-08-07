@@ -210,7 +210,7 @@ def register():
     new_user = User(
         id=user_id,
         username=username,
-        avatar=form.avatar.data or process_image_url('/static/images/default_avatar.png') ,
+        avatar=form.avatar.data or process_image_url('/static/images/default_avatar.png'),
         phone=phone or '',
         email=email or ''
     )
@@ -357,7 +357,7 @@ def refresh_token():
         new_token,
         current_user['user_data']
     )
-    
+
     if not session_created:
         return JsonResult.error("令牌刷新失败，请重新登录", 500)
 

@@ -132,7 +132,7 @@ def delete_user(user_id):
 def assign_user_roles(user_id):
     """分配用户角色"""
     check_id(user_id, "用户ID不能为空")
-    
+
     user = User.query.filter_by(id=user_id).first()
     if not user:
         return JsonResult.error('用户不存在', 404)

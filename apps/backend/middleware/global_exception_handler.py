@@ -1,8 +1,8 @@
 from flask import Flask, request, g
 from sqlalchemy.exc import SQLAlchemyError
 from utils.json_result import JsonResult
+from utils.logger_client import get_logger
 from models.base import db
-import logging
 import traceback
 
 
@@ -11,6 +11,7 @@ class GlobalExceptionHandler:
     
     def __init__(self, app: Flask = None):
         self.app = app
+        self.logger = get_logger(__name__)
         if app is not None:
             self.init_app(app)
     
@@ -90,7 +91,7 @@ class GlobalExceptionHandler:
             user_id = getattr(g, 'current_user', {}).get('id', 'ANONYMOUS') if hasattr(g, 'current_user') else 'ANONYMOUS'
             
             # 记录详细错误信息
-            logging.error(f"""
+            self.logger.error(f"""
 {error_type}:
 - 用户ID: {user_id}
 - 请求方法: {method}
