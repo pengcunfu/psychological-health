@@ -19,7 +19,21 @@
       <!-- 咨询人信息 -->
       <view class="section">
         <view class="section-title">咨询人</view>
-        <view class="client-card" @click="showClientPicker">
+        
+        <!-- 已选择的咨询人 -->
+        <view v-if="selectedConsultant" class="consultant-card selected" @click="showClientPicker">
+          <view class="consultant-info">
+            <view class="consultant-name">{{ selectedConsultant.name }}</view>
+            <view class="consultant-details">
+              <text class="detail-text">{{ getConsultantAge(selectedConsultant) }}</text>
+              <text class="detail-text">{{ selectedConsultant.phone }}</text>
+            </view>
+          </view>
+          <up-icon name="arrow-right" size="16" color="#999"></up-icon>
+        </view>
+        
+        <!-- 未选择咨询人时的添加按钮 -->
+        <view v-else class="client-card" @click="showClientPicker">
           <view class="add-client">
             <up-icon name="plus" size="24" color="#999"></up-icon>
             <text class="add-client-text">新增成人账户</text>
@@ -114,7 +128,8 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
-import { onLoad } from '@dcloudio/uni-app'
+import { onLoad, onShow } from '@dcloudio/uni-app'
+import { consultantAPI } from '@/api/consultant'
 
 // 页面参数
 const counselorId = ref('')
@@ -122,9 +137,13 @@ const counselorInfo = ref({})
 
 // 表单数据
 const selectedClient = ref('')
+const selectedConsultant = ref(null)
 const selectedType = ref('')
 const selectedMethod = ref('')
 const selectedTimeSlot = ref('')
+
+// 咨询人相关
+const consultantList = ref([])
 
 // 咨询类型选项
 const consultationTypes = ref([
@@ -194,7 +213,7 @@ const totalPrice = computed(() => {
 })
 
 const canSubmit = computed(() => {
-  return selectedClient.value && selectedType.value && selectedMethod.value && selectedTimeSlot.value
+  return (selectedClient.value || selectedConsultant.value) && selectedType.value && selectedMethod.value && selectedTimeSlot.value
 })
 
 // 方法
@@ -207,12 +226,47 @@ const showClientPicker = () => {
     itemList: ['新增成人账户', '新增儿童账户'],
     success: (res) => {
       if (res.tapIndex === 0) {
-        selectedClient.value = 'adult'
+        // 跳转到咨询人创建页面
+        uni.navigateTo({
+          url: '/pages/consultant/create'
+        })
       } else {
+        // 新增儿童账户（暂时保持原逻辑或后续实现）
         selectedClient.value = 'child'
       }
     }
   })
+}
+
+// 获取咨询人列表
+const fetchConsultantList = async () => {
+  try {
+    const result = await consultantAPI.getConsultants({
+      page: 1,
+      per_page: 20
+    })
+    
+    if (result.success && result.data) {
+      consultantList.value = result.data.list || result.data.consultants || []
+      
+      // 如果有咨询人且还没有选中任何咨询人，自动选择第一个
+      if (consultantList.value.length > 0 && !selectedConsultant.value && !selectedClient.value) {
+        selectedConsultant.value = consultantList.value[0]
+      }
+    }
+  } catch (error) {
+    console.error('获取咨询人列表失败:', error)
+  }
+}
+
+// 获取咨询人年龄信息
+const getConsultantAge = (consultant) => {
+  if (consultant.birth_year && consultant.birth_month) {
+    const currentYear = new Date().getFullYear()
+    const age = currentYear - consultant.birth_year
+    return `${consultant.birth_year}年${consultant.birth_month}月 (${age}岁)`
+  }
+  return '年龄未知'
 }
 
 const selectType = (type) => {
@@ -242,6 +296,7 @@ const submitOrder = () => {
   const orderData = {
     counselor_id: counselorId.value,
     client_type: selectedClient.value,
+    consultant_id: selectedConsultant.value?.id,
     consultation_type: selectedType.value,
     consultation_method: selectedMethod.value,
     time_slot_id: selectedTimeSlot.value,
@@ -265,6 +320,12 @@ onLoad((options) => {
   }
 })
 
+// 页面显示时（从其他页面返回时会触发）
+onShow(() => {
+  // 刷新咨询人列表，以便获取新创建的咨询人
+  fetchConsultantList()
+})
+
 const fetchCounselorInfo = async () => {
   try {
     // 这里应该调用API获取咨询师信息
@@ -280,6 +341,7 @@ const fetchCounselorInfo = async () => {
 
 onMounted(() => {
   // 页面初始化
+  fetchConsultantList()
 })
 </script>
 
@@ -360,6 +422,43 @@ onMounted(() => {
   font-size: 28rpx;
   color: #999;
   margin-top: 15rpx;
+}
+
+.consultant-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 30rpx;
+  background-color: #f5f7fa;
+  border-radius: 12rpx;
+  margin-bottom: 20rpx;
+}
+
+.consultant-card.selected {
+  background-color: #e6f7ff;
+  border: 1rpx solid #4a90e2;
+}
+
+.consultant-info {
+  flex: 1;
+  margin-right: 20rpx;
+}
+
+.consultant-name {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5rpx;
+}
+
+.consultant-details {
+  display: flex;
+  gap: 10rpx;
+}
+
+.detail-text {
+  font-size: 24rpx;
+  color: #666;
 }
 
 .consultation-types,

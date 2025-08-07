@@ -3,38 +3,43 @@
     <!-- 左侧菜单 -->
     <div class="sidebar" :class="{ collapsed: collapsed }">
       <div class="logo">
-        <h2 v-if="!collapsed">心理健康平台</h2>
+        <h2 v-if="!collapsed">美光心理后台管理系统</h2>
         <h2 v-else>心理</h2>
       </div>
 
       <div class="menu">
         <!-- 首页 -->
         <div class="menu-item" :class="{ active: activePath === '/' }" @click="navigateTo('/')">
-          <span class="menu-icon"><home-outlined /></span>
+          <span class="menu-icon"><home-outlined/></span>
           <span class="menu-text" v-if="!collapsed">首页</span>
         </div>
 
         <!-- 用户管理分类 -->
         <div class="menu-category">
-          <div class="category-header" @click="toggleCategory('user')" :class="{ active: activeCategoryKey === 'user' }">
-            <span class="menu-icon"><team-outlined /></span>
+          <div class="category-header" @click="toggleCategory('user')"
+               :class="{ active: activeCategoryKey === 'user' }">
+            <span class="menu-icon"><team-outlined/></span>
             <span class="menu-text" v-if="!collapsed">用户管理</span>
             <span class="arrow" v-if="!collapsed">
-              <down-outlined v-if="activeCategoryKey === 'user'" />
-              <right-outlined v-else />
+              <down-outlined v-if="activeCategoryKey === 'user'"/>
+              <right-outlined v-else/>
             </span>
           </div>
           <div class="category-items" v-show="activeCategoryKey === 'user' && !collapsed">
-            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/users' }" @click="navigateTo('/admin/users')">
+            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/users' }"
+                 @click="navigateTo('/admin/users')">
               <span class="menu-text">用户列表</span>
             </div>
-            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/counselors' }" @click="navigateTo('/admin/counselors')">
+            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/counselors' }"
+                 @click="navigateTo('/admin/counselors')">
               <span class="menu-text">咨询师管理</span>
             </div>
-            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/consultants' }" @click="navigateTo('/admin/consultants')">
+            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/consultants' }"
+                 @click="navigateTo('/admin/consultants')">
               <span class="menu-text">咨询人管理</span>
             </div>
-            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/roles' }" @click="navigateTo('/admin/roles')">
+            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/roles' }"
+                 @click="navigateTo('/admin/roles')">
               <span class="menu-text">角色管理</span>
             </div>
           </div>
@@ -42,25 +47,30 @@
 
         <!-- 内容管理分类 -->
         <div class="menu-category">
-          <div class="category-header" @click="toggleCategory('content')" :class="{ active: activeCategoryKey === 'content' }">
-            <span class="menu-icon"><read-outlined /></span>
+          <div class="category-header" @click="toggleCategory('content')"
+               :class="{ active: activeCategoryKey === 'content' }">
+            <span class="menu-icon"><read-outlined/></span>
             <span class="menu-text" v-if="!collapsed">内容管理</span>
             <span class="arrow" v-if="!collapsed">
-              <down-outlined v-if="activeCategoryKey === 'content'" />
-              <right-outlined v-else />
+              <down-outlined v-if="activeCategoryKey === 'content'"/>
+              <right-outlined v-else/>
             </span>
           </div>
           <div class="category-items" v-show="activeCategoryKey === 'content' && !collapsed">
-            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/courses' }" @click="navigateTo('/admin/courses')">
+            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/courses' }"
+                 @click="navigateTo('/admin/courses')">
               <span class="menu-text">课程管理</span>
             </div>
-            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/course-outlines' }" @click="navigateTo('/admin/course-outlines')">
+            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/course-outlines' }"
+                 @click="navigateTo('/admin/course-outlines')">
               <span class="menu-text">课程大纲</span>
             </div>
-            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/announcements' }" @click="navigateTo('/admin/announcements')">
+            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/announcements' }"
+                 @click="navigateTo('/admin/announcements')">
               <span class="menu-text">公告管理</span>
             </div>
-            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/banners' }" @click="navigateTo('/admin/banners')">
+            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/banners' }"
+                 @click="navigateTo('/admin/banners')">
               <span class="menu-text">横幅管理</span>
             </div>
           </div>
@@ -68,25 +78,30 @@
 
         <!-- 业务管理分类 -->
         <div class="menu-category">
-          <div class="category-header" @click="toggleCategory('business')" :class="{ active: activeCategoryKey === 'business' }">
-            <span class="menu-icon"><shopping-outlined /></span>
+          <div class="category-header" @click="toggleCategory('business')"
+               :class="{ active: activeCategoryKey === 'business' }">
+            <span class="menu-icon"><shopping-outlined/></span>
             <span class="menu-text" v-if="!collapsed">业务管理</span>
             <span class="arrow" v-if="!collapsed">
-              <down-outlined v-if="activeCategoryKey === 'business'" />
-              <right-outlined v-else />
+              <down-outlined v-if="activeCategoryKey === 'business'"/>
+              <right-outlined v-else/>
             </span>
           </div>
           <div class="category-items" v-show="activeCategoryKey === 'business' && !collapsed">
-            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/orders' }" @click="navigateTo('/admin/orders')">
+            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/orders' }"
+                 @click="navigateTo('/admin/orders')">
               <span class="menu-text">订单管理</span>
             </div>
-            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/appointments' }" @click="navigateTo('/admin/appointments')">
+            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/appointments' }"
+                 @click="navigateTo('/admin/appointments')">
               <span class="menu-text">预约管理</span>
             </div>
-            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/assessments' }" @click="navigateTo('/admin/assessments')">
+            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/assessments' }"
+                 @click="navigateTo('/admin/assessments')">
               <span class="menu-text">心理测评</span>
             </div>
-            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/reviews' }" @click="navigateTo('/admin/reviews')">
+            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/reviews' }"
+                 @click="navigateTo('/admin/reviews')">
               <span class="menu-text">评价管理</span>
             </div>
           </div>
@@ -94,28 +109,34 @@
 
         <!-- 系统设置分类 -->
         <div class="menu-category">
-          <div class="category-header" @click="toggleCategory('system')" :class="{ active: activeCategoryKey === 'system' }">
-            <span class="menu-icon"><setting-outlined /></span>
+          <div class="category-header" @click="toggleCategory('system')"
+               :class="{ active: activeCategoryKey === 'system' }">
+            <span class="menu-icon"><setting-outlined/></span>
             <span class="menu-text" v-if="!collapsed">系统设置</span>
             <span class="arrow" v-if="!collapsed">
-              <down-outlined v-if="activeCategoryKey === 'system'" />
-              <right-outlined v-else />
+              <down-outlined v-if="activeCategoryKey === 'system'"/>
+              <right-outlined v-else/>
             </span>
           </div>
           <div class="category-items" v-show="activeCategoryKey === 'system' && !collapsed">
-            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/categories' }" @click="navigateTo('/admin/categories')">
+            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/categories' }"
+                 @click="navigateTo('/admin/categories')">
               <span class="menu-text">分类管理</span>
             </div>
-            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/disease-tags' }" @click="navigateTo('/admin/disease-tags')">
+            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/disease-tags' }"
+                 @click="navigateTo('/admin/disease-tags')">
               <span class="menu-text">疾病标签</span>
             </div>
-            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/menus' }" @click="navigateTo('/admin/menus')">
+            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/menus' }"
+                 @click="navigateTo('/admin/menus')">
               <span class="menu-text">菜单管理</span>
             </div>
-            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/groups' }" @click="navigateTo('/admin/groups')">
+            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/groups' }"
+                 @click="navigateTo('/admin/groups')">
               <span class="menu-text">群组管理</span>
             </div>
-            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/workspaces' }" @click="navigateTo('/admin/workspaces')">
+            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/workspaces' }"
+                 @click="navigateTo('/admin/workspaces')">
               <span class="menu-text">工作空间</span>
             </div>
           </div>
@@ -123,8 +144,8 @@
       </div>
 
       <div class="collapse-button" @click="toggleCollapse">
-        <menu-fold-outlined v-if="!collapsed" />
-        <menu-unfold-outlined v-else />
+        <menu-fold-outlined v-if="!collapsed"/>
+        <menu-unfold-outlined v-else/>
       </div>
     </div>
 
@@ -212,7 +233,9 @@
               <router-link to="/admin/users" class="action-link">
                 <a-card hoverable class="action-card">
                   <div class="action-content">
-                    <div class="action-icon"><team-outlined /></div>
+                    <div class="action-icon">
+                      <team-outlined/>
+                    </div>
                     <div class="action-text">用户管理</div>
                   </div>
                 </a-card>
@@ -221,7 +244,9 @@
               <router-link to="/admin/counselors" class="action-link">
                 <a-card hoverable class="action-card">
                   <div class="action-content">
-                    <div class="action-icon"><team-outlined /></div>
+                    <div class="action-icon">
+                      <team-outlined/>
+                    </div>
                     <div class="action-text">咨询师管理</div>
                   </div>
                 </a-card>
@@ -230,7 +255,9 @@
               <router-link to="/admin/courses" class="action-link">
                 <a-card hoverable class="action-card">
                   <div class="action-content">
-                    <div class="action-icon"><read-outlined /></div>
+                    <div class="action-icon">
+                      <read-outlined/>
+                    </div>
                     <div class="action-text">课程管理</div>
                   </div>
                 </a-card>
@@ -239,7 +266,9 @@
               <router-link to="/admin/orders" class="action-link">
                 <a-card hoverable class="action-card">
                   <div class="action-content">
-                    <div class="action-icon"><shopping-outlined /></div>
+                    <div class="action-icon">
+                      <shopping-outlined/>
+                    </div>
                     <div class="action-text">订单管理</div>
                   </div>
                 </a-card>
@@ -253,15 +282,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import { message } from 'ant-design-vue'
-import { authAPI } from '@/api'
+import {ref, onMounted, computed} from 'vue'
+import {useRouter, useRoute} from 'vue-router'
+import {message} from 'ant-design-vue'
+import {authAPI} from '@/api'
 import {
-  UserOutlined, 
-  SettingOutlined, 
-  LogoutOutlined, 
-  DownOutlined, 
+  UserOutlined,
+  SettingOutlined,
+  LogoutOutlined,
+  DownOutlined,
   RightOutlined,
   HomeOutlined,
   TeamOutlined,
@@ -286,15 +315,15 @@ const initActiveCategory = () => {
   const path = route.path
   if (path.includes('/admin/users') || path.includes('/admin/counselors') || path.includes('/admin/consultants') || path.includes('/admin/roles')) {
     activeCategoryKey.value = 'user'
-  } else if (path.includes('/admin/courses') || path.includes('/admin/course-outlines') || 
-            path.includes('/admin/announcements') || path.includes('/admin/banners')) {
+  } else if (path.includes('/admin/courses') || path.includes('/admin/course-outlines') ||
+      path.includes('/admin/announcements') || path.includes('/admin/banners')) {
     activeCategoryKey.value = 'content'
-  } else if (path.includes('/admin/orders') || path.includes('/admin/appointments') || 
-            path.includes('/admin/reviews')) {
+  } else if (path.includes('/admin/orders') || path.includes('/admin/appointments') ||
+      path.includes('/admin/reviews')) {
     activeCategoryKey.value = 'business'
-  } else if (path.includes('/admin/categories') || path.includes('/admin/disease-tags') || 
-            path.includes('/admin/menus') || path.includes('/admin/groups') || 
-            path.includes('/admin/workspaces')) {
+  } else if (path.includes('/admin/categories') || path.includes('/admin/disease-tags') ||
+      path.includes('/admin/menus') || path.includes('/admin/groups') ||
+      path.includes('/admin/workspaces')) {
     activeCategoryKey.value = 'system'
   }
 }
@@ -360,7 +389,7 @@ onMounted(() => {
       console.error('Parse user info error:', error)
     }
   }
-  
+
   // 初始化激活的菜单分类
   initActiveCategory()
 })
