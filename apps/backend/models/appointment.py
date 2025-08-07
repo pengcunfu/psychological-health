@@ -1,6 +1,7 @@
 from datetime import datetime
 
-from sqlalchemy import Column, String, DateTime, Integer
+from sqlalchemy import Column, String, DateTime, Integer, ForeignKey
+from sqlalchemy.orm import relationship
 
 from .base import BaseModel
 
@@ -11,8 +12,12 @@ class Appointment(BaseModel):
 
     user_id = Column(String(50), nullable=False)  # 用户ID
     counselor_id = Column(String(50), nullable=False)  # 咨询师ID
+    consultant_id = Column(String(50), ForeignKey('consultants.id'), nullable=True)  # 咨询人ID
     appointment_time = Column(DateTime, nullable=False)  # 预约时间
     status = Column(Integer, default=0)  # 预约状态（0-待确认，1-已确认，2-已完成，3-已取消）
+
+    # 关系
+    consultant = relationship("Consultant", back_populates="appointments")
 
     def is_confirmed(self):
         return self.status == 1
@@ -44,6 +49,7 @@ class Appointment(BaseModel):
             'id': self.id,
             'user_id': self.user_id,
             'counselor_id': self.counselor_id,
+            'consultant_id': self.consultant_id,
             'appointment_time': self.appointment_time.isoformat() if self.appointment_time else None,
             'status': self.status,
             'create_time': self.create_time.isoformat() if self.create_time else None,
@@ -51,4 +57,4 @@ class Appointment(BaseModel):
         }
 
     def __str__(self):
-        return f"Appointment(id={self.id}, user_id={self.user_id}, counselor_id={self.counselor_id}, appointment_time={self.appointment_time}, status={self.status}, create_time={self.create_time}, update_time={self.update_time})"
+        return f"Appointment(id={self.id}, user_id={self.user_id}, counselor_id={self.counselor_id}, consultant_id={self.consultant_id}, appointment_time={self.appointment_time}, status={self.status}, create_time={self.create_time}, update_time={self.update_time})"

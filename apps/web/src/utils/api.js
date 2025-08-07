@@ -2,7 +2,7 @@ import axios from 'axios'
 
 // 创建axios实例
 const api = axios.create({
-    baseURL: process.env.VUE_APP_API_BASE_URL || 'http://localhost:5000',
+    baseURL: import.meta.env.VITE_APP_API_URL || '/api',
     timeout: 10000,
     headers: {
         'Content-Type': 'application/json'
@@ -14,7 +14,7 @@ api.interceptors.request.use(
     config => {
         const token = localStorage.getItem('token')
         if (token) {
-            config.headers.Authorization = `Bearer ${token}`
+            config.headers['Authorization'] = `Bearer ${token}`
         }
         return config
     },
@@ -29,14 +29,11 @@ api.interceptors.response.use(
         return response.data
     },
     error => {
-        if (error.response) {
-            // 处理401未授权错误
-            if (error.response.status === 401) {
-                localStorage.removeItem('token')
-                localStorage.removeItem('user')
-                window.location.href = '/login'
-            }
-            return Promise.reject(error.response.data)
+        if (error.response && error.response.status === 401) {
+            // 未授权，清除token并跳转到登录页
+            localStorage.removeItem('token')
+            localStorage.removeItem('user')
+            window.location.href = '/login'
         }
         return Promise.reject(error)
     }

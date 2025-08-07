@@ -31,6 +31,9 @@
             <div class="menu-item sub-item" :class="{ active: activePath === '/admin/counselors' }" @click="navigateTo('/admin/counselors')">
               <span class="menu-text">咨询师管理</span>
             </div>
+            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/consultants' }" @click="navigateTo('/admin/consultants')">
+              <span class="menu-text">咨询人管理</span>
+            </div>
             <div class="menu-item sub-item" :class="{ active: activePath === '/admin/roles' }" @click="navigateTo('/admin/roles')">
               <span class="menu-text">角色管理</span>
             </div>
@@ -297,7 +300,7 @@ export default {
     // 根据当前路径自动展开对应的菜单分类
     const initActiveCategory = () => {
       const path = route.path
-      if (path.includes('/admin/users') || path.includes('/admin/counselors') || path.includes('/admin/roles')) {
+      if (path.includes('/admin/users') || path.includes('/admin/counselors') || path.includes('/admin/consultants') || path.includes('/admin/roles')) {
         activeCategoryKey.value = 'user'
       } else if (path.includes('/admin/courses') || path.includes('/admin/course-outlines') || 
                 path.includes('/admin/announcements') || path.includes('/admin/banners')) {

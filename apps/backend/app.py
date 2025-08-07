@@ -5,6 +5,7 @@ from api.appointment import appointment_bp
 from api.assessment import assessment_bp
 from api.disease_tags import disease_tags_bp
 from api.counselor import counselor_bp
+from api.consultant import consultant_bp
 from api.course import course_bp
 from api.course_outline import course_outline_bp
 from api.user_favorite import user_favorite_bp
@@ -50,6 +51,7 @@ app.register_blueprint(appointment_bp)
 app.register_blueprint(assessment_bp)
 app.register_blueprint(disease_tags_bp)
 app.register_blueprint(counselor_bp)
+app.register_blueprint(consultant_bp)
 app.register_blueprint(course_bp)
 app.register_blueprint(course_outline_bp)
 app.register_blueprint(user_favorite_bp)

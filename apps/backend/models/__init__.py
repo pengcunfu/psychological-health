@@ -4,6 +4,7 @@ from .appointment import *
 from .assessment import *
 from .banner import *
 from .category import *
+from .consultant import *
 from .course import *
 from .course_outline import *
 from .counselor import *

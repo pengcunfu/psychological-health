@@ -4,6 +4,7 @@ import Home from '@/views/Home.vue'
 import UserProfile from '@/views/UserProfile.vue'
 import UserManagement from '@/views/admin/UserManagement.vue'
 import CounselorManagement from '@/views/admin/CounselorManagement.vue'
+import ConsultantManagement from '@/views/admin/ConsultantManagement.vue'
 import OrderManagement from '@/views/admin/OrderManagement.vue'
 import CourseManagement from '@/views/admin/CourseManagement.vue'
 import AnnouncementManagement from '@/views/admin/AnnouncementManagement.vue'
@@ -69,6 +70,15 @@ const routes = [
                 component: CounselorManagement,
                 meta: {
                     title: '咨询师管理',
+                    requiresAuth: true
+                }
+            },
+            {
+                path: 'admin/consultants',
+                name: 'ConsultantManagement',
+                component: ConsultantManagement,
+                meta: {
+                    title: '咨询人管理',
                     requiresAuth: true
                 }
             },

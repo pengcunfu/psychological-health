@@ -1,4 +1,5 @@
 from sqlalchemy import String, Column
+from sqlalchemy.orm import relationship
 
 from .base import BaseModel
 
@@ -12,6 +13,9 @@ class User(BaseModel):
     avatar = Column(String(255))  # 头像URL
     phone = Column(String(20))  # 手机号
     email = Column(String(100))  # 邮箱
+
+    # 关系
+    consultants = relationship("Consultant", back_populates="user")
 
     def to_dict(self):
         """转换为字典格式"""
