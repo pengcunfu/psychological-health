@@ -104,13 +104,11 @@ const getDifficultyText = (difficulty) => {
 <style lang="scss" scoped>
 .assessment-card {
   display: flex;
-  padding: 20rpx;
   border-radius: 12rpx;
   background-color: #fff;
   overflow: hidden;
-  margin-bottom: 12rpx;
+  margin-bottom: 20rpx;
   height: 240rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
 }
 
 .assessment-left {
@@ -219,9 +217,10 @@ const getDifficultyText = (difficulty) => {
 .action-btn {
   background-color: #52c41a;
   color: #fff;
-  font-size: 24rpx;
-  padding: 12rpx 24rpx;
-  border-radius: 20rpx;
+  font-size: 22rpx;
+  padding: 10rpx 20rpx;
+  // border-radius: 8rpx;
+  border-top-left-radius: 16rpx;
   font-weight: 500;
 }
 </style> 

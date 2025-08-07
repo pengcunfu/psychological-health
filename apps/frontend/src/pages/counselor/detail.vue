@@ -18,9 +18,9 @@
         <view class="hero-overlay">
           <!-- 保障信息条 -->
           <view class="guarantee-bar">
-            <up-icon name="shield-checkmark" size="16" color="#fff"></up-icon>
+            <SvgIcon name="shield-checkmark" :size="54" color="#fff" :offsetY="-3"></SvgIcon>
             <text class="guarantee-text">甄选头部师资 · 限时免费取消 · 隐私加密保护</text>
-            <up-icon name="arrow-right" size="14" color="#fff"></up-icon>
+            <SvgIcon name="arrow-right" :size="24" color="#fff"></SvgIcon>
           </view>
         </view>
       </view>
@@ -89,100 +89,19 @@
       </view>
 
       <!-- 个人简介卡片 -->
-      <view class="intro-card">
-        <view class="card-header">
-          <view class="section-indicator"></view>
-          <text class="card-title">个人简介</text>
-        </view>
-        
-        <view class="intro-content">
-          <!-- 个人头衔 -->
-          <view class="intro-section">
-            <text class="intro-subtitle">个人头衔：</text>
-            <view class="intro-tags">
-              <text class="intro-tag">{{ counselorInfo.title || '国家二级心理咨询师' }}</text>
-              <text class="intro-tag">初级心理治疗师</text>
-              <text class="intro-tag">中国艾利克森注册催眠治疗师</text>
-            </view>
-          </view>
-
-          <!-- 咨询师介绍 -->
-          <view class="intro-section" v-if="counselorInfo.introduction">
-            <text class="intro-text">{{ counselorInfo.introduction }}</text>
-          </view>
-
-          <!-- 个人简介 -->
-          <view class="intro-section" v-if="counselorInfo.bio">
-            <text class="intro-text">{{ counselorInfo.bio }}</text>
-          </view>
-
-          <!-- 专业领域 -->
-          <view class="intro-section" v-if="displayTags.length > 0">
-            <text class="intro-subtitle">专业领域：</text>
-            <view class="specialty-tags">
-              <text class="specialty-tag" v-for="(tag, index) in displayTags" :key="index">
-                {{ tag }}
-              </text>
-            </view>
-          </view>
-
-          <!-- 教育背景 -->
-          <view class="intro-section">
-            <text class="intro-subtitle">教育背景：</text>
-            <view class="education-list">
-              <view class="education-item" v-for="(edu, index) in education" :key="index">
-                <text class="edu-period">{{ edu.year }}</text>
-                <text class="edu-detail">{{ edu.school }} {{ edu.degree }}</text>
-              </view>
-            </view>
-          </view>
-
-          <!-- 联系信息 -->
-          <view class="intro-section" v-if="counselorInfo.phone || counselorInfo.email">
-            <text class="intro-subtitle">联系方式：</text>
-            <view class="contact-info">
-              <view class="contact-item" v-if="counselorInfo.phone">
-                <up-icon name="phone" size="16" color="#666"></up-icon>
-                <text class="contact-text">{{ counselorInfo.phone }}</text>
-              </view>
-              <view class="contact-item" v-if="counselorInfo.email">
-                <up-icon name="email" size="16" color="#666"></up-icon>
-                <text class="contact-text">{{ counselorInfo.email }}</text>
-              </view>
-            </view>
-          </view>
-        </view>
-      </view>
+      <ProfileCard 
+        :profile="counselorInfo"
+        :tags="counselorInfo.tags"
+        :education="education"
+      />
 
       <!-- 评价卡片 -->
-      <view class="reviews-card" v-if="comments.length > 0">
-        <view class="card-header">
-          <view class="section-indicator"></view>
-          <text class="card-title">用户评价</text>
-          <text class="review-count">({{ commentCount }}条)</text>
-        </view>
-        
-        <view class="reviews-content">
-          <view class="review-item" v-for="(comment, index) in comments.slice(0, 3)" :key="index">
-            <view class="review-header">
-              <u-avatar :src="comment.user_avatar || '/static/images/default-avatar.png'" size="60"></u-avatar>
-              <view class="review-user">
-                <text class="review-username">{{ comment.username || '匿名用户' }}</text>
-                <view class="review-rating">
-                  <u-rate :value="comment.rating || 5" readonly size="12" active-color="#faad14"></u-rate>
-                  <text class="review-time">{{ formatDate(comment.create_time) }}</text>
-                </view>
-              </view>
-            </view>
-            <text class="review-text">{{ comment.content || '用户给出了好评' }}</text>
-          </view>
-          
-          <view class="view-more" v-if="commentCount > 3" @click="viewAllReviews">
-            <text class="view-more-text">查看全部{{ commentCount }}条评价</text>
-            <up-icon name="arrow-right" size="14" color="#4A90E2"></up-icon>
-          </view>
-        </view>
-      </view>
+      <ReviewCard 
+        :reviews="comments"
+        :totalCount="commentCount"
+        :displayLimit="3"
+        @viewMore="viewAllReviews"
+      />
 
       <!-- 底部安全距离 -->
       <view class="bottom-safe-area"></view>
@@ -243,6 +162,9 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { counselorAPI } from '@/api/counselor'
 import { checkLogin } from '@/utils/auth'
+import ReviewCard from '@/components/ReviewCard.vue'
+import ProfileCard from '@/components/ProfileCard.vue'
+import SvgIcon from '@/components/SvgIcon.vue'
 
 // 页面参数
 const counselorId = ref('')
@@ -262,15 +184,7 @@ const education = ref([
   { year: '2008-2012', school: '复旦大学', degree: '心理学学士' }
 ])
 
-// 计算属性
-const displayTags = computed(() => {
-  if (Array.isArray(counselorInfo.value.tags)) {
-    return counselorInfo.value.tags.filter(tag => tag && tag.trim())
-  } else if (typeof counselorInfo.value.tags === 'string' && counselorInfo.value.tags) {
-    return counselorInfo.value.tags.split(',').map(tag => tag.trim()).filter(tag => tag)
-  }
-  return ['抑郁症咨询', '焦虑症治疗', '人际关系指导', '情感咨询']
-})
+// 计算属性 - displayTags 已移至 ProfileCard 组件
 
 // 获取咨询师信息
 const fetchCounselorInfo = async () => {
@@ -345,15 +259,7 @@ const fetchComments = async () => {
   }
 }
 
-// 工具函数
-const formatDate = (date) => {
-  if (!date) return ''
-  const d = new Date(date)
-  const year = d.getFullYear()
-  const month = (d.getMonth() + 1).toString().padStart(2, '0')
-  const day = d.getDate().toString().padStart(2, '0')
-  return `${year}-${month}-${day}`
-}
+// 工具函数 - formatDate 已移至 ReviewCard 组件
 
 const onAvatarError = () => {
   console.error('Counselor avatar failed to load')
@@ -465,7 +371,7 @@ onLoad((options) => {
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 120rpx;
+  height: 80rpx;
   background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
   display: flex;
   align-items: flex-end;
@@ -475,7 +381,6 @@ onLoad((options) => {
 
 .guarantee-bar {
   background: linear-gradient(135deg, rgba(74, 144, 226, 0.9), rgba(24, 144, 255, 0.9));
-  padding: 10rpx 20rpx;
   border-radius: 0;
   display: flex;
   align-items: center;
@@ -656,209 +561,9 @@ onLoad((options) => {
   white-space: nowrap;
 }
 
-.intro-card {
-  background-color: #fff;
-  padding: 30rpx;
-  margin-bottom: 20rpx;
-  border-radius: 12rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
-}
+// 个人简介相关样式已移至 ProfileCard 组件
 
-.card-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20rpx;
-}
-
-.section-indicator {
-  width: 6rpx;
-  height: 30rpx;
-  background-color: #4A90E2;
-  margin-right: 10rpx;
-  border-radius: 3rpx;
-}
-
-.card-title {
-  font-size: 32rpx;
-  font-weight: bold;
-  color: #333;
-}
-
-.intro-content {
-  font-size: 28rpx;
-  color: #666;
-  line-height: 1.8;
-}
-
-.intro-section {
-  margin-bottom: 30rpx;
-}
-
-.intro-section:last-child {
-  margin-bottom: 0;
-}
-
-.intro-subtitle {
-  font-size: 28rpx;
-  color: #999;
-  margin-bottom: 15rpx;
-  display: block;
-}
-
-.intro-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10rpx;
-}
-
-.intro-tag {
-  font-size: 26rpx;
-  color: #4A90E2;
-  background-color: #e6f7ff;
-  padding: 8rpx 12rpx;
-  border-radius: 8rpx;
-  border: 1rpx solid #91d5ff;
-}
-
-.intro-text {
-  margin-top: 10rpx;
-}
-
-.specialty-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10rpx;
-}
-
-.specialty-tag {
-  font-size: 26rpx;
-  color: #4A90E2;
-  background-color: #e6f7ff;
-  padding: 8rpx 12rpx;
-  border-radius: 8rpx;
-  border: 1rpx solid #91d5ff;
-}
-
-.education-list {
-  margin-top: 10rpx;
-}
-
-.education-item {
-  display: flex;
-  margin-bottom: 15rpx;
-  padding-bottom: 15rpx;
-  border-bottom: 1rpx solid #f0f0f0;
-}
-
-.education-item:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
-}
-
-.edu-period {
-  font-size: 26rpx;
-  color: #999;
-  width: 180rpx;
-  flex-shrink: 0;
-}
-
-.edu-detail {
-  font-size: 28rpx;
-  color: #333;
-  font-weight: bold;
-  display: block;
-  margin-bottom: 5rpx;
-}
-
-.contact-info {
-  margin-top: 15rpx;
-}
-
-.contact-item {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10rpx;
-}
-
-.contact-item:last-child {
-  margin-bottom: 0;
-}
-
-.contact-text {
-  font-size: 28rpx;
-  color: #666;
-  margin-left: 8rpx;
-}
-
-.reviews-card {
-  background-color: #fff;
-  padding: 30rpx;
-  margin-bottom: 20rpx;
-  border-radius: 12rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
-}
-
-.reviews-content {
-  margin-top: 20rpx;
-}
-
-.review-item {
-  padding: 25rpx 0;
-  border-bottom: 1rpx solid #f0f0f0;
-}
-
-.review-item:last-child {
-  border-bottom: none;
-}
-
-.review-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 15rpx;
-}
-
-.review-user {
-  flex: 1;
-  margin-left: 15rpx;
-}
-
-.review-username {
-  font-size: 28rpx;
-  color: #333;
-  font-weight: bold;
-  display: block;
-  margin-bottom: 8rpx;
-}
-
-.review-rating {
-  display: flex;
-  align-items: center;
-}
-
-.review-time {
-  font-size: 24rpx;
-  color: #999;
-  margin-left: 15rpx;
-}
-
-.review-text {
-  font-size: 28rpx;
-  color: #333;
-  line-height: 1.6;
-}
-
-.view-more {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20rpx;
-  color: #4A90E2;
-  font-size: 28rpx;
-}
-
-.view-more-text {
-  margin-right: 10rpx;
-}
+// 评价相关样式已移至 ReviewCard 组件
 
 .bottom-safe-area {
   height: 100rpx; /* 底部安全距离 */

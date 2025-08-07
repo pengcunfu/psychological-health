@@ -2,9 +2,7 @@
   <view class="container tab-page">
     <!-- 顶部导航栏 -->
     <view class="header">
-      <view class="back-button" @click="goBack">
-        <up-icon name="arrow-left" size="20" color="#333"></up-icon>
-      </view>
+
       <view class="header-title">咨询预约</view>
       <view class="search-button" @click="handleSearchClick">
         <up-icon name="search" size="20" color="#333"></up-icon>
@@ -14,7 +12,7 @@
     <!-- 标签栏 -->
     <view class="tabs">
       <view class="tab active">全部咨询师</view>
-      <view class="tab">我的预约</view>
+      <view class="tab" @click="navigateToAppointment">我的预约</view>
     </view>
 
     <!-- 筛选栏 -->
@@ -143,6 +141,13 @@ const goBack = () => {
 const handleSearchClick = () => {
   uni.navigateTo({
     url: '/pages/search'
+  })
+}
+
+// 跳转到我的预约页面
+const navigateToAppointment = () => {
+  uni.navigateTo({
+    url: '/pages/appointment'
   })
 }
 
@@ -366,10 +371,10 @@ onReachBottom(() => {
 })
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .container {
   min-height: 100vh;
-  background: #f5f7fa;
+  background: #ffffff;
   padding-bottom: 30rpx;
 }
 
@@ -454,7 +459,8 @@ onReachBottom(() => {
 
 // 咨询师列表
 .counselor-list {
-  padding: 0;
+  padding: 20rpx;
+  width: calc(100% - 40rpx);
 }
 
 // 空状态

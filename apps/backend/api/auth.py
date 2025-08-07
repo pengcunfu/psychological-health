@@ -119,7 +119,7 @@ def phone_login():
     ).filter(UserRole.user_id == user.id)
 
     user_roles = [role for _, role in user_roles_query.all()]
-    
+
     # 检查用户是否具有'user'角色
     has_user_role = any(role.code == 'user' for role in user_roles)
     if not has_user_role:
@@ -214,7 +214,8 @@ def register():
     db.session.flush()  # 获取用户ID
 
     # 分配默认角色（普通用户）
-    default_role = Role.query.filter_by(code='user', is_default=True).first()
+    default_role = Role.query.filter_by(code='user').first()
+    print("默认角色", default_role)
     if default_role:
         user_role = UserRole(
             id=str(uuid.uuid4()),
@@ -293,7 +294,7 @@ def update_profile():
     # 更新Redis中的用户会话信息
     updated_user_data = user.to_dict()
     updated_user_data['avatar'] = user.avatar
-    
+
     # 获取用户角色信息
     user_roles_query = db.session.query(UserRole, Role).join(
         Role, UserRole.role_id == Role.id
@@ -305,7 +306,7 @@ def update_profile():
         'name': role.name,
         'code': role.code
     } for role in user_roles]
-    
+
     # 获取当前用户的token
     token = request.headers.get('Authorization')
     if token and token.startswith('Bearer '):

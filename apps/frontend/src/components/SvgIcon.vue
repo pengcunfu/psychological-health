@@ -54,6 +54,16 @@ const props = defineProps({
   fallbackIcon: {
     type: String,
     default: '' // uview图标名称作为备用
+  },
+  // 水平偏移：>0向右，<0向左
+  offsetX: {
+    type: [Number, String],
+    default: 0
+  },
+  // 垂直偏移：>0向下，<0向上
+  offsetY: {
+    type: [Number, String],
+    default: 0
   }
 })
 
@@ -74,12 +84,18 @@ const iconPath = computed(() => {
 // 计算图标样式
 const iconStyle = computed(() => {
   const size = typeof props.size === 'number' ? `${props.size}rpx` : props.size
+  
+  // 处理偏移量
+  const offsetX = typeof props.offsetX === 'number' ? `${props.offsetX}rpx` : props.offsetX
+  const offsetY = typeof props.offsetY === 'number' ? `${props.offsetY}rpx` : props.offsetY
+  
   return {
     width: size,
     height: size,
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    transform: `translate(${offsetX}, ${offsetY})`
   }
 })
 

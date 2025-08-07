@@ -92,8 +92,12 @@ const handleMenuClick = (item) => {
 .nav-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  padding: 40rpx 20rpx;
+  margin: 20rpx;
+  margin-top: 0;
+  padding:  20rpx;
   background-color: #fff;
+  border-radius: 16rpx;
+  overflow: hidden;
 }
 
 .nav-item {

@@ -132,6 +132,13 @@
 			}
 		},
 		{
+			"path": "pages/profile/privacy-agreement",
+			"style": {
+				"navigationBarTitleText": "隐私政策",
+				"navigationStyle": "default"
+			}
+		},
+		{
 			"path": "pages/profile/MyCourse",
 			"style": {
 				"navigationBarTitleText": "我的课程"

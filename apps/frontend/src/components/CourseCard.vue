@@ -78,11 +78,10 @@ const formatPlayCount = (count) => {
 <style lang="scss" scoped>
 .course-card {
   display: flex;
-  padding: 20rpx;
   border-radius: 12rpx;
   background-color: #fff;
   overflow: hidden;
-  margin-bottom: 12rpx;
+  margin-bottom: 20rpx;
   height: 160rpx;
 }
 

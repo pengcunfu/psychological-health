@@ -2,20 +2,23 @@
   <view class="container">
     <!-- 顶部导航 -->
     <view class="header">
+      <view class="header-left">
+        <SvgIcon name="arrow-left" :size="32" color="#333" @click="goBack" />
+      </view>
       <view class="header-title">消息</view>
       <view class="header-actions">
-        <u-icon name="search" size="40" color="#333" @click="navigateTo('/pages/search')"></u-icon>
+        <SvgIcon name="search" :size="40" color="#333" @click="navigateTo('/pages/search')" />
       </view>
     </view>
 
     <!-- 选项卡 -->
     <view class="tab-bar">
-      <view 
-        class="tab" 
-        :class="{ active: activeTab === index }" 
-        v-for="(tab, index) in tabs" 
-        :key="index"
-        @click="switchTab(index)"
+      <view
+          class="tab"
+          :class="{ active: activeTab === index }"
+          v-for="(tab, index) in tabs"
+          :key="index"
+          @click="switchTab(index)"
       >
         {{ tab }}
       </view>
@@ -23,22 +26,22 @@
 
     <!-- 消息列表 -->
     <view class="message-list">
-      <view 
-        v-for="(message, index) in filteredMessages" 
-        :key="index"
-        class="message-item"
-        :class="{ 'system-message': message.type === 'system' }"
-        @click="handleMessageClick(message)"
+      <view
+          v-for="(message, index) in filteredMessages"
+          :key="index"
+          class="message-item"
+          :class="{ 'system-message': message.type === 'system' }"
+          @click="handleMessageClick(message)"
       >
         <!-- 头像或系统图标 -->
-        <image 
-          v-if="message.avatar" 
-          class="avatar" 
-          :src="message.avatar" 
-          mode="aspectFill"
+        <image
+            v-if="message.avatar"
+            class="avatar"
+            :src="message.avatar"
+            mode="aspectFill"
         ></image>
         <view v-else class="system-icon">
-          <u-icon :name="getSystemIcon(message.messageType)" size="40" color="#4A90E2"></u-icon>
+          <SvgIcon :name="getSystemIcon(message.messageType)" :size="40" color="#4A90E2" />
         </view>
 
         <!-- 消息内容 -->
@@ -59,21 +62,20 @@
 
       <!-- 空状态 -->
       <view v-if="filteredMessages.length === 0" class="empty-state">
-        <u-icon name="inbox" size="160" color="#ccc"></u-icon>
+        <SvgIcon name="inbox" :size="160" color="#ccc" />
         <text class="empty-text">暂无消息</text>
       </view>
     </view>
 
-    <!-- 自定义TabBar -->
-    <TabBar />
+
   </view>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { onLoad } from '@dcloudio/uni-app'
-import { navigateTo } from '@/utils/link'
-import TabBar from '@/components/TabBar.vue'
+import {ref, computed, onMounted} from 'vue'
+import {onLoad} from '@dcloudio/uni-app'
+import {navigateTo} from '@/utils/link'
+import SvgIcon from '@/components/SvgIcon.vue'
 
 // 选项卡数据
 const tabs = ref(['全部', '系统通知', '咨询消息', '课程提醒'])
@@ -166,22 +168,22 @@ const switchTab = (index) => {
 const getSystemIcon = (messageType) => {
   switch (messageType) {
     case '系统通知':
-      return 'bell-fill'
+      return 'notification'
     case '课程提醒':
-      return 'clock-fill'
+      return 'clock'
     case '测评通知':
-      return 'checkmark-circle-fill'
+      return 'checkmark-circle'
     case '活动通知':
-      return 'calendar-fill'
+      return 'calendar'
     default:
-      return 'bell-fill'
+      return 'notification'
   }
 }
 
 // 处理消息点击
 const handleMessageClick = (message) => {
   console.log('点击消息:', message)
-  
+
   // 根据消息类型跳转到不同页面
   switch (message.type) {
     case 'counselor':
@@ -211,11 +213,18 @@ const handleMessageClick = (message) => {
         icon: 'none'
       })
   }
-  
+
   // 标记为已读
   if (message.unreadCount > 0) {
     message.unreadCount = 0
   }
+}
+
+// 返回按钮处理
+const goBack = () => {
+  uni.navigateBack({
+    delta: 1
+  })
 }
 
 onLoad(() => {
@@ -241,6 +250,14 @@ onLoad(() => {
   top: 0;
   z-index: 10;
   position: relative;
+  padding: 0 30rpx;
+}
+
+.header-left {
+  position: absolute;
+  left: 30rpx;
+  display: flex;
+  align-items: center;
 }
 
 .header-title {
@@ -293,7 +310,7 @@ onLoad(() => {
 // 消息列表样式
 .message-list {
   padding: 16rpx 20rpx;
-  padding-bottom: 120rpx; /* 为TabBar留出空间 */
+  padding-bottom: 40rpx;
 }
 
 .message-item {
@@ -302,7 +319,7 @@ onLoad(() => {
   background-color: #fff;
   margin-bottom: 16rpx;
   border-radius: 12rpx;
-  box-shadow: 0 2rpx 4rpx rgba(0,0,0,0.05);
+  box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.05);
 }
 
 .system-message {

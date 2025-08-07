@@ -260,7 +260,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .forgot-password-container {
   min-height: 100vh;
   background-color: #fff;

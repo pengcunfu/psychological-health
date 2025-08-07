@@ -2,9 +2,7 @@
   <view class="container tab-page">
     <!-- 顶部导航栏 -->
     <view class="header">
-      <view class="back-button" @click="goBack">
-        <up-icon name="arrow-left" size="20" color="#333"></up-icon>
-      </view>
+
       <view class="header-title">课程学习</view>
       <view class="search-button" @click="handleSearchClick">
         <up-icon name="search" size="20" color="#333"></up-icon>
@@ -14,7 +12,7 @@
     <!-- 标签栏 -->
     <view class="tabs">
       <view class="tab active">全部课程</view>
-      <view class="tab">我的课程</view>
+      <view class="tab" @click="navigateToMyCourse">我的课程</view>
     </view>
 
     <!-- 分类列表 -->
@@ -128,6 +126,13 @@ const goBack = () => {
 const handleSearchClick = () => {
   uni.navigateTo({
     url: '/pages/search'
+  })
+}
+
+// 跳转到我的课程页面
+const navigateToMyCourse = () => {
+  uni.navigateTo({
+    url: '/pages/profile/MyCourse'
   })
 }
 

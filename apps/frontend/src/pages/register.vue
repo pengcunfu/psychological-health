@@ -61,7 +61,10 @@
     </view>
     
     <view class="footer">
-      <text>注册即代表同意《用户协议》和《隐私政策》</text>
+      <text>注册即代表同意</text>
+      <navigator url="/pages/profile/agreement" class="footer-link">《用户协议》</navigator>
+      <text>和</text>
+      <navigator url="/pages/profile/privacy-agreement" class="footer-link">《隐私政策》</navigator>
     </view>
   </view>
 </template>
@@ -182,7 +185,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .register-container {
   min-height: 100vh;
   background-color: #fff;
@@ -270,5 +273,16 @@ export default {
   font-size: 24rpx;
   color: #999;
   margin-top: 80rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.footer-link {
+  color: #4A90E2;
+  text-decoration: none;
+  font-size: 24rpx;
+  margin: 0 4rpx;
 }
 </style> 

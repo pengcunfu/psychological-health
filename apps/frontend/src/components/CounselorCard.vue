@@ -92,11 +92,10 @@ const getSpecialtyText = (item) => {
 <style lang="scss" scoped>
 .counselor-card {
   display: flex;
-  padding: 20rpx;
   border-radius: 12rpx;
   background-color: #fff;
   overflow: hidden;
-  margin-bottom: 12rpx;
+  margin-bottom: 20rpx;
 }
 
 .counselor-left {

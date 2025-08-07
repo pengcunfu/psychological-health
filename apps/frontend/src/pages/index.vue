@@ -17,45 +17,13 @@
     </view>
 
     <!-- 轮播图 -->
-    <view class="banner">
-      <swiper 
-        v-if="bannerList.length > 0"
-        :autoplay="true"
-        :interval="3000"
-        :duration="300"
-        :circular="true"
-        indicator-dots
-        indicator-active-color="#4A90E2"
-        indicator-color="rgba(255, 255, 255, 0.5)"
-        class="swiper-container"
-        @change="handleBannerChange"
-      >
-        <swiper-item 
-          v-for="(item, index) in bannerList" 
-          :key="item.id || index"
-          @tap="() => handleBannerClick(index)"
-        >
-          <view class="swiper-item">
-            <image 
-              :src="item.image_url" 
-              mode="aspectFill"
-              class="swiper-image"
-            />
-            <view v-if="item.title" class="swiper-title">{{ item.title }}</view>
-          </view>
-        </swiper-item>
-      </swiper>
-      <view v-else class="banner-empty">
-        <u-empty 
-          text="暂无轮播图"
-          icon="https://cdn.uviewui.com/uview/empty/list.png"
-          iconSize="80"
-          textSize="12"
-          textColor="#999999"
-          marginTop="50"
-        />
-      </view>
-    </view>
+    <Banner 
+      :bannerData="bannerList"
+      @bannerClick="handleBannerClick"
+      @bannerChange="handleBannerChange"
+      @imageLoad="onImageLoad"
+      @imageError="onImageError"
+    />
 
     <!-- 功能导航 -->
     <NavigationMenu @menuClick="handleMenuClick" />
@@ -69,7 +37,7 @@
         </view>
         <view class="section-more" @click="navigateTo('/pages/counselor/index')">
           <text>查看全部</text>
-          <up-icon name="arrow-right" size="16" color="#999"></up-icon>
+          <SvgIcon name="arrow-right" :size="24" color="#999" :offsetY="-1" :offsetX="1"></SvgIcon>
         </view>
       </view>
       
@@ -102,7 +70,7 @@
         </view>
         <view class="section-more" @click="navigateTo('/pages/course/index')">
           <text>查看全部</text>
-          <up-icon name="arrow-right" size="16" color="#999"></up-icon>
+          <SvgIcon name="arrow-right" :size="24" color="#999" :offsetY="-1" :offsetX="1"></SvgIcon>
         </view>
       </view>
       
@@ -135,7 +103,7 @@
         </view>
         <view class="section-more" @click="navigateTo('/pages/assessment/index')">
           <text>查看全部</text>
-          <up-icon name="arrow-right" size="16" color="#999"></up-icon>
+          <SvgIcon name="arrow-right" :size="24" color="#999" :offsetY="-1" :offsetX="1"></SvgIcon>
         </view>
       </view>
       
@@ -172,7 +140,7 @@ import { bannerAPI } from '@/api/banner'
 import { counselorAPI } from '@/api/counselor'
 import { courseAPI } from '@/api/course'
 import { assessmentAPI } from '@/api/assessment'
-import { preprocessUrl, handleUrlNavigation, navigateTo } from '@/utils/link'
+import { navigateTo } from '@/utils/link'
 
 import TabBar from '@/components/TabBar.vue'
 import SvgIcon from '@/components/SvgIcon.vue'
@@ -180,6 +148,7 @@ import CounselorCard from '@/components/CounselorCard.vue'
 import CourseCard from '@/components/CourseCard.vue'
 import AssessmentCard from '@/components/AssessmentCard.vue'
 import NavigationMenu from '@/components/NavigationMenu.vue'
+import Banner from '@/components/Banner.vue'
 
 const userStore = useUserStore()
 
@@ -300,34 +269,16 @@ const fetchAssessments = async () => {
 }
 
 // 轮播图点击处理
-const handleBannerClick = (index) => {
+const handleBannerClick = ({ banner, index }) => {
   console.log('轮播图点击事件触发，索引:', index)
-  console.log('轮播图数据:', bannerList.value)
-  
-  const banner = bannerList.value[index]
   console.log('当前点击的轮播图:', banner)
-  
-  if (banner && banner.link_url) {
-    console.log('准备跳转到:', banner.link_url)
-    
-    // 预处理链接URL
-    const processedUrl = preprocessUrl(banner.link_url)
-    console.log('处理后的URL:', processedUrl)
-    
-    // 判断链接类型并执行相应的跳转逻辑
-    handleUrlNavigation(processedUrl, banner.title || '加载中...')
-  } else {
-    console.log('轮播图数据无效或缺少链接')
-    uni.showToast({
-      title: '链接无效',
-      icon: 'none'
-    })
-  }
+  // Banner 组件已经处理了跳转逻辑，这里可以添加额外的处理，比如统计
 }
 
 // 轮播图变化处理
-const handleBannerChange = (index) => {
-  // 轮播图变化处理
+const handleBannerChange = ({ current, banner }) => {
+  console.log('轮播图切换到:', current, banner)
+  // 这里可以添加轮播图变化时的处理逻辑，比如埋点统计
 }
 
 // 菜单点击处理
@@ -463,63 +414,14 @@ onShow(() => {
   border-radius: 50%;
 }
 
-// 轮播图样式
-.banner {
-  height: 320rpx;
-}
-
-.swiper-container {
-  height: 320rpx;
-}
-
-.swiper-item {
-  width: 100%;
-  height: 100%;
-  position: relative;
-}
-
-.swiper-image {
-  width: 100%;
-  height: 100%;
-}
-
-.swiper-title {
-  position: absolute;
-  bottom: 20rpx;
-  left: 20rpx;
-  right: 20rpx;
-  background: rgba(0, 0, 0, 0.5);
-  color: white;
-  padding: 10rpx 20rpx;
-  border-radius: 10rpx;
-  font-size: 28rpx;
-  text-align: center;
-}
-
-.banner-loading {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #f5f5f5;
-  color: #999;
-  font-size: 28rpx;
-}
-
-.banner-empty {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #fafafa;
-  border-radius: 12rpx;
-}
+// 轮播图样式 - 已移至 Banner 组件
 
 // 功能导航样式 - 已移至 NavigationMenu 组件
 
 // 区块样式
 .section {
-  margin-top: 20rpx;
+  margin: 20rpx;
+  border-radius: 16rpx;
   background-color: #fff;
   padding: 30rpx;
 }
@@ -532,7 +434,7 @@ onShow(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30rpx;
+  margin-bottom: 20rpx;
 }
 
 .section-title {
@@ -552,7 +454,7 @@ onShow(() => {
 }
 
 .section-more {
-  font-size: 24rpx;
+  font-size: 26rpx;
   color: #999;
   display: flex;
   align-items: center;
@@ -560,8 +462,9 @@ onShow(() => {
   cursor: pointer;
   
   text {
-    font-size: 24rpx;
+    font-size: 26rpx;
     color: #999;
+    transform: translate(8rpx,0rpx);
   }
 }
 
