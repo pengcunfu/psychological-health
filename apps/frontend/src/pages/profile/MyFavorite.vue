@@ -35,7 +35,7 @@
                   <text class="counselor-title">{{ item.title }}</text>
                 </view>
                 <view class="counselor-rating">
-                  <u-icon name="star-fill" color="#faad14" size="24"></u-icon>
+                  <up-icon name="star-fill" color="#faad14" size="24"></up-icon>
                   <text class="rating-text">{{ item.rating }}</text>
                   <text class="consultation-count">{{ item.consultation_count }}次咨询</text>
                 </view>
@@ -48,7 +48,7 @@
               <text class="price">¥{{ item.price }}/次</text>
               <view class="action-btns">
                 <button class="action-btn cancel-btn" @click.stop="handleCancelFavorite('counselor', item.id)">
-                  <u-icon name="close" size="24" color="#999"></u-icon>
+                  <up-icon name="close" size="24" color="#999"></up-icon>
                 </button>
               </view>
             </view>
@@ -77,18 +77,18 @@
               </view>
               <view class="course-stats">
                 <view class="stat-item">
-                  <u-icon name="clock" size="24" color="#999"></u-icon>
+                  <up-icon name="clock" size="24" color="#999"></up-icon>
                   <text class="stat-text">{{ item.duration || '0小时' }}</text>
                 </view>
                 <view class="stat-item">
-                  <u-icon name="account" size="24" color="#999"></u-icon>
+                  <up-icon name="account" size="24" color="#999"></up-icon>
                   <text class="stat-text">{{ item.sales || 0 }}人学习</text>
                 </view>
               </view>
               <view class="course-footer">
                 <text class="course-price">¥{{ item.price }}</text>
                 <button class="action-btn cancel-btn" @click.stop="handleCancelFavorite('course', item.id)">
-                  <u-icon name="close" size="24" color="#999"></u-icon>
+                  <up-icon name="close" size="24" color="#999"></up-icon>
                 </button>
               </view>
             </view>

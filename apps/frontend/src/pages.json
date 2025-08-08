@@ -227,28 +227,7 @@
     "backgroundColor": "#F8F8F8"
   },
   "tabBar": {
-    "custom": false,
-    "color": "#999999",
-    "selectedColor": "#4A90E2",
-    "backgroundColor": "#FFFFFF",
-    "borderStyle": "black",
-    "list": [
-      {
-        "pagePath": "pages/index",
-        "text": "首页"
-      },
-      {
-        "pagePath": "pages/counselor/index",
-        "text": "咨询"
-      },
-      {
-        "pagePath": "pages/course/index",
-        "text": "课程"
-      },
-      {
-        "pagePath": "pages/profile/index",
-        "text": "我的"
-      }
-    ]
+    "custom": true,
+    "height": "50px"
   }
 }

@@ -24,7 +24,7 @@
             :customStyle="{ padding: '0', margin: '0' }"
           >
             <template #suffix>
-              <u-icon name="search" size="20" color="#999" @click="performSearch"></u-icon>
+              <up-icon name="search" size="20" color="#999" @click="performSearch"></up-icon>
             </template>
           </u-input>
         </view>
@@ -41,7 +41,7 @@
       <view class="history-section" v-if="searchHistory.length > 0">
         <view class="section-title">
           <text>搜索历史</text>
-          <u-icon class="clear-icon" name="trash" size="32" color="#999" @click="clearHistory"></u-icon>
+          <up-icon class="clear-icon" name="trash" size="32" color="#999" @click="clearHistory"></up-icon>
         </view>
         <view class="history-list">
           <view 
@@ -51,16 +51,16 @@
             @click="selectHistoryItem(item)"
           >
             <view class="history-text">
-              <u-icon class="history-icon" name="clock" size="32" color="#999"></u-icon>
+              <up-icon class="history-icon" name="clock" size="32" color="#999"></up-icon>
               <text>{{ item }}</text>
             </view>
-            <u-icon 
+            <up-icon 
               class="delete-icon" 
               name="close" 
               size="32" 
               color="#999" 
               @click.stop="removeHistoryItem(index)"
-            ></u-icon>
+            ></up-icon>
                      </view>
          </view>
        </view>
@@ -85,7 +85,7 @@
 
     <!-- 空状态 -->
     <view class="empty-state" v-show="showResults && searchResults.length === 0">
-      <u-icon name="search" size="120" color="#ccc"></u-icon>
+      <up-icon name="search" size="120" color="#ccc"></up-icon>
       <text class="empty-text">暂无相关内容</text>
     </view>
 

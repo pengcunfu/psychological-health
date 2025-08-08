@@ -12,19 +12,19 @@
       <view class="section-title">申请条件</view>
       <view class="requirement-list">
         <view class="requirement-item">
-          <u-icon name="checkmark-circle" color="#4A90E2" size="40"></u-icon>
+          <up-icon name="checkmark-circle" color="#4A90E2" size="40"></up-icon>
           <text class="requirement-text">持有心理咨询师资格证书或相关专业资质</text>
         </view>
         <view class="requirement-item">
-          <u-icon name="checkmark-circle" color="#4A90E2" size="40"></u-icon>
+          <up-icon name="checkmark-circle" color="#4A90E2" size="40"></up-icon>
           <text class="requirement-text">具有2年以上心理咨询工作经验</text>
         </view>
         <view class="requirement-item">
-          <u-icon name="checkmark-circle" color="#4A90E2" size="40"></u-icon>
+          <up-icon name="checkmark-circle" color="#4A90E2" size="40"></up-icon>
           <text class="requirement-text">良好的沟通能力和职业道德</text>
         </view>
         <view class="requirement-item">
-          <u-icon name="checkmark-circle" color="#4A90E2" size="40"></u-icon>
+          <up-icon name="checkmark-circle" color="#4A90E2" size="40"></up-icon>
           <text class="requirement-text">能够提供稳定的在线咨询服务</text>
         </view>
       </view>
@@ -75,22 +75,22 @@
       <view class="section-title">平台优势</view>
       <view class="advantage-list">
         <view class="advantage-item">
-          <u-icon name="star" color="#faad14" size="40"></u-icon>
+          <up-icon name="star" color="#faad14" size="40"></up-icon>
           <text class="advantage-title">广阔的客户资源</text>
           <text class="advantage-desc">平台拥有大量潜在客户，帮助您快速建立咨询业务</text>
         </view>
         <view class="advantage-item">
-          <u-icon name="calendar" color="#52c41a" size="40"></u-icon>
+          <up-icon name="calendar" color="#52c41a" size="40"></up-icon>
           <text class="advantage-title">灵活的工作时间</text>
           <text class="advantage-desc">自由设置咨询时段，兼顾工作与生活平衡</text>
         </view>
         <view class="advantage-item">
-          <u-icon name="rmb-circle" color="#f5222d" size="40"></u-icon>
+          <up-icon name="rmb-circle" color="#f5222d" size="40"></up-icon>
           <text class="advantage-title">有竞争力的收入</text>
           <text class="advantage-desc">根据专业能力和服务质量获得合理回报</text>
         </view>
         <view class="advantage-item">
-          <u-icon name="arrow-upward" color="#4A90E2" size="40"></u-icon>
+          <up-icon name="arrow-upward" color="#4A90E2" size="40"></up-icon>
           <text class="advantage-title">专业成长空间</text>
           <text class="advantage-desc">定期培训和案例研讨，提升专业能力</text>
         </view>

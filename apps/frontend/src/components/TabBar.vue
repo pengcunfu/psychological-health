@@ -1,70 +1,18 @@
 <template>
-  <!-- 微信小程序自定义TabBar -->
-  <!-- #ifdef MP-WEIXIN -->
+  <!-- 统一使用自定义TabBar，兼容所有平台 -->
   <view class="custom-tabbar" :style="{ paddingBottom: safeAreaBottom + 'px' }">
     <view class="tabbar-border"></view>
-    <view 
-      class="tabbar-item"
-      v-for="(item, index) in tabList"
-      :key="index"
-      :class="{ 'tabbar-item--active': currentIndex === index }"
-      @click="switchTab(index)"
-    >
+    <view class="tabbar-item" v-for="(item, index) in tabList" :key="index"
+      :class="{ 'tabbar-item--active': currentIndex === index }" @click="switchTab(index)">
       <view class="tabbar-item__icon">
-        <SvgIcon 
-          :name="item.iconName" 
-          path="tabbar"
-          :active="currentIndex === index"
-          :size="22"
-          :fallbackIcon="item.fallbackIcon"
-          :activeColor="activeColor"
-          :color="inactiveColor"
-        />
+        <SvgIcon :name="item.iconName" path="tabbar" :active="currentIndex === index" :size="22"
+          :fallbackIcon="item.fallbackIcon" :activeColor="activeColor" :color="inactiveColor" />
       </view>
       <text class="tabbar-item__text" :style="{ color: currentIndex === index ? activeColor : inactiveColor }">
         {{ item.text }}
       </text>
     </view>
   </view>
-  <!-- #endif -->
-  
-  <!-- 其他平台使用uView TabBar -->
-  <!-- #ifndef MP-WEIXIN -->
-  <u-tabbar
-    :value="currentIndex"
-    @change="switchTab"
-    :fixed="true"
-    :safeAreaInsetBottom="true"
-    activeColor="#4A90E2"
-    inactiveColor="#999999"
-    :border="false"
-  >
-    <u-tabbar-item
-      v-for="(item, index) in tabList"
-      :key="index"
-      :text="item.text"
-    >
-      <template #active-icon>
-        <SvgIcon 
-          :name="item.iconName" 
-          path="tabbar"
-          :active="true"
-          :size="44"
-          :fallbackIcon="item.fallbackIcon"
-        />
-      </template>
-      <template #inactive-icon>
-        <SvgIcon 
-          :name="item.iconName" 
-          path="tabbar"
-          :active="false"
-          :size="44"
-          :fallbackIcon="item.fallbackIcon"
-        />
-      </template>
-    </u-tabbar-item>
-  </u-tabbar>
-  <!-- #endif -->
 </template>
 
 <script setup>
@@ -113,13 +61,23 @@ let switching = false
 // 切换标签页
 const switchTab = (index) => {
   if (currentIndex.value === index || switching) return
-  
+
   switching = true
+
+  // 添加触觉反馈（支持的平台）
+  try {
+    uni.vibrateShort({
+      type: 'light'
+    })
+  } catch (e) {
+    console.log('震动反馈不支持')
+  }
+
   const targetPath = tabList[index].pagePath
-  
+
   // 先更新UI状态
   currentIndex.value = index
-  
+
   uni.switchTab({
     url: targetPath,
     success: () => {
@@ -141,41 +99,65 @@ const switchTab = (index) => {
 
 // 获取当前页面路径对应的索引
 const getCurrentIndex = () => {
-  const pages = getCurrentPages()
-  if (pages.length > 0) {
-    const currentPage = pages[pages.length - 1]
-    const route = '/' + currentPage.route
-    
-    // 检查是否是tabBar页面（需要去掉可能的参数）
-    const basePath = route.split('?')[0]
-    
-    // 找到对应的索引
-    const index = tabList.findIndex(item => item.pagePath === basePath)
-    if (index !== -1) {
-      currentIndex.value = index
+  try {
+    const pages = getCurrentPages()
+    if (pages.length > 0) {
+      const currentPage = pages[pages.length - 1]
+      const route = '/' + currentPage.route
+
+      // 检查是否是tabBar页面（需要去掉可能的参数）
+      const basePath = route.split('?')[0]
+
+      // 找到对应的索引
+      const index = tabList.findIndex(item => item.pagePath === basePath)
+      if (index !== -1) {
+        currentIndex.value = index
+        console.log('TabBar当前索引已更新:', index, basePath)
+      } else {
+        console.log('当前页面不是TabBar页面:', basePath)
+      }
     }
+  } catch (error) {
+    console.error('获取TabBar当前索引失败:', error)
+    // 错误时默认设置为首页
+    currentIndex.value = 0
   }
 }
 
 onMounted(() => {
   getCurrentIndex()
-  
-  // 获取安全区域信息
-  // #ifdef MP-WEIXIN
-  const systemInfo = uni.getSystemInfoSync()
-  safeAreaBottom.value = systemInfo.safeAreaInsets ? systemInfo.safeAreaInsets.bottom : 0
-  // #endif
+
+  // 获取安全区域信息（适用于所有平台）
+  try {
+    const systemInfo = uni.getSystemInfoSync()
+    safeAreaBottom.value = systemInfo.safeAreaInsets ? systemInfo.safeAreaInsets.bottom : 0
+    console.log('TabBar安全区域底部高度:', safeAreaBottom.value)
+  } catch (error) {
+    console.log('获取安全区域信息失败:', error)
+    safeAreaBottom.value = 0
+  }
 })
 
 // 监听页面显示
 uni.$on('tabBarPageShow', () => {
   getCurrentIndex()
 })
+
+// 页面显示监听（兼容所有平台）
+uni.$on('onShow', () => {
+  getCurrentIndex()
+})
+
+// 监听页面路由变化
+uni.$on('pageRouteChange', () => {
+  setTimeout(() => {
+    getCurrentIndex()
+  }, 100)
+})
 </script>
 
 <style lang="scss" scoped>
-// 微信小程序自定义TabBar样式
-/* #ifdef MP-WEIXIN */
+// 统一自定义TabBar样式，兼容所有平台
 .custom-tabbar {
   position: fixed;
   bottom: 0;
@@ -186,9 +168,13 @@ uni.$on('tabBarPageShow', () => {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  z-index: 1000;
+  z-index: 9999;
   box-sizing: border-box;
   border-top: 1rpx solid #ebeef5;
+  will-change: transform;
+  /* 优化渲染性能 */
+  transform: translateZ(0);
+  /* 开启硬件加速 */
 }
 
 .tabbar-border {
@@ -235,6 +221,22 @@ uni.$on('tabBarPageShow', () => {
 .tabbar-item:active {
   background-color: rgba(74, 144, 226, 0.05);
   border-radius: 8rpx;
+  transform: scale(0.98);
+}
+
+// 添加点击动画
+.tabbar-item {
+  &:active {
+    .tabbar-item__icon {
+      transform: scale(0.9);
+      transition: transform 0.1s ease;
+    }
+
+    .tabbar-item__text {
+      opacity: 0.8;
+      transition: opacity 0.1s ease;
+    }
+  }
 }
 
 // 适配iPhone X等带有安全区域的设备
@@ -244,21 +246,49 @@ uni.$on('tabBarPageShow', () => {
     height: calc(100rpx + env(safe-area-inset-bottom));
   }
 }
+
+// 微信小程序特殊优化
+/* #ifdef MP-WEIXIN */
+.custom-tabbar {
+  box-shadow: 0 -2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.tabbar-item {
+
+  // 微信小程序点击反馈优化
+  &:hover {
+    background-color: rgba(74, 144, 226, 0.03);
+  }
+}
+
 /* #endif */
 
-// 其他平台的uView TabBar样式优化
-/* #ifndef MP-WEIXIN */
-:deep(.u-tabbar-item__icon) {
-  margin-bottom: 4rpx !important;
+// H5平台优化
+/* #ifdef H5 */
+.custom-tabbar {
+  box-shadow: 0 -2rpx 12rpx rgba(0, 0, 0, 0.08);
 }
 
-:deep(.u-tabbar-item__text) {
-  font-size: 20rpx !important;
+.tabbar-item {
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(74, 144, 226, 0.03);
+
+    .tabbar-item__icon {
+      transform: scale(1.05);
+    }
+  }
 }
 
-:deep(.u-tabbar) {
-  background-color: #ffffff !important;
-  border-top: 1rpx solid #ebeef5 !important;
-}
 /* #endif */
-</style> 
+
+// APP平台优化
+/* #ifdef APP-PLUS */
+.custom-tabbar {
+  backdrop-filter: blur(20rpx);
+  -webkit-backdrop-filter: blur(20rpx);
+}
+
+/* #endif */
+</style>

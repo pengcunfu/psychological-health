@@ -43,11 +43,11 @@
             </view>
             <view class="course-stats">
               <view class="stat-item">
-                <u-icon name="clock" size="24" color="#999"></u-icon>
+                <up-icon name="clock" size="24" color="#999"></up-icon>
                 <text class="stat-text">{{ item.duration || '0小时' }}</text>
               </view>
               <view class="stat-item">
-                <u-icon name="file-text" size="24" color="#999"></u-icon>
+                <up-icon name="file-text" size="24" color="#999"></up-icon>
                 <text class="stat-text">{{ item.lesson_count || 0 }}课时</text>
               </view>
               <text class="course-status" :class="`status-${item.status}`">{{ getStatusText(item.status) }}</text>

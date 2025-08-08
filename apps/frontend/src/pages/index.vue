@@ -361,6 +361,7 @@ onShow(() => {
   
   // 触发tabbar页面显示事件
   uni.$emit('tabBarPageShow')
+  uni.$emit('onShow')
 })
 </script>
 

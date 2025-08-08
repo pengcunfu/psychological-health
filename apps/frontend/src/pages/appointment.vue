@@ -47,19 +47,19 @@
           
           <view class="appointment-info">
             <view class="info-item">
-              <u-icon name="calendar" size="30" color="#4A90E2"></u-icon>
+              <up-icon name="calendar" size="30" color="#4A90E2"></up-icon>
               <text class="info-text">{{ item.appointment_date }}</text>
             </view>
             <view class="info-item">
-              <u-icon name="clock" size="30" color="#4A90E2"></u-icon>
+              <up-icon name="clock" size="30" color="#4A90E2"></up-icon>
               <text class="info-text">{{ item.start_time }} - {{ item.end_time }}</text>
             </view>
             <view class="info-item">
-              <u-icon name="map" size="30" color="#4A90E2"></u-icon>
+              <up-icon name="map" size="30" color="#4A90E2"></up-icon>
               <text class="info-text">{{ item.type === 'online' ? '线上咨询' : '线下咨询' }}</text>
             </view>
             <view class="info-item" v-if="item.type === 'offline'">
-              <u-icon name="home" size="30" color="#4A90E2"></u-icon>
+              <up-icon name="home" size="30" color="#4A90E2"></up-icon>
               <text class="info-text">{{ item.address }}</text>
             </view>
           </view>

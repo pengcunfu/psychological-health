@@ -140,6 +140,9 @@
         立即登录
       </view>
     </view>
+
+    <!-- 自定义TabBar -->
+    <TabBar />
   </view>
 </template>
 
@@ -150,6 +153,7 @@ import { useUserStore } from '@/store/user'
 import { checkLogin, redirectToLogin } from '@/utils/auth'
 import SvgIcon from '@/components/SvgIcon.vue'
 import Navbar from '@/components/Navbar.vue'
+import TabBar from '@/components/TabBar.vue'
 
 const userStore = useUserStore()
 

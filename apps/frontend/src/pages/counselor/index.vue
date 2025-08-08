@@ -73,6 +73,9 @@
         :margin-bottom="20"
       />
     </view>
+
+    <!-- 自定义TabBar -->
+    <TabBar />
   </view>
 </template>
 
@@ -82,6 +85,7 @@ import {onLoad, onReachBottom} from '@dcloudio/uni-app'
 import {counselorAPI} from '@/api/counselor'
 import CounselorCard from '@/components/CounselorCard.vue'
 import Navbar from '@/components/Navbar.vue'
+import TabBar from '@/components/TabBar.vue'
 
 // 搜索关键词
 const searchKeyword = ref('')

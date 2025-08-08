@@ -11,7 +11,7 @@
     <view class="contact-section">
       <view class="contact-card">
         <view class="contact-item">
-          <u-icon name="phone" color="#4A90E2" size="40"></u-icon>
+          <up-icon name="phone" color="#4A90E2" size="40"></up-icon>
           <view class="contact-info">
             <text class="contact-title">客服热线</text>
             <text class="contact-value">400-123-4567</text>
@@ -22,7 +22,7 @@
 
       <view class="contact-card">
         <view class="contact-item">
-          <u-icon name="email" color="#4A90E2" size="40"></u-icon>
+          <up-icon name="email" color="#4A90E2" size="40"></up-icon>
           <view class="contact-info">
             <text class="contact-title">电子邮箱</text>
             <text class="contact-value">support@psychhealth.com</text>
@@ -33,7 +33,7 @@
 
       <view class="contact-card">
         <view class="contact-item">
-          <u-icon name="weixin-fill" color="#4A90E2" size="40"></u-icon>
+          <up-icon name="weixin-fill" color="#4A90E2" size="40"></up-icon>
           <view class="contact-info">
             <text class="contact-title">微信公众号</text>
             <text class="contact-value">心理健康平台</text>
@@ -44,7 +44,7 @@
 
       <view class="contact-card">
         <view class="contact-item">
-          <u-icon name="home" color="#4A90E2" size="40"></u-icon>
+          <up-icon name="home" color="#4A90E2" size="40"></up-icon>
           <view class="contact-info">
             <text class="contact-title">公司地址</text>
             <text class="contact-value">北京市海淀区中关村南大街5号</text>
@@ -96,7 +96,7 @@
         <view class="faq-item" v-for="(item, index) in faqList" :key="index" @click="toggleFaq(index)">
           <view class="faq-question">
             <text>{{ item.question }}</text>
-            <u-icon :name="item.expanded ? 'arrow-up' : 'arrow-down'" color="#999" size="30"></u-icon>
+            <up-icon :name="item.expanded ? 'arrow-up' : 'arrow-down'" color="#999" size="30"></up-icon>
           </view>
           <view class="faq-answer" v-if="item.expanded">
             <text>{{ item.answer }}</text>

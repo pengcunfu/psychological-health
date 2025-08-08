@@ -42,7 +42,7 @@ RUN addgroup -g 1001 -S nginx-user && \
 COPY --from=builder /app/dist/build/h5 /usr/share/nginx/html
 
 # 复制 Nginx 配置
-COPY <<EOF /etc/nginx/conf.d/default.conf
+COPY <EOF /etc/nginx/conf.d/default.conf
 server {
     listen 80;
     listen [::]:80;

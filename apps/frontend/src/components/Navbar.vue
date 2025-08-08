@@ -10,7 +10,7 @@
         <!-- 左侧 -->
         <view class="navbar-left" @click="handleLeftClick" v-if="showLeft">
           <view class="navbar-left-icon" v-if="leftIcon">
-            <u-icon :name="leftIcon" size="20" color="#333"></u-icon>
+            <up-icon :name="leftIcon" size="20" color="#333"></up-icon>
           </view>
           <text class="navbar-left-text" v-if="leftText">{{ leftText }}</text>
         </view>
@@ -26,7 +26,7 @@
           <slot name="right" v-if="$slots.right"></slot>
           <view v-else>
             <view class="navbar-right-icon" v-if="rightIcon">
-              <u-icon :name="rightIcon" size="20" color="#333"></u-icon>
+              <up-icon :name="rightIcon" size="20" color="#333"></up-icon>
             </view>
             <text class="navbar-right-text" v-if="rightText">{{ rightText }}</text>
           </view>

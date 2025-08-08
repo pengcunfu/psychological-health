@@ -84,10 +84,10 @@
       
       <view class="social-login">
         <view class="social-btn" @click="handleWechatLogin">
-          <u-icon name="weixin-fill" color="#09BB07" size="60"></u-icon>
+          <up-icon name="weixin-fill" color="#09BB07" size="60"></up-icon>
         </view>
         <view class="social-btn" @click="handleQQLogin">
-          <u-icon name="qq-fill" color="#1296db" size="60"></u-icon>
+          <up-icon name="qq-fill" color="#1296db" size="60"></up-icon>
         </view>
       </view>
     </view>

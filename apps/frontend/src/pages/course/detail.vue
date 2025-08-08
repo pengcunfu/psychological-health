@@ -49,7 +49,7 @@
           <view class="block-title">适合人群</view>
           <view class="block-content">
             <view class="target-item" v-for="(target, index) in targetUsers" :key="index">
-              <u-icon name="checkmark-circle" color="#4A90E2" size="30"></u-icon>
+              <up-icon name="checkmark-circle" color="#4A90E2" size="30"></up-icon>
               <text class="target-text">{{ target }}</text>
             </view>
           </view>
@@ -89,7 +89,7 @@
                 <text class="chapter-index">{{ chapterIndex + 1 }}</text>
                 <text class="chapter-name">{{ chapter.name }}</text>
               </view>
-              <u-icon :name="chapter.expanded ? 'arrow-down' : 'arrow-right'" size="30" color="#999"></u-icon>
+              <up-icon :name="chapter.expanded ? 'arrow-down' : 'arrow-right'" size="30" color="#999"></up-icon>
             </view>
             <view class="chapter-lessons" v-if="chapter.expanded">
               <view 
@@ -103,7 +103,7 @@
                   <text class="lesson-name">{{ lesson.name }}</text>
                 </view>
                 <view class="lesson-duration">
-                  <u-icon name="clock" size="24" color="#999"></u-icon>
+                  <up-icon name="clock" size="24" color="#999"></up-icon>
                   <text class="duration-text">{{ lesson.duration || '00:00' }}</text>
                 </view>
               </view>
@@ -147,11 +147,11 @@
     <view class="bottom-action">
       <view class="action-btn-group">
         <view class="action-btn" @click="handleCollect">
-          <u-icon :name="isCollected ? 'star-fill' : 'star'" :color="isCollected ? '#faad14' : '#999'" size="40"></u-icon>
+          <up-icon :name="isCollected ? 'star-fill' : 'star'" :color="isCollected ? '#faad14' : '#999'" size="40"></up-icon>
           <text class="btn-text">{{ isCollected ? '已收藏' : '收藏' }}</text>
         </view>
         <view class="action-btn" @click="handleShare">
-          <u-icon name="share" color="#999" size="40"></u-icon>
+          <up-icon name="share" color="#999" size="40"></up-icon>
           <text class="btn-text">分享</text>
         </view>
       </view>
