@@ -1,5 +1,8 @@
 <template>
   <view class="container">
+    <!-- 导航栏 -->
+    <Navbar title="联系我们" />
+    
     <view class="header-section">
       <image class="banner-image" src="/static/images/contact-us-banner.png" mode="aspectFill"></image>
       <view class="header-content">
@@ -109,8 +112,12 @@
 
 <script>
 import { ref, reactive } from 'vue'
+import Navbar from '@/components/Navbar.vue' // 导入 Navbar 组件
 
 export default {
+  components: { // 注册 Navbar 组件
+    Navbar
+  },
   setup() {
     const form = reactive({
       name: '',
@@ -213,11 +220,13 @@ export default {
   min-height: 100vh;
   background-color: #f5f7fa;
   padding-bottom: 50rpx;
+  padding-top: 0; /* 移除顶部padding，让NavBar组件自己处理占位 */
 }
 
 .header-section {
   position: relative;
   height: 300rpx;
+  margin-top: 0; /* 确保header紧贴NavBar占位区域 */
 }
 
 .banner-image {

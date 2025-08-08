@@ -1,13 +1,7 @@
 <template>
   <view class="container tab-page">
     <!-- 顶部导航栏 -->
-    <Navbar 
-      title="课程学习"
-      :showLeft="false"
-      :showRight="true"
-      rightIcon="search"
-      @rightClick="handleSearchClick"
-    />
+    <Navbar title="课程学习" :showLeft="false" :showRight="true" rightIcon="search" @rightClick="handleSearchClick" />
 
     <!-- 标签栏 -->
     <view class="tabs">
@@ -17,32 +11,19 @@
 
     <!-- 分类列表 -->
     <view class="category-list">
-      <view 
-        class="category-item" 
-        :class="{ active: activeCategory === 'all' }" 
-        @click="setCategory('all')"
-      >
+      <view class="category-item" :class="{ active: activeCategory === 'all' }" @click="setCategory('all')">
         全部
       </view>
-      <view 
-        class="category-item" 
-        :class="{ active: activeCategory === category.id }" 
-        v-for="category in categories" 
-        :key="category.id"
-        @click="setCategory(category.id)"
-      >
+      <view class="category-item" :class="{ active: activeCategory === category.id }" v-for="category in categories"
+        :key="category.id" @click="setCategory(category.id)">
         {{ category.name }}
       </view>
     </view>
 
     <!-- 课程列表 -->
     <view class="course-list">
-      <CourseCard 
-        v-for="(item, index) in courseList" 
-        :key="item.id || index"
-        :course="item"
-        @click="handleCourseClick"
-      />
+      <CourseCard v-for="(item, index) in courseList" :key="item.id || index" :course="item"
+        @click="handleCourseClick" />
     </view>
 
     <!-- 空状态 -->
@@ -51,31 +32,19 @@
         <up-icon name="search" size="60" color="#ccc"></up-icon>
         <text class="empty-title">暂无课程</text>
         <text class="empty-subtitle">试试切换其他分类</text>
-        <up-button
-            text="重新加载"
-            type="primary"
-            size="normal"
-            @click="fetchCourses(true)"
-            :customStyle="{
-              marginTop: '30rpx',
-              width: '160rpx',
-              borderRadius: '22rpx',
-              background: '#4A90E2'
-            }"
-        ></up-button>
+        <up-button text="重新加载" type="primary" size="normal" @click="fetchCourses(true)" :customStyle="{
+          marginTop: '30rpx',
+          width: '160rpx',
+          borderRadius: '22rpx',
+          background: '#4A90E2'
+        }"></up-button>
       </view>
     </view>
 
     <!-- 加载更多 -->
     <view class="load-more-container">
-      <up-loadmore :status="loadMoreStatus" @loadmore="loadMore" 
-        :loading-text="'正在加载更多课程...'"
-        :loadmore-text="'上拉加载更多'"
-        :nomore-text="'已加载全部课程'"
-        icon-size="20"
-        :margin-top="20"
-        :margin-bottom="20"
-      />
+      <up-loadmore :status="loadMoreStatus" @loadmore="loadMore" :loading-text="'正在加载更多课程...'" :loadmore-text="'上拉加载更多'"
+        :nomore-text="'已加载全部课程'" icon-size="20" :margin-top="20" :margin-bottom="20" />
     </view>
 
     <!-- 自定义TabBar -->
@@ -270,11 +239,25 @@ onReachBottom(() => {
 })
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+// SCSS变量
+$primary-color: #4A90E2;
+$secondary-color: #1890ff;
+$text-color: #333;
+$text-light: #666;
+$text-lighter: #999;
+$bg-color: #f5f7fa;
+$white: #fff;
+$border-color: #f0f0f0;
+$shadow-light: rgba(0, 0, 0, 0.05);
+$shadow-medium: rgba(0, 0, 0, 0.08);
+$shadow-strong: rgba(0, 0, 0, 0.15);
+
 .container {
   min-height: 100vh;
-  background: #f5f7fa;
-  padding-bottom: 30rpx;
+  background: $bg-color;
+  padding-bottom: 120rpx;
+  /* 为TabBar留出空间 */
 }
 
 // 顶部导航栏样式已由Navbar组件提供
@@ -282,98 +265,135 @@ onReachBottom(() => {
 // 标签栏
 .tabs {
   display: flex;
-  background: #fff;
-  border-bottom: 1rpx solid #f0f0f0;
+  background: $white;
+  border-bottom: 1rpx solid $border-color;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 2rpx 8rpx $shadow-light;
+
+  .tab {
+    flex: 1;
+    text-align: center;
+    padding: 28rpx 0;
+    font-size: 30rpx;
+    color: $text-light;
+    position: relative;
+    transition: color 0.3s ease;
+
+    &:active {
+      background-color: rgba($primary-color, 0.05);
+    }
+
+    &.active {
+      color: $primary-color;
+      font-weight: bold;
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50rpx;
+        height: 6rpx;
+        background: linear-gradient(90deg, $primary-color, $secondary-color);
+        border-radius: 3rpx;
+        animation: slideIn 0.3s ease;
+      }
+    }
+  }
 }
 
-.tab {
-  flex: 1;
-  text-align: center;
-  padding: 24rpx 0;
-  font-size: 28rpx;
-  color: #666;
-  position: relative;
-}
+@keyframes slideIn {
+  from {
+    width: 0;
+  }
 
-.tab.active {
-  color: #4A90E2;
-  font-weight: bold;
-}
-
-.tab.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 40rpx;
-  height: 6rpx;
-  background: #4A90E2;
-  border-radius: 3rpx;
+  to {
+    width: 50rpx;
+  }
 }
 
 // 分类列表
 .category-list {
   display: flex;
   overflow-x: auto;
-  padding: 30rpx 20rpx;
-  background: #fff;
-  scrollbar-width: none; /* Firefox */
-}
+  padding: 30rpx 30rpx 20rpx;
+  background: $white;
+  scrollbar-width: none;
+  /* Firefox */
+  gap: 16rpx;
+  border-bottom: 1rpx solid $border-color;
 
-.category-list::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Edge */
-}
+  &::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari, Edge */
+  }
 
-.category-item {
-  flex: 0 0 auto;
-  padding: 12rpx 24rpx;
-  margin-right: 16rpx;
-  background: #f5f5f5;
-  border-radius: 32rpx;
-  font-size: 24rpx;
-  color: #666;
-  white-space: nowrap;
-}
+  .category-item {
+    flex: 0 0 auto;
+    padding: 16rpx 28rpx;
+    background: #f8f9fa;
+    border-radius: 40rpx;
+    font-size: 26rpx;
+    color: $text-light;
+    white-space: nowrap;
+    border: 2rpx solid transparent;
+    transition: all 0.3s ease;
+    box-shadow: 0 2rpx 6rpx $shadow-light;
 
-.category-item.active {
-  background: #e6f7ff;
-  color: #4A90E2;
+    &:active {
+      transform: scale(0.95);
+    }
+
+    &.active {
+      background: linear-gradient(135deg, #e6f7ff, #f0f9ff);
+      color: $primary-color;
+      border-color: #b3d8ff;
+      font-weight: 600;
+      box-shadow: 0 4rpx 12rpx rgba($primary-color, 0.15);
+    }
+  }
 }
 
 // 课程列表
 .course-list {
-  padding: 0;
+  margin-top: 10rpx;
 }
 
 // 空状态
 .empty-state {
-  padding: 100rpx 60rpx;
+  padding: 120rpx 40rpx;
   text-align: center;
-}
 
-.empty-content {
-  background: #fff;
-  border-radius: 16rpx;
-  padding: 60rpx 40rpx;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
-}
+  .empty-content {
+    background: $white;
+    border-radius: 20rpx;
+    padding: 80rpx 40rpx;
+    box-shadow: 0 8rpx 24rpx $shadow-medium;
+    border: 1rpx solid $border-color;
 
-.empty-title {
-  font-size: 28rpx;
-  color: #333;
-  margin: 20rpx 0 8rpx;
-  display: block;
-}
+    .empty-title {
+      font-size: 32rpx;
+      color: $text-color;
+      margin: 30rpx 0 12rpx;
+      display: block;
+      font-weight: 600;
+    }
 
-.empty-subtitle {
-  font-size: 24rpx;
-  color: #999;
-  display: block;
+    .empty-subtitle {
+      font-size: 26rpx;
+      color: $text-lighter;
+      display: block;
+      line-height: 1.4;
+    }
+  }
 }
 
 // 加载更多
 .load-more-container {
-  padding: 0 30rpx 20rpx;
+  padding: 20rpx 30rpx 40rpx;
+  margin-top: 20rpx;
 }
-</style> 
+</style>

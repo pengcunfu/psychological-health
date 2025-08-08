@@ -5,7 +5,7 @@
       <text class="card-title">用户评价</text>
       <text class="review-count">({{ totalCount }}条)</text>
     </view>
-    
+
     <view class="reviews-content">
       <view class="review-item" v-for="(review, index) in displayReviews" :key="review.id || index">
         <view class="review-header">
@@ -13,19 +13,14 @@
           <view class="review-user">
             <text class="review-username">{{ review.username || '匿名用户' }}</text>
             <view class="review-rating">
-              <up-rate 
-                :value="review.rating || 5" 
-                readonly 
-                size="12" 
-                active-color="#faad14"
-              ></up-rate>
+              <up-rate :value="review.rating || 5" readonly size="12" active-color="#faad14"></up-rate>
               <text class="review-time">{{ formatDate(review.create_time) }}</text>
             </view>
           </view>
         </view>
         <text class="review-text">{{ review.content || '用户给出了好评' }}</text>
       </view>
-      
+
       <view class="view-more" v-if="showViewMore" @click="handleViewMore">
         <text class="view-more-text">查看全部{{ totalCount }}条评价</text>
         <SvgIcon name="arrow-right" :size="14" color="#4A90E2" />
@@ -97,100 +92,128 @@ const handleViewMore = () => {
 </script>
 
 <style lang="scss" scoped>
+// SCSS变量
+$primary-color: #4A90E2;
+$white: #fff;
+$text-color: #333;
+$text-lighter: #999;
+$border-color: #f0f0f0;
+$shadow-medium: rgba(0, 0, 0, 0.1);
+
+$padding-large: 30rpx;
+$padding-medium: 25rpx;
+$padding-small: 20rpx;
+$padding-xs: 15rpx;
+$margin-medium: 20rpx;
+$margin-small: 15rpx;
+$margin-xs: 10rpx;
+$margin-icon: 8rpx;
+
+$border-radius: 12rpx;
+$border-radius-xs: 3rpx;
+$indicator-width: 6rpx;
+$indicator-height: 30rpx;
+
+$font-size-title: 32rpx;
+$font-size-base: 28rpx;
+$font-size-small: 24rpx;
+$font-weight-bold: bold;
+$line-height-text: 1.6;
+
 .reviews-card {
-  background-color: #fff;
-  padding: 30rpx;
-  margin-bottom: 20rpx;
-  border-radius: 12rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
-}
+  background-color: $white;
+  padding: $padding-large;
+  margin-bottom: $margin-medium;
+  border-radius: $border-radius;
+  box-shadow: 0 2rpx 8rpx $shadow-medium;
 
-.card-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20rpx;
-}
+  .card-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: $margin-medium;
 
-.section-indicator {
-  width: 6rpx;
-  height: 30rpx;
-  background-color: #4A90E2;
-  margin-right: 10rpx;
-  border-radius: 3rpx;
-}
+    .section-indicator {
+      width: $indicator-width;
+      height: $indicator-height;
+      background-color: $primary-color;
+      margin-right: $margin-xs;
+      border-radius: $border-radius-xs;
+    }
 
-.card-title {
-  font-size: 32rpx;
-  font-weight: bold;
-  color: #333;
-}
+    .card-title {
+      font-size: $font-size-title;
+      font-weight: $font-weight-bold;
+      color: $text-color;
+    }
 
-.review-count {
-  font-size: 28rpx;
-  color: #999;
-  margin-left: 8rpx;
-}
+    .review-count {
+      font-size: $font-size-base;
+      color: $text-lighter;
+      margin-left: $margin-icon;
+    }
+  }
 
-.reviews-content {
-  margin-top: 20rpx;
-}
+  .reviews-content {
+    margin-top: $margin-medium;
 
-.review-item {
-  padding: 25rpx 0;
-  border-bottom: 1rpx solid #f0f0f0;
-}
+    .review-item {
+      padding: $padding-medium 0;
+      border-bottom: 1rpx solid $border-color;
 
-.review-item:last-child {
-  border-bottom: none;
-}
+      &:last-child {
+        border-bottom: none;
+      }
 
-.review-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 15rpx;
-}
+      .review-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: $margin-small;
 
-.review-user {
-  flex: 1;
-  margin-left: 15rpx;
-}
+        .review-user {
+          flex: 1;
+          margin-left: $margin-small;
 
-.review-username {
-  font-size: 28rpx;
-  color: #333;
-  font-weight: bold;
-  display: block;
-  margin-bottom: 8rpx;
-}
+          .review-username {
+            font-size: $font-size-base;
+            color: $text-color;
+            font-weight: $font-weight-bold;
+            display: block;
+            margin-bottom: $margin-icon;
+          }
 
-.review-rating {
-  display: flex;
-  align-items: center;
-}
+          .review-rating {
+            display: flex;
+            align-items: center;
 
-.review-time {
-  font-size: 24rpx;
-  color: #999;
-  margin-left: 15rpx;
-}
+            .review-time {
+              font-size: $font-size-small;
+              color: $text-lighter;
+              margin-left: $margin-small;
+            }
+          }
+        }
+      }
 
-.review-text {
-  font-size: 28rpx;
-  color: #333;
-  line-height: 1.6;
-}
+      .review-text {
+        font-size: $font-size-base;
+        color: $text-color;
+        line-height: $line-height-text;
+      }
+    }
 
-.view-more {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20rpx;
-  color: #4A90E2;
-  font-size: 28rpx;
-  cursor: pointer;
-}
+    .view-more {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: $margin-medium;
+      color: $primary-color;
+      font-size: $font-size-base;
+      cursor: pointer;
 
-.view-more-text {
-  margin-right: 10rpx;
+      .view-more-text {
+        margin-right: $margin-xs;
+      }
+    }
+  }
 }
-</style> 
+</style>

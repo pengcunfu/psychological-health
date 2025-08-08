@@ -14,12 +14,8 @@
 
         <!-- 自定义指示器 -->
         <view v-if="bannerList.length > 0 && indicatorDots" class="custom-indicator">
-            <view 
-                v-for="(item, index) in bannerList" 
-                :key="index"
-                class="indicator-item"
-                :class="{ active: index === currentIndex }"
-            ></view>
+            <view v-for="(item, index) in bannerList" :key="index" class="indicator-item"
+                :class="{ active: index === currentIndex }"></view>
         </view>
 
         <!-- 空状态 -->
@@ -162,103 +158,122 @@ const onImageError = (e) => {
 </script>
 
 <style lang="scss" scoped>
+// SCSS变量
+$border-radius-large: 16rpx;
+$border-radius-medium: 12rpx;
+$border-radius-small: 10rpx;
+$border-radius-xs: 3rpx;
+$padding-base: 20rpx;
+$padding-small: 10rpx;
+$padding-xs: 2rpx;
+$white: white;
+$text-light: #999;
+$bg-empty: #fafafa;
+$bg-loading: rgba(245, 245, 245, 0.9);
+$bg-overlay: rgba(0, 0, 0, 0.5);
+$font-size-base: 28rpx;
+$z-index-loading: 10;
+$z-index-indicator: 5;
+$transition-base: all 0.3s ease;
+
 .banner {
     height: v-bind(height);
     position: relative;
-    padding:  20rpx;
-}
+    padding: $padding-base;
 
-.banner :deep(.uni-swiper-wrapper),
-.banner :deep(.uni-swiper-slides) {
-    border-radius: 16rpx !important;
-    overflow: hidden !important;
-}
+    // 深度选择器样式
+    :deep(.uni-swiper-wrapper),
+    :deep(.uni-swiper-slides) {
+        border-radius: $border-radius-large !important;
+        overflow: hidden !important;
+    }
 
-.swiper-container {
-    height: 100%;
-    border-radius: 16rpx;
-    overflow: hidden;
-}
+    .swiper-container {
+        height: 100%;
+        border-radius: $border-radius-large;
+        overflow: hidden;
 
-.swiper-item {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    border-radius: 16rpx;
-    overflow: hidden;
-}
+        .swiper-item {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            border-radius: $border-radius-large;
+            overflow: hidden;
 
-.swiper-image {
-    width: 100%;
-    height: 100%;
-    object-fit: fill;
-}
+            .swiper-image {
+                width: 100%;
+                height: 100%;
+                object-fit: fill;
+            }
 
-.swiper-title {
-    position: absolute;
-    bottom: 20rpx;
-    left: 20rpx;
-    right: 20rpx;
-    background: rgba(0, 0, 0, 0.5);
-    color: white;
-    padding: 10rpx 20rpx;
-    border-radius: 10rpx;
-    font-size: 28rpx;
-    text-align: center;
-}
+            .swiper-title {
+                position: absolute;
+                bottom: $padding-base;
+                left: $padding-base;
+                right: $padding-base;
+                background: $bg-overlay;
+                color: $white;
+                padding: $padding-small $padding-base;
+                border-radius: $border-radius-small;
+                font-size: $font-size-base;
+                text-align: center;
+            }
+        }
+    }
 
-.banner-empty {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #fafafa;
-    border-radius: 12rpx;
-}
+    .banner-empty {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: $bg-empty;
+        border-radius: $border-radius-medium;
+    }
 
-.banner-loading {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(245, 245, 245, 0.9);
-    z-index: 10;
-}
+    .banner-loading {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: $bg-loading;
+        z-index: $z-index-loading;
 
-.loading-text {
-    font-size: 28rpx;
-    color: #999;
-    margin-top: 20rpx;
-}
+        .loading-text {
+            font-size: $font-size-base;
+            color: $text-light;
+            margin-top: $padding-base;
+        }
+    }
 
-// 自定义指示器样式
-.custom-indicator {
-    position: absolute;
-    bottom: 8rpx;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 5;
-}
+    // 自定义指示器样式
+    .custom-indicator {
+        position: absolute;
+        bottom: 8rpx;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: $z-index-indicator;
 
-.indicator-item {
-    width: 8rpx;
-    height: 4rpx;
-    background-color: v-bind(indicatorColor);
-    border-radius: 3rpx;
-    margin: 0 2rpx;
-    transition: all 0.3s ease;
-    
-    &.active {
-        background-color: v-bind(indicatorActiveColor);
-        width: 10rpx;
+        .indicator-item {
+            width: 8rpx;
+            height: 4rpx;
+            background-color: v-bind(indicatorColor);
+            border-radius: $border-radius-xs;
+            margin: 0 $padding-xs;
+            transition: $transition-base;
+
+            &.active {
+                background-color: v-bind(indicatorActiveColor);
+                width: 10rpx;
+            }
+        }
     }
 }
 </style>

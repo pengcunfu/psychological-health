@@ -1,13 +1,11 @@
 <template>
   <view class="container">
-    <!-- 顶部导航 -->
-    <view class="header">
-      <view class="back-button" @click="goBack">
-        <SvgIcon name="arrow-left" :size="48" color="#333" />
-      </view>
-      <view class="header-title">我的测评</view>
-      <view style="width: 32px;"></view>
-    </view>
+    <Navbar
+      title="我的测评"
+      :showLeft="true"
+      :showRight="false"
+      @leftClick="goBack"
+    />
     
     <!-- 标签栏 -->
     <view class="tabs">
@@ -99,6 +97,7 @@
 import { ref, computed } from 'vue'
 import { useUserStore } from '@/store/user'
 import SvgIcon from '@/components/SvgIcon.vue'
+import Navbar from '@/components/Navbar.vue'
 
 const userStore = useUserStore()
 
@@ -290,241 +289,217 @@ const goToAssessment = () => {
   color: #333;
 }
 
-.header {
-  padding: 30rpx;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background-color: #fff;
-  border-bottom: 1rpx solid #f0f0f0;
-}
-
-.header-title {
-  font-size: 36rpx;
-  font-weight: bold;
-  flex: 1;
-  text-align: center;
-}
-
-.back-button {
-  width: 48rpx;
-  height: 48rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .tabs {
   display: flex;
   background-color: #fff;
   border-bottom: 1rpx solid #f0f0f0;
-}
 
-.tab {
-  flex: 1;
-  text-align: center;
-  padding: 24rpx 0;
-  font-size: 28rpx;
-  color: #666;
-  position: relative;
-  transition: color 0.3s;
-}
+  .tab {
+    flex: 1;
+    text-align: center;
+    padding: 24rpx 0;
+    font-size: 28rpx;
+    color: #666;
+    position: relative;
+    transition: color 0.3s;
 
-.tab.active {
-  color: #4A90E2;
-  font-weight: bold;
-}
+    &.active {
+      color: #4A90E2;
+      font-weight: bold;
 
-.tab.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 40rpx;
-  height: 6rpx;
-  background-color: #4A90E2;
-  border-radius: 3rpx;
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 40rpx;
+        height: 6rpx;
+        background-color: #4A90E2;
+        border-radius: 3rpx;
+      }
+    }
+  }
 }
 
 .assessment-list {
   padding: 30rpx;
+
+  .assessment-card {
+    margin-bottom: 30rpx;
+    border-radius: 16rpx;
+    background-color: #fff;
+    box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.05);
+    overflow: hidden;
+
+    .assessment-status {
+      padding: 16rpx 30rpx;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 24rpx;
+
+      &.status-completed {
+        background-color: #f6ffed;
+        color: #52c41a;
+      }
+
+      &.status-inprogress {
+        background-color: #e6f7ff;
+        color: #4A90E2;
+      }
+
+      &.status-expired {
+        background-color: #f5f5f5;
+        color: #999;
+      }
+    }
+  }
 }
 
-.assessment-card {
-  margin-bottom: 30rpx;
-  border-radius: 16rpx;
-  background-color: #fff;
-  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.05);
-  overflow: hidden;
-}
+      .assessment-content {
+        padding: 30rpx;
+        display: flex;
 
-.assessment-status {
-  padding: 16rpx 30rpx;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 24rpx;
-}
+        .assessment-image {
+          width: 160rpx;
+          height: 160rpx;
+          border-radius: 8rpx;
+          margin-right: 24rpx;
+          background-color: #f5f5f5;
+        }
 
-.status-completed {
-  background-color: #f6ffed;
-  color: #52c41a;
-}
+        .assessment-info {
+          flex: 1;
 
-.status-inprogress {
-  background-color: #e6f7ff;
-  color: #4A90E2;
-}
+          .assessment-name {
+            font-size: 32rpx;
+            font-weight: bold;
+            margin-bottom: 12rpx;
+            color: #333;
+          }
 
-.status-expired {
-  background-color: #f5f5f5;
-  color: #999;
-}
+          .assessment-description {
+            font-size: 24rpx;
+            color: #666;
+            margin-bottom: 16rpx;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
 
-.assessment-content {
-  padding: 30rpx;
-  display: flex;
-}
+          .assessment-time {
+            font-size: 24rpx;
+            color: #999;
+            margin-bottom: 16rpx;
+          }
 
-.assessment-image {
-  width: 160rpx;
-  height: 160rpx;
-  border-radius: 8rpx;
-  margin-right: 24rpx;
-  background-color: #f5f5f5;
-}
+          .assessment-actions {
+            display: flex;
+            justify-content: flex-end;
+          }
+        }
+      }
 
-.assessment-info {
-  flex: 1;
-}
+            .action-button {
+              padding: 12rpx 24rpx;
+              font-size: 24rpx;
+              border-radius: 8rpx;
+              margin-left: 16rpx;
+              transition: all 0.2s;
 
-.assessment-name {
-  font-size: 32rpx;
-  font-weight: bold;
-  margin-bottom: 12rpx;
-  color: #333;
-}
+              &.primary-button {
+                background-color: #4A90E2;
+                color: #fff;
 
-.assessment-description {
-  font-size: 24rpx;
-  color: #666;
-  margin-bottom: 16rpx;
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+                &:active {
+                  background-color: #357abd;
+                }
+              }
 
-.assessment-time {
-  font-size: 24rpx;
-  color: #999;
-  margin-bottom: 16rpx;
-}
+              &.secondary-button {
+                background-color: #f5f5f5;
+                color: #666;
 
-.assessment-actions {
-  display: flex;
-  justify-content: flex-end;
-}
+                &:active {
+                  background-color: #e8e8e8;
+                }
+              }
+            }
 
-.action-button {
-  padding: 12rpx 24rpx;
-  font-size: 24rpx;
-  border-radius: 8rpx;
-  margin-left: 16rpx;
-  transition: all 0.2s;
-}
+      .result-summary {
+        padding: 24rpx 30rpx;
+        border-top: 1rpx solid #f0f0f0;
+        font-size: 24rpx;
+        color: #666;
 
-.primary-button {
-  background-color: #4A90E2;
-  color: #fff;
-}
+        .result-item {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 8rpx;
 
-.primary-button:active {
-  background-color: #357abd;
-}
+          &:last-child {
+            margin-bottom: 0;
+          }
 
-.secondary-button {
-  background-color: #f5f5f5;
-  color: #666;
-}
+          .result-label {
+            color: #999;
+          }
 
-.secondary-button:active {
-  background-color: #e8e8e8;
-}
+          .result-value {
+            font-weight: bold;
 
-.result-summary {
-  padding: 24rpx 30rpx;
-  border-top: 1rpx solid #f0f0f0;
-  font-size: 24rpx;
-  color: #666;
-}
+            &.result-high {
+              color: #ff4d4f;
+            }
 
-.result-item {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 8rpx;
-}
+            &.result-medium {
+              color: #faad14;
+            }
 
-.result-item:last-child {
-  margin-bottom: 0;
-}
-
-.result-label {
-  color: #999;
-}
-
-.result-value {
-  font-weight: bold;
-}
-
-.result-high {
-  color: #ff4d4f;
-}
-
-.result-medium {
-  color: #faad14;
-}
-
-.result-low {
-  color: #52c41a;
-}
+            &.result-low {
+              color: #52c41a;
+            }
+          }
+        }
+      }
 
 .empty-state {
   padding: 120rpx 40rpx;
   text-align: center;
-}
 
-.empty-icon {
-  width: 160rpx;
-  height: 160rpx;
-  margin: 0 auto 40rpx;
-  background-color: #f5f5f5;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+  .empty-icon {
+    width: 160rpx;
+    height: 160rpx;
+    margin: 0 auto 40rpx;
+    background-color: #f5f5f5;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-.empty-text {
-  font-size: 28rpx;
-  color: #999;
-  margin-bottom: 40rpx;
-}
+  .empty-text {
+    font-size: 28rpx;
+    color: #999;
+    margin-bottom: 40rpx;
+  }
 
-.empty-button {
-  display: inline-block;
-  padding: 16rpx 40rpx;
-  background-color: #4A90E2;
-  color: #fff;
-  border-radius: 8rpx;
-  font-size: 28rpx;
-  transition: background-color 0.2s;
-}
+  .empty-button {
+    display: inline-block;
+    padding: 16rpx 40rpx;
+    background-color: #4A90E2;
+    color: #fff;
+    border-radius: 8rpx;
+    font-size: 28rpx;
+    transition: background-color 0.2s;
 
-.empty-button:active {
-  background-color: #357abd;
+    &:active {
+      background-color: #357abd;
+    }
+  }
 }
 </style>

@@ -1,16 +1,8 @@
 <template>
   <view class="container tab-page">
-    <!-- 顶部导航栏 -->
-    <view class="header">
-      <view class="back-button" @click="goBack">
-        <up-icon name="arrow-left" size="20" color="#333"></up-icon>
-      </view>
-      <view class="header-title">心理测评</view>
-      <view class="search-button" @click="handleSearchClick">
-        <up-icon name="search" size="20" color="#333"></up-icon>
-      </view>
-    </view>
-
+    <!-- 导航栏 -->
+    <Navbar title="心理测评" :show-right="true" right-icon="search" @right-click="handleSearchClick" />
+    
     <!-- 标签栏 -->
     <view class="tabs">
       <view 
@@ -153,6 +145,7 @@ import { ref, reactive, computed } from 'vue'
 import { onLoad, onReachBottom } from '@dcloudio/uni-app'
 import { assessmentAPI } from '@/api/assessment'
 import AssessmentCard from '@/components/AssessmentCard.vue'
+import Navbar from '@/components/Navbar.vue'
 
 // 搜索关键词
 const searchKeyword = ref('')
@@ -242,10 +235,7 @@ const getDifficultyText = (difficulty) => {
   }
 }
 
-// 返回上一页
-const goBack = () => {
-  uni.navigateBack()
-}
+// goBack函数已移除，NavBar组件会自动处理返回功能
 
 // 搜索按钮点击
 const handleSearchClick = () => {
@@ -470,33 +460,10 @@ onReachBottom(() => {
   min-height: 100vh;
   background: #f5f7fa;
   padding-bottom: 30rpx;
+  padding-top: 0; /* NavBar组件自己处理占位空间 */
 }
 
-// 顶部导航栏
-.header {
-  padding: 30rpx;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #fff;
-  border-bottom: 1rpx solid #f0f0f0;
-}
-
-.header-title {
-  font-size: 36rpx;
-  font-weight: bold;
-  flex: 1;
-  text-align: center;
-  color: #333;
-}
-
-.back-button, .search-button {
-  width: 48rpx;
-  height: 48rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+// Header样式已移除，使用NavBar组件
 
 // 标签栏
 .tabs {

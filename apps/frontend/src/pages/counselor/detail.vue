@@ -1,5 +1,8 @@
 <template>
   <view class="container">
+    <!-- 导航栏 -->
+    <Navbar title="咨询师详情" />
+    
     <!-- 加载状态 -->
     <view v-if="loading" class="loading-container">
       <up-loading-page :loading="true" loading-text="加载中..."></up-loading-page>
@@ -165,6 +168,7 @@ import { checkLogin } from '@/utils/auth'
 import ReviewCard from '@/components/ReviewCard.vue'
 import ProfileCard from '@/components/ProfileCard.vue'
 import SvgIcon from '@/components/SvgIcon.vue'
+import Navbar from '@/components/Navbar.vue'
 
 // 页面参数
 const counselorId = ref('')
@@ -336,6 +340,7 @@ onLoad((options) => {
   min-height: 100vh;
   background-color: #f5f7fa;
   padding: 0;
+  padding-top: 0; /* NavBar组件自己处理占位空间 */
 }
 
 .loading-container, .error-container {
@@ -348,6 +353,7 @@ onLoad((options) => {
 .content {
   padding: 20rpx;
   padding-bottom: 120rpx; // 为固定底部栏留出空间
+  padding-top: 20rpx; /* 确保内容与NavBar有适当间距 */
 }
 
 .counselor-hero {

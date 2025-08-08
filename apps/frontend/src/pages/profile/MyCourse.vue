@@ -1,5 +1,12 @@
 <template>
   <view class="container">
+    <Navbar
+      title="我的课程"
+      :showLeft="true"
+      :showRight="false"
+      @leftClick="goBack"
+    />
+    
     <view class="tab-section">
       <view 
         class="tab-item" 
@@ -62,171 +69,168 @@
   </view>
 </template>
 
-<script>
+<script setup>
 import { ref } from 'vue'
 import { onLoad, onPullDownRefresh, onReachBottom } from '@dcloudio/uni-app'
 import { request } from '@/utils/request'
 import { checkLogin } from '@/utils/auth'
+import Navbar from '@/components/Navbar.vue'
 
-export default {
-  setup() {
-    // 检查登录状态
-    if (!checkLogin()) return {}
-    
-    const activeTab = ref('all')
-    const courses = ref([])
-    const pagination = ref({
-      page: 1,
-      per_page: 10,
-      total: 0,
-      total_pages: 0
-    })
-    const loading = ref(false)
-    
-    // 获取课程列表
-    const fetchCourses = async (reset = false) => {
-      if (loading.value) return
-      
-      if (reset) {
-        pagination.value.page = 1
-        courses.value = []
-      }
-      
-      loading.value = true
-      
-      try {
-        // 根据当前标签页确定状态过滤
-        let status = ''
-        switch (activeTab.value) {
-          case 'all':
-            status = ''
-            break
-          case 'learning':
-            status = 'learning'
-            break
-          case 'completed':
-            status = 'completed'
-            break
-        }
-        
-        const res = await request({
-          url: '/user/course',
-          method: 'GET',
-          data: {
-            page: pagination.value.page,
-            per_page: pagination.value.per_page,
-            status: status
-          }
-        })
-        
-        if (res.code === 200 && res.success) {
-          const newList = res.data.list || []
-          courses.value = reset ? newList : [...courses.value, ...newList]
-          
-          pagination.value.total = res.data.total || 0
-          pagination.value.total_pages = res.data.pages || 0
-        } else {
-          uni.showToast({
-            title: res.message || '获取课程列表失败',
-            icon: 'none'
-          })
-        }
-      } catch (error) {
-        console.error('获取课程列表失败:', error)
-        uni.showToast({
-          title: '获取课程列表失败，请稍后重试',
-          icon: 'none'
-        })
-      } finally {
-        loading.value = false
-        
-        // 停止下拉刷新
-        uni.stopPullDownRefresh()
-      }
+// 检查登录状态
+if (!checkLogin()) {
+  // 在 setup 语法糖中，无法直接返回空对象，需要处理登录跳转
+  uni.redirectTo({
+    url: '/pages/login'
+  })
+}
+
+const activeTab = ref('all')
+const courses = ref([])
+const pagination = ref({
+  page: 1,
+  per_page: 10,
+  total: 0,
+  total_pages: 0
+})
+const loading = ref(false)
+
+// 返回上一页
+const goBack = () => {
+  uni.navigateBack()
+}
+// 获取课程列表
+const fetchCourses = async (reset = false) => {
+  if (loading.value) return
+  
+  if (reset) {
+    pagination.value.page = 1
+    courses.value = []
+  }
+  
+  loading.value = true
+  
+  try {
+    // 根据当前标签页确定状态过滤
+    let status = ''
+    switch (activeTab.value) {
+      case 'all':
+        status = ''
+        break
+      case 'learning':
+        status = 'learning'
+        break
+      case 'completed':
+        status = 'completed'
+        break
     }
     
-    // 切换标签页
-    const switchTab = (tab) => {
-      activeTab.value = tab
-      fetchCourses(true)
-    }
-    
-    // 获取状态文本
-    const getStatusText = (status) => {
-      switch (status) {
-        case 'not_started':
-          return '未开始'
-        case 'learning':
-          return '学习中'
-        case 'completed':
-          return '已完成'
-        default:
-          return '未知状态'
-      }
-    }
-    
-    // 获取当前标签页文本
-    const getTabText = () => {
-      switch (activeTab.value) {
-        case 'all':
-          return ''
-        case 'learning':
-          return '学习中'
-        case 'completed':
-          return '已完成'
-        default:
-          return ''
-      }
-    }
-    
-    // 跳转到课程详情或学习页面
-    const navigateToCourse = (course) => {
-      if (course.last_learn_lesson_id) {
-        // 继续上次学习
-        uni.navigateTo({
-          url: `/pages/course/play/index?course_id=${course.id}&lesson_id=${course.last_learn_lesson_id}`
-        })
-      } else {
-        // 查看课程详情
-        uni.navigateTo({
-          url: `/pages/course/detail?id=${course.id}`
-        })
-      }
-    }
-    
-    // 页面加载
-    onLoad(() => {
-      fetchCourses(true)
-    })
-    
-    // 下拉刷新
-    onPullDownRefresh(() => {
-      fetchCourses(true)
-    })
-    
-    // 上拉加载更多
-    onReachBottom(() => {
-      if (loading.value) return
-      
-      if (pagination.value.page < pagination.value.total_pages) {
-        pagination.value.page++
-        fetchCourses()
+    const res = await request({
+      url: '/user/course',
+      method: 'GET',
+      data: {
+        page: pagination.value.page,
+        per_page: pagination.value.per_page,
+        status: status
       }
     })
     
-    return {
-      activeTab,
-      courses,
-      switchTab,
-      getStatusText,
-      getTabText,
-      navigateToCourse
+    if (res.code === 200 && res.success) {
+      const newList = res.data.list || []
+      courses.value = reset ? newList : [...courses.value, ...newList]
+      
+      pagination.value.total = res.data.total || 0
+      pagination.value.total_pages = res.data.pages || 0
+    } else {
+      uni.showToast({
+        title: res.message || '获取课程列表失败',
+        icon: 'none'
+      })
     }
+  } catch (error) {
+    console.error('获取课程列表失败:', error)
+    uni.showToast({
+      title: '获取课程列表失败，请稍后重试',
+      icon: 'none'
+    })
+  } finally {
+    loading.value = false
+    
+    // 停止下拉刷新
+    uni.stopPullDownRefresh()
   }
 }
+
+// 切换标签页
+const switchTab = (tab) => {
+  activeTab.value = tab
+  fetchCourses(true)
+}
+
+// 获取状态文本
+const getStatusText = (status) => {
+  switch (status) {
+    case 'not_started':
+      return '未开始'
+    case 'learning':
+      return '学习中'
+    case 'completed':
+      return '已完成'
+    default:
+      return '未知状态'
+  }
+}
+
+// 获取当前标签页文本
+const getTabText = () => {
+  switch (activeTab.value) {
+    case 'all':
+      return ''
+    case 'learning':
+      return '学习中'
+    case 'completed':
+      return '已完成'
+    default:
+      return ''
+  }
+}
+
+// 跳转到课程详情或学习页面
+const navigateToCourse = (course) => {
+  if (course.last_learn_lesson_id) {
+    // 继续上次学习
+    uni.navigateTo({
+      url: `/pages/course/play/index?course_id=${course.id}&lesson_id=${course.last_learn_lesson_id}`
+    })
+  } else {
+    // 查看课程详情
+    uni.navigateTo({
+      url: `/pages/course/detail?id=${course.id}`
+    })
+  }
+}
+
+// 页面加载
+onLoad(() => {
+  fetchCourses(true)
+})
+
+// 下拉刷新
+onPullDownRefresh(() => {
+  fetchCourses(true)
+})
+
+// 上拉加载更多
+onReachBottom(() => {
+  if (loading.value) return
+  
+  if (pagination.value.page < pagination.value.total_pages) {
+    pagination.value.page++
+    fetchCourses()
+  }
+})
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .container {
   min-height: 100vh;
   background-color: #f5f7fa;
@@ -239,31 +243,31 @@ export default {
   position: sticky;
   top: 0;
   z-index: 10;
-}
 
-.tab-item {
-  flex: 1;
-  text-align: center;
-  padding: 30rpx 0;
-  font-size: 28rpx;
-  color: #666;
-  position: relative;
-}
+  .tab-item {
+    flex: 1;
+    text-align: center;
+    padding: 30rpx 0;
+    font-size: 28rpx;
+    color: #666;
+    position: relative;
 
-.tab-item.active {
-  color: #4A90E2;
-  font-weight: bold;
-}
+    &.active {
+      color: #4A90E2;
+      font-weight: bold;
 
-.tab-item.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60rpx;
-  height: 4rpx;
-  background-color: #4A90E2;
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60rpx;
+        height: 4rpx;
+        background-color: #4A90E2;
+      }
+    }
+  }
 }
 
 .content-section {
@@ -277,33 +281,33 @@ export default {
   padding: 20rpx;
   margin-bottom: 20rpx;
   box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
-}
 
-.course-image {
-  width: 200rpx;
-  height: 200rpx;
-  border-radius: 10rpx;
-  background-color: #f0f0f0;
-}
+  .course-image {
+    width: 200rpx;
+    height: 200rpx;
+    border-radius: 10rpx;
+    background-color: #f0f0f0;
+  }
 
-.course-info {
-  flex: 1;
-  margin-left: 20rpx;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
+  .course-info {
+    flex: 1;
+    margin-left: 20rpx;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 
-.course-name {
-  font-size: 32rpx;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 20rpx;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
+    .course-name {
+      font-size: 32rpx;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 20rpx;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
 }
 
 .course-progress {

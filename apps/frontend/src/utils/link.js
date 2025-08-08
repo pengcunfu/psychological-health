@@ -55,7 +55,7 @@ export const isValidInternalPath = (url) => {
     '/pages/course/detail',
     '/pages/assessment/index',
     '/pages/assessment/detail',
-    '/pages/community/index',
+    '/pages/social/index',
     '/pages/profile/index',
     '/pages/profile/edit',
     '/pages/profile/security',

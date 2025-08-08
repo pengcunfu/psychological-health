@@ -4,23 +4,26 @@
     <view class="custom-navbar">
       <!-- 状态栏占位 -->
       <view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
-      
+
       <!-- 导航栏内容 -->
       <view class="navbar-content">
         <!-- 左侧 -->
         <view class="navbar-left" @click="handleLeftClick" v-if="showLeft">
-          <view class="navbar-left-icon" v-if="leftIcon">
-            <up-icon :name="leftIcon" size="20" color="#333"></up-icon>
+          <slot name="left" v-if="$slots.left"></slot>
+          <view v-else>
+            <view class="navbar-left-icon" v-if="leftIcon">
+              <up-icon :name="leftIcon" size="20" color="#333"></up-icon>
+            </view>
+            <text class="navbar-left-text" v-if="leftText">{{ leftText }}</text>
           </view>
-          <text class="navbar-left-text" v-if="leftText">{{ leftText }}</text>
         </view>
-        
+
         <!-- 标题 -->
         <view class="navbar-center">
           <slot name="center" v-if="$slots.center"></slot>
           <text class="navbar-title" v-else>{{ title }}</text>
         </view>
-        
+
         <!-- 右侧 -->
         <view class="navbar-right" @click="handleRightClick" v-if="showRight">
           <slot name="right" v-if="$slots.right"></slot>
@@ -33,7 +36,7 @@
         </view>
       </view>
     </view>
-    
+
     <!-- 占位元素，防止内容被导航栏遮挡 -->
     <view class="navbar-placeholder" v-if="placeholder" :style="{ height: (statusBarHeight + 44) + 'px' }"></view>
   </view>
@@ -158,102 +161,118 @@ const handleRightClick = () => {
 </script>
 
 <style lang="scss" scoped>
+// SCSS变量
+$navbar-height: 88rpx;
+$navbar-padding: 30rpx;
+$icon-size: 48rpx;
+$text-margin: 8rpx;
+$white: #ffffff;
+$text-color: #333333;
+$border-color: #ebeef5;
+$transparent: transparent;
+$z-index-navbar: 1000;
+$z-index-side: 2;
+$z-index-center: 1;
+$font-size-title: 32rpx;
+$font-size-text: 28rpx;
+$font-weight-bold: bold;
+
 .custom-navbar {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  z-index: 1000;
-  background-color: #ffffff;
-  border-bottom: 1rpx solid #ebeef5;
-}
+  z-index: $z-index-navbar;
+  background-color: $white;
+  border-bottom: 1rpx solid $border-color;
 
-.status-bar {
-  width: 100%;
-  background-color: #ffffff;
-}
+  .status-bar {
+    width: 100%;
+    background-color: $white;
+  }
 
-.navbar-content {
-  position: relative;
-  display: flex;
-  align-items: center;
-  height: 88rpx;
-  padding: 0 30rpx;
-  background-color: #ffffff;
-}
+  .navbar-content {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: $navbar-height;
+    padding: 0 $navbar-padding;
+    background-color: $white;
 
-.navbar-left,
-.navbar-right {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  height: 88rpx;
-  z-index: 2;
-}
+    .navbar-left,
+    .navbar-right {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      height: $navbar-height;
+      z-index: $z-index-side;
 
-.navbar-left {
-  left: 30rpx;
-  justify-content: flex-start;
-}
+      .navbar-left-icon,
+      .navbar-right-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: $icon-size;
+        height: $icon-size;
+      }
 
-.navbar-right {
-  right: 30rpx;
-  justify-content: flex-end;
-}
+      .navbar-left-text,
+      .navbar-right-text {
+        font-size: $font-size-text;
+        color: $text-color;
+        margin-left: $text-margin;
+      }
+    }
 
-.navbar-left-icon,
-.navbar-right-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 48rpx;
-  height: 48rpx;
-}
+    .navbar-left {
+      left: $navbar-padding;
+      justify-content: flex-start;
+    }
 
-.navbar-left-text,
-.navbar-right-text {
-  font-size: 28rpx;
-  color: #333333;
-  margin-left: 8rpx;
-}
+    .navbar-right {
+      right: $navbar-padding;
+      justify-content: flex-end;
+    }
 
-.navbar-center {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 88rpx;
-  z-index: 1;
-  pointer-events: none;
-}
+    .navbar-center {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: $navbar-height;
+      z-index: $z-index-center;
+      pointer-events: none;
 
-.navbar-center .navbar-title,
-.navbar-center view,
-.navbar-center text,
-.navbar-center .header-center,
-.navbar-center .search-bar,
-.navbar-center .logo,
-.navbar-center .logo-icon,
-.navbar-center .logo-text,
-.navbar-center .search-text {
-  pointer-events: auto;
-}
+      .navbar-title,
+      view,
+      text,
+      .header-center,
+      .search-bar,
+      .logo,
+      .logo-icon,
+      .logo-text,
+      .search-text {
+        pointer-events: auto;
+      }
 
-.navbar-title {
-  font-size: 32rpx;
-  font-weight: bold;
-  color: #333333;
-  text-align: center;
+      .navbar-title {
+        font-size: $font-size-title;
+        font-weight: $font-weight-bold;
+        color: $text-color;
+        text-align: center;
+      }
+    }
+  }
 }
 
 // 占位元素样式
 .navbar-placeholder {
   width: 100%;
-  background-color: transparent;
+  background-color: $transparent;
 }
 
 // 微信小程序安全区域适配
@@ -261,5 +280,6 @@ const handleRightClick = () => {
 .custom-navbar {
   /* 适配微信小程序 */
 }
+
 /* #endif */
 </style>

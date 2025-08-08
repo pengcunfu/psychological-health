@@ -1,17 +1,9 @@
 <template>
-  <view 
-    class="assessment-card" 
-    @click="handleCardClick"
-  >
+  <view class="assessment-card" @click="handleCardClick">
     <view class="assessment-left">
-      <image 
-        class="assessment-img" 
-        :src="getAssessmentCover()" 
-        mode="aspectFill"
-        @error="onImageError"
-      />
+      <image class="assessment-img" :src="getAssessmentCover()" mode="aspectFill" @error="onImageError" />
     </view>
-    
+
     <view class="assessment-right">
       <view class="assessment-header">
         <text class="assessment-title">{{ assessment.name || assessment.title }}</text>
@@ -19,7 +11,7 @@
           {{ assessment.subtitle }}
         </text>
       </view>
-      
+
       <view class="assessment-info">
         <view class="info-row">
           <text class="info-item">{{ formatParticipantCount(assessment.participant_count) }}人已测</text>
@@ -27,7 +19,7 @@
         </view>
         <text class="assessment-desc" v-if="assessment.description">{{ assessment.description }}</text>
       </view>
-      
+
       <view class="assessment-footer">
         <view class="assessment-price">
           <text class="price-text" v-if="assessment.price > 0">¥{{ assessment.price }}</text>
@@ -68,7 +60,7 @@ const handleCardClick = () => {
 // 格式化参与人数
 const formatParticipantCount = (count) => {
   if (!count) return '201.2万'
-  
+
   const num = parseInt(count)
   if (num >= 10000) {
     return (num / 10000).toFixed(1) + '万'
@@ -102,125 +94,138 @@ const getDifficultyText = (difficulty) => {
 </script>
 
 <style lang="scss" scoped>
+// SCSS变量
+$primary-color: #4A90E2;
+$success-color: #52c41a;
+$warning-color: #ff6b35;
+$text-color: #333;
+$text-light: #666;
+$text-lighter: #999;
+$white: #fff;
+$border-radius: 12rpx;
+$border-radius-large: 16rpx;
+$card-height: 240rpx;
+$image-width: 180rpx;
+
 .assessment-card {
   display: flex;
-  border-radius: 12rpx;
-  background-color: #fff;
+  border-radius: $border-radius;
+  background-color: $white;
   overflow: hidden;
   margin-bottom: 20rpx;
-  height: 240rpx;
-}
+  height: $card-height;
 
-.assessment-left {
-  position: relative;
-  width: 180rpx;
-  height: 240rpx;
-  margin-right: 20rpx;
-  flex-shrink: 0;
-}
+  .assessment-left {
+    position: relative;
+    width: $image-width;
+    height: $card-height;
+    margin-right: 20rpx;
+    flex-shrink: 0;
 
-.assessment-img {
-  width: 180rpx;
-  height: calc(100% - 10rpx);
-  border-radius: 12rpx;
-  object-fit: cover;
-}
+    .assessment-img {
+      width: $image-width;
+      height: calc(100% - 10rpx);
+      border-radius: $border-radius;
+      object-fit: cover;
+    }
+  }
 
-.assessment-right {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-height: 120rpx;
-}
+  .assessment-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 120rpx;
 
-.assessment-header {
-  margin-bottom: 8rpx;
-}
+    .assessment-header {
+      margin-bottom: 8rpx;
 
-.assessment-title {
-  font-size: 30rpx;
-  font-weight: bold;
-  color: #333;
-  line-height: 1.3;
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-bottom: 6rpx;
-}
+      .assessment-title {
+        font-size: 30rpx;
+        font-weight: bold;
+        color: $text-color;
+        line-height: 1.3;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-bottom: 6rpx;
+      }
 
-.assessment-subtitle {
-  font-size: 24rpx;
-  color: #666;
-  line-height: 1.3;
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+      .assessment-subtitle {
+        font-size: 24rpx;
+        color: $text-light;
+        line-height: 1.3;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
 
-.assessment-info {
-  flex: 1;
-  margin-bottom: 8rpx;
-}
+    .assessment-info {
+      flex: 1;
+      margin-bottom: 8rpx;
 
-.info-row {
-  display: flex;
-  align-items: center;
-  margin-bottom: 6rpx;
-}
+      .info-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 6rpx;
 
-.info-item {
-  font-size: 22rpx;
-  color: #999;
-  margin-right: 20rpx;
-}
+        .info-item {
+          font-size: 22rpx;
+          color: $text-lighter;
+          margin-right: 20rpx;
+        }
+      }
 
-.assessment-desc {
-  font-size: 22rpx;
-  color: #666;
-  line-height: 1.3;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+      .assessment-desc {
+        font-size: 22rpx;
+        color: $text-light;
+        line-height: 1.3;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
 
-.assessment-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+    .assessment-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
 
-.assessment-price {
-  flex: 1;
-}
+      .assessment-price {
+        flex: 1;
 
-.price-text {
-  font-size: 26rpx;
-  font-weight: bold;
-  color: #ff6b35;
-  
-  &.free {
-    color: #52c41a;
+        .price-text {
+          font-size: 26rpx;
+          font-weight: bold;
+          color: $warning-color;
+
+          &.free {
+            color: $success-color;
+          }
+        }
+      }
+
+      .assessment-action {
+        margin-left: 20rpx;
+
+        .action-btn {
+          background-color: $success-color;
+          color: $white;
+          font-size: 22rpx;
+          padding: 10rpx 20rpx;
+          // border-radius: 8rpx;
+          border-top-left-radius: $border-radius-large;
+          font-weight: 500;
+        }
+      }
+    }
   }
 }
-
-.assessment-action {
-  margin-left: 20rpx;
-}
-
-.action-btn {
-  background-color: #52c41a;
-  color: #fff;
-  font-size: 22rpx;
-  padding: 10rpx 20rpx;
-  // border-radius: 8rpx;
-  border-top-left-radius: 16rpx;
-  font-weight: 500;
-}
-</style> 
+</style>

@@ -228,6 +228,14 @@
         "navigationBarTitleText": "支付成功",
         "navigationStyle": "custom"
       }
+    },
+    {
+      "path": "pages/social/index",
+      "style": {
+        "navigationBarTitleText": "互动社区",
+        "navigationStyle": "custom",
+        "enablePullDownRefresh": true
+      }
     }
   ],
   "globalStyle": {

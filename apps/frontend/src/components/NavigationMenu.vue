@@ -67,7 +67,7 @@ const defaultMenuItems = [
     name: '互动社区', 
     color: '#fa8c16', 
     bgColor: '#fff7e6',
-    url: '/pages/community/index',
+    url: '/pages/social/index',
     iconName: 'community',
     fallbackIcon: 'account-fill'
   }
@@ -89,48 +89,64 @@ const handleMenuClick = (item) => {
 </script>
 
 <style lang="scss" scoped>
+// SCSS变量
+$grid-columns: 4;
+$margin-base: 20rpx;
+$margin-icon: 16rpx;
+$padding-base: 20rpx;
+$white: #fff;
+$text-color: #333;
+$border-radius: 16rpx;
+$icon-size: 100rpx;
+$font-size-text: 24rpx;
+$line-height-text: 1.2;
+$transition-fast: 0.2s ease;
+$transition-medium: 0.3s ease;
+$scale-active: 0.95;
+$scale-icon-active: 0.9;
+
 .nav-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  margin: 20rpx;
+  grid-template-columns: repeat($grid-columns, 1fr);
+  margin: $margin-base;
   margin-top: 0;
-  padding:  20rpx;
-  background-color: #fff;
-  border-radius: 16rpx;
+  padding: $padding-base;
+  background-color: $white;
+  border-radius: $border-radius;
   overflow: hidden;
-}
 
-.nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20rpx;
-  transition: transform 0.2s ease;
-}
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: $padding-base;
+    transition: transform $transition-fast;
 
-.nav-item:active {
-  transform: scale(0.95);
-}
+    &:active {
+      transform: scale($scale-active);
 
-.nav-icon {
-  width: 100rpx;
-  height: 100rpx;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 16rpx;
-  transition: all 0.3s ease;
-}
+      .nav-icon {
+        transform: scale($scale-icon-active);
+      }
+    }
 
-.nav-item:active .nav-icon {
-  transform: scale(0.9);
-}
+    .nav-icon {
+      width: $icon-size;
+      height: $icon-size;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: $margin-icon;
+      transition: all $transition-medium;
+    }
 
-.nav-text {
-  font-size: 24rpx;
-  color: #333;
-  text-align: center;
-  line-height: 1.2;
+    .nav-text {
+      font-size: $font-size-text;
+      color: $text-color;
+      text-align: center;
+      line-height: $line-height-text;
+    }
+  }
 }
 </style> 

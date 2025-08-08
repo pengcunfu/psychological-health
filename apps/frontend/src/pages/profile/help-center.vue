@@ -1,13 +1,11 @@
 <template>
   <view class="container">
-    <!-- 顶部导航 -->
-    <view class="header">
-      <view class="back-button" @click="goBack">
-        <SvgIcon name="arrow-left" :size="48" color="#333" />
-      </view>
-      <view class="header-title">帮助中心</view>
-      <view style="width: 32px;"></view>
-    </view>
+    <Navbar
+      title="帮助中心"
+      :showLeft="true"
+      :showRight="false"
+      @leftClick="goBack"
+    />
     
     <!-- 搜索框 -->
     <view class="search-box">
@@ -137,6 +135,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import SvgIcon from '@/components/SvgIcon.vue'
+import Navbar from '@/components/Navbar.vue'
 
 // 搜索关键词
 const searchKeyword = ref('')
@@ -244,30 +243,6 @@ const sendEmail = () => {
   min-height: 100vh;
   background-color: #f5f7fa;
   color: #333;
-}
-
-.header {
-  padding: 30rpx;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background-color: #fff;
-  border-bottom: 1rpx solid #f0f0f0;
-}
-
-.header-title {
-  font-size: 36rpx;
-  font-weight: bold;
-  flex: 1;
-  text-align: center;
-}
-
-.back-button {
-  width: 48rpx;
-  height: 48rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .search-box {

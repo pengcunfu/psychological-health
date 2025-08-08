@@ -138,14 +138,19 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+// SCSS变量
+$display-flex: inline-flex;
+$text-align-center: center;
+$font-weight-bold: bold;
+
 .svg-icon {
-  display: inline-flex;
+  display: $display-flex;
   align-items: center;
   justify-content: center;
-}
 
-.fallback-text {
-  text-align: center;
-  font-weight: bold;
+  .fallback-text {
+    text-align: $text-align-center;
+    font-weight: $font-weight-bold;
+  }
 }
 </style> 

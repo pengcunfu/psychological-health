@@ -1,13 +1,7 @@
 <template>
   <view class="container">
-    <!-- 顶部导航 -->
-    <view class="header">
-      <view class="back-button" @click="goBack">
-        <SvgIcon name="arrow-left"  :size="32" color="#333" />
-      </view>
-      <view class="header-title">设置</view>
-      <view style="width: 32px;"></view>
-    </view>
+    <!-- 导航栏 -->
+    <Navbar title="设置" />
     
     <!-- 账号设置 -->
     <view class="settings-section">
@@ -190,6 +184,7 @@
 import { ref, computed } from 'vue'
 import { useUserStore } from '@/store/user'
 import SvgIcon from '@/components/SvgIcon.vue'
+import Navbar from '@/components/Navbar.vue'
 
 const userStore = useUserStore()
 
@@ -201,10 +196,7 @@ const cacheSize = ref('23.5MB')
 // 计算属性
 const isLoggedIn = computed(() => userStore.isLoggedIn)
 
-// 返回上一页
-const goBack = () => {
-  uni.navigateBack()
-}
+// goBack函数已移除，NavBar组件会自动处理返回功能
 
 // 页面跳转
 const navigateTo = (url) => {
@@ -295,31 +287,10 @@ const handleLogout = () => {
   min-height: 100vh;
   background-color: #f5f7fa;
   color: #333;
+  padding-top: 0; /* NavBar组件自己处理占位空间 */
 }
 
-.header {
-  padding: 30rpx;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background-color: #fff;
-  border-bottom: 1rpx solid #f0f0f0;
-}
-
-.header-title {
-  font-size: 36rpx;
-  font-weight: bold;
-  flex: 1;
-  text-align: center;
-}
-
-.back-button {
-  width: 48rpx;
-  height: 48rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+// Header样式已移除，使用NavBar组件
 
 .settings-section {
   background-color: #fff;

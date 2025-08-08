@@ -4,7 +4,7 @@
       <view class="section-indicator"></view>
       <text class="card-title">个人简介</text>
     </view>
-    
+
     <view class="intro-content">
       <!-- 个人头衔 -->
       <view class="intro-section" v-if="titles.length > 0">
@@ -101,19 +101,19 @@ const props = defineProps({
 // 计算个人头衔
 const titles = computed(() => {
   const result = []
-  
+
   // 添加主要头衔
   if (props.profile.title) {
     result.push(props.profile.title)
   }
-  
+
   // 添加默认头衔（去重）
   props.defaultTitles.forEach(title => {
     if (!result.includes(title)) {
       result.push(title)
     }
   })
-  
+
   return result
 })
 
@@ -136,137 +136,172 @@ const hasContactInfo = computed(() => {
 </script>
 
 <style lang="scss" scoped>
+// SCSS变量
+$primary-color: #4A90E2;
+$primary-light: #e6f7ff;
+$primary-border: #91d5ff;
+$white: #fff;
+$text-color: #333;
+$text-light: #666;
+$text-lighter: #999;
+$border-color: #f0f0f0;
+$shadow-medium: rgba(0, 0, 0, 0.1);
+
+$padding-large: 30rpx;
+$padding-medium: 20rpx;
+$padding-small: 15rpx;
+$padding-xs: 10rpx;
+$padding-tag: 8rpx 12rpx;
+$margin-large: 30rpx;
+$margin-medium: 20rpx;
+$margin-small: 15rpx;
+$margin-xs: 10rpx;
+$margin-icon: 8rpx;
+$margin-text: 5rpx;
+
+$border-radius: 12rpx;
+$border-radius-small: 8rpx;
+$border-radius-xs: 3rpx;
+$indicator-width: 6rpx;
+$edu-period-width: 180rpx;
+
+$font-size-title: 32rpx;
+$font-size-base: 28rpx;
+$font-size-tag: 26rpx;
+$font-weight-bold: bold;
+$line-height-content: 1.8;
+
 .intro-card {
-  background-color: #fff;
-  padding: 30rpx;
-  margin-bottom: 20rpx;
-  border-radius: 12rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
-}
+  background-color: $white;
+  padding: $padding-large;
+  margin-bottom: $margin-medium;
+  border-radius: $border-radius;
+  box-shadow: 0 2rpx 8rpx $shadow-medium;
 
-.card-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20rpx;
-}
+  .card-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: $margin-medium;
 
-.section-indicator {
-  width: 6rpx;
-  height: 30rpx;
-  background-color: #4A90E2;
-  margin-right: 10rpx;
-  border-radius: 3rpx;
-}
+    .section-indicator {
+      width: $indicator-width;
+      height: $padding-large;
+      background-color: $primary-color;
+      margin-right: $margin-xs;
+      border-radius: $border-radius-xs;
+    }
 
-.card-title {
-  font-size: 32rpx;
-  font-weight: bold;
-  color: #333;
-}
+    .card-title {
+      font-size: $font-size-title;
+      font-weight: $font-weight-bold;
+      color: $text-color;
+    }
+  }
 
-.intro-content {
-  font-size: 28rpx;
-  color: #666;
-  line-height: 1.8;
-}
+  .intro-content {
+    font-size: $font-size-base;
+    color: $text-light;
+    line-height: $line-height-content;
 
-.intro-section {
-  margin-bottom: 30rpx;
-}
+    .intro-section {
+      margin-bottom: $margin-large;
 
-.intro-section:last-child {
-  margin-bottom: 0;
-}
+      &:last-child {
+        margin-bottom: 0;
+      }
 
-.intro-subtitle {
-  font-size: 28rpx;
-  color: #999;
-  margin-bottom: 15rpx;
-  display: block;
-}
+      .intro-subtitle {
+        font-size: $font-size-base;
+        color: $text-lighter;
+        margin-bottom: $margin-small;
+        display: block;
+      }
 
-.intro-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10rpx;
-}
+      .intro-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: $margin-xs;
 
-.intro-tag {
-  font-size: 26rpx;
-  color: #4A90E2;
-  background-color: #e6f7ff;
-  padding: 8rpx 12rpx;
-  border-radius: 8rpx;
-  border: 1rpx solid #91d5ff;
-}
+        .intro-tag {
+          font-size: $font-size-tag;
+          color: $primary-color;
+          background-color: $primary-light;
+          padding: $padding-tag;
+          border-radius: $border-radius-small;
+          border: 1rpx solid $primary-border;
+        }
+      }
 
-.intro-text {
-  margin-top: 10rpx;
-}
+      .intro-text {
+        margin-top: $margin-xs;
+      }
 
-.specialty-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10rpx;
-}
+      .specialty-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: $margin-xs;
 
-.specialty-tag {
-  font-size: 26rpx;
-  color: #4A90E2;
-  background-color: #e6f7ff;
-  padding: 8rpx 12rpx;
-  border-radius: 8rpx;
-  border: 1rpx solid #91d5ff;
-}
+        .specialty-tag {
+          font-size: $font-size-tag;
+          color: $primary-color;
+          background-color: $primary-light;
+          padding: $padding-tag;
+          border-radius: $border-radius-small;
+          border: 1rpx solid $primary-border;
+        }
+      }
 
-.education-list {
-  margin-top: 10rpx;
-}
+      .education-list {
+        margin-top: $margin-xs;
 
-.education-item {
-  display: flex;
-  margin-bottom: 15rpx;
-  padding-bottom: 15rpx;
-  border-bottom: 1rpx solid #f0f0f0;
-}
+        .education-item {
+          display: flex;
+          margin-bottom: $margin-small;
+          padding-bottom: $margin-small;
+          border-bottom: 1rpx solid $border-color;
 
-.education-item:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
-}
+          &:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+          }
 
-.edu-period {
-  font-size: 26rpx;
-  color: #999;
-  width: 180rpx;
-  flex-shrink: 0;
-}
+          .edu-period {
+            font-size: $font-size-tag;
+            color: $text-lighter;
+            width: $edu-period-width;
+            flex-shrink: 0;
+          }
 
-.edu-detail {
-  font-size: 28rpx;
-  color: #333;
-  font-weight: bold;
-  display: block;
-  margin-bottom: 5rpx;
-}
+          .edu-detail {
+            font-size: $font-size-base;
+            color: $text-color;
+            font-weight: $font-weight-bold;
+            display: block;
+            margin-bottom: $margin-text;
+          }
+        }
+      }
 
-.contact-info {
-  margin-top: 15rpx;
-}
+      .contact-info {
+        margin-top: $margin-small;
 
-.contact-item {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10rpx;
-}
+        .contact-item {
+          display: flex;
+          align-items: center;
+          margin-bottom: $margin-xs;
 
-.contact-item:last-child {
-  margin-bottom: 0;
-}
+          &:last-child {
+            margin-bottom: 0;
+          }
 
-.contact-text {
-  font-size: 28rpx;
-  color: #666;
-  margin-left: 8rpx;
+          .contact-text {
+            font-size: $font-size-base;
+            color: $text-light;
+            margin-left: $margin-icon;
+          }
+        }
+      }
+    }
+  }
 }
-</style> 
+</style>
