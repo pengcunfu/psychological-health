@@ -74,8 +74,10 @@
       />
     </view>
 
-    <!-- 自定义TabBar -->
-    <TabBar />
+    <!-- 自定义TabBar with keep-alive -->
+    <keep-alive>
+      <TabBar />
+    </keep-alive>
   </view>
 </template>
 

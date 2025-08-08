@@ -1,6 +1,6 @@
 <template>
   <!-- 统一使用自定义TabBar，兼容所有平台 -->
-  <view class="custom-tabbar" :style="{ paddingBottom: safeAreaBottom + 'px' }">
+  <view class="custom-tabbar" :style="{ paddingBottom: safeAreaBottom + 'px' }" v-if="currentIndex >= 0">
     <view class="tabbar-border"></view>
     <view class="tabbar-item" v-for="(item, index) in tabList" :key="index"
       :class="{ 
@@ -35,7 +35,7 @@
 import { ref, onMounted } from 'vue'
 import SvgIcon from './SvgIcon.vue'
 
-const currentIndex = ref(0)
+const currentIndex = ref(-1)  // 初始化为-1，等待获取真实索引
 const switchingIndex = ref(-1)  // 跟踪正在切换的项目索引
 
 // TabBar颜色配置
@@ -75,8 +75,14 @@ const tabList = [
 // 防抖标识
 let switching = false
 
-// 切换标签页（使用自定义TabBar，不使用原生switchTab）
+// 切换标签页（使用页面跳转，保持原有架构）
 const switchTab = (index) => {
+  // 验证索引范围
+  if (index < 0 || index > 3 || index >= tabList.length) {
+    console.error('TabBar切换索引超出范围:', index)
+    return
+  }
+  
   if (currentIndex.value === index || switching) return
 
   switching = true
@@ -98,39 +104,83 @@ const switchTab = (index) => {
     currentIndex.value = index
   }, 100)
 
-  // 使用navigateTo实现TabBar页面切换，保持页面状态不刷新
-  uni.navigateTo({
-    url: targetPath,
-            success: () => {
-          console.log('TabBar页面切换成功:', targetPath)
-          setTimeout(() => {
-            switching = false
-            switchingIndex.value = -1  // 重置切换索引
-          }, 300)
-        },
-    fail: (err) => {
-      console.error('TabBar页面切换失败:', err)
-      // 如果navigateTo失败（如页面已存在），尝试使用redirectTo
-      uni.redirectTo({
-        url: targetPath,
-        success: () => {
-          console.log('TabBar页面redirectTo成功:', targetPath)
-          setTimeout(() => {
-            switching = false
-          }, 300)
-        },
-        fail: (redirectErr) => {
-          console.error('TabBar页面redirectTo也失败:', redirectErr)
-          // 失败时恢复状态
-          getCurrentIndex()
-          setTimeout(() => {
-            switching = false
-            switchingIndex.value = -1  // 重置切换索引
-          }, 300)
-        }
-      })
-    }
-  })
+  // 检查当前页面是否为TabBar页面，决定使用何种跳转方式
+  const pages = getCurrentPages()
+  const currentPage = pages[pages.length - 1]
+  const currentRoute = '/' + currentPage.route
+  const isCurrentTabPage = tabList.some(item => item.pagePath === currentRoute)
+  
+  if (isCurrentTabPage) {
+    // 如果当前在TabBar页面，使用redirectTo直接替换
+    uni.redirectTo({
+      url: targetPath,
+      success: () => {
+        console.log('TabBar页面直接切换成功:', targetPath)
+        setTimeout(() => {
+          switching = false
+          switchingIndex.value = -1  // 重置切换索引
+        }, 300)
+      },
+      fail: (err) => {
+        console.error('TabBar页面直接切换失败:', err)
+        // 如果redirectTo失败，尝试reLaunch
+        uni.reLaunch({
+          url: targetPath,
+          success: () => {
+            console.log('TabBar页面reLaunch成功:', targetPath)
+            setTimeout(() => {
+              switching = false
+              switchingIndex.value = -1  // 重置切换索引
+            }, 300)
+          },
+          fail: (reLaunchErr) => {
+            console.error('TabBar页面reLaunch也失败:', reLaunchErr)
+            // 失败时恢复状态
+            getCurrentIndex()
+            setTimeout(() => {
+              switching = false
+              switchingIndex.value = -1  // 重置切换索引
+            }, 300)
+          }
+        })
+      }
+    })
+  } else {
+    // 如果不在TabBar页面，使用navigateTo
+    uni.navigateTo({
+      url: targetPath,
+      success: () => {
+        console.log('从非TabBar页面跳转成功:', targetPath)
+        setTimeout(() => {
+          switching = false
+          switchingIndex.value = -1  // 重置切换索引
+        }, 300)
+      },
+      fail: (err) => {
+        console.error('从非TabBar页面跳转失败:', err)
+        // 失败时使用reLaunch
+        uni.reLaunch({
+          url: targetPath,
+          success: () => {
+            console.log('从非TabBar页面reLaunch成功:', targetPath)
+            setTimeout(() => {
+              switching = false
+              switchingIndex.value = -1  // 重置切换索引
+            }, 300)
+          },
+          fail: (reLaunchErr) => {
+            console.error('从非TabBar页面reLaunch也失败:', reLaunchErr)
+            // 失败时恢复状态
+            getCurrentIndex()
+            setTimeout(() => {
+              switching = false
+              switchingIndex.value = -1  // 重置切换索引
+            }, 300)
+          }
+        })
+      }
+    })
+  }
 }
 
 // 获取当前页面路径对应的索引
@@ -146,26 +196,23 @@ const getCurrentIndex = () => {
 
       // 找到对应的索引
       const index = tabList.findIndex(item => item.pagePath === basePath)
-      if (index !== -1) {
+      if (index !== -1 && index >= 0 && index <= 3) {
+        // 确保索引在有效范围内
         currentIndex.value = index
         console.log('TabBar当前索引已更新:', index, basePath)
       } else {
-        console.log('当前页面不是TabBar页面:', basePath)
+        console.log('当前页面不是TabBar页面或索引超出范围:', basePath, 'index:', index)
+        // 不改变当前索引，保持TabBar状态
       }
     }
   } catch (error) {
     console.error('获取TabBar当前索引失败:', error)
-    // 错误时默认设置为首页
-    currentIndex.value = 0
+    // 错误时不改变当前索引，避免跳转到错误页面
   }
 }
 
 onMounted(() => {
-  console.log('🎨 TabBar组件已挂载')
-  
-  // 默认设置为首页
-  currentIndex.value = 0
-  console.log('🏠 TabBar默认设置为首页索引: 0')
+  console.log('🎨 TabBar组件已挂载 - keep-alive模式')
   
   // 获取安全区域信息（适用于所有平台）
   try {
@@ -177,10 +224,16 @@ onMounted(() => {
     safeAreaBottom.value = 0
   }
   
-  // 延迟获取当前索引
+  // 立即获取当前索引，不设置默认值
+  getCurrentIndex()
+  
+  // 如果获取失败或不是TabBar页面，则设置为首页
   setTimeout(() => {
-    getCurrentIndex()
-  }, 300)
+    if (currentIndex.value < 0 || currentIndex.value > 3) {
+      currentIndex.value = 0
+      console.log('🏠 TabBar索引无效，设置为首页索引: 0')
+    }
+  }, 100)
 })
 
 // 添加页面显示监听，确保TabBar状态与页面同步
