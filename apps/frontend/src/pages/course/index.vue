@@ -174,11 +174,9 @@ const fetchCourses = async (reset = false) => {
       params.category = activeCategory.value
     }
 
-    console.log('获取课程列表参数:', params)
 
     const res = await courseAPI.getCourses(params)
 
-    console.log('课程API响应:', res)
 
     if (res.code === 200 && res.success && res.data) {
       // 处理课程数据
@@ -214,9 +212,7 @@ const fetchCourses = async (reset = false) => {
       // 更新加载更多状态
       loadMoreStatus.value = pagination.page >= pagination.total_pages ? 'nomore' : 'loadmore'
 
-      console.log('课程列表加载成功，共', newList.length, '条数据')
     } else {
-      console.log('API返回数据格式异常:', res)
 
       // 设置为空数组，显示空状态
       if (reset) {
@@ -225,7 +221,6 @@ const fetchCourses = async (reset = false) => {
       loadMoreStatus.value = 'nomore'
     }
   } catch (error) {
-    console.error('获取课程列表失败:', error)
 
     // 设置为空数组，显示空状态
     if (reset) {
@@ -266,7 +261,6 @@ const loadMore = () => {
 
 // 页面加载
 onLoad(() => {
-  console.log('页面加载，初始化课程列表')
   fetchCourses(true)
 })
 

@@ -138,13 +138,11 @@
       </view>
     </view>
 
-    <!-- 自定义TabBar -->
-    <TabBar />
   </view>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, getCurrentInstance } from 'vue'
 import { onLoad, onShow } from '@dcloudio/uni-app'
 import { useUserStore } from '@/store/user'
 import { bannerAPI } from '@/api/banner'
@@ -153,7 +151,6 @@ import { courseAPI } from '@/api/course'
 import { assessmentAPI } from '@/api/assessment'
 import { navigateTo } from '@/utils/link'
 
-import TabBar from '@/components/TabBar.vue'
 import SvgIcon from '@/components/SvgIcon.vue'
 import CounselorCard from '@/components/CounselorCard.vue'
 import CourseCard from '@/components/CourseCard.vue'
@@ -198,7 +195,6 @@ const fetchCounselors = async () => {
       counselorList.value = []
     }
   } catch (error) {
-    console.error('获取咨询师列表失败:', error)
     counselorList.value = []
   }
 }
@@ -211,7 +207,6 @@ const fetchCourses = async () => {
       per_page: 4
     })
     
-    console.log('课程API响应:', res)
     
     if (res.code === 200 && res.success && res.data && res.data.list) {
       // 处理课程数据，确保rating有默认值
@@ -220,13 +215,10 @@ const fetchCourses = async () => {
         rating: course.rating || 4.8, // 如果rating为0，使用默认值4.8
         student_count: course.student_count || 0
       }))
-      console.log('处理后的课程列表:', courseList.value)
     } else {
-      console.log('API返回数据格式异常')
       courseList.value = []
     }
   } catch (error) {
-    console.error('获取课程列表失败:', error)
     courseList.value = []
   }
 }
@@ -259,7 +251,6 @@ const fetchAssessments = async () => {
       status: 'published' // 只获取已发布的测评
     })
     
-    console.log('测评API响应:', res)
     
     if (res.success && res.data) {
       // 处理测评数据，确保所有字段都有默认值
@@ -269,9 +260,7 @@ const fetchAssessments = async () => {
         price: assessment.price || 0,
         difficulty: assessment.difficulty || 'medium'
       }))
-      console.log('处理后的测评列表:', assessmentList.value)
     } else {
-      console.log('测评API返回数据格式异常')
       assessmentList.value = []
     }
   } catch (error) {
@@ -282,36 +271,29 @@ const fetchAssessments = async () => {
 
 // 轮播图点击处理
 const handleBannerClick = ({ banner, index }) => {
-  console.log('轮播图点击事件触发，索引:', index)
-  console.log('当前点击的轮播图:', banner)
   // Banner 组件已经处理了跳转逻辑，这里可以添加额外的处理，比如统计
 }
 
 // 轮播图变化处理
 const handleBannerChange = ({ current, banner }) => {
-  console.log('轮播图切换到:', current, banner)
   // 这里可以添加轮播图变化时的处理逻辑，比如埋点统计
 }
 
 // 菜单点击处理
 const handleMenuClick = (menuItem) => {
-  console.log('菜单点击:', menuItem)
   // 这里可以添加额外的点击处理逻辑，比如统计、权限检查等
 }
 
 // 咨询师卡片点击处理
 const handleCounselorClick = (counselor) => {
-  console.log('咨询师卡片点击:', counselor)
 }
 
 // 课程卡片点击处理
 const handleCourseClick = (course) => {
-  console.log('课程卡片点击:', course)
 }
 
 // 心理测评卡片点击处理
 const handleAssessmentClick = (assessment) => {
-  console.log('心理测评卡片点击:', assessment)
   
   if (assessment && assessment.id) {
     // 导航到测评详情页
@@ -326,7 +308,6 @@ const handleAssessmentClick = (assessment) => {
 
 // 搜索栏点击处理
 const handleSearchBarClick = () => {
-  console.log('搜索栏被点击')
   uni.showToast({
     title: '跳转到搜索页面',
     icon: 'none'
@@ -359,9 +340,15 @@ onShow(() => {
     userStore.getUserInfo()
   }
   
-  // 触发tabbar页面显示事件
-  uni.$emit('tabBarPageShow')
-  uni.$emit('onShow')
+  // TabBar现在由App.vue全局管理，会自动在此页面显示
+  
+  // 手动触发App.vue的路由检测
+  setTimeout(() => {
+    const app = getCurrentInstance()?.appContext?.app?.$parent
+    if (app && app.getCurrentRoute) {
+      app.getCurrentRoute()
+    }
+  }, 200)
 })
 </script>
 

@@ -62,7 +62,6 @@ const isValidUrl = (string) => {
 
 // 处理消息
 const handleMessage = (e) => {
-  console.log('WebView消息:', e.detail)
 }
 
 // 处理错误
@@ -76,7 +75,6 @@ const handleError = (e) => {
 
 // 处理加载完成
 const handleLoad = (e) => {
-  console.log('WebView加载完成:', e.detail)
 }
 </script>
 

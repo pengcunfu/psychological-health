@@ -199,11 +199,9 @@ const fetchCounselors = async (reset = false) => {
         break
     }
 
-    console.log('获取咨询师列表参数:', params)
 
     const res = await counselorAPI.getCounselors(params)
 
-    console.log('咨询师API响应:', res)
 
     if (res.code === 200 && res.success && res.data) {
       // 处理咨询师数据
@@ -248,9 +246,7 @@ const fetchCounselors = async (reset = false) => {
       // 更新加载更多状态
       loadMoreStatus.value = pagination.page >= pagination.total_pages ? 'nomore' : 'loadmore'
 
-      console.log('咨询师列表加载成功，共', newList.length, '条数据')
     } else {
-      console.log('API返回数据格式异常:', res)
 
       // 设置为空数组，显示空状态
       if (reset) {
@@ -318,11 +314,9 @@ const processSpecialties = (tags) => {
 
 // 标签页切换处理
 const handleTabChange = (index) => {
-  console.log('切换到标签页:', index, tabList.value[index]?.name)
   // 确保index是数字类型
   const tabIndex = typeof index === 'object' ? index.index : index
   currentTab.value = Number(tabIndex)
-  console.log('当前筛选条件:', currentFilter.value)
   fetchCounselors(true)
 }
 
@@ -364,7 +358,6 @@ const loadMore = () => {
 
 // 页面加载
 onLoad(() => {
-  console.log('页面加载，初始化咨询师列表')
   // 确保初始状态正确
   currentTab.value = 0
   fetchCounselors(true)

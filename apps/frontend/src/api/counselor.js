@@ -18,7 +18,6 @@ export const counselorAPI = {
    * @returns {Promise} API响应
    */
   getCounselors(params = {}) {
-    console.log('发送咨询师列表请求，参数:', params)
     return request({
       url: '/counselor',
       method: 'GET',

@@ -316,7 +316,6 @@ const submitOrder = () => {
     total_price: totalPrice.value
   }
 
-  console.log('提交订单:', orderData)
 
   // 跳转到订单支付页面
   uni.navigateTo({

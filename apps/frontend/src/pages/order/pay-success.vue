@@ -198,7 +198,6 @@ onLoad((options) => {
 
 onMounted(() => {
   // 页面加载完成后的处理
-  console.log('支付成功页面加载完成', orderInfo.value)
 })
 </script>
 

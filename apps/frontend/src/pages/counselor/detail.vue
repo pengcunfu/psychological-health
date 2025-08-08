@@ -199,7 +199,6 @@ const fetchCounselorInfo = async () => {
 
   try {
     const res = await counselorAPI.getCounselorDetail(counselorId.value)
-    console.log('咨询师详情API响应:', res)
     
     if (res.success && res.data) {
       counselorInfo.value = {

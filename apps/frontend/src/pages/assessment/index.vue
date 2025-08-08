@@ -321,11 +321,9 @@ const fetchAssessments = async (reset = false) => {
         break
     }
 
-    console.log('获取测评列表参数:', params)
 
     const res = await assessmentAPI.getAssessments(params)
 
-    console.log('测评API响应:', res)
 
     if (res.success && res.data) {
       // 处理测评数据
@@ -362,9 +360,7 @@ const fetchAssessments = async (reset = false) => {
       // 更新加载更多状态
       loadMoreStatus.value = pagination.page >= pagination.total_pages ? 'nomore' : 'loadmore'
 
-      console.log('测评列表加载成功，共', newList.length, '条数据')
     } else {
-      console.log('API返回数据格式异常:', res)
 
       // 设置为空数组，显示空状态
       if (reset) {
@@ -392,16 +388,13 @@ const fetchAssessments = async (reset = false) => {
 
 // 标签页切换处理
 const handleTabChange = (index) => {
-  console.log('切换到标签页:', index, tabList.value[index]?.name)
   const tabIndex = typeof index === 'object' ? index.index : index
   currentTab.value = Number(tabIndex)
-  console.log('当前筛选条件:', currentFilter.value)
   fetchAssessments(true)
 }
 
 // 处理测评卡片点击
 const handleAssessmentClick = (assessment) => {
-  console.log('测评卡片点击:', assessment)
   
   if (assessment && assessment.id) {
     uni.navigateTo({
@@ -461,7 +454,6 @@ const loadMore = () => {
 
 // 页面加载
 onLoad(() => {
-  console.log('页面加载，初始化测评列表')
   // 确保初始状态正确
   currentTab.value = 0
   fetchAssessments(true)

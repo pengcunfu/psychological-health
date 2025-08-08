@@ -281,7 +281,6 @@ const fetchAssessmentDetail = async () => {
 
   try {
     const res = await assessmentAPI.getAssessment(assessmentId.value)
-    console.log('测评详情API响应:', res)
 
     if (res.success && res.data) {
       assessment.value = {

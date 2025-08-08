@@ -98,7 +98,6 @@ export const isTabBarPage = (url) => {
  * @param {string} title - 链接标题
  */
 export const handleExternalUrl = (url, title = '') => {
-  console.log('处理外部链接:', url)
   
   // #ifdef H5
   // 浏览器环境下，可以直接打开新窗口
@@ -156,7 +155,6 @@ export const handleExternalUrl = (url, title = '') => {
  * @param {string} url - 内部页面路径
  */
 export const handleInternalUrl = (url) => {
-  console.log('处理内部链接:', url)
   
   // 验证内部路径是否有效
   if (!isValidInternalPath(url)) {
@@ -173,7 +171,6 @@ export const handleInternalUrl = (url) => {
     uni.switchTab({
       url: url,
       success: () => {
-        console.log('TabBar页面跳转成功:', url)
       },
       fail: (err) => {
         console.error('TabBar页面跳转失败:', err, url)
@@ -187,7 +184,6 @@ export const handleInternalUrl = (url) => {
     uni.navigateTo({
       url: url,
       success: () => {
-        console.log('内部页面跳转成功:', url)
       },
       fail: (err) => {
         console.error('内部页面跳转失败:', err, url)

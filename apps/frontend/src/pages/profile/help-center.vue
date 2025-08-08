@@ -213,7 +213,6 @@ const makePhoneCall = () => {
   uni.makePhoneCall({
     phoneNumber: '400-123-4567',
     success: () => {
-      console.log('拨打电话成功')
     },
     fail: () => {
       uni.showToast({

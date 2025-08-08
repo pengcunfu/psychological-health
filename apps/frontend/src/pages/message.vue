@@ -189,7 +189,6 @@ const getSystemIcon = (messageType) => {
 
 // 处理消息点击
 const handleMessageClick = (message) => {
-  console.log('点击消息:', message)
 
   // 根据消息类型跳转到不同页面
   switch (message.type) {

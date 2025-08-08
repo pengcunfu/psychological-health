@@ -114,27 +114,21 @@ const currentIndex = ref(0)
 
 // 轮播图点击处理
 const handleBannerClick = (index) => {
-    console.log('轮播图点击事件触发，索引:', index)
-    console.log('轮播图数据:', bannerList.value)
 
     const banner = bannerList.value[index]
-    console.log('当前点击的轮播图:', banner)
 
     // 发送点击事件给父组件
     emit('bannerClick', { banner, index })
 
     // 默认跳转逻辑
     if (banner && banner.link_url) {
-        console.log('准备跳转到:', banner.link_url)
 
         // 预处理链接URL
         const processedUrl = preprocessUrl(banner.link_url)
-        console.log('处理后的URL:', processedUrl)
 
         // 判断链接类型并执行相应的跳转逻辑
         handleUrlNavigation(processedUrl, banner.title || '加载中...')
     } else {
-        console.log('轮播图数据无效或缺少链接')
         uni.showToast({
             title: '链接无效',
             icon: 'none'
@@ -145,7 +139,6 @@ const handleBannerClick = (index) => {
 // 轮播图变化处理
 const handleBannerChange = (e) => {
     const currentIndexValue = e.detail.current
-    console.log('轮播图切换到:', currentIndexValue)
 
     // 更新当前索引
     currentIndex.value = currentIndexValue
@@ -159,13 +152,11 @@ const handleBannerChange = (e) => {
 
 // 图片加载成功
 const onImageLoad = (e) => {
-    console.log('轮播图图片加载成功')
     emit('imageLoad', e)
 }
 
 // 图片加载失败
 const onImageError = (e) => {
-    console.log('轮播图图片加载失败')
     emit('imageError', e)
 }
 </script>

@@ -19,7 +19,6 @@ export const consultantAPI = {
    * @returns {Promise} API响应
    */
   getConsultants(params = {}) {
-    console.log('发送咨询人列表请求，参数:', params)
     return request({
       url: '/consultant',
       method: 'GET',
