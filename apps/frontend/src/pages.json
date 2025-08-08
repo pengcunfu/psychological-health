@@ -1,262 +1,254 @@
 {
-	"easycom": {
-		"autoscan": true,
-		"custom": {
-			"^u-(.*)": "uview-plus/components/u-$1/u-$1.vue",
-			"^up-(.*)": "uview-plus/components/u-$1/u-$1.vue"
-		}
-	},
-	"pages": [
-		{
-			"path": "pages/index",
-			"style": {
-				"navigationBarTitleText": "首页",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/login",
-			"style": {
-				"navigationBarTitleText": "登录",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/register",
-			"style": {
-				"navigationBarTitleText": "注册",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/forgot-password",
-			"style": {
-				"navigationBarTitleText": "找回密码",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/counselor/index",
-			"style": {
-				"navigationBarTitleText": "咨询师",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/counselor/detail",
-			"style": {
-				"navigationBarTitleText": "咨询师详情"
-			}
-		},
-		{
-			"path": "pages/counselor/appointment-now",
-			"style": {
-				"navigationBarTitleText": "预约咨询",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/consultant/create",
-			"style": {
-				"navigationBarTitleText": "咨询人信息",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/course/index",
-			"style": {
-				"navigationBarTitleText": "课程",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/course/detail",
-			"style": {
-				"navigationBarTitleText": "课程详情"
-			}
-		},
-		{
-			"path": "pages/assessment/index",
-			"style": {
-				"navigationBarTitleText": "心理测评",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/assessment/detail",
-			"style": {
-				"navigationBarTitleText": "测评详情"
-			}
-		},
-		{
-			"path": "pages/profile/index",
-			"style": {
-				"navigationBarTitleText": "我的",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/profile/edit",
-			"style": {
-				"navigationBarTitleText": "编辑资料"
-			}
-		},
-		{
-			"path": "pages/profile/security",
-			"style": {
-				"navigationBarTitleText": "账号安全"
-			}
-		},
-		{
-			"path": "pages/profile/BecomeCounselor",
-			"style": {
-				"navigationBarTitleText": "成为咨询师"
-			}
-		},
-		{
-			"path": "pages/profile/ContactUs",
-			"style": {
-				"navigationBarTitleText": "联系我们"
-			}
-		},
-		{
-			"path": "pages/profile/agreement",
-			"style": {
-				"navigationBarTitleText": "用户协议"
-			}
-		},
-		{
-			"path": "pages/profile/privacy",
-			"style": {
-				"navigationBarTitleText": "隐私政策"
-			}
-		},
-		{
-			"path": "pages/profile/privacy-agreement",
-			"style": {
-				"navigationBarTitleText": "隐私政策",
-				"navigationStyle": "default"
-			}
-		},
-		{
-			"path": "pages/profile/MyCourse",
-			"style": {
-				"navigationBarTitleText": "我的课程"
-			}
-		},
-		{
-			"path": "pages/profile/MyFavorite",
-			"style": {
-				"navigationBarTitleText": "我的收藏"
-			}
-		},
-		{
-			"path": "pages/order",
-			"style": {
-				"navigationBarTitleText": "我的订单"
-			}
-		},
-		{
-			"path": "pages/appointment",
-			"style": {
-				"navigationBarTitleText": "我的预约"
-			}
-		},
-		{
-			"path": "pages/search",
-			"style": {
-				"navigationBarTitleText": "搜索",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/webview",
-			"style": {
-				"navigationBarTitleText": "加载中...",
-				"navigationBarBackgroundColor": "#ffffff",
-				"navigationBarTextStyle": "black"
-			}
-		},
-		{
-			"path": "pages/message",
-			"style": {
-				"navigationBarTitleText": "消息",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/profile/setting",
-			"style": {
-				"navigationBarTitleText": "设置",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/profile/help-center",
-			"style": {
-				"navigationBarTitleText": "帮助中心",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/profile/my-assessment",
-			"style": {
-				"navigationBarTitleText": "我的测评",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/order/submit",
-			"style": {
-				"navigationBarTitleText": "订单支付",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/order/pay-success",
-			"style": {
-				"navigationBarTitleText": "支付成功",
-				"navigationStyle": "custom"
-			}
-		}
-	],
-	"globalStyle": {
-		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "心理健康平台",
-		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#F8F8F8"
-	},
-	"tabBar": {
-		"custom": true,
-		"color": "#999999",
-		"selectedColor": "#4A90E2",
-		"backgroundColor": "#FFFFFF",
-		"borderStyle": "black",
-		"list": [
-			{
-				"pagePath": "pages/index",
-				"text": "首页",
-				"iconPath": "static/icons/tabbar/home.svg",
-				"selectedIconPath": "static/icons/tabbar/home-active.svg"
-			},
-			{
-				"pagePath": "pages/counselor/index",
-				"text": "咨询",
-				"iconPath": "static/icons/tabbar/counselor.svg",
-				"selectedIconPath": "static/icons/tabbar/counselor-active.svg"
-			},
-			{
-				"pagePath": "pages/course/index",
-				"text": "课程",
-				"iconPath": "static/icons/tabbar/course.svg",
-				"selectedIconPath": "static/icons/tabbar/course-active.svg"
-			},
-			{
-				"pagePath": "pages/profile/index",
-				"text": "我的",
-				"iconPath": "static/icons/tabbar/profile.svg",
-				"selectedIconPath": "static/icons/tabbar/profile-active.svg"
-			}
-		]
-	}
+  "easycom": {
+    "autoscan": true,
+    "custom": {
+      "^u-(.*)": "uview-plus/components/u-$1/u-$1.vue",
+      "^up-(.*)": "uview-plus/components/u-$1/u-$1.vue"
+    }
+  },
+  "pages": [
+    {
+      "path": "pages/index",
+      "style": {
+        "navigationBarTitleText": "首页",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/login",
+      "style": {
+        "navigationBarTitleText": "登录",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/register",
+      "style": {
+        "navigationBarTitleText": "注册",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/forgot-password",
+      "style": {
+        "navigationBarTitleText": "找回密码",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/counselor/index",
+      "style": {
+        "navigationBarTitleText": "咨询师",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/counselor/detail",
+      "style": {
+        "navigationBarTitleText": "咨询师详情"
+      }
+    },
+    {
+      "path": "pages/counselor/appointment-now",
+      "style": {
+        "navigationBarTitleText": "预约咨询",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/consultant/create",
+      "style": {
+        "navigationBarTitleText": "咨询人信息",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/course/index",
+      "style": {
+        "navigationBarTitleText": "课程",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/course/detail",
+      "style": {
+        "navigationBarTitleText": "课程详情"
+      }
+    },
+    {
+      "path": "pages/assessment/index",
+      "style": {
+        "navigationBarTitleText": "心理测评",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/assessment/detail",
+      "style": {
+        "navigationBarTitleText": "测评详情"
+      }
+    },
+    {
+      "path": "pages/profile/index",
+      "style": {
+        "navigationBarTitleText": "我的",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/profile/edit",
+      "style": {
+        "navigationBarTitleText": "编辑资料"
+      }
+    },
+    {
+      "path": "pages/profile/security",
+      "style": {
+        "navigationBarTitleText": "账号安全"
+      }
+    },
+    {
+      "path": "pages/profile/BecomeCounselor",
+      "style": {
+        "navigationBarTitleText": "成为咨询师"
+      }
+    },
+    {
+      "path": "pages/profile/ContactUs",
+      "style": {
+        "navigationBarTitleText": "联系我们"
+      }
+    },
+    {
+      "path": "pages/profile/agreement",
+      "style": {
+        "navigationBarTitleText": "用户协议"
+      }
+    },
+    {
+      "path": "pages/profile/privacy",
+      "style": {
+        "navigationBarTitleText": "隐私政策"
+      }
+    },
+    {
+      "path": "pages/profile/privacy-agreement",
+      "style": {
+        "navigationBarTitleText": "隐私政策",
+        "navigationStyle": "default"
+      }
+    },
+    {
+      "path": "pages/profile/MyCourse",
+      "style": {
+        "navigationBarTitleText": "我的课程"
+      }
+    },
+    {
+      "path": "pages/profile/MyFavorite",
+      "style": {
+        "navigationBarTitleText": "我的收藏"
+      }
+    },
+    {
+      "path": "pages/order",
+      "style": {
+        "navigationBarTitleText": "我的订单"
+      }
+    },
+    {
+      "path": "pages/appointment",
+      "style": {
+        "navigationBarTitleText": "我的预约"
+      }
+    },
+    {
+      "path": "pages/search",
+      "style": {
+        "navigationBarTitleText": "搜索",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/webview",
+      "style": {
+        "navigationBarTitleText": "加载中...",
+        "navigationBarBackgroundColor": "#ffffff",
+        "navigationBarTextStyle": "black"
+      }
+    },
+    {
+      "path": "pages/message",
+      "style": {
+        "navigationBarTitleText": "消息",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/profile/setting",
+      "style": {
+        "navigationBarTitleText": "设置",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/profile/help-center",
+      "style": {
+        "navigationBarTitleText": "帮助中心",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/profile/my-assessment",
+      "style": {
+        "navigationBarTitleText": "我的测评",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/order/submit",
+      "style": {
+        "navigationBarTitleText": "订单支付",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/order/pay-success",
+      "style": {
+        "navigationBarTitleText": "支付成功",
+        "navigationStyle": "custom"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "心理健康平台",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#F8F8F8"
+  },
+  "tabBar": {
+    "custom": false,
+    "color": "#999999",
+    "selectedColor": "#4A90E2",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/counselor/index",
+        "text": "咨询"
+      },
+      {
+        "pagePath": "pages/course/index",
+        "text": "课程"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的"
+      }
+    ]
+  }
 }

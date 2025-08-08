@@ -1,33 +1,39 @@
 <template>
   <view class="container">
     <!-- 顶部搜索栏 -->
-    <view class="header">
-      <view class="back-button" @click="goBack">
-        <u-icon name="arrow-left" size="22" color="#333"></u-icon>
-      </view>
-      <view class="search-container">
-        <u-input
-          v-model="searchKeyword"
-          placeholder="搜索课程、测评、咨询师..."
-          :border="false"
-          :clearable="true"
-          :focus="true"
-          @change="onSearchInput"
-          @confirm="performSearch"
-          shape="round"
-          height="72"
-          backgroundColor="#f5f7fa"
-          fontSize="28"
-          placeholderStyle="color: #999; font-size: 28rpx;"
-          :customStyle="{ padding: '0', margin: '0' }"
-        >
-          <template #suffix>
-            <u-icon name="search" size="22" color="#999" @click="performSearch"></u-icon>
-          </template>
-        </u-input>
-      </view>
-      <text class="cancel-button" @click="goBack">取消</text>
-    </view>
+    <Navbar 
+      :showLeft="true"
+      :showRight="false"
+      @leftClick="goBack"
+    >
+      <template #center>
+        <view class="search-container">
+          <u-input
+            v-model="searchKeyword"
+            placeholder="搜索课程、测评、咨询师..."
+            :border="false"
+            :clearable="true"
+            :focus="true"
+            @change="onSearchInput"
+            @confirm="performSearch"
+            shape="round"
+            height="64"
+            backgroundColor="#f5f7fa"
+            fontSize="26"
+            placeholderStyle="color: #999; font-size: 26rpx;"
+            :customStyle="{ padding: '0', margin: '0' }"
+          >
+            <template #suffix>
+              <u-icon name="search" size="20" color="#999" @click="performSearch"></u-icon>
+            </template>
+          </u-input>
+        </view>
+      </template>
+      
+      <template #left>
+        <SvgIcon name="arrow-left" :size="20" color="#333" />
+      </template>
+    </Navbar>
 
     <!-- 搜索内容区域 -->
     <view class="search-content" v-show="!showResults">
@@ -122,7 +128,15 @@
 </template>
 
 <script>
+import Navbar from '@/components/Navbar.vue'
+import SvgIcon from '@/components/SvgIcon.vue'
+
 export default {
+  components: {
+    Navbar,
+    SvgIcon
+  },
+  
   data() {
     return {
       searchKeyword: '',
@@ -293,37 +307,7 @@ export default {
   background-color: #f5f7fa;
 }
 
-.header {
-  padding: 30rpx;
-  display: flex;
-  align-items: center;
-  background-color: #fff;
-  border-bottom: 1px solid #f0f0f0;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-.back-button {
-  width: 48rpx;
-  height: 48rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.search-container {
-  flex: 1;
-  height: 72rpx;
-  margin: 0 20rpx;
-}
-
-.cancel-button {
-  font-size: 28rpx;
-  color: #4A90E2;
-  flex-shrink: 0;
-}
+/* 顶部导航样式已由Navbar组件提供 */
 
 .search-content {
   padding: 30rpx;
@@ -508,34 +492,39 @@ export default {
 }
 
 /* uview输入框样式优化 - 彻底移除边距 */
+.search-container {
+  flex: 1;
+  max-width: 500rpx;
+}
+
 .search-container ::v-deep .u-input {
-  height: 72rpx !important;
+  height: 64rpx !important;
   padding: 0 !important;
   margin: 0 !important;
   box-sizing: border-box !important;
 }
 
 .search-container ::v-deep .u-input__content {
-  height: 72rpx !important;
+  height: 64rpx !important;
   background-color: #f5f7fa !important;
-  border-radius: 36rpx !important;
-  padding: 0 30rpx !important;
+  border-radius: 32rpx !important;
+  padding: 0 24rpx !important;
   margin: 0 !important;
   border: none !important;
   box-sizing: border-box !important;
 }
 
 .search-container ::v-deep .u-input__content__field-wrapper {
-  height: 72rpx !important;
+  height: 64rpx !important;
   padding: 0 !important;
   margin: 0 !important;
   box-sizing: border-box !important;
 }
 
 .search-container ::v-deep .u-input__content__field-wrapper__field {
-  height: 72rpx !important;
-  line-height: 72rpx !important;
-  font-size: 28rpx !important;
+  height: 64rpx !important;
+  line-height: 64rpx !important;
+  font-size: 26rpx !important;
   padding: 0 !important;
   margin: 0 !important;
   box-sizing: border-box !important;

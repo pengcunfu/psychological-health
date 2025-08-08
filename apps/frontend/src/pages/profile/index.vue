@@ -1,12 +1,13 @@
 <template>
   <view class="container tab-page">
     <!-- 顶部导航栏 -->
-    <view class="header">
-      <view class="header-title">个人中心</view>
-      <view class="header-icon" @click="goToSettings">
-        <SvgIcon name="setting" path="profile" :size="32" color="#333" />
-      </view>
-    </view>
+    <Navbar 
+      title="个人中心"
+      :showLeft="false"
+      :showRight="showRightButton"
+      rightIcon="setting"
+      @rightClick="goToSettings"
+    />
 
     <!-- 用户资料 -->
     <view class="user-profile" @click="goToEditProfile">
@@ -89,6 +90,18 @@
           <SvgIcon name="arrow-right" path="profile" :size="28" color="#999" />
         </view>
       </view>
+
+      <!-- #ifdef MP-WEIXIN -->
+      <view class="menu-item" @click="navigateTo('/pages/profile/setting')">
+        <view class="item-icon">
+          <SvgIcon name="setting" path="profile" :size="32" color="#722ED1" />
+        </view>
+        <view class="item-text">系统设置</view>
+        <view class="item-arrow">
+          <SvgIcon name="arrow-right" path="profile" :size="28" color="#999" />
+        </view>
+      </view>
+      <!-- #endif -->
     </view>
 
     <!-- 其他 -->
@@ -136,6 +149,7 @@ import { onLoad, onShow } from '@dcloudio/uni-app'
 import { useUserStore } from '@/store/user'
 import { checkLogin, redirectToLogin } from '@/utils/auth'
 import SvgIcon from '@/components/SvgIcon.vue'
+import Navbar from '@/components/Navbar.vue'
 
 const userStore = useUserStore()
 
@@ -144,6 +158,24 @@ const userInfo = computed(() => userStore.userInfo || {})
 
 // 是否已登录
 const isLoggedIn = computed(() => userStore.isLoggedIn)
+
+// 根据平台决定是否显示右侧按钮
+const showRightButton = computed(() => {
+  // #ifdef APP-PLUS
+  return true
+  // #endif
+  
+  // #ifdef MP-WEIXIN
+  return false
+  // #endif
+  
+  // #ifdef H5
+  return true
+  // #endif
+  
+  // 默认返回true（其他平台）
+  return true
+})
 
 // 检查登录状态并处理重定向
 const checkLoginStatus = () => {
@@ -258,30 +290,7 @@ onShow(() => {
   padding-bottom: 30rpx;
 }
 
-// 顶部导航栏
-.header {
-  padding: 30rpx;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #fff;
-}
-
-.header-title {
-  font-size: 36rpx;
-  font-weight: bold;
-  flex: 1;
-  text-align: center;
-  color: #333;
-}
-
-.header-icon {
-  width: 48rpx;
-  height: 48rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+// 顶部导航栏样式已由Navbar组件提供
 
 // 用户资料
 .user-profile {

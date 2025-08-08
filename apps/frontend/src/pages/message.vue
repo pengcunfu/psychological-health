@@ -1,15 +1,21 @@
 <template>
   <view class="container">
     <!-- 顶部导航 -->
-    <view class="header">
-      <view class="header-left">
-        <SvgIcon name="arrow-left" :size="32" color="#333" @click="goBack" />
-      </view>
-      <view class="header-title">消息</view>
-      <view class="header-actions">
-        <SvgIcon name="search" :size="40" color="#333" @click="navigateTo('/pages/search')" />
-      </view>
-    </view>
+    <Navbar 
+      title="消息"
+      :showLeft="true"
+      :showRight="true"
+      @leftClick="goBack"
+      @rightClick="navigateTo('/pages/search')"
+    >
+      <template #left>
+        <SvgIcon name="arrow-left" :size="20" color="#333" />
+      </template>
+      
+      <template #right>
+        <SvgIcon name="search" :size="40" color="#333" />
+      </template>
+    </Navbar>
 
     <!-- 选项卡 -->
     <view class="tab-bar">
@@ -76,6 +82,7 @@ import {ref, computed, onMounted} from 'vue'
 import {onLoad} from '@dcloudio/uni-app'
 import {navigateTo} from '@/utils/link'
 import SvgIcon from '@/components/SvgIcon.vue'
+import Navbar from '@/components/Navbar.vue'
 
 // 选项卡数据
 const tabs = ref(['全部', '系统通知', '咨询消息', '课程提醒'])
@@ -238,40 +245,7 @@ onLoad(() => {
   background-color: #f5f7fa;
 }
 
-// 顶部导航样式
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 88rpx;
-  background-color: #fff;
-  border-bottom: 2rpx solid #f0f0f0;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  position: relative;
-  padding: 0 30rpx;
-}
-
-.header-left {
-  position: absolute;
-  left: 30rpx;
-  display: flex;
-  align-items: center;
-}
-
-.header-title {
-  font-size: 32rpx;
-  font-weight: bold;
-  color: #333;
-}
-
-.header-actions {
-  position: absolute;
-  right: 30rpx;
-  display: flex;
-  align-items: center;
-}
+// 顶部导航样式已由Navbar组件提供
 
 // 选项卡样式
 .tab-bar {

@@ -1,13 +1,13 @@
 <template>
   <view class="container tab-page">
     <!-- 顶部导航栏 -->
-    <view class="header">
-
-      <view class="header-title">咨询预约</view>
-      <view class="search-button" @click="handleSearchClick">
-        <up-icon name="search" size="20" color="#333"></up-icon>
-      </view>
-    </view>
+    <Navbar 
+      title="咨询预约"
+      :showLeft="false"
+      :showRight="true"
+      rightIcon="search"
+      @rightClick="handleSearchClick"
+    />
 
     <!-- 标签栏 -->
     <view class="tabs">
@@ -81,6 +81,7 @@ import {ref, reactive, computed} from 'vue'
 import {onLoad, onReachBottom} from '@dcloudio/uni-app'
 import {counselorAPI} from '@/api/counselor'
 import CounselorCard from '@/components/CounselorCard.vue'
+import Navbar from '@/components/Navbar.vue'
 
 // 搜索关键词
 const searchKeyword = ref('')
@@ -378,31 +379,7 @@ onReachBottom(() => {
   padding-bottom: 30rpx;
 }
 
-// 顶部导航栏
-.header {
-  padding: 30rpx;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #fff;
-  border-bottom: 1rpx solid #f0f0f0;
-}
-
-.header-title {
-  font-size: 36rpx;
-  font-weight: bold;
-  flex: 1;
-  text-align: center;
-  color: #333;
-}
-
-.back-button, .search-button {
-  width: 48rpx;
-  height: 48rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+// 顶部导航栏样式已由Navbar组件提供
 
 // 标签栏
 .tabs {

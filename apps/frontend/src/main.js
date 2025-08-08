@@ -16,6 +16,12 @@ setConfig({
   // 修改$u.props对象的属性
   props: {
     // 可以在这里配置组件的默认属性
+    navbar: {
+      safeAreaInsetTop: true,
+      placeholder: true,
+      fixed: true,
+      zIndex: 980
+    }
   }
 })
 

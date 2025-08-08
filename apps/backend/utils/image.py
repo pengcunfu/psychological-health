@@ -37,7 +37,7 @@ def get_base_url() -> str:
         str: 基础URL，例如 'http://localhost:5000'
     """
     # return request.url_root.rstrip('/')
-    return 'http://192.168.137.4:5000'
+    return 'http://192.168.242.4:5000'
 
 
 def process_image_url(image_url: Optional[str], base_url: Optional[str] = None) -> Optional[str]:

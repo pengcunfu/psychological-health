@@ -1,20 +1,31 @@
 <template>
   <view class="container tab-page">
     <!-- 顶部导航 -->
-    <view class="header">
-      <view class="logo">
-        <view class="logo-icon">心</view>
-        <view class="logo-text">美光心理</view>
-      </view>
-      <view class="search-bar" @click="navigateTo('/pages/search')">
-        <up-icon name="search" size="22" color="#999"></up-icon>
-        <text class="search-text">搜索咨询师、课程</text>
-      </view>
-      <view class="message-icon" @click="navigateTo('/pages/message')">
-        <up-icon name="bell" size="22" color="#333"></up-icon>
-        <view class="message-dot"></view>
-      </view>
-    </view>
+    <Navbar 
+      :showLeft="false"
+      :showRight="true"
+      @rightClick="navigateTo('/pages/message')"
+    >
+      <template #center>
+        <view class="header-center">
+          <view class="logo">
+            <view class="logo-icon">心</view>
+            <view class="logo-text">美光心理</view>
+          </view>
+          <view class="search-bar" @click="handleSearchBarClick">
+            <SvgIcon name="search" :size="22" color="#999" />
+            <text class="search-text">搜索咨询师、课程</text>
+          </view>
+        </view>
+      </template>
+      
+      <template #right>
+        <view class="message-icon" @click="navigateTo('/pages/message')">
+          <SvgIcon name="notification" :size="44" color="#333" />
+          <view class="message-dot"></view>
+        </view>
+      </template>
+    </Navbar>
 
     <!-- 轮播图 -->
     <Banner 
@@ -149,6 +160,7 @@ import CourseCard from '@/components/CourseCard.vue'
 import AssessmentCard from '@/components/AssessmentCard.vue'
 import NavigationMenu from '@/components/NavigationMenu.vue'
 import Banner from '@/components/Banner.vue'
+import Navbar from '@/components/Navbar.vue'
 
 const userStore = useUserStore()
 
@@ -312,6 +324,16 @@ const handleAssessmentClick = (assessment) => {
   }
 }
 
+// 搜索栏点击处理
+const handleSearchBarClick = () => {
+  console.log('搜索栏被点击')
+  uni.showToast({
+    title: '跳转到搜索页面',
+    icon: 'none'
+  })
+  navigateTo('/pages/search')
+}
+
 
 
 
@@ -342,20 +364,19 @@ onShow(() => {
 })
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .container {
   min-height: 100vh;
   background-color: #f5f7fa;
 }
 
-// 顶部导航样式
-.header {
-  padding: 30rpx;
+// 顶部导航样式 - 现在用于Navbar的center内容
+.header-center {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #fff;
-  border-bottom: 2rpx solid #f0f0f0;
+  width: 100%;
+  padding: 0 20rpx;
 }
 
 .logo {
@@ -364,40 +385,55 @@ onShow(() => {
 }
 
 .logo-icon {
-  width: 64rpx;
-  height: 64rpx;
+  width: 56rpx;
+  height: 56rpx;
   background-color: #4A90E2;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 32rpx;
+  font-size: 28rpx;
   font-weight: bold;
-  margin-right: 16rpx;
+  margin-right: 12rpx;
 }
 
 .logo-text {
-  font-size: 32rpx;
+  font-size: 28rpx;
   font-weight: bold;
   color: #333;
 }
 
 .search-bar {
   flex: 1;
-  height: 72rpx;
+  height: 60rpx;
   background-color: #f5f5f5;
-  border-radius: 36rpx;
+  border-radius: 30rpx;
   margin: 0 20rpx;
   display: flex;
   align-items: center;
-  padding: 0 30rpx;
+  padding: 0 24rpx;
+  margin-right: 60rpx;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.search-bar:active {
+  background-color: #e8e8e8;
+}
+
+.header-center {
+  pointer-events: auto !important;
+}
+
+.header-center .search-bar {
+  pointer-events: auto !important;
 }
 
 .search-text {
-  font-size: 28rpx;
+  font-size: 26rpx;
   color: #999;
-  margin-left: 16rpx;
+  margin-left: 12rpx;
 }
 
 .message-icon {
