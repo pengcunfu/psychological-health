@@ -26,7 +26,7 @@
     <view class="menu-section">
       <view class="section-title">心理服务</view>
 
-      <view class="menu-item" @click="navigateTo('/pages/appointment')">
+      <view class="menu-item" @click="navigateTo('/pages/profile/my-appointment')">
         <view class="item-icon">
           <SvgIcon name="calendar" path="profile" :size="32" color="#4A90E2" />
         </view>
@@ -36,7 +36,7 @@
         </view>
       </view>
 
-      <view class="menu-item" @click="navigateTo('/pages/profile/MyCourse')">
+      <view class="menu-item" @click="navigateTo('/pages/profile/my-course')">
         <view class="item-icon">
           <SvgIcon name="book" path="profile" :size="32" color="#52C41A" />
         </view>
@@ -56,7 +56,7 @@
         </view>
       </view>
 
-      <view class="menu-item" @click="navigateTo('/pages/profile/MyFavorite')">
+      <view class="menu-item" @click="navigateTo('/pages/profile/my-favorite')">
         <view class="item-icon">
           <SvgIcon name="bookmark" path="profile" :size="32" color="#EB2F96" />
         </view>
@@ -118,7 +118,7 @@
         </view>
       </view>
 
-      <view class="menu-item" @click="navigateTo('/pages/profile/ContactUs')">
+      <view class="menu-item" @click="navigateTo('/pages/profile/contact-us')">
         <view class="item-icon">
           <SvgIcon name="info-circle" path="profile" :size="32" color="#13C2C2" />
         </view>
@@ -204,7 +204,7 @@ const navigateTo = (url) => {
   if (!isLoggedIn.value &&
     url !== '/pages/profile/agreement' &&
     url !== '/pages/profile/privacy' &&
-    url !== '/pages/profile/ContactUs' &&
+    url !== '/pages/profile/contact-us' &&
     url !== '/pages/profile/help/index') {
     uni.showToast({
       title: '请先登录',

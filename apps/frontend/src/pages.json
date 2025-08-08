@@ -112,14 +112,14 @@
       }
     },
     {
-      "path": "pages/profile/BecomeCounselor",
+      "path": "pages/profile/become-counselor",
       "style": {
         "navigationBarTitleText": "成为咨询师",
         "navigationStyle": "custom"
       }
     },
     {
-      "path": "pages/profile/ContactUs",
+      "path": "pages/profile/contact-us",
       "style": {
         "navigationBarTitleText": "联系我们",
         "navigationStyle": "custom"
@@ -145,28 +145,28 @@
       }
     },
     {
-      "path": "pages/profile/MyCourse",
+      "path": "pages/profile/my-course",
       "style": {
         "navigationBarTitleText": "我的课程",
         "navigationStyle": "custom"
       }
     },
     {
-      "path": "pages/profile/MyFavorite",
+      "path": "pages/profile/my-favorite",
       "style": {
         "navigationBarTitleText": "我的收藏",
         "navigationStyle": "custom"
       }
     },
     {
-      "path": "pages/order",
+      "path": "pages/profile/my-order",
       "style": {
         "navigationBarTitleText": "我的订单",
         "navigationStyle": "custom"
       }
     },
     {
-      "path": "pages/appointment",
+      "path": "pages/profile/my-appointment",
       "style": {
         "navigationBarTitleText": "我的预约",
         "navigationStyle": "custom"

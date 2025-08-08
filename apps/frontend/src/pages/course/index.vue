@@ -106,7 +106,7 @@ const handleSearchClick = () => {
 // 跳转到我的课程页面
 const navigateToMyCourse = () => {
   uni.navigateTo({
-    url: '/pages/profile/MyCourse'
+    url: '/pages/profile/my-course'
   })
 }
 

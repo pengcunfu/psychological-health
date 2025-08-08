@@ -172,7 +172,7 @@ const contactCounselor = () => {
 // 查看我的预约
 const viewMyAppointments = () => {
   uni.navigateTo({
-    url: '/pages/appointment'
+    url: '/pages/profile/my-appointment'
   })
 }
 

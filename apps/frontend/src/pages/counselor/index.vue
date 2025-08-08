@@ -152,7 +152,7 @@ const handleSearchClick = () => {
 // 跳转到我的预约页面
 const navigateToAppointment = () => {
   uni.navigateTo({
-    url: '/pages/appointment'
+    url: '/pages/profile/my-appointment'
   })
 }
 

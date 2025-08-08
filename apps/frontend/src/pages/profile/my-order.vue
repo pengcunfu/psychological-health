@@ -375,7 +375,7 @@ export default {
         })
       } else if (order.type === 'appointment') {
         uni.navigateTo({
-          url: `/pages/appointment/detail?id=${order.target_id}`
+          url: `/pages/profile/my-appointment/detail?id=${order.target_id}`
         })
       } else {
         navigateToDetail(order.id)

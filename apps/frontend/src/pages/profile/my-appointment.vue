@@ -318,7 +318,7 @@ if (!checkLogin()) {
     // 跳转到详情页
     const navigateToDetail = (id) => {
       uni.navigateTo({
-        url: `/pages/appointment/detail?id=${id}`
+        url: `/pages/profile/my-appointment/detail?id=${id}`
       })
     }
     

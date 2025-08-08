@@ -123,7 +123,7 @@
         </view>
       </view>
       
-      <view class="settings-item" @click="navigateTo('/pages/profile/ContactUs')">
+      <view class="settings-item" @click="navigateTo('/pages/profile/contact-us')">
         <SvgIcon name="info-circle" path="profile" class="settings-icon" :size="32" color="#4A90E2" />
         <view class="settings-content">
           <view class="settings-title">关于我们</view>
@@ -200,7 +200,7 @@ const isLoggedIn = computed(() => userStore.isLoggedIn)
 
 // 页面跳转
 const navigateTo = (url) => {
-  if (!isLoggedIn.value && url !== '/pages/profile/ContactUs') {
+  if (!isLoggedIn.value && url !== '/pages/profile/contact-us') {
     uni.showToast({
       title: '请先登录',
       icon: 'none'
