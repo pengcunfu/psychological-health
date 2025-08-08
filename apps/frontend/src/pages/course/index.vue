@@ -1,7 +1,7 @@
 <template>
   <view class="container tab-page">
     <!-- 顶部导航栏 -->
-    <Navbar title="课程学习" :showLeft="false" :showRight="true" rightIcon="search" @rightClick="handleSearchClick" />
+    <!-- <Navbar title="课程学习" :showLeft="false" :showRight="true" rightIcon="search" @rightClick="handleSearchClick" /> -->
 
     <!-- 标签栏 -->
     <view class="tabs">

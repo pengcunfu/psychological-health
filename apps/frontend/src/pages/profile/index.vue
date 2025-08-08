@@ -1,13 +1,13 @@
 <template>
   <view class="container tab-page">
     <!-- 顶部导航栏 -->
-    <Navbar 
+    <!-- <Navbar 
       title="个人中心"
       :showLeft="false"
       :showRight="showRightButton"
       rightIcon="setting"
       @rightClick="goToSettings"
-    />
+    /> -->
 
     <!-- 用户资料 -->
     <view class="user-profile" @click="goToEditProfile">

@@ -1,27 +1,18 @@
 <template>
   <view class="container tab-page">
     <!-- 顶部导航 -->
-    <Navbar :showLeft="false" :showRight="true" @rightClick="navigateTo('/pages/message')">
-      <template #center>
-        <view class="header-center">
-          <view class="logo">
-            <view class="logo-icon">心</view>
-            <view class="logo-text">美光心理</view>
-          </view>
-          <view class="search-bar" @click="handleSearchBarClick">
-            <SvgIcon name="search" :size="22" color="#999" />
-            <text class="search-text">搜索咨询师、课程</text>
-          </view>
+    <view class="header-wrapper">
+      <view class="header-content">
+        <view class="search-bar" @click="handleSearchBarClick">
+          <SvgIcon name="search" :size="22" color="#999" />
+          <text class="search-text">搜索咨询师、课程</text>
         </view>
-      </template>
-
-      <template #right>
         <view class="message-icon" @click="navigateTo('/pages/message')">
           <SvgIcon name="notification" :size="44" color="#333" />
           <view class="message-dot"></view>
         </view>
-      </template>
-    </Navbar>
+      </view>
+    </view>
 
     <!-- 轮播图 -->
     <Banner :bannerData="bannerList" @bannerClick="handleBannerClick" @bannerChange="handleBannerChange"
@@ -293,6 +284,16 @@ const onImageError = (e) => {
 
 
 onLoad(() => {
+  // 获取系统信息，设置状态栏高度
+  const systemInfo = uni.getSystemInfoSync()
+  const statusBarHeight = systemInfo.statusBarHeight || 0
+
+  // 设置CSS变量
+  const style = document.documentElement.style || document.body.style
+  if (style) {
+    style.setProperty('--status-bar-height', statusBarHeight + 'px')
+  }
+
   fetchBanners()
   fetchCounselors()
   fetchCourses()
@@ -308,89 +309,77 @@ onShow(() => {
 </script>
 
 <style lang="scss" scoped>
+// SCSS 变量定义
+$primary-color: #4A90E2;
+$bg-color: #f5f7fa;
+$white: #fff;
+$gray-light: #f5f5f5;
+$gray: #999;
+$gray-dark: #333;
+$text-color: #333;
+$border-radius: 16rpx;
+$border-radius-small: 12rpx;
+$border-radius-large: 30rpx;
+$shadow-light: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+$red-danger: #ff4d4f;
+
 .container {
   min-height: 100vh;
-  background-color: #f5f7fa;
+  background-color: $bg-color;
 }
 
-// 顶部导航样式 - 现在用于Navbar的center内容
-.header-center {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 0 20rpx;
-}
+// 顶部导航样式
+.header-wrapper {
+  background-color: $white;
+  box-shadow: $shadow-light;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 
-.logo {
-  display: flex;
-  align-items: center;
-}
-
-.logo-icon {
-  width: 56rpx;
-  height: 56rpx;
-  background-color: #4A90E2;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 28rpx;
-  font-weight: bold;
-  margin-right: 12rpx;
-}
-
-.logo-text {
-  font-size: 28rpx;
-  font-weight: bold;
-  color: #333;
+  .header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20rpx 30rpx;
+    height: 88rpx;
+  }
 }
 
 .search-bar {
   flex: 1;
   height: 60rpx;
-  background-color: #f5f5f5;
-  border-radius: 30rpx;
-  margin: 0 20rpx;
+  background-color: $gray-light;
+  border-radius: $border-radius-large;
+  margin-right: 24rpx;
   display: flex;
   align-items: center;
   padding: 0 24rpx;
-  margin-right: 60rpx;
   cursor: pointer;
   transition: background-color 0.2s ease;
-}
 
-.search-bar:active {
-  background-color: #e8e8e8;
-}
+  &:active {
+    background-color: #e8e8e8;
+  }
 
-.header-center {
-  pointer-events: auto !important;
-}
-
-.header-center .search-bar {
-  pointer-events: auto !important;
-}
-
-.search-text {
-  font-size: 26rpx;
-  color: #999;
-  margin-left: 12rpx;
+  .search-text {
+    font-size: 26rpx;
+    color: $gray;
+    margin-left: 12rpx;
+  }
 }
 
 .message-icon {
   position: relative;
-}
 
-.message-dot {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 16rpx;
-  height: 16rpx;
-  background-color: #ff4d4f;
-  border-radius: 50%;
+  .message-dot {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 16rpx;
+    height: 16rpx;
+    background-color: $red-danger;
+    border-radius: 50%;
+  }
 }
 
 // 轮播图样式 - 已移至 Banner 组件
@@ -400,80 +389,72 @@ onShow(() => {
 // 区块样式
 .section {
   margin: 20rpx;
-  border-radius: 16rpx;
-  background-color: #fff;
+  border-radius: $border-radius;
+  background-color: $white;
   padding: 30rpx;
-}
 
-.section:last-of-type {
-  margin-bottom: 120rpx;
-  /* 为TabBar留出空间 */
-}
+  &:last-of-type {
+    margin-bottom: 120rpx; // 为TabBar留出空间
+  }
 
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20rpx;
-}
+  &-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20rpx;
+  }
 
-.section-title {
-  font-size: 32rpx;
-  font-weight: bold;
-  color: #333;
-  display: flex;
-  align-items: center;
-}
+  &-title {
+    font-size: 32rpx;
+    font-weight: bold;
+    color: $text-color;
+    display: flex;
+    align-items: center;
 
-.section-title-icon {
-  width: 8rpx;
-  height: 32rpx;
-  background-color: #4A90E2;
-  margin-right: 16rpx;
-  border-radius: 4rpx;
-}
+    &-icon {
+      width: 8rpx;
+      height: 32rpx;
+      background-color: $primary-color;
+      margin-right: 16rpx;
+      border-radius: 4rpx;
+    }
+  }
 
-.section-more {
-  font-size: 26rpx;
-  color: #999;
-  display: flex;
-  align-items: center;
-  gap: 8rpx;
-  cursor: pointer;
-
-  text {
+  &-more {
     font-size: 26rpx;
-    color: #999;
-    transform: translate(8rpx, 0rpx);
+    color: $gray;
+    display: flex;
+    align-items: center;
+    gap: 8rpx;
+    cursor: pointer;
+
+    text {
+      font-size: 26rpx;
+      color: $gray;
+      transform: translate(8rpx, 0rpx);
+    }
+  }
+
+  &-empty {
+    height: 200rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fafafa;
+    border-radius: $border-radius-small;
+    margin: 20rpx 0;
   }
 }
 
-.section-empty {
-  height: 200rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #fafafa;
-  border-radius: 12rpx;
-  margin: 20rpx 0;
-}
-
-// 咨询师列表样式
-.counselor-list {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
-// 课程列表样式
-.course-list {
-  display: flex;
-  flex-direction: column;
-}
-
-// 心理测评列表样式
+// 列表样式
+.counselor-list,
+.course-list,
 .assessment-list {
   display: flex;
   flex-direction: column;
+}
+
+.counselor-list {
+  width: 100%;
 }
 </style>

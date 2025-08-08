@@ -1,13 +1,13 @@
 <template>
   <view class="container tab-page">
     <!-- 顶部导航栏 -->
-    <Navbar 
+    <!-- <Navbar 
       title="咨询预约"
       :showLeft="false"
       :showRight="true"
       rightIcon="search"
       @rightClick="handleSearchClick"
-    />
+    /> -->
 
     <!-- 标签栏 -->
     <view class="tabs">
