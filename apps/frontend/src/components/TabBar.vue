@@ -58,7 +58,7 @@ const tabList = [
 // 防抖标识
 let switching = false
 
-// 切换标签页
+// 切换标签页（使用自定义TabBar，不使用原生switchTab）
 const switchTab = (index) => {
   if (currentIndex.value === index || switching) return
 
@@ -78,21 +78,35 @@ const switchTab = (index) => {
   // 先更新UI状态
   currentIndex.value = index
 
-  uni.switchTab({
+  // 使用navigateTo实现TabBar页面切换，保持页面状态不刷新
+  uni.navigateTo({
     url: targetPath,
     success: () => {
-      console.log('TabBar切换成功:', targetPath)
+      console.log('TabBar页面切换成功:', targetPath)
       setTimeout(() => {
         switching = false
       }, 300)
     },
     fail: (err) => {
-      console.error('TabBar切换失败:', err)
-      // 失败时恢复状态
-      getCurrentIndex()
-      setTimeout(() => {
-        switching = false
-      }, 300)
+      console.error('TabBar页面切换失败:', err)
+      // 如果navigateTo失败（如页面已存在），尝试使用redirectTo
+      uni.redirectTo({
+        url: targetPath,
+        success: () => {
+          console.log('TabBar页面redirectTo成功:', targetPath)
+          setTimeout(() => {
+            switching = false
+          }, 300)
+        },
+        fail: (redirectErr) => {
+          console.error('TabBar页面redirectTo也失败:', redirectErr)
+          // 失败时恢复状态
+          getCurrentIndex()
+          setTimeout(() => {
+            switching = false
+          }, 300)
+        }
+      })
     }
   })
 }
@@ -138,18 +152,8 @@ onMounted(() => {
   }
 })
 
-// 监听页面显示
-uni.$on('tabBarPageShow', () => {
-  getCurrentIndex()
-})
-
-// 页面显示监听（兼容所有平台）
+// 添加页面显示监听，确保TabBar状态与页面同步
 uni.$on('onShow', () => {
-  getCurrentIndex()
-})
-
-// 监听页面路由变化
-uni.$on('pageRouteChange', () => {
   setTimeout(() => {
     getCurrentIndex()
   }, 100)

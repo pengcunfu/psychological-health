@@ -8,10 +8,10 @@
     >
       <template #center>
         <view class="search-container">
-          <up-input
+          <up--input
             v-model="searchKeyword"
             placeholder="搜索课程、测评、咨询师..."
-            :border="false"
+            border="none"
             :clearable="true"
             :focus="true"
             @change="onSearchInput"
@@ -24,9 +24,9 @@
             :customStyle="{ padding: '0', margin: '0' }"
           >
             <template #suffix>
-              <up-icon name="search" size="20" color="#999" @click="performSearch"></up-icon>
+              <up-icon name="search" :size="20" color="#999" @click="performSearch"></up-icon>
             </template>
-          </up-input>
+          </up--input>
         </view>
       </template>
       
@@ -41,7 +41,7 @@
       <view class="history-section" v-if="searchHistory.length > 0">
         <view class="section-title">
           <text>搜索历史</text>
-          <up-icon class="clear-icon" name="trash" size="32" color="#999" @click="clearHistory"></up-icon>
+          <up-icon class="clear-icon" name="trash" :size="32" color="#999" @click="clearHistory"></up-icon>
         </view>
         <view class="history-list">
           <view 
@@ -51,13 +51,13 @@
             @click="selectHistoryItem(item)"
           >
             <view class="history-text">
-              <up-icon class="history-icon" name="clock" size="32" color="#999"></up-icon>
+              <up-icon class="history-icon" name="clock" :size="32" color="#999"></up-icon>
               <text>{{ item }}</text>
             </view>
             <up-icon 
               class="delete-icon" 
               name="close" 
-              size="32" 
+              :size="32" 
               color="#999" 
               @click.stop="removeHistoryItem(index)"
             ></up-icon>
@@ -85,7 +85,7 @@
 
     <!-- 空状态 -->
     <view class="empty-state" v-show="showResults && searchResults.length === 0">
-      <up-icon name="search" size="120" color="#ccc"></up-icon>
+      <up-icon name="search" :size="120" color="#ccc"></up-icon>
       <text class="empty-text">暂无相关内容</text>
     </view>
 
@@ -497,14 +497,14 @@ export default {
   max-width: 500rpx;
 }
 
-.search-container ::v-deep .up-input {
+.search-container ::v-deep .up--input {
   height: 64rpx !important;
   padding: 0 !important;
   margin: 0 !important;
   box-sizing: border-box !important;
 }
 
-.search-container ::v-deep .up-input__content {
+.search-container ::v-deep .up--input__content {
   height: 64rpx !important;
   background-color: #f5f7fa !important;
   border-radius: 32rpx !important;
@@ -514,14 +514,14 @@ export default {
   box-sizing: border-box !important;
 }
 
-.search-container ::v-deep .up-input__content__field-wrapper {
+.search-container ::v-deep .up--input__content__field-wrapper {
   height: 64rpx !important;
   padding: 0 !important;
   margin: 0 !important;
   box-sizing: border-box !important;
 }
 
-.search-container ::v-deep .up-input__content__field-wrapper__field {
+.search-container ::v-deep .up--input__content__field-wrapper__field {
   height: 64rpx !important;
   line-height: 64rpx !important;
   font-size: 26rpx !important;

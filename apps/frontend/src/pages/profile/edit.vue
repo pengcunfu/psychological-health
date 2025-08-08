@@ -11,21 +11,21 @@
       <view class="form-group">
         <view class="form-item">
           <text class="form-label">用户名</text>
-          <up-input
+          <up--input
             v-model="form.username"
             placeholder="请输入用户名"
             border="bottom"
             disabled
-          ></up-input>
+          ></up--input>
         </view>
         
         <view class="form-item">
           <text class="form-label">昵称</text>
-          <up-input
+          <up--input
             v-model="form.nickname"
             placeholder="请输入昵称"
             border="bottom"
-          ></up-input>
+          ></up--input>
         </view>
         
         <view class="form-item">
@@ -40,22 +40,22 @@
         
         <view class="form-item">
           <text class="form-label">手机号</text>
-          <up-input
+          <up--input
             v-model="form.phone"
             placeholder="请输入手机号"
             border="bottom"
             type="number"
-          ></up-input>
+          ></up--input>
         </view>
         
         <view class="form-item">
           <text class="form-label">邮箱</text>
-          <up-input
+          <up--input
             v-model="form.email"
             placeholder="请输入邮箱"
             border="bottom"
             type="email"
-          ></up-input>
+          ></up--input>
         </view>
         
         <view class="form-item">

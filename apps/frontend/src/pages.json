@@ -2,7 +2,6 @@
   "easycom": {
     "autoscan": true,
     "custom": {
-      "^u-(.*)": "uview-plus/components/u-$1/u-$1.vue",
       "^up-(.*)": "uview-plus/components/u-$1/u-$1.vue"
     }
   },
@@ -45,7 +44,8 @@
     {
       "path": "pages/counselor/detail",
       "style": {
-        "navigationBarTitleText": "咨询师详情"
+        "navigationBarTitleText": "咨询师详情",
+        "navigationStyle": "custom"
       }
     },
     {
@@ -72,7 +72,8 @@
     {
       "path": "pages/course/detail",
       "style": {
-        "navigationBarTitleText": "课程详情"
+        "navigationBarTitleText": "课程详情",
+        "navigationStyle": "custom"
       }
     },
     {
@@ -85,7 +86,8 @@
     {
       "path": "pages/assessment/detail",
       "style": {
-        "navigationBarTitleText": "测评详情"
+        "navigationBarTitleText": "测评详情",
+        "navigationStyle": "custom"
       }
     },
     {
@@ -98,25 +100,29 @@
     {
       "path": "pages/profile/edit",
       "style": {
-        "navigationBarTitleText": "编辑资料"
+        "navigationBarTitleText": "编辑资料",
+        "navigationStyle": "custom"
       }
     },
     {
       "path": "pages/profile/security",
       "style": {
-        "navigationBarTitleText": "账号安全"
+        "navigationBarTitleText": "账号安全",
+        "navigationStyle": "custom"
       }
     },
     {
       "path": "pages/profile/BecomeCounselor",
       "style": {
-        "navigationBarTitleText": "成为咨询师"
+        "navigationBarTitleText": "成为咨询师",
+        "navigationStyle": "custom"
       }
     },
     {
       "path": "pages/profile/ContactUs",
       "style": {
-        "navigationBarTitleText": "联系我们"
+        "navigationBarTitleText": "联系我们",
+        "navigationStyle": "custom"
       }
     },
     {
@@ -141,25 +147,29 @@
     {
       "path": "pages/profile/MyCourse",
       "style": {
-        "navigationBarTitleText": "我的课程"
+        "navigationBarTitleText": "我的课程",
+        "navigationStyle": "custom"
       }
     },
     {
       "path": "pages/profile/MyFavorite",
       "style": {
-        "navigationBarTitleText": "我的收藏"
+        "navigationBarTitleText": "我的收藏",
+        "navigationStyle": "custom"
       }
     },
     {
       "path": "pages/order",
       "style": {
-        "navigationBarTitleText": "我的订单"
+        "navigationBarTitleText": "我的订单",
+        "navigationStyle": "custom"
       }
     },
     {
       "path": "pages/appointment",
       "style": {
-        "navigationBarTitleText": "我的预约"
+        "navigationBarTitleText": "我的预约",
+        "navigationStyle": "custom"
       }
     },
     {
