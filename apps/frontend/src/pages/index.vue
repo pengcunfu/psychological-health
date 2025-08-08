@@ -99,7 +99,7 @@
     </view>
 
     <!-- TabBar -->
-    <TabBar />
+    <!-- <TabBar2 /> -->
   </view>
 </template>
 
@@ -113,7 +113,7 @@ import { courseAPI } from '@/api/course'
 import { assessmentAPI } from '@/api/assessment'
 import { navigateTo } from '@/utils/link'
 
-import TabBar from '@/components/TabBar.vue'
+// import TabBar2 from '@/components/TabBar2.vue'
 import SvgIcon from '@/components/SvgIcon.vue'
 import CounselorCard from '@/components/CounselorCard.vue'
 import CourseCard from '@/components/CourseCard.vue'

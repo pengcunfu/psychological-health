@@ -142,7 +142,7 @@
     </view>
 
     <!-- 自定义TabBar -->
-    <TabBar />
+    <!-- <TabBar2 /> -->
   </view>
 </template>
 
@@ -153,7 +153,7 @@ import { useUserStore } from '@/store/user'
 import { checkLogin, redirectToLogin } from '@/utils/auth'
 import SvgIcon from '@/components/SvgIcon.vue'
 import Navbar from '@/components/Navbar.vue'
-import TabBar from '@/components/TabBar.vue'
+// import TabBar2 from '@/components/TabBar2.vue'
 
 const userStore = useUserStore()
 

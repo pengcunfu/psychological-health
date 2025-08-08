@@ -245,24 +245,38 @@
     "backgroundColor": "#F8F8F8"
   },
   "tabBar": {
-    "custom": true,
+    "color": "#999999",
+    "selectedColor": "#4A90E2",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
     "height": "50px",
+    "fontSize": "10px",
+    "iconWidth": "22px",
+    "spacing": "3px",
     "list": [
       {
         "pagePath": "pages/index",
-        "text": "首页"
+        "text": "首页",
+        "iconPath": "static/wx/tabbar/home.png",
+        "selectedIconPath": "static/wx/tabbar/home-active.png"
       },
       {
         "pagePath": "pages/counselor/index",
-        "text": "咨询"
+        "text": "咨询",
+        "iconPath": "static/wx/tabbar/counselor.png",
+        "selectedIconPath": "static/wx/tabbar/counselor-active.png"
       },
       {
         "pagePath": "pages/course/index",
-        "text": "课程"
+        "text": "课程",
+        "iconPath": "static/wx/tabbar/course.png",
+        "selectedIconPath": "static/wx/tabbar/course-active.png"
       },
       {
         "pagePath": "pages/profile/index",
-        "text": "我的"
+        "text": "我的",
+        "iconPath": "static/wx/tabbar/profile.png",
+        "selectedIconPath": "static/wx/tabbar/profile-active.png"
       }
     ]
   }

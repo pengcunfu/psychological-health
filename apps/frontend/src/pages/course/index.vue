@@ -48,7 +48,7 @@
     </view>
 
     <!-- 自定义TabBar -->
-    <TabBar />
+    <!-- <TabBar2 /> -->
   </view>
 </template>
 
@@ -58,7 +58,7 @@ import { onLoad, onReachBottom } from '@dcloudio/uni-app'
 import { courseAPI } from '@/api/course'
 import CourseCard from '@/components/CourseCard.vue'
 import Navbar from '@/components/Navbar.vue'
-import TabBar from '@/components/TabBar.vue'
+// import TabBar2 from '@/components/TabBar2.vue'
 
 // 搜索关键词
 const searchKeyword = ref('')
