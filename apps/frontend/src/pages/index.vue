@@ -1,11 +1,7 @@
 <template>
   <view class="container tab-page">
     <!-- 顶部导航 -->
-    <Navbar 
-      :showLeft="false"
-      :showRight="true"
-      @rightClick="navigateTo('/pages/message')"
-    >
+    <Navbar :showLeft="false" :showRight="true" @rightClick="navigateTo('/pages/message')">
       <template #center>
         <view class="header-center">
           <view class="logo">
@@ -18,7 +14,7 @@
           </view>
         </view>
       </template>
-      
+
       <template #right>
         <view class="message-icon" @click="navigateTo('/pages/message')">
           <SvgIcon name="notification" :size="44" color="#333" />
@@ -28,13 +24,8 @@
     </Navbar>
 
     <!-- 轮播图 -->
-    <Banner 
-      :bannerData="bannerList"
-      @bannerClick="handleBannerClick"
-      @bannerChange="handleBannerChange"
-      @imageLoad="onImageLoad"
-      @imageError="onImageError"
-    />
+    <Banner :bannerData="bannerList" @bannerClick="handleBannerClick" @bannerChange="handleBannerChange"
+      @imageLoad="onImageLoad" @imageError="onImageError" />
 
     <!-- 功能导航 -->
     <NavigationMenu @menuClick="handleMenuClick" />
@@ -51,24 +42,14 @@
           <SvgIcon name="arrow-right" :size="24" color="#999" :offsetY="-1" :offsetX="1"></SvgIcon>
         </view>
       </view>
-      
+
       <view class="counselor-list" v-if="counselorList.length > 0">
-        <CounselorCard 
-          v-for="(item, index) in counselorList" 
-          :key="index"
-          :counselor="item"
-          @click="handleCounselorClick"
-        />
+        <CounselorCard v-for="(item, index) in counselorList" :key="index" :counselor="item"
+          @click="handleCounselorClick" />
       </view>
       <view v-else class="section-empty">
-        <up-empty 
-          text="暂无推荐咨询师"
-          icon="https://cdn.uviewui.com/uview/empty/list.png"
-          iconSize="100"
-          textSize="14"
-          textColor="#999999"
-          marginTop="40"
-        />
+        <up-empty text="暂无推荐咨询师" icon="https://cdn.uviewui.com/uview/empty/list.png" iconSize="100" textSize="14"
+          textColor="#999999" marginTop="40" />
       </view>
     </view>
 
@@ -84,24 +65,13 @@
           <SvgIcon name="arrow-right" :size="24" color="#999" :offsetY="-1" :offsetX="1"></SvgIcon>
         </view>
       </view>
-      
+
       <view class="course-list" v-if="courseList.length > 0">
-        <CourseCard 
-          v-for="(item, index) in courseList" 
-          :key="index"
-          :course="item"
-          @click="handleCourseClick"
-        />
+        <CourseCard v-for="(item, index) in courseList" :key="index" :course="item" @click="handleCourseClick" />
       </view>
       <view v-else class="section-empty">
-        <up-empty 
-          text="暂无推荐课程"
-          icon="https://cdn.uviewui.com/uview/empty/list.png"
-          iconSize="100"
-          textSize="14"
-          textColor="#999999"
-          marginTop="40"
-        />
+        <up-empty text="暂无推荐课程" icon="https://cdn.uviewui.com/uview/empty/list.png" iconSize="100" textSize="14"
+          textColor="#999999" marginTop="40" />
       </view>
     </view>
 
@@ -117,24 +87,14 @@
           <SvgIcon name="arrow-right" :size="24" color="#999" :offsetY="-1" :offsetX="1"></SvgIcon>
         </view>
       </view>
-      
+
       <view class="assessment-list" v-if="assessmentList.length > 0">
-        <AssessmentCard 
-          v-for="(item, index) in assessmentList" 
-          :key="index"
-          :assessment="item"
-          @click="handleAssessmentClick"
-        />
+        <AssessmentCard v-for="(item, index) in assessmentList" :key="index" :assessment="item"
+          @click="handleAssessmentClick" />
       </view>
       <view v-else class="section-empty">
-        <up-empty 
-          text="暂无心理测评"
-          icon="https://cdn.uviewui.com/uview/empty/list.png"
-          iconSize="100"
-          textSize="14"
-          textColor="#999999"
-          marginTop="40"
-        />
+        <up-empty text="暂无心理测评" icon="https://cdn.uviewui.com/uview/empty/list.png" iconSize="100" textSize="14"
+          textColor="#999999" marginTop="40" />
       </view>
     </view>
 
@@ -164,6 +124,8 @@ import Navbar from '@/components/Navbar.vue'
 
 const userStore = useUserStore()
 
+
+
 // 用户信息
 const userInfo = computed(() => {
   return {
@@ -191,7 +153,7 @@ const fetchCounselors = async () => {
       page: 1,
       per_page: 5
     })
-    
+
     if (res.code === 200 && res.success && res.data) {
       counselorList.value = res.data.list || []
     } else {
@@ -209,8 +171,8 @@ const fetchCourses = async () => {
       page: 1,
       per_page: 4
     })
-    
-    
+
+
     if (res.code === 200 && res.success && res.data && res.data.list) {
       // 处理课程数据，确保rating有默认值
       courseList.value = res.data.list.map(course => ({
@@ -233,7 +195,7 @@ const fetchBanners = async () => {
       page: 1,
       per_page: 10
     })
-    
+
     if (res.code === 200 && res.success && res.data) {
       bannerList.value = res.data.list || []
     } else {
@@ -253,8 +215,8 @@ const fetchAssessments = async () => {
       per_page: 5,
       status: 'published' // 只获取已发布的测评
     })
-    
-    
+
+
     if (res.success && res.data) {
       // 处理测评数据，确保所有字段都有默认值
       assessmentList.value = (res.data.list || []).map(assessment => ({
@@ -297,7 +259,7 @@ const handleCourseClick = (course) => {
 
 // 心理测评卡片点击处理
 const handleAssessmentClick = (assessment) => {
-  
+
   if (assessment && assessment.id) {
     // 导航到测评详情页
     navigateTo(`/pages/assessment/detail?id=${assessment.id}`)
@@ -444,7 +406,8 @@ onShow(() => {
 }
 
 .section:last-of-type {
-  margin-bottom: 120rpx; /* 为TabBar留出空间 */
+  margin-bottom: 120rpx;
+  /* 为TabBar留出空间 */
 }
 
 .section-header {
@@ -477,11 +440,11 @@ onShow(() => {
   align-items: center;
   gap: 8rpx;
   cursor: pointer;
-  
+
   text {
     font-size: 26rpx;
     color: #999;
-    transform: translate(8rpx,0rpx);
+    transform: translate(8rpx, 0rpx);
   }
 }
 
