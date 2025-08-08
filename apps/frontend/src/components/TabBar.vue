@@ -3,12 +3,28 @@
   <view class="custom-tabbar" :style="{ paddingBottom: safeAreaBottom + 'px' }">
     <view class="tabbar-border"></view>
     <view class="tabbar-item" v-for="(item, index) in tabList" :key="index"
-      :class="{ 'tabbar-item--active': currentIndex === index }" @click="switchTab(index)">
-      <view class="tabbar-item__icon">
+      :class="{ 
+        'tabbar-item--active': currentIndex === index,
+        'tabbar-item--switching': switching && switchingIndex === index
+      }" 
+      @click="switchTab(index)">
+      
+      <!-- 波纹动画背景 -->
+      <view class="tabbar-item__ripple" :class="{ 'ripple-active': currentIndex === index }"></view>
+      
+      <!-- 活跃指示器 -->
+      <view class="tabbar-item__indicator" :class="{ 'indicator-active': currentIndex === index }"></view>
+      
+      <!-- 图标容器 -->
+      <view class="tabbar-item__icon" :class="{ 'icon-bounce': switching && switchingIndex === index }">
         <SvgIcon :name="item.iconName" path="tabbar" :active="currentIndex === index" :size="22"
           :fallbackIcon="item.fallbackIcon" :activeColor="activeColor" :color="inactiveColor" />
       </view>
-      <text class="tabbar-item__text" :style="{ color: currentIndex === index ? activeColor : inactiveColor }">
+      
+      <!-- 文字标签 -->
+      <text class="tabbar-item__text" 
+        :class="{ 'text-slide-up': switching && switchingIndex === index }"
+        :style="{ color: currentIndex === index ? activeColor : inactiveColor }">
         {{ item.text }}
       </text>
     </view>
@@ -20,6 +36,7 @@ import { ref, onMounted } from 'vue'
 import SvgIcon from './SvgIcon.vue'
 
 const currentIndex = ref(0)
+const switchingIndex = ref(-1)  // 跟踪正在切换的项目索引
 
 // TabBar颜色配置
 const activeColor = ref('#4A90E2')
@@ -63,6 +80,7 @@ const switchTab = (index) => {
   if (currentIndex.value === index || switching) return
 
   switching = true
+  switchingIndex.value = index  // 设置正在切换的索引
 
   // 添加触觉反馈（支持的平台）
   try {
@@ -75,18 +93,21 @@ const switchTab = (index) => {
 
   const targetPath = tabList[index].pagePath
 
-  // 先更新UI状态
-  currentIndex.value = index
+  // 延迟更新索引，先播放动画
+  setTimeout(() => {
+    currentIndex.value = index
+  }, 100)
 
   // 使用navigateTo实现TabBar页面切换，保持页面状态不刷新
   uni.navigateTo({
     url: targetPath,
-    success: () => {
-      console.log('TabBar页面切换成功:', targetPath)
-      setTimeout(() => {
-        switching = false
-      }, 300)
-    },
+            success: () => {
+          console.log('TabBar页面切换成功:', targetPath)
+          setTimeout(() => {
+            switching = false
+            switchingIndex.value = -1  // 重置切换索引
+          }, 300)
+        },
     fail: (err) => {
       console.error('TabBar页面切换失败:', err)
       // 如果navigateTo失败（如页面已存在），尝试使用redirectTo
@@ -104,6 +125,7 @@ const switchTab = (index) => {
           getCurrentIndex()
           setTimeout(() => {
             switching = false
+            switchingIndex.value = -1  // 重置切换索引
           }, 300)
         }
       })
@@ -139,17 +161,26 @@ const getCurrentIndex = () => {
 }
 
 onMounted(() => {
-  getCurrentIndex()
-
+  console.log('🎨 TabBar组件已挂载')
+  
+  // 默认设置为首页
+  currentIndex.value = 0
+  console.log('🏠 TabBar默认设置为首页索引: 0')
+  
   // 获取安全区域信息（适用于所有平台）
   try {
     const systemInfo = uni.getSystemInfoSync()
     safeAreaBottom.value = systemInfo.safeAreaInsets ? systemInfo.safeAreaInsets.bottom : 0
-    console.log('TabBar安全区域底部高度:', safeAreaBottom.value)
+    console.log('📐 TabBar安全区域底部高度:', safeAreaBottom.value)
   } catch (error) {
     console.log('获取安全区域信息失败:', error)
     safeAreaBottom.value = 0
   }
+  
+  // 延迟获取当前索引
+  setTimeout(() => {
+    getCurrentIndex()
+  }, 300)
 })
 
 // 添加页面显示监听，确保TabBar状态与页面同步
@@ -163,22 +194,27 @@ uni.$on('onShow', () => {
 <style lang="scss" scoped>
 // 统一自定义TabBar样式，兼容所有平台
 .custom-tabbar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 100rpx;
-  background-color: #ffffff;
-  display: flex;
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  height: 100rpx !important;
+  background-color: #ffffff !important;
+  display: flex !important;
   align-items: center;
   justify-content: space-around;
-  z-index: 9999;
+  z-index: 9999 !important;
   box-sizing: border-box;
   border-top: 1rpx solid #ebeef5;
   will-change: transform;
   /* 优化渲染性能 */
   transform: translateZ(0);
   /* 开启硬件加速 */
+  /* 调试样式 - 确保可见 */
+  min-height: 100rpx !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 .tabbar-border {
@@ -198,7 +234,44 @@ uni.$on('onShow', () => {
   justify-content: center;
   height: 100rpx;
   position: relative;
-  transition: all 0.2s ease;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// 波纹动画背景
+.tabbar-item__ripple {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: radial-gradient(circle, rgba(74, 144, 226, 0.1) 0%, rgba(74, 144, 226, 0) 70%);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  
+  &.ripple-active {
+    width: 120rpx;
+    height: 120rpx;
+  }
+}
+
+// 活跃指示器
+.tabbar-item__indicator {
+  position: absolute;
+  top: 8rpx;
+  left: 50%;
+  width: 0;
+  height: 6rpx;
+  background: linear-gradient(90deg, #4A90E2, #74B3F7);
+  border-radius: 3rpx;
+  transform: translateX(-50%);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &.indicator-active {
+    width: 40rpx;
+  }
 }
 
 .tabbar-item__icon {
@@ -208,37 +281,121 @@ uni.$on('onShow', () => {
   align-items: center;
   justify-content: center;
   margin-bottom: 4rpx;
+  position: relative;
+  z-index: 2;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  // 图标弹跳动画
+  &.icon-bounce {
+    animation: iconBounce 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
 }
 
 .tabbar-item__text {
   font-size: 20rpx;
   line-height: 1;
   text-align: center;
-  transition: color 0.2s ease;
+  position: relative;
+  z-index: 2;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  // 文字滑动动画
+  &.text-slide-up {
+    animation: textSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 }
 
 .tabbar-item--active .tabbar-item__text {
   font-weight: 500;
+  transform: scale(1.05);
+}
+
+.tabbar-item--active .tabbar-item__icon {
+  transform: scale(1.1);
+  animation: activePulse 2s ease-in-out infinite;
+}
+
+// 切换中的状态
+.tabbar-item--switching {
+  .tabbar-item__icon {
+    transform: scale(0.9);
+  }
+}
+
+// 关键帧动画定义
+@keyframes iconBounce {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.8);
+  }
+  70% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes textSlideUp {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-4rpx) scale(0.95);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(0) scale(1.05);
+    opacity: 1;
+  }
+}
+
+@keyframes rippleEffect {
+  0% {
+    width: 0;
+    height: 0;
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    width: 120rpx;
+    height: 120rpx;
+    opacity: 0;
+  }
+}
+
+@keyframes activePulse {
+  0%, 100% {
+    transform: scale(1.1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
 }
 
 // 添加点击效果
 .tabbar-item:active {
-  background-color: rgba(74, 144, 226, 0.05);
-  border-radius: 8rpx;
-  transform: scale(0.98);
+  .tabbar-item__icon {
+    transform: scale(0.95);
+  }
+  
+  .tabbar-item__ripple {
+    animation: rippleEffect 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 }
 
-// 添加点击动画
+// 悬停效果优化
 .tabbar-item {
-  &:active {
-    .tabbar-item__icon {
-      transform: scale(0.9);
-      transition: transform 0.1s ease;
-    }
-
-    .tabbar-item__text {
-      opacity: 0.8;
-      transition: opacity 0.1s ease;
+  &:hover {
+    .tabbar-item__ripple {
+      width: 60rpx;
+      height: 60rpx;
+      opacity: 0.3;
     }
   }
 }
@@ -258,10 +415,17 @@ uni.$on('onShow', () => {
 }
 
 .tabbar-item {
-
   // 微信小程序点击反馈优化
   &:hover {
-    background-color: rgba(74, 144, 226, 0.03);
+    .tabbar-item__ripple {
+      width: 70rpx;
+      height: 70rpx;
+      opacity: 0.15;
+    }
+    
+    .tabbar-item__icon {
+      transform: scale(1.03);
+    }
   }
 }
 
@@ -277,10 +441,18 @@ uni.$on('onShow', () => {
   cursor: pointer;
 
   &:hover {
-    background-color: rgba(74, 144, 226, 0.03);
+    .tabbar-item__ripple {
+      width: 80rpx;
+      height: 80rpx;
+      opacity: 0.2;
+    }
 
     .tabbar-item__icon {
       transform: scale(1.05);
+    }
+    
+    .tabbar-item__text {
+      transform: scale(1.02);
     }
   }
 }

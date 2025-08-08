@@ -138,6 +138,8 @@
       </view>
     </view>
 
+    <!-- TabBar -->
+    <TabBar />
   </view>
 </template>
 
@@ -151,6 +153,7 @@ import { courseAPI } from '@/api/course'
 import { assessmentAPI } from '@/api/assessment'
 import { navigateTo } from '@/utils/link'
 
+import TabBar from '@/components/TabBar.vue'
 import SvgIcon from '@/components/SvgIcon.vue'
 import CounselorCard from '@/components/CounselorCard.vue'
 import CourseCard from '@/components/CourseCard.vue'
@@ -339,16 +342,6 @@ onShow(() => {
   if (userStore.isLoggedIn) {
     userStore.getUserInfo()
   }
-  
-  // TabBar现在由App.vue全局管理，会自动在此页面显示
-  
-  // 手动触发App.vue的路由检测
-  setTimeout(() => {
-    const app = getCurrentInstance()?.appContext?.app?.$parent
-    if (app && app.getCurrentRoute) {
-      app.getCurrentRoute()
-    }
-  }, 200)
 })
 </script>
 

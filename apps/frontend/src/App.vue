@@ -1,151 +1,26 @@
 <template>
-  <view class="app-container">
-    <!-- 页面内容区域 -->
-    <view class="page-content" :class="{ 
-      'has-tabbar': showTabbar,
-      'tab-page': isTabBarPage 
-    }">
-      <!-- uni-app 使用页面栈，这里作为内容容器 -->
-      <view class="content-wrapper">
-        <slot />
-      </view>
-    </view>
-
-    <!-- 全局底部TabBar，只在指定的四个页面显示 -->
-    <TabBar v-if="showTabbar" />
-  </view>
+  <!-- uni-app的App.vue模板通常不渲染，页面内容由各个page组件渲染 -->
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
 import { onLaunch, onShow, onHide } from '@dcloudio/uni-app'
 import { useUserStore } from './store/user'
-import TabBar from './components/TabBar.vue'
 
 // Store
 const userStore = useUserStore()
-
-// 页面状态
-const currentRoute = ref('')
-
-// TabBar页面列表 - 只有这四个页面显示TabBar
-const tabBarPages = [
-  '/pages/index',
-  'pages/index',  // 兼容不同的路由格式
-  '/pages/counselor/index', 
-  'pages/counselor/index',
-  '/pages/course/index',
-  'pages/course/index',
-  '/pages/profile/index',
-  'pages/profile/index'
-]
-
-// 计算属性
-const isTabBarPage = computed(() => {
-  const result = tabBarPages.includes(currentRoute.value)
-  console.log(`TabBar检查 - 当前路由: ${currentRoute.value}, 是否TabBar页面: ${result}`)
-  return result
-})
-
-const showTabbar = computed(() => {
-  const result = isTabBarPage.value
-  console.log(`TabBar显示状态: ${result}`)
-  return result
-})
-
-// Navbar由各个子页面自己控制，App.vue不再管理
-
-// 获取当前页面路由
-const getCurrentRoute = () => {
-  try {
-    const pageStack = getCurrentPages()
-    console.log('页面栈:', pageStack)
-    if (pageStack.length > 0) {
-      const currentPage = pageStack[pageStack.length - 1]
-      const route = '/' + currentPage.route
-      currentRoute.value = route
-      console.log('当前页面路由:', route)
-      console.log('TabBar页面列表:', tabBarPages)
-      console.log('是否包含当前路由:', tabBarPages.includes(route))
-    }
-  } catch (error) {
-    console.error('获取当前路由失败:', error)
-  }
-}
 
 // 生命周期
 onLaunch(() => {
   console.log('App Launch')
   userStore.initUserInfo()
-  getCurrentRoute()
 })
 
 onShow(() => {
   console.log('App Show')
-  // 延迟获取路由，确保页面完全加载
-  setTimeout(() => {
-    getCurrentRoute()
-  }, 100)
 })
 
 onHide(() => {
   console.log('App Hide')
-})
-
-onMounted(() => {
-  getCurrentRoute()
-  
-  // 监听页面栈变化
-  const originalNavigateTo = uni.navigateTo
-  const originalNavigateBack = uni.navigateBack
-  const originalRedirectTo = uni.redirectTo
-  const originalReLaunch = uni.reLaunch
-  
-  uni.navigateTo = function(options) {
-    return originalNavigateTo.call(this, {
-      ...options,
-      success: (...args) => {
-        setTimeout(getCurrentRoute, 100)
-        options.success && options.success(...args)
-      }
-    })
-  }
-  
-  uni.navigateBack = function(options = {}) {
-    return originalNavigateBack.call(this, {
-      ...options,
-      success: (...args) => {
-        setTimeout(getCurrentRoute, 100)
-        options.success && options.success(...args)
-      }
-    })
-  }
-  
-  uni.redirectTo = function(options) {
-    return originalRedirectTo.call(this, {
-      ...options,
-      success: (...args) => {
-        setTimeout(getCurrentRoute, 100)
-        options.success && options.success(...args)
-      }
-    })
-  }
-  
-  uni.reLaunch = function(options) {
-    return originalReLaunch.call(this, {
-      ...options,
-      success: (...args) => {
-        setTimeout(getCurrentRoute, 100)
-        options.success && options.success(...args)
-      }
-    })
-  }
-})
-
-// 暴露给模板的数据和方法
-defineExpose({
-  currentRoute,
-  getCurrentRoute
 })
 </script>
 
