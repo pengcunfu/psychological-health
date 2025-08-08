@@ -31,14 +31,14 @@
       <template v-if="loginType === 'phone'">
         <view class="form-group">
           <text class="form-label">手机号</text>
-          <u--input
+          <up--input
             v-model="form.phone"
             placeholder="请输入手机号"
             border="bottom"
             :clearable="true"
             type="number"
             maxlength="11"
-          ></u--input>
+          ></up--input>
         </view>
       </template>
       
@@ -46,25 +46,25 @@
       <template v-else>
         <view class="form-group">
           <text class="form-label">用户名</text>
-          <u--input
+          <up--input
             v-model="form.username"
             placeholder="请输入用户名"
             border="bottom"
             :clearable="true"
-          ></u--input>
+          ></up--input>
         </view>
       </template>
       
       <view class="form-group">
         <text class="form-label">密码</text>
-        <u--input
+        <up--input
           v-model="form.password"
           type="password"
           placeholder="请输入密码"
           border="bottom"
           :clearable="true"
           :passwordIcon="true"
-        ></u--input>
+        ></up--input>
       </view>
       
       <button class="login-btn" @click="handleLogin">登 录</button>

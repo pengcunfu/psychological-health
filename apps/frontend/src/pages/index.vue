@@ -61,7 +61,7 @@
         />
       </view>
       <view v-else class="section-empty">
-        <u-empty 
+        <up-empty 
           text="暂无推荐咨询师"
           icon="https://cdn.uviewui.com/uview/empty/list.png"
           iconSize="100"
@@ -94,7 +94,7 @@
         />
       </view>
       <view v-else class="section-empty">
-        <u-empty 
+        <up-empty 
           text="暂无推荐课程"
           icon="https://cdn.uviewui.com/uview/empty/list.png"
           iconSize="100"
@@ -127,7 +127,7 @@
         />
       </view>
       <view v-else class="section-empty">
-        <u-empty 
+        <up-empty 
           text="暂无心理测评"
           icon="https://cdn.uviewui.com/uview/empty/list.png"
           iconSize="100"

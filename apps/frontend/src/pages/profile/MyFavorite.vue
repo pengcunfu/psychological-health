@@ -28,7 +28,7 @@
             @click="navigateToCounselor(item.id)"
           >
             <view class="card-left">
-              <u-avatar :src="item.avatar || '/static/images/default-avatar.png'" size="120"></u-avatar>
+              <up-avatar :src="item.avatar || '/static/images/default-avatar.png'" size="120"></up-avatar>
               <view class="counselor-info">
                 <view class="counselor-name-row">
                   <text class="counselor-name">{{ item.name }}</text>
@@ -55,7 +55,7 @@
           </view>
         </view>
         <view v-else class="empty-content">
-          <u-empty mode="list" icon="star" text="暂无收藏的咨询师"></u-empty>
+          <up-empty mode="list" icon="star" text="暂无收藏的咨询师"></up-empty>
         </view>
       </view>
 
@@ -72,7 +72,7 @@
             <view class="course-info">
               <text class="course-name">{{ item.name }}</text>
               <view class="course-teacher">
-                <u-avatar :src="item.teacher_avatar || '/static/images/default-avatar.png'" size="40"></u-avatar>
+                <up-avatar :src="item.teacher_avatar || '/static/images/default-avatar.png'" size="40"></up-avatar>
                 <text class="teacher-name">{{ item.teacher_name }}</text>
               </view>
               <view class="course-stats">
@@ -95,7 +95,7 @@
           </view>
         </view>
         <view v-else class="empty-content">
-          <u-empty mode="list" icon="star" text="暂无收藏的课程"></u-empty>
+          <up-empty mode="list" icon="star" text="暂无收藏的课程"></up-empty>
         </view>
       </view>
     </view>

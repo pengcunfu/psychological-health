@@ -99,7 +99,7 @@
 
     <view class="agreement-section">
       <view class="agreement-check">
-        <u-checkbox v-model="agreed" shape="circle" activeColor="#4A90E2"></u-checkbox>
+        <up-checkbox v-model="agreed" shape="circle" activeColor="#4A90E2"></up-checkbox>
         <text class="agreement-text">我已阅读并同意<text class="link-text" @click="navigateToAgreement">《咨询师服务协议》</text></text>
       </view>
     </view>

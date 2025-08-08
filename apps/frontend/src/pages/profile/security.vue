@@ -6,35 +6,35 @@
       <view class="form-group">
         <view class="form-item">
           <text class="form-label">当前密码</text>
-          <u--input
+          <up--input
             v-model="form.oldPassword"
             type="password"
             placeholder="请输入当前密码"
             border="bottom"
             :password-icon="true"
-          ></u--input>
+          ></up--input>
         </view>
         
         <view class="form-item">
           <text class="form-label">新密码</text>
-          <u--input
+          <up--input
             v-model="form.newPassword"
             type="password"
             placeholder="请输入新密码"
             border="bottom"
             :password-icon="true"
-          ></u--input>
+          ></up--input>
         </view>
         
         <view class="form-item">
           <text class="form-label">确认新密码</text>
-          <u--input
+          <up--input
             v-model="form.confirmPassword"
             type="password"
             placeholder="请再次输入新密码"
             border="bottom"
             :password-icon="true"
-          ></u--input>
+          ></up--input>
         </view>
       </view>
       
@@ -70,30 +70,30 @@
     </view>
     
     <!-- 绑定手机弹窗 -->
-    <u-popup :show="showBindPhoneModal" mode="center" @close="showBindPhoneModal = false" round="10">
+    <up-popup :show="showBindPhoneModal" mode="center" @close="showBindPhoneModal = false" round="10">
       <view class="popup-content">
         <view class="popup-title">绑定手机</view>
         
         <view class="popup-form">
           <view class="form-item">
             <text class="form-label">新手机号</text>
-            <u--input
+            <up--input
               v-model="phoneForm.phone"
               placeholder="请输入新手机号"
               border="bottom"
               type="number"
-            ></u--input>
+            ></up--input>
           </view>
           
           <view class="form-item">
             <text class="form-label">验证码</text>
             <view class="verify-code-input">
-              <u--input
+              <up--input
                 v-model="phoneForm.verifyCode"
                 placeholder="请输入验证码"
                 border="bottom"
                 style="flex: 1;"
-              ></u--input>
+              ></up--input>
               <button 
                 class="verify-code-btn" 
                 :disabled="phoneForm.counting" 
@@ -110,33 +110,33 @@
           <button class="confirm-btn" @click="handleBindPhone">确认</button>
         </view>
       </view>
-    </u-popup>
+    </up-popup>
     
     <!-- 绑定邮箱弹窗 -->
-    <u-popup :show="showBindEmailModal" mode="center" @close="showBindEmailModal = false" round="10">
+    <up-popup :show="showBindEmailModal" mode="center" @close="showBindEmailModal = false" round="10">
       <view class="popup-content">
         <view class="popup-title">绑定邮箱</view>
         
         <view class="popup-form">
           <view class="form-item">
             <text class="form-label">新邮箱</text>
-            <u--input
+            <up--input
               v-model="emailForm.email"
               placeholder="请输入新邮箱"
               border="bottom"
               type="email"
-            ></u--input>
+            ></up--input>
           </view>
           
           <view class="form-item">
             <text class="form-label">验证码</text>
             <view class="verify-code-input">
-              <u--input
+              <up--input
                 v-model="emailForm.verifyCode"
                 placeholder="请输入验证码"
                 border="bottom"
                 style="flex: 1;"
-              ></u--input>
+              ></up--input>
               <button 
                 class="verify-code-btn" 
                 :disabled="emailForm.counting" 
@@ -153,7 +153,7 @@
           <button class="confirm-btn" @click="handleBindEmail">确认</button>
         </view>
       </view>
-    </u-popup>
+    </up-popup>
   </view>
 </template>
 

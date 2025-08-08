@@ -34,7 +34,7 @@
         >
           <view class="appointment-header">
             <view class="counselor-info">
-              <u-avatar :src="item.counselor_avatar || '/static/images/default-avatar.png'" size="80"></u-avatar>
+              <up-avatar :src="item.counselor_avatar || '/static/images/default-avatar.png'" size="80"></up-avatar>
               <view class="counselor-detail">
                 <text class="counselor-name">{{ item.counselor_name }}</text>
                 <text class="counselor-title">{{ item.counselor_title }}</text>
@@ -93,28 +93,28 @@
         </view>
       </view>
       <view v-else class="empty-content">
-        <u-empty mode="list" icon="calendar" :text="`暂无${getTabText()}预约`"></u-empty>
+        <up-empty mode="list" icon="calendar" :text="`暂无${getTabText()}预约`"></up-empty>
       </view>
     </view>
     
     <!-- 评价弹窗 -->
-    <u-popup :show="showCommentModal" mode="center" @close="showCommentModal = false" round="10">
+    <up-popup :show="showCommentModal" mode="center" @close="showCommentModal = false" round="10">
       <view class="comment-popup">
         <view class="popup-title">评价咨询</view>
         
         <view class="rating-section">
           <text class="rating-label">服务评分</text>
-          <u-rate v-model="commentForm.rating" count="5" active-color="#faad14" size="40"></u-rate>
+          <up-rate v-model="commentForm.rating" count="5" active-color="#faad14" size="40"></up-rate>
         </view>
         
         <view class="comment-section">
-          <u--textarea
+          <up--textarea
             v-model="commentForm.content"
             placeholder="请输入您的评价内容"
             height="200"
             count
             maxlength="500"
-          ></u--textarea>
+          ></up--textarea>
         </view>
         
         <view class="popup-btns">
@@ -122,10 +122,10 @@
           <button class="confirm-btn" @click="submitComment">提交评价</button>
         </view>
       </view>
-    </u-popup>
+    </up-popup>
     
     <!-- 取消预约弹窗 -->
-    <u-popup :show="showCancelModal" mode="center" @close="showCancelModal = false" round="10">
+    <up-popup :show="showCancelModal" mode="center" @close="showCancelModal = false" round="10">
       <view class="cancel-popup">
         <view class="popup-title">取消预约</view>
         
@@ -134,25 +134,25 @@
           
           <view class="reason-section">
             <text class="reason-label">取消原因</text>
-            <u-radio-group v-model="cancelForm.reason">
-              <u-radio 
+            <up-radio-group v-model="cancelForm.reason">
+              <up-radio 
                 v-for="(item, index) in cancelReasons" 
                 :key="index"
                 :name="item.value"
                 :label="item.label"
                 :customStyle="{marginBottom: '16px'}"
-              ></u-radio>
-            </u-radio-group>
+              ></up-radio>
+            </up-radio-group>
           </view>
           
           <view class="remark-section" v-if="cancelForm.reason === 'other'">
-            <u--textarea
+            <up--textarea
               v-model="cancelForm.remark"
               placeholder="请输入取消原因"
               height="150"
               count
               maxlength="200"
-            ></u--textarea>
+            ></up--textarea>
           </view>
         </view>
         
@@ -161,7 +161,7 @@
           <button class="confirm-btn danger" @click="submitCancel">确认取消</button>
         </view>
       </view>
-    </u-popup>
+    </up-popup>
   </view>
 </template>
 

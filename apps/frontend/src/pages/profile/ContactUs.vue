@@ -59,31 +59,31 @@
       <view class="form-content">
         <view class="form-item">
           <text class="form-label">姓名</text>
-          <u--input
+          <up--input
             v-model="form.name"
             placeholder="请输入您的姓名"
             border="bottom"
-          ></u--input>
+          ></up--input>
         </view>
         
         <view class="form-item">
           <text class="form-label">联系方式</text>
-          <u--input
+          <up--input
             v-model="form.contact"
             placeholder="请输入您的手机号或邮箱"
             border="bottom"
-          ></u--input>
+          ></up--input>
         </view>
         
         <view class="form-item">
           <text class="form-label">留言内容</text>
-          <u--textarea
+          <up--textarea
             v-model="form.content"
             placeholder="请输入您的留言内容"
             height="200"
             count
             maxlength="500"
-          ></u--textarea>
+          ></up--textarea>
         </view>
         
         <button class="submit-btn" @click="handleSubmit">提交留言</button>

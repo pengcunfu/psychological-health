@@ -9,16 +9,16 @@
     <view class="reviews-content">
       <view class="review-item" v-for="(review, index) in displayReviews" :key="review.id || index">
         <view class="review-header">
-          <u-avatar :src="review.user_avatar || defaultAvatar" size="60"></u-avatar>
+          <up-avatar :src="review.user_avatar || defaultAvatar" size="60"></up-avatar>
           <view class="review-user">
             <text class="review-username">{{ review.username || '匿名用户' }}</text>
             <view class="review-rating">
-              <u-rate 
+              <up-rate 
                 :value="review.rating || 5" 
                 readonly 
                 size="12" 
                 active-color="#faad14"
-              ></u-rate>
+              ></up-rate>
               <text class="review-time">{{ formatDate(review.create_time) }}</text>
             </view>
           </view>

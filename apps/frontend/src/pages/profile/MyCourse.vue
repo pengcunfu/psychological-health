@@ -56,7 +56,7 @@
         </view>
       </view>
       <view v-else class="empty-content">
-        <u-empty mode="list" icon="order" :text="`暂无${getTabText()}课程`"></u-empty>
+        <up-empty mode="list" icon="order" :text="`暂无${getTabText()}课程`"></up-empty>
       </view>
     </view>
   </view>

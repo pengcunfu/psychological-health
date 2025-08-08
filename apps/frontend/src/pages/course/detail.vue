@@ -69,7 +69,7 @@
           <view class="block-title">讲师介绍</view>
           <view class="block-content">
             <view class="teacher-card">
-              <u-avatar :src="courseInfo.teacher_avatar || '/static/images/default-avatar.png'" size="120"></u-avatar>
+              <up-avatar :src="courseInfo.teacher_avatar || '/static/images/default-avatar.png'" size="120"></up-avatar>
               <view class="teacher-info">
                 <text class="teacher-name">{{ courseInfo.teacher_name || '未知讲师' }}</text>
                 <text class="teacher-title">{{ courseInfo.teacher_title || '' }}</text>
@@ -111,7 +111,7 @@
           </view>
         </view>
         <view v-else class="empty-content">
-          <u-empty mode="list" icon="list" text="暂无课程目录"></u-empty>
+          <up-empty mode="list" icon="list" text="暂无课程目录"></up-empty>
         </view>
       </view>
       
@@ -120,11 +120,11 @@
         <view v-if="comments.length > 0">
           <view class="comment-item" v-for="(comment, index) in comments" :key="index">
             <view class="comment-header">
-              <u-avatar :src="comment.user_avatar || '/static/images/default-avatar.png'" size="80"></u-avatar>
+              <up-avatar :src="comment.user_avatar || '/static/images/default-avatar.png'" size="80"></up-avatar>
               <view class="comment-user">
                 <text class="comment-username">{{ comment.username }}</text>
                 <view class="comment-rating">
-                  <u-rate :value="comment.rating" readonly size="16" active-color="#faad14"></u-rate>
+                  <up-rate :value="comment.rating" readonly size="16" active-color="#faad14"></up-rate>
                   <text class="comment-time">{{ comment.create_time }}</text>
                 </view>
               </view>
@@ -139,7 +139,7 @@
           </view>
         </view>
         <view v-else class="empty-content">
-          <u-empty mode="comment" icon="chat" text="暂无评价"></u-empty>
+          <up-empty mode="comment" icon="chat" text="暂无评价"></up-empty>
         </view>
       </view>
     </view>

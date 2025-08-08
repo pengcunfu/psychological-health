@@ -8,7 +8,7 @@
     >
       <template #center>
         <view class="search-container">
-          <u-input
+          <up-input
             v-model="searchKeyword"
             placeholder="搜索课程、测评、咨询师..."
             :border="false"
@@ -26,7 +26,7 @@
             <template #suffix>
               <up-icon name="search" size="20" color="#999" @click="performSearch"></up-icon>
             </template>
-          </u-input>
+          </up-input>
         </view>
       </template>
       
@@ -497,14 +497,14 @@ export default {
   max-width: 500rpx;
 }
 
-.search-container ::v-deep .u-input {
+.search-container ::v-deep .up-input {
   height: 64rpx !important;
   padding: 0 !important;
   margin: 0 !important;
   box-sizing: border-box !important;
 }
 
-.search-container ::v-deep .u-input__content {
+.search-container ::v-deep .up-input__content {
   height: 64rpx !important;
   background-color: #f5f7fa !important;
   border-radius: 32rpx !important;
@@ -514,14 +514,14 @@ export default {
   box-sizing: border-box !important;
 }
 
-.search-container ::v-deep .u-input__content__field-wrapper {
+.search-container ::v-deep .up-input__content__field-wrapper {
   height: 64rpx !important;
   padding: 0 !important;
   margin: 0 !important;
   box-sizing: border-box !important;
 }
 
-.search-container ::v-deep .u-input__content__field-wrapper__field {
+.search-container ::v-deep .up-input__content__field-wrapper__field {
   height: 64rpx !important;
   line-height: 64rpx !important;
   font-size: 26rpx !important;
