@@ -138,10 +138,8 @@
       </view>
     </view>
 
-    <!-- TabBar with keep-alive -->
-    <keep-alive>
-      <TabBar />
-    </keep-alive>
+    <!-- TabBar -->
+    <TabBar />
   </view>
 </template>
 

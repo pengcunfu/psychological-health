@@ -1,5 +1,13 @@
 <template>
   <view class="container">
+    <!-- 顶部导航 -->
+    <Navbar 
+      title="我的预约"
+      :showLeft="true"
+      :showRight="false"
+      @leftClick="goBack"
+    />
+
     <view class="tab-section">
       <view 
         class="tab-item" 
@@ -165,16 +173,17 @@
   </view>
 </template>
 
-<script>
+<script setup>
 import { ref, reactive, computed } from 'vue'
 import { onLoad, onPullDownRefresh, onReachBottom } from '@dcloudio/uni-app'
 import { request } from '@/utils/request'
 import { checkLogin } from '@/utils/auth'
+import Navbar from '@/components/Navbar.vue'
 
-export default {
-  setup() {
-    // 检查登录状态
-    if (!checkLogin()) return {}
+// 检查登录状态
+if (!checkLogin()) {
+  // 如果未登录，直接返回
+}
     
     const activeTab = ref('upcoming')
     const appointments = ref([])
@@ -446,6 +455,11 @@ export default {
       }
     }
     
+    // 返回上一页
+    const goBack = () => {
+      uni.navigateBack()
+    }
+    
     // 页面加载
     onLoad(() => {
       fetchAppointments(true)
@@ -466,29 +480,10 @@ export default {
       }
     })
     
-    return {
-      activeTab,
-      appointments,
-      showCommentModal,
-      commentForm,
-      showCancelModal,
-      cancelForm,
-      cancelReasons,
-      switchTab,
-      getStatusText,
-      getTabText,
-      navigateToDetail,
-      handleStartConsult,
-      handleComment,
-      submitComment,
-      handleCancel,
-      submitCancel
-    }
-  }
-}
+// 所有变量和函数已在 setup 语法糖中定义，无需返回
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .container {
   min-height: 100vh;
   background-color: #f5f7fa;
@@ -510,22 +505,22 @@ export default {
   font-size: 28rpx;
   color: #666;
   position: relative;
-}
 
-.tab-item.active {
-  color: #4A90E2;
-  font-weight: bold;
-}
+  &.active {
+    color: #4A90E2;
+    font-weight: bold;
 
-.tab-item.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60rpx;
-  height: 4rpx;
-  background-color: #4A90E2;
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60rpx;
+      height: 4rpx;
+      background-color: #4A90E2;
+    }
+  }
 }
 
 .content-section {
@@ -556,56 +551,56 @@ export default {
 
 .counselor-detail {
   margin-left: 20rpx;
-}
 
-.counselor-name {
-  font-size: 32rpx;
-  font-weight: bold;
-  color: #333;
-  display: block;
-  margin-bottom: 10rpx;
-}
+  .counselor-name {
+    font-size: 32rpx;
+    font-weight: bold;
+    color: #333;
+    display: block;
+    margin-bottom: 10rpx;
+  }
 
-.counselor-title {
-  font-size: 24rpx;
-  color: #666;
+  .counselor-title {
+    font-size: 24rpx;
+    color: #666;
+  }
 }
 
 .appointment-status {
   font-size: 28rpx;
   font-weight: bold;
-}
 
-.status-pending {
-  color: #faad14;
-}
+  &.status-pending {
+    color: #faad14;
+  }
 
-.status-confirmed {
-  color: #4A90E2;
-}
+  &.status-confirmed {
+    color: #4A90E2;
+  }
 
-.status-completed {
-  color: #52c41a;
-}
+  &.status-completed {
+    color: #52c41a;
+  }
 
-.status-cancelled {
-  color: #999;
+  &.status-cancelled {
+    color: #999;
+  }
 }
 
 .appointment-info {
   margin-bottom: 20rpx;
-}
 
-.info-item {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10rpx;
-}
+  .info-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10rpx;
 
-.info-text {
-  font-size: 28rpx;
-  color: #333;
-  margin-left: 10rpx;
+    .info-text {
+      font-size: 28rpx;
+      color: #333;
+      margin-left: 10rpx;
+    }
+  }
 }
 
 .appointment-footer {
@@ -614,41 +609,41 @@ export default {
   align-items: center;
   padding-top: 20rpx;
   border-top: 1rpx solid #f0f0f0;
-}
 
-.appointment-price {
-  font-size: 36rpx;
-  color: #f5222d;
-  font-weight: bold;
-}
+  .appointment-price {
+    font-size: 36rpx;
+    color: #f5222d;
+    font-weight: bold;
+  }
 
-.action-btns {
-  display: flex;
-}
+  .action-btns {
+    display: flex;
 
-.action-btn {
-  padding: 10rpx 30rpx;
-  font-size: 28rpx;
-  border-radius: 30rpx;
-  margin-left: 20rpx;
-}
+    .action-btn {
+      padding: 10rpx 30rpx;
+      font-size: 28rpx;
+      border-radius: 30rpx;
+      margin-left: 20rpx;
 
-.cancel-btn {
-  background-color: #fff;
-  color: #999;
-  border: 1rpx solid #ddd;
-}
+      &.cancel-btn {
+        background-color: #fff;
+        color: #999;
+        border: 1rpx solid #ddd;
+      }
 
-.consult-btn {
-  background-color: #4A90E2;
-  color: #fff;
-  border: none;
-}
+      &.consult-btn {
+        background-color: #4A90E2;
+        color: #fff;
+        border: none;
+      }
 
-.comment-btn {
-  background-color: #faad14;
-  color: #fff;
-  border: none;
+      &.comment-btn {
+        background-color: #faad14;
+        color: #fff;
+        border: none;
+      }
+    }
+  }
 }
 
 .empty-content {
@@ -661,14 +656,14 @@ export default {
   background-color: #fff;
   border-radius: 20rpx;
   padding: 30rpx;
-}
 
-.popup-title {
-  font-size: 32rpx;
-  font-weight: bold;
-  color: #333;
-  text-align: center;
-  margin-bottom: 30rpx;
+  .popup-title {
+    font-size: 32rpx;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    margin-bottom: 30rpx;
+  }
 }
 
 .rating-section {
@@ -676,12 +671,12 @@ export default {
   flex-direction: column;
   align-items: center;
   margin-bottom: 30rpx;
-}
 
-.rating-label {
-  font-size: 28rpx;
-  color: #333;
-  margin-bottom: 20rpx;
+  .rating-label {
+    font-size: 28rpx;
+    color: #333;
+    margin-bottom: 20rpx;
+  }
 }
 
 .comment-section {
@@ -697,13 +692,13 @@ export default {
 
 .reason-section {
   margin-bottom: 30rpx;
-}
 
-.reason-label {
-  font-size: 28rpx;
-  color: #333;
-  margin-bottom: 20rpx;
-  display: block;
+  .reason-label {
+    font-size: 28rpx;
+    color: #333;
+    margin-bottom: 20rpx;
+    display: block;
+  }
 }
 
 .remark-section {
@@ -713,28 +708,28 @@ export default {
 .popup-btns {
   display: flex;
   justify-content: space-between;
-}
 
-.cancel-btn, .confirm-btn {
-  width: 280rpx;
-  height: 80rpx;
-  line-height: 80rpx;
-  font-size: 28rpx;
-  border-radius: 10rpx;
-  border: none;
-}
+  .cancel-btn, .confirm-btn {
+    width: 280rpx;
+    height: 80rpx;
+    line-height: 80rpx;
+    font-size: 28rpx;
+    border-radius: 10rpx;
+    border: none;
+  }
 
-.cancel-btn {
-  background-color: #f5f5f5;
-  color: #666;
-}
+  .cancel-btn {
+    background-color: #f5f5f5;
+    color: #666;
+  }
 
-.confirm-btn {
-  background-color: #4A90E2;
-  color: #fff;
-}
+  .confirm-btn {
+    background-color: #4A90E2;
+    color: #fff;
 
-.danger {
-  background-color: #f5222d;
+    &.danger {
+      background-color: #f5222d;
+    }
+  }
 }
 </style> 

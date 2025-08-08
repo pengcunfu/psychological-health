@@ -212,7 +212,7 @@ const getCurrentIndex = () => {
 }
 
 onMounted(() => {
-  console.log('🎨 TabBar组件已挂载 - keep-alive模式')
+  console.log('🎨 TabBar组件已挂载 - 微信小程序兼容模式')
   
   // 获取安全区域信息（适用于所有平台）
   try {
