@@ -84,14 +84,6 @@ const switchTab = (index) => {
   switching = true
   switchingIndex.value = index  // 设置正在切换的索引
 
-  // 添加触觉反馈（支持的平台）
-  try {
-    uni.vibrateShort({
-      type: 'light'
-    })
-  } catch (e) {
-  }
-
   const targetPath = tabList[index].pagePath
 
   // 延迟更新索引，先播放动画
@@ -200,7 +192,14 @@ onMounted(() => {
   // 获取安全区域信息（适用于所有平台）
   try {
     const systemInfo = uni.getSystemInfoSync()
-    safeAreaBottom.value = systemInfo.safeAreaInsets ? systemInfo.safeAreaInsets.bottom : 0
+    let safeAreaBottomValue = systemInfo.safeAreaInsets ? systemInfo.safeAreaInsets.bottom : 0
+    
+    // 微信小程序的安全区域单位可能不同，需要乘以2
+    // #ifdef MP-WEIXIN
+    safeAreaBottomValue = safeAreaBottomValue * 2
+    // #endif
+    
+    safeAreaBottom.value = safeAreaBottomValue
   } catch (error) {
     safeAreaBottom.value = 0
   }
@@ -378,25 +377,7 @@ $ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
       }
     }
 
-    // 点击效果
-    &:active {
-      .tabbar-item__icon {
-        transform: scale(0.95);
-      }
 
-      .tabbar-item__ripple {
-        animation: rippleEffect 0.6s $ease-out-cubic;
-      }
-    }
-
-    // 悬停效果
-    &:hover {
-      .tabbar-item__ripple {
-        width: 60rpx;
-        height: 60rpx;
-        opacity: 0.3;
-      }
-    }
   }
 }
 
@@ -476,62 +457,42 @@ $ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
   }
 }
 
-// 平台特定优化
-/* #ifdef MP-WEIXIN */
+// 统一的跨平台样式 - 所有平台表现一致
 .custom-tabbar {
-  box-shadow: 0 -2rpx 8rpx $shadow-medium;
-}
-
-.tabbar-item {
-
-  // 微信小程序点击反馈优化
-  &:hover {
-    .tabbar-item__ripple {
-      width: 70rpx;
-      height: 70rpx;
-      opacity: 0.15;
-    }
-
-    .tabbar-item__icon {
-      transform: scale(1.03);
-    }
-  }
-}
-
-/* #endif */
-
-/* #ifdef H5 */
-.custom-tabbar {
-  box-shadow: 0 -2rpx 12rpx $shadow-light;
+  box-shadow: 0 -2rpx 10rpx $shadow-medium;
+  backdrop-filter: blur(20rpx);
+  -webkit-backdrop-filter: blur(20rpx);
 }
 
 .tabbar-item {
   cursor: pointer;
 
+  // 统一的悬停效果 - 所有平台一致
   &:hover {
     .tabbar-item__ripple {
-      width: 80rpx;
-      height: 80rpx;
-      opacity: 0.2;
+      width: 75rpx;
+      height: 75rpx;
+      opacity: 0.18;
     }
 
     .tabbar-item__icon {
-      transform: scale(1.05);
+      transform: scale(1.04);
     }
 
     .tabbar-item__text {
       transform: scale(1.02);
     }
   }
+
+  // 统一的点击效果 - 所有平台一致
+  &:active {
+    .tabbar-item__icon {
+      transform: scale(0.95);
+    }
+
+    .tabbar-item__ripple {
+      animation: rippleEffect 0.6s $ease-out-cubic;
+    }
+  }
 }
-
-/* #endif */
-
-/* #ifdef APP-PLUS */
-.custom-tabbar {
-  backdrop-filter: blur(20rpx);
-  -webkit-backdrop-filter: blur(20rpx);
-}
-
-/* #endif */
 </style>
