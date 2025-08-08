@@ -1,6 +1,6 @@
 <template>
   <view class="container">
-    <Navbar title="课程详情" />
+    <!-- <Navbar title="课程详情" /> -->
     <view class="course-header">
       <image class="course-cover" :src="courseInfo.cover || '/static/images/default-course.png'" mode="aspectFill"></image>
       <view class="course-info">

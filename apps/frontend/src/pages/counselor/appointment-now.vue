@@ -1,6 +1,6 @@
 <template>
   <view class="container">
-    <Navbar title="请完善订单信息" />
+    <!-- <Navbar title="请完善订单信息" /> -->
 
     <!-- 主要内容 -->
     <view class="content">

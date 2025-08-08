@@ -1,7 +1,7 @@
 <template>
   <view class="container">
     <!-- 导航栏 -->
-    <Navbar title="咨询师详情" />
+    <!-- <Navbar title="咨询师详情" /> -->
     
     <!-- 加载状态 -->
     <view v-if="loading" class="loading-container">

@@ -1,11 +1,11 @@
 <template>
   <view class="container">
-    <Navbar
+    <!-- <Navbar
       title="我的测评"
       :showLeft="true"
       :showRight="false"
       @leftClick="goBack"
-    />
+    /> -->
     
     <!-- 标签栏 -->
     <view class="tabs">

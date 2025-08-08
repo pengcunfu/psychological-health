@@ -1,6 +1,6 @@
 <template>
   <view class="container">
-    <Navbar title="编辑资料" :showLeft="true" :showRight="false" @leftClick="goBack" />
+    <!-- <Navbar title="编辑资料" :showLeft="true" :showRight="false" @leftClick="goBack" /> -->
 
     <view class="form-section">
       <view class="avatar-upload">

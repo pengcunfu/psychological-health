@@ -1,8 +1,5 @@
 <template>
   <view class="container tab-page">
-    <!-- 导航栏 -->
-    <Navbar title="心理测评" :show-right="true" right-icon="search" @right-click="handleSearchClick" />
-    
     <!-- 标签栏 -->
     <view class="tabs">
       <view 
@@ -137,6 +134,11 @@
         </view>
       </view>
     </up-popup>
+
+    <!-- 悬浮搜索按钮 -->
+    <view class="floating-search-btn" @click="handleSearchClick">
+      <SvgIcon name="search" :size="24" color="#fff" />
+    </view>
   </view>
 </template>
 
@@ -145,7 +147,7 @@ import { ref, reactive, computed } from 'vue'
 import { onLoad, onReachBottom } from '@dcloudio/uni-app'
 import { assessmentAPI } from '@/api/assessment'
 import AssessmentCard from '@/components/AssessmentCard.vue'
-import Navbar from '@/components/Navbar.vue'
+import SvgIcon from '@/components/SvgIcon.vue'
 
 // 搜索关键词
 const searchKeyword = ref('')
@@ -456,20 +458,28 @@ onReachBottom(() => {
 </script>
 
 <style lang="scss">
+// SCSS 变量定义
+$primary-color: #52c41a;
+$bg-color: #f5f7fa;
+$white: #fff;
+$gray-light: #f0f0f0;
+$gray: #999;
+$gray-medium: #666;
+$text-color: #333;
+$border-radius: 12rpx;
+$shadow-light: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+
 .container {
   min-height: 100vh;
-  background: #f5f7fa;
+  background: $bg-color;
   padding-bottom: 30rpx;
-  padding-top: 0; /* NavBar组件自己处理占位空间 */
 }
-
-// Header样式已移除，使用NavBar组件
 
 // 标签栏
 .tabs {
   display: flex;
-  background: #fff;
-  border-bottom: 1rpx solid #f0f0f0;
+  background: $white;
+  border-bottom: 1rpx solid $gray-light;
 }
 
 .tab {
@@ -477,33 +487,33 @@ onReachBottom(() => {
   text-align: center;
   padding: 24rpx 0;
   font-size: 28rpx;
-  color: #666;
+  color: $gray-medium;
   position: relative;
-}
 
-.tab.active {
-  color: #52c41a;
-  font-weight: bold;
-}
+  &.active {
+    color: $primary-color;
+    font-weight: bold;
 
-.tab.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 40rpx;
-  height: 6rpx;
-  background: #52c41a;
-  border-radius: 3rpx;
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40rpx;
+      height: 6rpx;
+      background: $primary-color;
+      border-radius: 3rpx;
+    }
+  }
 }
 
 // 筛选栏
 .filter-bar {
   display: flex;
   padding: 20rpx 30rpx;
-  background: #fff;
-  border-bottom: 1rpx solid #f0f0f0;
+  background: $white;
+  border-bottom: 1rpx solid $gray-light;
 }
 
 .filter-item {
@@ -511,12 +521,12 @@ onReachBottom(() => {
   align-items: center;
   margin-right: 30rpx;
   font-size: 24rpx;
-  color: #666;
+  color: $gray-medium;
   padding: 10rpx 0;
-}
 
-.filter-item text {
-  margin-right: 8rpx;
+  text {
+    margin-right: 8rpx;
+  }
 }
 
 // 测评列表
@@ -529,25 +539,25 @@ onReachBottom(() => {
 .empty-state {
   padding: 80rpx 40rpx;
   text-align: center;
-}
 
-.empty-content {
-  background: #fff;
-  border-radius: 12rpx;
-  padding: 40rpx 30rpx;
-}
+  .empty-content {
+    background: $white;
+    border-radius: $border-radius;
+    padding: 40rpx 30rpx;
+  }
 
-.empty-title {
-  font-size: 28rpx;
-  color: #333;
-  margin: 20rpx 0 8rpx;
-  display: block;
-}
+  .empty-title {
+    font-size: 28rpx;
+    color: $text-color;
+    margin: 20rpx 0 8rpx;
+    display: block;
+  }
 
-.empty-subtitle {
-  font-size: 24rpx;
-  color: #999;
-  display: block;
+  .empty-subtitle {
+    font-size: 24rpx;
+    color: $gray;
+    display: block;
+  }
 }
 
 // 加载更多
@@ -557,44 +567,71 @@ onReachBottom(() => {
 
 // 筛选弹窗
 .filter-popup {
-  background: #fff;
+  background: $white;
   border-radius: 20rpx 20rpx 0 0;
   max-height: 60vh;
+
+  .filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 30rpx;
+    border-bottom: 1rpx solid $gray-light;
+
+    .filter-title {
+      font-size: 32rpx;
+      font-weight: bold;
+      color: $text-color;
+    }
+  }
+
+  .filter-options {
+    padding: 20rpx 0;
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+
+  .filter-option {
+    padding: 24rpx 30rpx;
+    font-size: 28rpx;
+    color: $text-color;
+    border-bottom: 1rpx solid #f8f8f8;
+
+    &.active {
+      color: $primary-color;
+      background: #f6ffed;
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
 }
 
-.filter-header {
+// 悬浮搜索按钮
+.floating-search-btn {
+  position: fixed;
+  bottom: 120rpx;
+  right: 30rpx;
+  width: 100rpx;
+  height: 100rpx;
+  background: $primary-color;
+  border-radius: 50%;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 30rpx;
-  border-bottom: 1rpx solid #f0f0f0;
-}
+  justify-content: center;
+  box-shadow: $shadow-light;
+  z-index: 1000;
+  transition: all 0.3s ease;
 
-.filter-title {
-  font-size: 32rpx;
-  font-weight: bold;
-  color: #333;
-}
+  &:active {
+    transform: scale(0.95);
+    box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.12);
+  }
 
-.filter-options {
-  padding: 20rpx 0;
-  max-height: 50vh;
-  overflow-y: auto;
-}
-
-.filter-option {
-  padding: 24rpx 30rpx;
-  font-size: 28rpx;
-  color: #333;
-  border-bottom: 1rpx solid #f8f8f8;
-}
-
-.filter-option.active {
-  color: #52c41a;
-  background: #f6ffed;
-}
-
-.filter-option:last-child {
-  border-bottom: none;
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6rpx 16rpx rgba(0, 0, 0, 0.12);
+  }
 }
 </style>

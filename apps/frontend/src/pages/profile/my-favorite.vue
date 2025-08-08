@@ -1,6 +1,6 @@
 <template>
   <view class="container">
-    <Navbar title="我的收藏" :showLeft="true" :showRight="false" @leftClick="goBack" />
+    <!-- <Navbar title="我的收藏" :showLeft="true" :showRight="false" @leftClick="goBack" /> -->
 
     <view class="tab-section">
       <view class="tab-item" :class="{ active: activeTab === 'counselor' }" @click="switchTab('counselor')">

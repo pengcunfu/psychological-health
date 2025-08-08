@@ -1,6 +1,6 @@
 <template>
   <view class="container">
-    <Navbar title="安全设置" :showLeft="true" :showRight="false" @leftClick="goBack" />
+    <!-- <Navbar title="安全设置" :showLeft="true" :showRight="false" @leftClick="goBack" /> -->
 
     <view class="form-section">
       <view class="form-title">修改密码</view>

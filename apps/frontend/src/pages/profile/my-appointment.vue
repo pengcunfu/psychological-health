@@ -1,12 +1,12 @@
 <template>
   <view class="container">
     <!-- 顶部导航 -->
-    <Navbar 
+    <!-- <Navbar 
       title="我的预约"
       :showLeft="true"
       :showRight="false"
       @leftClick="goBack"
-    />
+    /> -->
 
     <view class="tab-section">
       <view 

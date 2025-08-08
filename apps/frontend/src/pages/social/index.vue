@@ -1,7 +1,7 @@
 <template>
   <view class="container tab-page">
     <!-- 导航栏 -->
-    <Navbar 
+    <!-- <Navbar 
       title="互动社区" 
       :show-left="true"
       :show-right="true" 
@@ -13,7 +13,7 @@
         <SvgIcon name="home" :size="44" color="#333" />
       </template>
     </Navbar>
-    
+     -->
     <!-- 标签栏 -->
     <view class="tabs">
       <view 

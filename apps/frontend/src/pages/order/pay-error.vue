@@ -1,12 +1,12 @@
 <template>
   <view class="container">
-    <Navbar 
+    <!-- <Navbar 
       title="支付失败" 
       :show-left="false" 
       :show-right="true" 
       right-icon="home" 
       @right-click="goHome" 
-    />
+    /> -->
 
     <!-- 失败状态区域 -->
     <view class="error-header">

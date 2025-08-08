@@ -1,16 +1,5 @@
 <template>
   <view class="container">
-    <!-- 自定义导航栏 -->
-    <view class="custom-navbar">
-      <view class="navbar-content">
-        <view class="navbar-left" @click="goBack">
-          <text class="back-icon">←</text>
-        </view>
-        <view class="navbar-title">咨询人信息</view>
-        <view class="navbar-right"></view>
-      </view>
-    </view>
-
     <!-- 隐私保护提示 -->
     <view class="privacy-notice" v-if="showPrivacyNotice">
       <text class="shield-icon">🛡️</text>
@@ -259,10 +248,6 @@ const canSave = computed(() => {
 })
 
 // 方法
-const goBack = () => {
-  uni.navigateBack()
-}
-
 const hidePrivacyNotice = () => {
   showPrivacyNotice.value = false
 }
@@ -437,6 +422,16 @@ const loadConsultantData = async () => {
 
 // 页面加载
 onLoad((options) => {
+  // 获取系统信息，设置状态栏高度
+  const systemInfo = uni.getSystemInfoSync()
+  const statusBarHeight = systemInfo.statusBarHeight || 0
+  
+  // 设置CSS变量
+  const style = document.documentElement.style || document.body.style
+  if (style) {
+    style.setProperty('--status-bar-height', statusBarHeight + 'px')
+  }
+  
   if (options.id) {
     isEdit.value = true
     consultantId.value = options.id
@@ -456,40 +451,10 @@ onMounted(() => {
   padding-bottom: 120rpx;
 }
 
-.custom-navbar {
-  background-color: #fff;
-  padding-top: var(--status-bar-height);
-  border-bottom: 1rpx solid #f0f0f0;
-}
-
-.navbar-content {
-  height: 88rpx;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 30rpx;
-}
-
-.navbar-left {
-  width: 80rpx;
-  display: flex;
-  align-items: center;
-}
-
-.navbar-title {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: #333;
-  text-align: center;
-}
-
-.navbar-right {
-  width: 80rpx;
-}
-
 .privacy-notice {
   background-color: #e6f7ff;
   padding: 20rpx 30rpx;
+  padding-top: calc(20rpx + var(--status-bar-height, 0px));
   display: flex;
   align-items: center;
   border-bottom: 1rpx solid #91d5ff;
@@ -685,12 +650,6 @@ onMounted(() => {
 }
 
 /* 原生组件样式 */
-.back-icon {
-  font-size: 36rpx;
-  color: #333;
-  font-weight: bold;
-}
-
 .shield-icon {
   font-size: 32rpx;
   margin-right: 10rpx;

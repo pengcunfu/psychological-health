@@ -1,7 +1,7 @@
 <template>
   <view class="container">
     <!-- 导航栏 -->
-    <Navbar title="设置" />
+    <!-- <Navbar title="设置" /> -->
     
     <!-- 账号设置 -->
     <view class="settings-section">

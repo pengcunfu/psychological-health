@@ -1,11 +1,11 @@
 <template>
   <view class="container">
-    <Navbar
+    <!-- <Navbar
       title="我的课程"
       :showLeft="true"
       :showRight="false"
       @leftClick="goBack"
-    />
+    /> -->
     
     <view class="tab-section">
       <view 

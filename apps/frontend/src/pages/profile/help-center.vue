@@ -1,11 +1,11 @@
 <template>
   <view class="container">
-    <Navbar
+    <!-- <Navbar
       title="帮助中心"
       :showLeft="true"
       :showRight="false"
       @leftClick="goBack"
-    />
+    /> -->
     
     <!-- 搜索框 -->
     <view class="search-box">

@@ -1,6 +1,6 @@
 <template>
   <view class="container">
-    <Navbar title="确认订单" />
+    <!-- <Navbar title="确认订单" /> -->
 
     <!-- 支付倒计时区域 -->
     <view class="payment-header">

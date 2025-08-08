@@ -1,12 +1,12 @@
 <template>
   <view class="container">
-    <Navbar 
+    <!-- <Navbar 
       title="支付成功" 
       :show-left="false" 
       :show-right="true" 
       right-icon="home" 
       @right-click="goHome" 
-    />
+    /> -->
 
     <!-- 成功状态区域 -->
     <view class="success-header">
