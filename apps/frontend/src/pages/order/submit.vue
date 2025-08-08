@@ -1,18 +1,6 @@
 <template>
   <view class="container">
-    <!-- 自定义导航栏 -->
-    <view class="custom-navbar">
-      <view class="navbar-content">
-        <view class="navbar-left" @click="goBack">
-          <up-icon name="arrow-left" size="20" color="#333"></up-icon>
-        </view>
-        <view class="navbar-title"></view>
-        <view class="navbar-right">
-          <up-icon name="more-dot-fill" size="20" color="#333"></up-icon>
-          <up-icon name="scan" size="20" color="#333" style="margin-left: 15rpx;"></up-icon>
-        </view>
-      </view>
-    </view>
+    <Navbar title="确认订单" />
 
     <!-- 支付倒计时区域 -->
     <view class="payment-header">
@@ -105,6 +93,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
+import Navbar from '@/components/Navbar.vue'
 
 // 页面数据
 const orderData = ref({})
@@ -124,9 +113,6 @@ const canPay = computed(() => {
 })
 
 // 方法
-const goBack = () => {
-  uni.navigateBack()
-}
 
 const toggleAgreement = () => {
   agreedToTerms.value = !agreedToTerms.value
@@ -281,41 +267,8 @@ onUnmounted(() => {
 .container {
   min-height: 100vh;
   background-color: #f5f7fa;
+  padding-top: 88rpx; /* 为Navbar留出空间 */
   padding-bottom: 120rpx;
-}
-
-.custom-navbar {
-  background-color: #fff;
-  padding-top: var(--status-bar-height);
-  border-bottom: 1rpx solid #f0f0f0;
-}
-
-.navbar-content {
-  height: 88rpx;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 30rpx;
-}
-
-.navbar-left {
-  width: 80rpx;
-  display: flex;
-  align-items: center;
-}
-
-.navbar-title {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: #333;
-  text-align: center;
-}
-
-.navbar-right {
-  width: 80rpx;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
 }
 
 .payment-header {

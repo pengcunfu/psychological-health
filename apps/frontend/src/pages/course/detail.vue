@@ -1,5 +1,6 @@
 <template>
   <view class="container">
+    <Navbar title="课程详情" />
     <view class="course-header">
       <image class="course-cover" :src="courseInfo.cover || '/static/images/default-course.png'" mode="aspectFill"></image>
       <view class="course-info">
@@ -165,8 +166,12 @@ import { ref, reactive } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { request } from '@/utils/request'
 import { checkLogin } from '@/utils/auth'
+import Navbar from '@/components/Navbar.vue'
 
 export default {
+  components: {
+    Navbar
+  },
   setup() {
     const courseId = ref('')
     const courseInfo = ref({})
@@ -440,6 +445,7 @@ export default {
 .container {
   min-height: 100vh;
   background-color: #f5f7fa;
+  padding-top: 88rpx; /* 为Navbar留出空间 */
   padding-bottom: 120rpx; /* 为底部操作栏留出空间 */
 }
 
