@@ -108,6 +108,10 @@
                  @click="navigateTo('/admin/assessment-records')">
               <span class="menu-text">测评记录</span>
             </div>
+            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/favorites' }"
+                 @click="navigateTo('/admin/favorites')">
+              <span class="menu-text">收藏管理</span>
+            </div>
             <div class="menu-item sub-item" :class="{ active: activePath === '/admin/reviews' }"
                  @click="navigateTo('/admin/reviews')">
               <span class="menu-text">评价管理</span>
@@ -327,7 +331,7 @@ const initActiveCategory = () => {
       path.includes('/admin/assessments') || path.includes('/admin/announcements') || path.includes('/admin/banners')) {
     activeCategoryKey.value = 'content'
   } else if (path.includes('/admin/orders') || path.includes('/admin/course-subscriptions') || path.includes('/admin/appointments') ||
-      path.includes('/admin/assessment-records') || path.includes('/admin/reviews')) {
+      path.includes('/admin/assessment-records') || path.includes('/admin/favorites') || path.includes('/admin/reviews')) {
     activeCategoryKey.value = 'business'
   } else if (path.includes('/admin/categories') || path.includes('/admin/disease-tags') ||
       path.includes('/admin/menus') || path.includes('/admin/groups') ||

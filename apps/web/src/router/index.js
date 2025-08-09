@@ -21,6 +21,7 @@ import WorkspaceManagement from '@/views/admin/WorkspaceManagement.vue'
 import CourseOutlineManagement from '@/views/admin/CourseOutlineManagement.vue'
 import AssessmentManagement from '@/views/admin/AssessmentManagement.vue'
 import AssessmentRecordManagement from '@/views/admin/AssessmentRecordManagement.vue'
+import FavoriteManagement from '@/views/admin/FavoriteManagement.vue'
 import NotFound from '@/views/common/404.vue'
 import Unauthorized from '@/views/common/401.vue'
 
@@ -225,6 +226,15 @@ const routes = [
                 component: AssessmentRecordManagement,
                 meta: {
                     title: '测评记录管理',
+                    requiresAuth: true
+                }
+            },
+            {
+                path: 'admin/favorites',
+                name: 'FavoriteManagement',
+                component: FavoriteManagement,
+                meta: {
+                    title: '收藏管理',
                     requiresAuth: true
                 }
             }
