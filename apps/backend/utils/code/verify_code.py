@@ -16,7 +16,8 @@ class VerifyCodeGenerator:
             if os.name == 'nt':
                 self.font = ImageFont.truetype('arial.ttf', self.font_size)
             else:
-                self.font = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf', self.font_size)
+                self.font = ImageFont.truetype(
+                    '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf', self.font_size)
         except (OSError, IOError):
             self.font = ImageFont.load_default()
 
@@ -24,7 +25,8 @@ class VerifyCodeGenerator:
         return ''.join(random.choices(string.digits + string.ascii_uppercase, k=self.char_count))
 
     def create_image(self, code: str):
-        image = Image.new('RGB', (self.width, self.height), self._get_random_background_color())
+        image = Image.new('RGB', (self.width, self.height),
+                          self._get_random_background_color())
         draw = ImageDraw.Draw(image)
 
         self._draw_background_pattern(draw)
@@ -49,7 +51,8 @@ class VerifyCodeGenerator:
             x = random.randint(0, self.width)
             y = random.randint(0, self.height)
             size = random.randint(1, 2)
-            draw.ellipse([x - size, y - size, x + size, y + size], fill=self._get_random_light_color())
+            draw.ellipse([x - size, y - size, x + size, y + size],
+                         fill=self._get_random_light_color())
 
     def _draw_disturbance_lines(self, draw):
         for _ in range(4):
@@ -57,20 +60,26 @@ class VerifyCodeGenerator:
             start_y = random.randint(0, self.height)
             end_x = start_x + random.randint(self.width // 2, self.width)
             end_y = random.randint(0, self.height)
-            draw.line([(start_x, start_y), (end_x, end_y)], fill=self._get_random_light_color(), width=1)
+            draw.line([(start_x, start_y), (end_x, end_y)],
+                      fill=self._get_random_light_color(), width=1)
 
         for _ in range(3):
             control_points = [
-                (random.randint(0, self.width // 3), random.randint(0, self.height)),
-                (random.randint(self.width // 3, 2 * self.width // 3), random.randint(0, self.height)),
-                (random.randint(2 * self.width // 3, self.width), random.randint(0, self.height))
+                (random.randint(0, self.width // 3),
+                 random.randint(0, self.height)),
+                (random.randint(self.width // 3, 2 * self.width // 3),
+                 random.randint(0, self.height)),
+                (random.randint(2 * self.width // 3, self.width),
+                 random.randint(0, self.height))
             ]
             for i in range(len(control_points) - 1):
-                draw.line([control_points[i], control_points[i + 1]], fill=self._get_random_light_color(), width=1)
+                draw.line([control_points[i], control_points[i + 1]],
+                          fill=self._get_random_light_color(), width=1)
 
     def _draw_code_characters(self, draw, code):
         total_chars_width = sum(
-            draw.textbbox((0, 0), char, font=self.font)[2] - draw.textbbox((0, 0), char, font=self.font)[0]
+            draw.textbbox((0, 0), char, font=self.font)[
+                2] - draw.textbbox((0, 0), char, font=self.font)[0]
             for char in code
         ) + self.spacing * (len(code) - 1)
         start_x = max(0, (self.width - total_chars_width) // 2)
@@ -79,7 +88,8 @@ class VerifyCodeGenerator:
             char_bbox = draw.textbbox((0, 0), char, font=self.font)
             char_width = char_bbox[2] - char_bbox[0]
             x = start_x + sum(
-                draw.textbbox((0, 0), c, font=self.font)[2] - draw.textbbox((0, 0), c, font=self.font)[0] + self.spacing
+                draw.textbbox((0, 0), c, font=self.font)[
+                    2] - draw.textbbox((0, 0), c, font=self.font)[0] + self.spacing
                 for c in code[:i]
             )
             y = (self.height - self.font_size) // 2 + random.randint(-5, 5)

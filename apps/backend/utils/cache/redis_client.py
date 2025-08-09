@@ -80,8 +80,10 @@ class SessionManager:
 
     def __init__(self):
         self.redis_client = RedisClient()
-        self.session_prefix = get_config().get('SESSION', {}).get('KEY_PREFIX', 'session:')
-        self.session_expires = get_config().get('SESSION', {}).get('EXPIRES', 7200)  # 默认2小时
+        self.session_prefix = get_config().get(
+            'SESSION', {}).get('KEY_PREFIX', 'session:')
+        self.session_expires = get_config().get(
+            'SESSION', {}).get('EXPIRES', 7200)  # 默认2小时
 
         # 如果Redis不可用，使用内存存储作为降级方案
         self._memory_sessions = {}
@@ -95,7 +97,8 @@ class SessionManager:
         """启动内存会话清理线程"""
         if not self.redis_client.is_available() and not self._cleanup_running:
             self._cleanup_running = True
-            self._cleanup_thread = threading.Thread(target=self._cleanup_worker, daemon=True)
+            self._cleanup_thread = threading.Thread(
+                target=self._cleanup_worker, daemon=True)
             self._cleanup_thread.start()
             logger.info("内存会话清理线程已启动")
 
@@ -231,14 +234,16 @@ class SessionManager:
             if self.redis_client.is_available():
                 # 延长Redis中的会话
                 session_key = self._get_session_key(token)
-                result = self.redis_client.client.expire(session_key, self.session_expires)
+                result = self.redis_client.client.expire(
+                    session_key, self.session_expires)
                 if result:
                     logger.debug(f"会话有效期已延长: {token[:8]}...")
                 return result
             else:
                 # 延长内存中的会话
                 if token in self._memory_sessions:
-                    self._memory_sessions[token]['expires_at'] = time.time() + self.session_expires
+                    self._memory_sessions[token]['expires_at'] = time.time(
+                    ) + self.session_expires
                     logger.debug(f"Redis不可用，内存会话有效期已延长: {token[:8]}...")
                     return True
                 return False

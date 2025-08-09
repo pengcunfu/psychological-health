@@ -9,7 +9,7 @@ def create_user_models(api):
         'username': fields.String(required=True, description='用户名'),
         'avatar': fields.String(description='头像URL'),
         'phone': fields.String(description='手机号'),
-        'email': fields.String(description='邮箱'),
+        'code': fields.String(description='邮箱'),
         'create_time': fields.DateTime(description='创建时间'),
         'update_time': fields.DateTime(description='更新时间')
     })
@@ -19,7 +19,7 @@ def create_user_models(api):
         'username': fields.String(required=True, description='用户名', example='john_doe'),
         'avatar': fields.String(description='头像URL', example='https://example.com/avatar.jpg'),
         'phone': fields.String(description='手机号', example='13800138000'),
-        'email': fields.String(description='邮箱', example='john@example.com')
+        'code': fields.String(description='邮箱', example='john@example.com')
     })
 
     # 用户更新请求模型
@@ -27,7 +27,7 @@ def create_user_models(api):
         'username': fields.String(description='用户名', example='john_doe_updated'),
         'avatar': fields.String(description='头像URL', example='https://example.com/new_avatar.jpg'),
         'phone': fields.String(description='手机号', example='13900139000'),
-        'email': fields.String(description='邮箱', example='john_new@example.com')
+        'code': fields.String(description='邮箱', example='john_new@example.com')
     })
 
     # 用户列表响应模型

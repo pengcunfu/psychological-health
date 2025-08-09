@@ -1,3 +1,4 @@
+from flask_restx import fields
 from flask_restx import Api
 from flask import Blueprint
 
@@ -27,7 +28,6 @@ api = Api(
 )
 
 # 定义通用的响应模型
-from flask_restx import fields
 
 # 成功响应模型
 success_response = api.model('SuccessResponse', {
@@ -62,7 +62,7 @@ user_model = api.model('User', {
     'username': fields.String(description='用户名', example='张三'),
     'avatar': fields.String(description='头像URL', example='https://example.com/avatar.jpg'),
     'phone': fields.String(description='手机号', example='13800138000'),
-    'email': fields.String(description='邮箱', example='user@example.com'),
+    'code': fields.String(description='邮箱', example='user@example.com'),
     'create_time': fields.DateTime(description='创建时间'),
     'update_time': fields.DateTime(description='更新时间')
 })
