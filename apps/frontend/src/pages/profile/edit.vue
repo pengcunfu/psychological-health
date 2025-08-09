@@ -34,7 +34,7 @@
       <view class="form-item" @click="editPhone">
         <text class="form-label">手机号</text>
         <view class="form-value">
-          <text class="value-text">{{ form.phone || '请输入手机号' }}</text>
+          <text class="value-text">{{ maskPhone(form.phone) || '请绑定手机号' }}</text>
           <up-icon name="arrow-right" size="20" color="#C7C7CC"></up-icon>
         </view>
       </view>
@@ -42,7 +42,7 @@
       <view class="form-item" @click="editEmail">
         <text class="form-label">邮箱</text>
         <view class="form-value">
-          <text class="value-text">{{ form.email || '请输入邮箱' }}</text>
+          <text class="value-text">{{ maskEmail(form.email) || '请绑定邮箱' }}</text>
           <up-icon name="arrow-right" size="20" color="#C7C7CC"></up-icon>
         </view>
       </view>
@@ -65,6 +65,17 @@
         <text class="form-label">个人简介</text>
         <view class="form-value">
           <text class="value-text">{{ form.bio || '编辑个签' }}</text>
+          <up-icon name="arrow-right" size="20" color="#C7C7CC"></up-icon>
+        </view>
+      </view>
+    </view>
+
+    <!-- 安全设置 -->
+    <view class="form-section security-section">
+      <view class="form-item" @click="editPassword">
+        <text class="form-label">修改密码</text>
+        <view class="form-value">
+          <text class="value-text">••••••</text>
           <up-icon name="arrow-right" size="20" color="#C7C7CC"></up-icon>
         </view>
       </view>
@@ -314,7 +325,7 @@ const handleSubmit = async () => {
 // 导航到个人简介编辑页
 const navigateToBioEdit = () => {
   uni.navigateTo({
-    url: `/pages/profile/bio-edit?bio=${encodeURIComponent(form.bio || '')}`
+    url: `/pages/profile/edit-bio?bio=${encodeURIComponent(form.bio || '')}`
   })
 }
 
@@ -335,46 +346,48 @@ const editNickname = () => {
 
 // 编辑手机号
 const editPhone = () => {
-  uni.showModal({
-    title: '编辑手机号',
-    editable: true,
-    content: form.phone,
-    placeholderText: '请输入手机号',
-    success: (res) => {
-      if (res.confirm && res.content) {
-        if (!/^1\d{10}$/.test(res.content)) {
-          uni.showToast({
-            title: '手机号格式不正确',
-            icon: 'none'
-          })
-          return
-        }
-        form.phone = res.content
-      }
-    }
+  uni.navigateTo({
+    url: '/pages/profile/edit-phone'
   })
 }
 
 // 编辑邮箱
 const editEmail = () => {
-  uni.showModal({
-    title: '编辑邮箱',
-    editable: true,
-    content: form.email,
-    placeholderText: '请输入邮箱',
-    success: (res) => {
-      if (res.confirm && res.content) {
-        if (!/^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$/.test(res.content)) {
-          uni.showToast({
-            title: '邮箱格式不正确',
-            icon: 'none'
-          })
-          return
-        }
-        form.email = res.content
-      }
-    }
+  uni.navigateTo({
+    url: '/pages/profile/edit-email'
   })
+}
+
+// 编辑密码
+const editPassword = () => {
+  uni.navigateTo({
+    url: '/pages/profile/edit-password'
+  })
+}
+
+// 手机号脱敏
+const maskPhone = (phone) => {
+  if (!phone) return ''
+  return phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')
+}
+
+// 邮箱脱敏
+const maskEmail = (email) => {
+  if (!email) return ''
+  const parts = email.split('@')
+  if (parts.length !== 2) return email
+
+  const name = parts[0]
+  const domain = parts[1]
+
+  let maskedName = name
+  if (name.length > 3) {
+    maskedName = name.substr(0, 3) + '****'
+  } else {
+    maskedName = name.substr(0, 1) + '****'
+  }
+
+  return maskedName + '@' + domain
 }
 
 // 页面加载
@@ -504,6 +517,10 @@ $font-weight-bold: 700;
       margin-top: 20rpx;
     }
 
+    &.security-section {
+      margin-top: 20rpx;
+    }
+
     .form-item {
       display: flex;
       align-items: center;
@@ -543,8 +560,15 @@ $font-weight-bold: 700;
 
   // 保存按钮区域
   .submit-section {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: $white;
     padding: 20rpx;
-    padding-top: 0rpx;
+    padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+    border-top: 1rpx solid $gray-200;
+    z-index: 100;
 
     .submit-btn {
       width: 100%;

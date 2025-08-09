@@ -1,14 +1,5 @@
 <template>
   <view class="container tab-page">
-    <!-- 顶部导航栏 -->
-    <!-- <Navbar 
-      title="个人中心"
-      :showLeft="false"
-      :showRight="showRightButton"
-      rightIcon="setting"
-      @rightClick="goToSettings"
-    /> -->
-
     <!-- 用户资料 -->
     <view class="user-profile" @click="goToEditProfile">
       <image class="user-avatar" :src="userInfo.avatar || '/static/wx/images/default-avatar.png'" mode="aspectFill">
@@ -22,10 +13,28 @@
       </view>
     </view>
 
-    <!-- 心理服务 -->
-    <view class="menu-section">
-      <view class="section-title">心理服务</view>
+    <!-- 我的服务导航 -->
+    <view class="nav-grid">
+      <view 
+        class="nav-item" 
+        v-for="(item, index) in myServicesMenuItems" 
+        :key="index" 
+        @click="handleMenuClick(item)"
+      >
+        <view class="nav-icon" :style="{ backgroundColor: item.bgColor }">
+          <SvgIcon 
+            :name="item.iconName" 
+            path="profile"
+            :size="40"
+            :color="item.color"
+          />
+        </view>
+        <text class="nav-text">{{ item.name }}</text>
+      </view>
+    </view>
 
+    <!-- 其他功能 -->
+    <view class="menu-section">
       <view class="menu-item" @click="navigateTo('/pages/profile/message')">
         <view class="item-icon">
           <SvgIcon name="notification" path="profile" :size="32" color="#FF6B35" />
@@ -36,72 +45,16 @@
         </view>
       </view>
 
-      <view class="menu-item" @click="navigateTo('/pages/profile/my-appointment')">
-        <view class="item-icon">
-          <SvgIcon name="calendar" path="profile" :size="32" color="#4A90E2" />
-        </view>
-        <view class="item-text">我的预约</view>
-        <view class="item-arrow">
-          <SvgIcon name="arrow-right" path="profile" :size="28" color="#999" />
-        </view>
-      </view>
-
-      <view class="menu-item" @click="navigateTo('/pages/profile/my-course')">
-        <view class="item-icon">
-          <SvgIcon name="book" path="profile" :size="32" color="#52C41A" />
-        </view>
-        <view class="item-text">我的课程</view>
-        <view class="item-arrow">
-          <SvgIcon name="arrow-right" path="profile" :size="28" color="#999" />
-        </view>
-      </view>
-
-      <view class="menu-item" @click="navigateTo('/pages/profile/my-assessment')">
-        <view class="item-icon">
-          <SvgIcon name="checkmark-circle" path="profile" :size="32" color="#FA8C16" />
-        </view>
-        <view class="item-text">我的测评</view>
-        <view class="item-arrow">
-          <SvgIcon name="arrow-right" path="profile" :size="28" color="#999" />
-        </view>
-      </view>
-
-      <view class="menu-item" @click="navigateTo('/pages/profile/my-favorite')">
-        <view class="item-icon">
-          <SvgIcon name="bookmark" path="profile" :size="32" color="#EB2F96" />
-        </view>
-        <view class="item-text">我的收藏</view>
-        <view class="item-arrow">
-          <SvgIcon name="arrow-right" path="profile" :size="28" color="#999" />
-        </view>
-      </view>
-    </view>
-
-    <!-- 账户管理 -->
-    <view class="menu-section">
-      <view class="section-title">账户管理</view>
-
-      <view class="menu-item" @click="navigateTo('/pages/profile/edit')">
+      <view class="menu-item" @click="navigateTo('/pages/consultant/index')">
         <view class="item-icon">
           <SvgIcon name="account" path="profile" :size="32" color="#722ED1" />
         </view>
-        <view class="item-text">个人资料</view>
+        <view class="item-text">咨询人管理</view>
         <view class="item-arrow">
           <SvgIcon name="arrow-right" path="profile" :size="28" color="#999" />
         </view>
       </view>
 
-      <view class="menu-item" @click="navigateTo('/pages/profile/security')">
-        <view class="item-icon">
-          <SvgIcon name="shield" path="profile" :size="32" color="#F5222D" />
-        </view>
-        <view class="item-text">安全设置</view>
-        <view class="item-arrow">
-          <SvgIcon name="arrow-right" path="profile" :size="28" color="#999" />
-        </view>
-      </view>
-
-      <!-- #ifdef MP-WEIXIN -->
       <view class="menu-item" @click="navigateTo('/pages/profile/setting')">
         <view class="item-icon">
           <SvgIcon name="setting" path="profile" :size="32" color="#722ED1" />
@@ -111,59 +64,16 @@
           <SvgIcon name="arrow-right" path="profile" :size="28" color="#999" />
         </view>
       </view>
-      <!-- #endif -->
     </view>
-
-    <!-- 其他 -->
-    <view class="menu-section">
-      <view class="section-title">其他</view>
-
-      <view class="menu-item" @click="navigateTo('/pages/profile/help-center')">
-        <view class="item-icon">
-          <SvgIcon name="help-circle" path="profile" :size="32" color="#1890FF" />
-        </view>
-        <view class="item-text">帮助中心</view>
-        <view class="item-arrow">
-          <SvgIcon name="arrow-right" path="profile" :size="28" color="#999" />
-        </view>
-      </view>
-
-      <view class="menu-item" @click="navigateTo('/pages/profile/contact-us')">
-        <view class="item-icon">
-          <SvgIcon name="info-circle" path="profile" :size="32" color="#13C2C2" />
-        </view>
-        <view class="item-text">关于我们</view>
-        <view class="item-arrow">
-          <SvgIcon name="arrow-right" path="profile" :size="28" color="#999" />
-        </view>
-      </view>
-
-
-    </view>
-
-    <!-- 退出登录按钮 -->
-    <view class="logout-section">
-      <view class="logout-btn" @click="handleLogout" v-if="isLoggedIn">
-        退出登录
-      </view>
-      <view class="login-btn" @click="goToLogin" v-else>
-        立即登录
-      </view>
-    </view>
-
-    <!-- 自定义TabBar -->
-    <!-- <TabBar2 /> -->
   </view>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { onLoad, onShow } from '@dcloudio/uni-app'
 import { useUserStore } from '@/store/user'
-import { checkLogin, redirectToLogin } from '@/utils/auth'
+import { redirectToLogin } from '@/utils/auth'
 import SvgIcon from '@/components/SvgIcon.vue'
-import Navbar from '@/components/Navbar.vue'
-// import TabBar2 from '@/components/TabBar2.vue'
 
 const userStore = useUserStore()
 
@@ -173,23 +83,37 @@ const userInfo = computed(() => userStore.userInfo || {})
 // 是否已登录
 const isLoggedIn = computed(() => userStore.isLoggedIn)
 
-// 根据平台决定是否显示右侧按钮
-const showRightButton = computed(() => {
-  // #ifdef APP-PLUS
-  return true
-  // #endif
-  
-  // #ifdef MP-WEIXIN
-  return false
-  // #endif
-  
-  // #ifdef H5
-  return true
-  // #endif
-  
-  // 默认返回true（其他平台）
-  return true
-})
+// 我的服务菜单数据
+const myServicesMenuItems = ref([
+  { 
+    name: '我的预约', 
+    color: '#1890ff', 
+    bgColor: '#e6f7ff',
+    url: '/pages/profile/my-appointment',
+    iconName: 'calendar'
+  },
+  { 
+    name: '我的课程', 
+    color: '#52c41a', 
+    bgColor: '#f6ffed',
+    url: '/pages/profile/my-course',
+    iconName: 'book'
+  },
+  { 
+    name: '我的测评', 
+    color: '#fa8c16', 
+    bgColor: '#fff7e6',
+    url: '/pages/profile/my-assessment',
+    iconName: 'checkmark-circle'
+  },
+  { 
+    name: '我的收藏', 
+    color: '#eb2f96', 
+    bgColor: '#fff0f6',
+    url: '/pages/profile/my-favorite',
+    iconName: 'bookmark'
+  }
+])
 
 // 检查登录状态并处理重定向
 const checkLoginStatus = () => {
@@ -211,11 +135,7 @@ const checkLoginStatus = () => {
 // 页面跳转
 const navigateTo = (url) => {
   // 检查是否需要登录
-  if (!isLoggedIn.value &&
-    url !== '/pages/profile/agreement' &&
-    url !== '/pages/profile/privacy' &&
-    url !== '/pages/profile/contact-us' &&
-    url !== '/pages/profile/help/index') {
+  if (!isLoggedIn.value) {
     uni.showToast({
       title: '请先登录',
       icon: 'none'
@@ -232,6 +152,13 @@ const navigateTo = (url) => {
   uni.navigateTo({ url })
 }
 
+// 处理导航菜单点击
+const handleMenuClick = (item) => {
+  if (item.url) {
+    navigateTo(item.url)
+  }
+}
+
 // 跳转到编辑个人资料页
 const goToEditProfile = () => {
   if (!isLoggedIn.value) {
@@ -243,37 +170,6 @@ const goToEditProfile = () => {
 
   uni.navigateTo({
     url: '/pages/profile/edit'
-  })
-}
-
-// 跳转到设置页
-const goToSettings = () => {
-  uni.navigateTo({
-    url: '/pages/profile/setting'
-  })
-}
-
-// 跳转到登录页
-const goToLogin = () => {
-  uni.navigateTo({
-    url: '/pages/login'
-  })
-}
-
-// 退出登录
-const handleLogout = () => {
-  uni.showModal({
-    title: '提示',
-    content: '确定要退出登录吗？',
-    success: async (res) => {
-      if (res.confirm) {
-        await userStore.logout()
-
-        uni.reLaunch({
-          url: '/pages/login'
-        })
-      }
-    }
   })
 }
 
@@ -303,8 +199,6 @@ onShow(() => {
   background: #f5f7fa;
   padding-bottom: 30rpx;
 }
-
-// 顶部导航栏样式已由Navbar组件提供
 
 // 用户资料
 .user-profile {
@@ -354,14 +248,6 @@ onShow(() => {
   overflow: hidden;
 }
 
-.section-title {
-  font-size: 28rpx;
-  color: #999;
-  padding: 20rpx 30rpx;
-  border-bottom: 1rpx solid #f0f0f0;
-  background: #fafafa;
-}
-
 // 菜单项
 .menu-item {
   display: flex;
@@ -370,14 +256,14 @@ onShow(() => {
   border-bottom: 1rpx solid #f0f0f0;
   position: relative;
   transition: background-color 0.2s;
-}
 
-.menu-item:last-child {
-  border-bottom: none;
-}
+  &:last-child {
+    border-bottom: none;
+  }
 
-.menu-item:active {
-  background: #f8f9fa;
+  &:active {
+    background: #f8f9fa;
+  }
 }
 
 .item-icon {
@@ -403,36 +289,48 @@ onShow(() => {
   justify-content: center;
 }
 
-// 退出登录区域
-.logout-section {
-  padding: 40rpx 30rpx;
-}
-
-.logout-btn,
-.login-btn {
-  width: 100%;
-  height: 88rpx;
-  line-height: 88rpx;
-  background: #fff;
-  color: #ff4d4f;
-  font-size: 28rpx;
-  text-align: center;
+// 导航网格样式 (基于 NavigationMenu.vue)
+.nav-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin: 0 20rpx 20rpx;
+  padding: 20rpx;
+  background-color: #fff;
   border-radius: 16rpx;
-  border: 1rpx solid #f0f0f0;
-  transition: all 0.2s;
-}
+  overflow: hidden;
 
-.logout-btn:active {
-  background: #fff2f0;
-}
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20rpx;
+    transition: transform 0.2s ease;
 
-.login-btn {
-  background: #4A90E2;
-  color: #fff;
-  border-color: #4A90E2;
-}
+    &:active {
+      transform: scale(0.95);
 
-.login-btn:active {
-  background: #357abd;
+      .nav-icon {
+        transform: scale(0.9);
+      }
+    }
+
+    .nav-icon {
+      width: 80rpx;
+      height: 80rpx;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12rpx;
+      transition: all 0.3s ease;
+    }
+
+    .nav-text {
+      font-size: 24rpx;
+      color: #333;
+      text-align: center;
+      line-height: 1.2;
+    }
+  }
 }
 </style>

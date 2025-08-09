@@ -50,9 +50,26 @@
       }
     },
     {
+      "path": "pages/consultant/index",
+      "style": {
+        "navigationBarTitleText": "咨询人管理",
+        "navigationBarBackgroundColor": "#ffffff",
+        "navigationBarTextStyle": "black",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
       "path": "pages/consultant/create",
       "style": {
         "navigationBarTitleText": "咨询人信息"
+      }
+    },
+    {
+      "path": "pages/consultant/agreement",
+      "style": {
+        "navigationBarTitleText": "咨询预约协议书",
+        "navigationBarBackgroundColor": "#ffffff",
+        "navigationBarTextStyle": "black"
       }
     },
     {
@@ -92,7 +109,7 @@
       }
     },
     {
-      "path": "pages/profile/bio-edit",
+      "path": "pages/profile/edit-bio",
       "style": {
         "navigationBarTitleText": "编辑个签"
       }
@@ -182,6 +199,30 @@
       "path": "pages/chat/index",
       "style": {
         "navigationBarTitleText": "聊天",
+        "navigationBarBackgroundColor": "#ffffff",
+        "navigationBarTextStyle": "black"
+      }
+    },
+    {
+      "path": "pages/profile/edit-password",
+      "style": {
+        "navigationBarTitleText": "修改密码",
+        "navigationBarBackgroundColor": "#ffffff",
+        "navigationBarTextStyle": "black"
+      }
+    },
+    {
+      "path": "pages/profile/edit-phone",
+      "style": {
+        "navigationBarTitleText": "更换手机号",
+        "navigationBarBackgroundColor": "#ffffff",
+        "navigationBarTextStyle": "black"
+      }
+    },
+    {
+      "path": "pages/profile/edit-email",
+      "style": {
+        "navigationBarTitleText": "更换邮箱",
         "navigationBarBackgroundColor": "#ffffff",
         "navigationBarTextStyle": "black"
       }
