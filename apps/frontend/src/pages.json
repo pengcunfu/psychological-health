@@ -2,6 +2,7 @@
   "easycom": {
     "autoscan": true,
     "custom": {
+      "^u-(.*)": "uview-plus/components/u-$1/u-$1.vue",
       "^up-(.*)": "uview-plus/components/u-$1/u-$1.vue"
     }
   },
@@ -91,6 +92,12 @@
       }
     },
     {
+      "path": "pages/profile/bio-edit",
+      "style": {
+        "navigationBarTitleText": "编辑个签"
+      }
+    },
+    {
       "path": "pages/profile/security",
       "style": {
         "navigationBarTitleText": "账号安全"
@@ -166,9 +173,17 @@
       }
     },
     {
-      "path": "pages/message",
+      "path": "pages/profile/message",
       "style": {
         "navigationBarTitleText": "消息"
+      }
+    },
+    {
+      "path": "pages/chat/index",
+      "style": {
+        "navigationBarTitleText": "聊天",
+        "navigationBarBackgroundColor": "#ffffff",
+        "navigationBarTextStyle": "black"
       }
     },
     {

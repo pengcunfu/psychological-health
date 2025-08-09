@@ -69,7 +69,8 @@ export const isValidInternalPath = (url) => {
     '/pages/profile/my-appointment',
     '/pages/search',
     '/pages/webview',
-    '/pages/message'
+    '/pages/profile/message',
+    '/pages/chat/index'
   ]
   
   return validPaths.includes(pathOnly)

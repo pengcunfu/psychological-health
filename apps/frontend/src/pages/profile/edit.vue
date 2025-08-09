@@ -1,77 +1,79 @@
 <template>
   <view class="container">
-    <!-- <Navbar title="编辑资料" :showLeft="true" :showRight="false" @leftClick="goBack" /> -->
-
-    <view class="form-section">
-      <view class="avatar-upload">
+    <!-- 头像区域 -->
+    <view class="avatar-section">
+      <view class="avatar-upload" @click="chooseAvatar">
         <image class="avatar" :src="form.avatar || '/static/images/default-avatar.png'" mode="aspectFill"></image>
-        <view class="upload-btn" @click="chooseAvatar">
-          <up-icon name="camera-fill" color="#fff" size="40"></up-icon>
+        <view class="upload-btn">
+          <up-icon name="camera-fill" color="#fff" size="36"></up-icon>
         </view>
       </view>
-
-      <view class="form-group">
-        <view class="form-item">
-          <text class="form-label">用户名</text>
-          <view class="form-input">
-            <up--input v-model="form.username" placeholder="请输入用户名" border="none" disabled></up--input>
-          </view>
-        </view>
-
-        <view class="form-item">
-          <text class="form-label">昵称</text>
-          <view class="form-input">
-            <up--input v-model="form.nickname" placeholder="请输入昵称" border="none"></up--input>
-          </view>
-        </view>
-
-        <view class="form-item">
-          <text class="form-label">性别</text>
-          <picker :range="genderOptions" range-key="label" :value="getGenderIndex()" @change="onGenderChange">
-            <view class="form-picker">
-              <text class="picker-text">{{ getGenderLabel() }}</text>
-              <up-icon name="arrow-down" size="24" color="#999"></up-icon>
-            </view>
-          </picker>
-        </view>
-
-        <view class="form-item">
-          <text class="form-label">手机号</text>
-          <view class="form-input">
-            <up--input v-model="form.phone" placeholder="请输入手机号" border="none" type="number"></up--input>
-          </view>
-        </view>
-
-        <view class="form-item">
-          <text class="form-label">邮箱</text>
-          <view class="form-input">
-            <up--input v-model="form.email" placeholder="请输入邮箱" border="none" type="email"></up--input>
-          </view>
-        </view>
-
-        <view class="form-item">
-          <text class="form-label">生日</text>
-          <picker mode="date" :value="form.birthday" @change="onDateChange">
-            <view class="form-picker">
-              <text class="picker-text">{{ form.birthday || '请选择生日' }}</text>
-              <up-icon name="calendar" size="24" color="#999"></up-icon>
-            </view>
-          </picker>
-        </view>
-
-        <view class="form-item">
-          <text class="form-label">个人简介</text>
-          <view class="form-input bio-input">
-            <textarea v-model="form.bio" placeholder="请输入个人简介" class="bio-textarea" maxlength="200"></textarea>
-            <view class="char-count">{{ (form.bio || '').length }}/200</view>
-          </view>
-        </view>
-      </view>
-
-      <button class="submit-btn" @click="handleSubmit">保存修改</button>
     </view>
 
+    <!-- 基本信息 -->
+    <view class="form-section">
+      <view class="form-item" @click="editNickname">
+        <text class="form-label">昵称</text>
+        <view class="form-value">
+          <text class="value-text">{{ form.nickname || '请输入昵称' }}</text>
+          <up-icon name="arrow-right" size="20" color="#C7C7CC"></up-icon>
+        </view>
+      </view>
 
+      <view class="form-item" @click="triggerGenderPicker">
+        <text class="form-label">性别</text>
+        <view class="form-value">
+          <picker ref="genderPicker" :range="genderOptions" range-key="label" :value="getGenderIndex()" @change="onGenderChange" style="position: absolute; opacity: 0; pointer-events: none;">
+            <text></text>
+          </picker>
+          <text class="value-text">{{ getGenderLabel() }}</text>
+          <up-icon name="arrow-right" size="20" color="#C7C7CC"></up-icon>
+        </view>
+      </view>
+
+      <view class="form-item" @click="editPhone">
+        <text class="form-label">手机号</text>
+        <view class="form-value">
+          <text class="value-text">{{ form.phone || '请输入手机号' }}</text>
+          <up-icon name="arrow-right" size="20" color="#C7C7CC"></up-icon>
+        </view>
+      </view>
+
+      <view class="form-item" @click="editEmail">
+        <text class="form-label">邮箱</text>
+        <view class="form-value">
+          <text class="value-text">{{ form.email || '请输入邮箱' }}</text>
+          <up-icon name="arrow-right" size="20" color="#C7C7CC"></up-icon>
+        </view>
+      </view>
+
+      <view class="form-item" @click="triggerDatePicker">
+        <text class="form-label">生日</text>
+        <view class="form-value">
+          <picker ref="datePicker" mode="date" :value="form.birthday" @change="onDateChange" style="position: absolute; opacity: 0; pointer-events: none;">
+            <text></text>
+          </picker>
+          <text class="value-text">{{ form.birthday || '请选择生日' }}</text>
+          <up-icon name="arrow-right" size="20" color="#C7C7CC"></up-icon>
+        </view>
+      </view>
+    </view>
+
+    <!-- 个人简介 -->
+    <view class="form-section bio-section">
+      <view class="form-item" @click="navigateToBioEdit">
+        <text class="form-label">个人简介</text>
+        <view class="form-value">
+          <text class="value-text">{{ form.bio || '编辑个签' }}</text>
+          <up-icon name="arrow-right" size="20" color="#C7C7CC"></up-icon>
+        </view>
+      </view>
+    </view>
+
+    <!-- 保存按钮 -->
+    <view class="submit-section">
+      <button class="submit-btn" @click="handleSubmit">保存修改</button>
+    </view>
   </view>
 </template>
 
@@ -79,14 +81,11 @@
 import { ref, reactive } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { useUserStore } from '@/store/user'
-import Navbar from '@/components/Navbar.vue'
+
 
 const userStore = useUserStore()
 
-// 返回上一页
-const goBack = () => {
-  uni.navigateBack()
-}
+
 
 const form = reactive({
   avatar: '',
@@ -153,6 +152,28 @@ const getGenderIndex = () => {
 const getGenderLabel = () => {
   const option = genderOptions.find(item => item.value === form.gender)
   return option ? option.label : '请选择性别'
+}
+
+// 引用picker组件
+const genderPicker = ref(null)
+const datePicker = ref(null)
+
+// 触发性别选择器
+const triggerGenderPicker = () => {
+  // 手动触发隐藏的picker
+  const pickerElement = genderPicker.value
+  if (pickerElement && pickerElement.$el) {
+    pickerElement.$el.click()
+  }
+}
+
+// 触发日期选择器
+const triggerDatePicker = () => {
+  // 手动触发隐藏的date picker
+  const pickerElement = datePicker.value
+  if (pickerElement && pickerElement.$el) {
+    pickerElement.$el.click()
+  }
 }
 
 // 选择头像
@@ -290,6 +311,72 @@ const handleSubmit = async () => {
   }
 }
 
+// 导航到个人简介编辑页
+const navigateToBioEdit = () => {
+  uni.navigateTo({
+    url: `/pages/profile/bio-edit?bio=${encodeURIComponent(form.bio || '')}`
+  })
+}
+
+// 编辑昵称
+const editNickname = () => {
+  uni.showModal({
+    title: '编辑昵称',
+    editable: true,
+    content: form.nickname,
+    placeholderText: '请输入昵称',
+    success: (res) => {
+      if (res.confirm && res.content) {
+        form.nickname = res.content
+      }
+    }
+  })
+}
+
+// 编辑手机号
+const editPhone = () => {
+  uni.showModal({
+    title: '编辑手机号',
+    editable: true,
+    content: form.phone,
+    placeholderText: '请输入手机号',
+    success: (res) => {
+      if (res.confirm && res.content) {
+        if (!/^1\d{10}$/.test(res.content)) {
+          uni.showToast({
+            title: '手机号格式不正确',
+            icon: 'none'
+          })
+          return
+        }
+        form.phone = res.content
+      }
+    }
+  })
+}
+
+// 编辑邮箱
+const editEmail = () => {
+  uni.showModal({
+    title: '编辑邮箱',
+    editable: true,
+    content: form.email,
+    placeholderText: '请输入邮箱',
+    success: (res) => {
+      if (res.confirm && res.content) {
+        if (!/^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$/.test(res.content)) {
+          uni.showToast({
+            title: '邮箱格式不正确',
+            icon: 'none'
+          })
+          return
+        }
+        form.email = res.content
+      }
+    }
+  })
+}
+
 // 页面加载
 onLoad(() => {
   getUserInfo()
@@ -370,35 +457,28 @@ $font-weight-bold: 700;
   background-color: $bg-secondary;
   padding-bottom: 120rpx;
 
-  .form-section {
-    background-color: $bg-primary;
-    margin: $margin-xl;
-    border-radius: $border-radius-lg;
-    box-shadow: $shadow-sm;
-    overflow: hidden;
+  // 头像区域
+  .avatar-section {
+    display: flex;
+    justify-content: center;
+    padding: 60rpx 0 40rpx;
+    background-color: $bg-secondary;
 
     .avatar-upload {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: $padding-2xl $padding-xl;
-      background: $primary-light;
       position: relative;
+      cursor: pointer;
 
       .avatar {
         width: $avatar-size;
         height: $avatar-size;
         border-radius: $border-radius-circle;
         background-color: $gray-200;
-        box-shadow: $shadow-md;
-        border: 4rpx solid $white;
       }
 
       .upload-btn {
         position: absolute;
-        bottom: $padding-xl;
-        right: 50%;
-        transform: translateX(calc(50% + 30rpx));
+        bottom: 8rpx;
+        right: 8rpx;
         width: $upload-btn-size;
         height: $upload-btn-size;
         background: $primary-gradient;
@@ -407,117 +487,80 @@ $font-weight-bold: 700;
         align-items: center;
         justify-content: center;
         box-shadow: $shadow-md;
-        border: 3rpx solid $white;
 
         &:active {
-          transform: translateX(calc(50% + 30rpx)) scale(0.95);
+          transform: scale(0.95);
         }
       }
     }
+  }
 
-    .form-group {
-      padding: 0 $padding-xl $padding-lg;
+  // 表单区域
+  .form-section {
+    background-color: $bg-primary;
+    margin: 20rpx 0;
 
-      .form-item {
+    &.bio-section {
+      margin-top: 20rpx;
+    }
+
+    .form-item {
+      display: flex;
+      align-items: center;
+      min-height: 96rpx;
+      padding: 0 30rpx;
+      background-color: $bg-primary;
+      border-bottom: 1rpx solid $gray-100;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .form-label {
+        font-size: 32rpx;
+        font-weight: $font-weight-normal;
+        color: $text-primary;
+        flex-shrink: 0;
+        margin-right: 20rpx;
+      }
+
+      .form-value {
+        flex: 1;
         display: flex;
         align-items: center;
-        min-height: $form-item-height;
-        padding: $padding-lg 0;
-        background-color: $bg-primary;
-        transition: all 0.2s ease;
+        justify-content: flex-end;
+        min-height: 60rpx;
 
-        &:not(:last-child) {
-          border-bottom: 1rpx solid $gray-100;
-        }
-
-        &:hover {
-          background-color: $bg-tertiary;
-        }
-
-        .form-label {
-          font-size: $font-size-md;
-          font-weight: $font-weight-medium;
-          color: $text-secondary;
-          width: 140rpx;
-          flex-shrink: 0;
-          line-height: 1.4;
-        }
-
-        .form-input {
-          flex: 1;
-          margin-left: $margin-lg;
-
-          &.bio-input {
-            display: flex;
-            flex-direction: column;
-
-            .bio-textarea {
-              width: 100%;
-              min-height: 80rpx;
-              padding: $padding-sm;
-              border: none;
-              border-radius: $border-radius-sm;
-              font-size: $font-size-md;
-              color: $text-primary;
-              background-color: $bg-tertiary;
-              resize: none;
-              line-height: 1.5;
-              font-family: inherit;
-
-              &:focus {
-                background-color: $primary-light;
-                outline: none;
-              }
-            }
-
-            .char-count {
-              text-align: right;
-              font-size: $font-size-xs;
-              color: $text-tertiary;
-              margin-top: $margin-xs;
-              font-weight: $font-weight-normal;
-            }
-          }
-        }
-
-        .form-picker {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          flex: 1;
-          margin-left: $margin-lg;
-          padding: $padding-sm $padding-md;
-          background-color: $bg-tertiary;
-          border-radius: $border-radius-sm;
-          transition: all 0.2s ease;
-
-          &:active {
-            background-color: $primary-light;
-            transform: scale(0.98);
-          }
-
-          .picker-text {
-            font-size: $font-size-md;
-            color: $text-primary;
-            font-weight: $font-weight-normal;
-          }
+        .value-text {
+          font-size: 32rpx;
+          color: $text-primary;
+          margin-right: 16rpx;
+          text-align: right;
         }
       }
     }
+  }
+
+  // 保存按钮区域
+  .submit-section {
+    padding: 20rpx;
+    padding-top: 0rpx;
 
     .submit-btn {
-      width: calc(100% - #{$padding-xl * 2});
-      height: $submit-btn-height;
+      width: 100%;
+      height: 88rpx;
       background: $primary-gradient;
       color: $white;
       border: none;
-      border-radius: $border-radius-lg;
-      font-size: $font-size-lg;
+      border-radius: 12rpx;
+      font-size: 32rpx;
       font-weight: $font-weight-semibold;
-      margin: $margin-2xl $padding-xl;
       box-shadow: $shadow-md;
       transition: all 0.2s ease;
       letter-spacing: 1rpx;
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
       &:active {
         transform: scale(0.98);

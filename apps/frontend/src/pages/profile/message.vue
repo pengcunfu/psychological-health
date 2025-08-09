@@ -1,51 +1,20 @@
 <template>
   <view class="container">
-    <!-- 顶部导航 -->
-    <Navbar 
-      title="消息"
-      :showLeft="true"
-      :showRight="true"
-      @leftClick="goBack"
-      @rightClick="navigateTo('/pages/search')"
-    >
-      <template #left>
-        <SvgIcon name="arrow-left" :size="20" color="#333" />
-      </template>
-      
-      <template #right>
-        <SvgIcon name="search" :size="40" color="#333" />
-      </template>
-    </Navbar>
 
     <!-- 选项卡 -->
     <view class="tab-bar">
-      <view
-          class="tab"
-          :class="{ active: activeTab === index }"
-          v-for="(tab, index) in tabs"
-          :key="index"
-          @click="switchTab(index)"
-      >
+      <view class="tab" :class="{ active: activeTab === index }" v-for="(tab, index) in tabs" :key="index"
+        @click="switchTab(index)">
         {{ tab }}
       </view>
     </view>
 
     <!-- 消息列表 -->
     <view class="message-list">
-      <view
-          v-for="(message, index) in filteredMessages"
-          :key="index"
-          class="message-item"
-          :class="{ 'system-message': message.type === 'system' }"
-          @click="handleMessageClick(message)"
-      >
+      <view v-for="(message, index) in filteredMessages" :key="index" class="message-item"
+        :class="{ 'system-message': message.type === 'system' }" @click="handleMessageClick(message)">
         <!-- 头像或系统图标 -->
-        <image
-            v-if="message.avatar"
-            class="avatar"
-            :src="message.avatar"
-            mode="aspectFill"
-        ></image>
+        <image v-if="message.avatar" class="avatar" :src="message.avatar" mode="aspectFill"></image>
         <view v-else class="system-icon">
           <SvgIcon :name="getSystemIcon(message.messageType)" :size="40" color="#4A90E2" />
         </view>
@@ -78,11 +47,10 @@
 </template>
 
 <script setup>
-import {ref, computed, onMounted} from 'vue'
-import {onLoad} from '@dcloudio/uni-app'
-import {navigateTo} from '@/utils/link'
+import { ref, computed, onMounted } from 'vue'
+import { onLoad } from '@dcloudio/uni-app'
+import { navigateTo } from '@/utils/link'
 import SvgIcon from '@/components/SvgIcon.vue'
-import Navbar from '@/components/Navbar.vue'
 
 // 选项卡数据
 const tabs = ref(['全部', '系统通知', '咨询消息', '课程提醒'])
@@ -226,25 +194,18 @@ const handleMessageClick = (message) => {
   }
 }
 
-// 返回按钮处理
-const goBack = () => {
-  uni.navigateBack({
-    delta: 1
-  })
-}
+
 
 onLoad(() => {
   // 页面加载时的逻辑
 })
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .container {
   min-height: 100vh;
   background-color: #f5f7fa;
 }
-
-// 顶部导航样式已由Navbar组件提供
 
 // 选项卡样式
 .tab-bar {
@@ -299,7 +260,8 @@ onLoad(() => {
   background-color: #f9fbff;
 }
 
-.avatar, .system-icon {
+.avatar,
+.system-icon {
   width: 80rpx;
   height: 80rpx;
   border-radius: 50%;
@@ -389,4 +351,4 @@ onLoad(() => {
   margin-top: 30rpx;
   display: block;
 }
-</style> 
+</style>

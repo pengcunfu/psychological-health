@@ -11,7 +11,7 @@
 
     <!-- 用户资料 -->
     <view class="user-profile" @click="goToEditProfile">
-      <image class="user-avatar" :src="userInfo.avatar || '/static/images/default-avatar.png'" mode="aspectFill">
+      <image class="user-avatar" :src="userInfo.avatar || '/static/wx/images/default-avatar.png'" mode="aspectFill">
       </image>
       <view class="user-info">
         <view class="user-name">{{ userInfo.phone || userInfo.name || '138****1234' }}</view>
@@ -25,6 +25,16 @@
     <!-- 心理服务 -->
     <view class="menu-section">
       <view class="section-title">心理服务</view>
+
+      <view class="menu-item" @click="navigateTo('/pages/profile/message')">
+        <view class="item-icon">
+          <SvgIcon name="notification" path="profile" :size="32" color="#FF6B35" />
+        </view>
+        <view class="item-text">消息中心</view>
+        <view class="item-arrow">
+          <SvgIcon name="arrow-right" path="profile" :size="28" color="#999" />
+        </view>
+      </view>
 
       <view class="menu-item" @click="navigateTo('/pages/profile/my-appointment')">
         <view class="item-icon">

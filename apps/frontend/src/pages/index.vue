@@ -7,10 +7,6 @@
           <SvgIcon name="search" :size="22" color="#999" />
           <text class="search-text">搜索咨询师、课程</text>
         </view>
-        <view class="message-icon" @click="navigateTo('/pages/message')">
-          <SvgIcon name="notification" :size="44" color="#333" />
-          <view class="message-dot"></view>
-        </view>
       </view>
     </view>
 
@@ -350,7 +346,6 @@ $red-danger: #ff4d4f;
   height: 60rpx;
   background-color: $gray-light;
   border-radius: $border-radius-large;
-  margin-right: 24rpx;
   display: flex;
   align-items: center;
   padding: 0 24rpx;
@@ -368,19 +363,7 @@ $red-danger: #ff4d4f;
   }
 }
 
-.message-icon {
-  position: relative;
 
-  .message-dot {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 16rpx;
-    height: 16rpx;
-    background-color: $red-danger;
-    border-radius: 50%;
-  }
-}
 
 // 轮播图样式 - 已移至 Banner 组件
 

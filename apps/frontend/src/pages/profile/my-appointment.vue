@@ -325,7 +325,7 @@ if (!checkLogin()) {
     // 开始咨询
     const handleStartConsult = (appointment) => {
       uni.navigateTo({
-        url: `/pages/message/chat?type=counselor&id=${appointment.counselor_id}`
+        url: `/pages/profile/message/chat?type=counselor&id=${appointment.counselor_id}`
       })
     }
     

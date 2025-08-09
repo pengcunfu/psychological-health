@@ -27,6 +27,7 @@ from utils.auth import hash_password, generate_token, verify_password
 from form.auth import LoginForm, PhoneLoginForm, RegisterForm, UpdateProfileForm, ChangePasswordForm
 from utils.image import process_image_url
 from utils.cache.verify_code_cache import verify_code_cache
+from utils.auth_helper import get_user_id
 
 login_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -238,6 +239,8 @@ def register():
 @login_bp.route('/profile', methods=['GET'])
 def get_profile():
     """获取当前用户信息"""
+    _ = get_user_id()
+
     current_user = AuthManager.get_current_user()
     if not current_user:
         return JsonResult.error("获取用户信息失败")

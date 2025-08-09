@@ -17,7 +17,7 @@ const requestInterceptor = (options) => {
       'Authorization': `Bearer ${token}`
     }
   }
-  
+
   // 添加内容类型
   if (options.method === 'POST' || options.method === 'PUT') {
     options.header = {
@@ -25,12 +25,12 @@ const requestInterceptor = (options) => {
       'Content-Type': 'application/json'
     }
   }
-  
+
   // 拼接完整URL
   if (!options.url.startsWith('http')) {
     options.url = baseURL + options.url
   }
-  
+
   return options
 }
 
@@ -41,33 +41,30 @@ const requestInterceptor = (options) => {
  */
 const responseInterceptor = (response, options) => {
   const { statusCode, data } = response
-  
+
   // 请求成功
-  if (statusCode >= 200 && statusCode < 300) {
-    return data
-  }
-  
-  // 处理401未授权错误
-  if (statusCode === 401) {
-    // 可以在这里处理登录过期的逻辑，例如清除token并跳转到登录页
-    uni.showToast({
-      title: '登录已过期，请重新登录',
-      icon: 'none'
-    })
-    
-    // 延迟跳转到登录页
-    setTimeout(() => {
+  if (statusCode == 200) {
+    // 处理401未授权错误
+    if (data.code === 401) {
+      // 可以在这里处理登录过期的逻辑，例如清除token并跳转到登录页
+      uni.showToast({
+        title: '登录已过期，请重新登录',
+        icon: 'none'
+      })
+
       uni.navigateTo({
         url: '/pages/login'
       })
-    }, 1500)
+    }
+
+    return data
   }
-  
+
   // 其他错误
   return Promise.reject({
-    statusCode,
+    code: data.code,
     message: data.message || '请求失败',
-    data
+    data: data.data
   })
 }
 
@@ -79,7 +76,7 @@ const responseInterceptor = (response, options) => {
 export const request = (options) => {
   // 应用请求拦截器
   options = requestInterceptor(options)
-  
+
   return new Promise((resolve, reject) => {
     uni.request({
       ...options,
