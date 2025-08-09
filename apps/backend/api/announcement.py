@@ -1,13 +1,18 @@
 """
 公告管理API
-提供系统公告的增删改查功能
+提供系统公告的增删改查功能，包含权限控制
 
 接口列表：
-- GET /announcement - 获取公告列表
-- GET /announcement/<announcement_id> - 获取单个公告详情
-- POST /announcement - 创建公告
-- PUT /announcement/<announcement_id> - 更新公告
-- DELETE /announcement/<announcement_id> - 删除公告
+- GET /announcement - 获取公告列表（管理员可查看全部，普通用户只能查看已发布的）
+- GET /announcement/active - 获取有效公告列表（普通用户接口，显示当前时间有效的已发布公告）
+- GET /announcement/<announcement_id> - 获取单个公告详情（管理员可查看全部，普通用户只能查看已发布的）
+- POST /announcement - 创建公告（仅管理员）
+- PUT /announcement/<announcement_id> - 更新公告（仅管理员）
+- DELETE /announcement/<announcement_id> - 删除公告（仅管理员）
+
+权限说明：
+- 管理员（admin/manager角色）：可以执行所有操作，查看所有状态的公告
+- 普通用户：只能查看已发布状态的公告，无法进行增删改操作
 """
 from flask import Blueprint
 import uuid
@@ -18,6 +23,7 @@ from utils.json_result import JsonResult
 from form.announcement import AnnouncementCreateForm, AnnouncementUpdateForm, AnnouncementQueryForm
 from utils.validate import validate_args, validate_data, check_id
 from utils.model_helper import update_model_from_form
+from utils.auth_helper import is_manager_user, get_user_id
 
 announcements_bp = Blueprint('announcement', __name__, url_prefix='/announcement')
 
@@ -30,6 +36,10 @@ def get_announcements():
 
     # 构建查询
     query = Announcement.query
+    
+    # 普通用户只能查看已发布的公告
+    if not is_manager_user():
+        query = query.filter(Announcement.status == 'published')
 
     if form.title.data:
         query = query.filter(Announcement.title.contains(form.title.data))
@@ -60,7 +70,15 @@ def get_announcements():
 def get_announcement(announcement_id):
     """获取单个公告详情"""
     check_id(announcement_id, "公告ID不能为空")
-    announcement = Announcement.query.filter_by(id=announcement_id).first()
+    
+    # 构建查询
+    query = Announcement.query.filter_by(id=announcement_id)
+    
+    # 普通用户只能查看已发布的公告
+    if not is_manager_user():
+        query = query.filter(Announcement.status == 'published')
+    
+    announcement = query.first()
     if not announcement:
         return JsonResult.error('公告不存在', 404)
 
@@ -69,8 +87,13 @@ def get_announcement(announcement_id):
 
 @announcements_bp.route('', methods=['POST'])
 def create_announcement():
-    """创建公告"""
-    form: AnnouncementCreateForm = validate_data(AnnouncementCreateForm)
+    """创建公告（仅管理员）"""
+    # 检查管理员权限
+    if not is_manager_user():
+        return JsonResult.error('权限不足，只有管理员可以创建公告', 403)
+    
+    form = validate_data(AnnouncementCreateForm)
+    current_user_id = get_user_id()
 
     # 解析时间字段
     start_time = None
@@ -99,8 +122,8 @@ def create_announcement():
         content=form.content.data,
         start_time=start_time,
         end_time=end_time,
-        is_pinned=form.is_pinned.data or False
-        # user_id 暂时不传入
+        is_pinned=form.is_pinned.data or False,
+        user_id=current_user_id  # 添加创建者ID
     )
 
     db.session.add(announcement)
@@ -111,7 +134,11 @@ def create_announcement():
 
 @announcements_bp.route('/<announcement_id>', methods=['PUT'])
 def update_announcement(announcement_id):
-    """更新公告"""
+    """更新公告（仅管理员）"""
+    # 检查管理员权限
+    if not is_manager_user():
+        return JsonResult.error('权限不足，只有管理员可以更新公告', 403)
+    
     check_id(announcement_id, "公告ID不能为空")
     announcement = Announcement.query.filter_by(id=announcement_id).first()
     if not announcement:
@@ -154,7 +181,11 @@ def update_announcement(announcement_id):
 
 @announcements_bp.route('/<announcement_id>', methods=['DELETE'])
 def delete_announcement(announcement_id):
-    """删除公告"""
+    """删除公告（仅管理员）"""
+    # 检查管理员权限
+    if not is_manager_user():
+        return JsonResult.error('权限不足，只有管理员可以删除公告', 403)
+    
     check_id(announcement_id, "公告ID不能为空")
     announcement = Announcement.query.filter_by(id=announcement_id).first()
     if not announcement:
@@ -162,3 +193,52 @@ def delete_announcement(announcement_id):
     db.session.delete(announcement)
     db.session.commit()
     return JsonResult.success(None, '公告删除成功')
+
+
+@announcements_bp.route('/active', methods=['GET'])
+def get_active_announcements():
+    """获取有效公告列表（普通用户接口）"""
+    form = validate_args(AnnouncementQueryForm)
+    
+    # 构建查询 - 只显示已发布且在有效期内的公告
+    query = Announcement.query.filter(
+        Announcement.status == 'published'
+    )
+    
+    # 可选的时间过滤（显示当前时间有效的公告）
+    current_time = datetime.now()
+    query = query.filter(
+        (Announcement.start_time.is_(None)) | (Announcement.start_time <= current_time)
+    ).filter(
+        (Announcement.end_time.is_(None)) | (Announcement.end_time >= current_time)
+    )
+    
+    # 搜索条件
+    if form.title.data:
+        query = query.filter(Announcement.title.contains(form.title.data))
+    if form.type.data:
+        query = query.filter(Announcement.type == form.type.data)
+    if form.priority.data:
+        query = query.filter(Announcement.priority == form.priority.data)
+    
+    # 按优先级和创建时间排序（置顶的在前，然后按优先级和时间排序）
+    query = query.order_by(
+        Announcement.is_pinned.desc(),
+        Announcement.priority.desc(),
+        Announcement.create_time.desc()
+    )
+    
+    # 分页查询
+    pagination = query.paginate(
+        page=form.page.data, per_page=form.per_page.data, error_out=False
+    )
+    
+    announcements = [announcement.to_dict() for announcement in pagination.items]
+    
+    return JsonResult.success({
+        'list': announcements,
+        'total': pagination.total,
+        'page': form.page.data,
+        'per_page': form.per_page.data,
+        'pages': pagination.pages
+    })
