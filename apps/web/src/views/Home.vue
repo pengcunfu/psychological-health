@@ -65,6 +65,10 @@
                  @click="navigateTo('/admin/course-outlines')">
               <span class="menu-text">课程大纲</span>
             </div>
+            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/assessments' }"
+                 @click="navigateTo('/admin/assessments')">
+              <span class="menu-text">心理测评</span>
+            </div>
             <div class="menu-item sub-item" :class="{ active: activePath === '/admin/announcements' }"
                  @click="navigateTo('/admin/announcements')">
               <span class="menu-text">公告管理</span>
@@ -92,13 +96,17 @@
                  @click="navigateTo('/admin/orders')">
               <span class="menu-text">订单管理</span>
             </div>
+            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/course-subscriptions' }"
+                 @click="navigateTo('/admin/course-subscriptions')">
+              <span class="menu-text">课程订阅</span>
+            </div>
             <div class="menu-item sub-item" :class="{ active: activePath === '/admin/appointments' }"
                  @click="navigateTo('/admin/appointments')">
               <span class="menu-text">预约管理</span>
             </div>
-            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/assessments' }"
-                 @click="navigateTo('/admin/assessments')">
-              <span class="menu-text">心理测评</span>
+            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/assessment-records' }"
+                 @click="navigateTo('/admin/assessment-records')">
+              <span class="menu-text">测评记录</span>
             </div>
             <div class="menu-item sub-item" :class="{ active: activePath === '/admin/reviews' }"
                  @click="navigateTo('/admin/reviews')">
@@ -316,10 +324,10 @@ const initActiveCategory = () => {
   if (path.includes('/admin/users') || path.includes('/admin/counselors') || path.includes('/admin/consultants') || path.includes('/admin/roles')) {
     activeCategoryKey.value = 'user'
   } else if (path.includes('/admin/courses') || path.includes('/admin/course-outlines') ||
-      path.includes('/admin/announcements') || path.includes('/admin/banners')) {
+      path.includes('/admin/assessments') || path.includes('/admin/announcements') || path.includes('/admin/banners')) {
     activeCategoryKey.value = 'content'
-  } else if (path.includes('/admin/orders') || path.includes('/admin/appointments') ||
-      path.includes('/admin/reviews')) {
+  } else if (path.includes('/admin/orders') || path.includes('/admin/course-subscriptions') || path.includes('/admin/appointments') ||
+      path.includes('/admin/assessment-records') || path.includes('/admin/reviews')) {
     activeCategoryKey.value = 'business'
   } else if (path.includes('/admin/categories') || path.includes('/admin/disease-tags') ||
       path.includes('/admin/menus') || path.includes('/admin/groups') ||

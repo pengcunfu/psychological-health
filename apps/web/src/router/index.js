@@ -6,6 +6,7 @@ import UserManagement from '@/views/admin/UserManagement.vue'
 import CounselorManagement from '@/views/admin/CounselorManagement.vue'
 import ConsultantManagement from '@/views/admin/ConsultantManagement.vue'
 import OrderManagement from '@/views/admin/OrderManagement.vue'
+import CourseSubscriptionManagement from '@/views/admin/CourseSubscriptionManagement.vue'
 import CourseManagement from '@/views/admin/CourseManagement.vue'
 import AnnouncementManagement from '@/views/admin/AnnouncementManagement.vue'
 import ReviewManagement from '@/views/admin/ReviewManagement.vue'
@@ -19,6 +20,7 @@ import DiseaseTagsManagement from '@/views/admin/DiseaseTagsManagement.vue'
 import WorkspaceManagement from '@/views/admin/WorkspaceManagement.vue'
 import CourseOutlineManagement from '@/views/admin/CourseOutlineManagement.vue'
 import AssessmentManagement from '@/views/admin/AssessmentManagement.vue'
+import AssessmentRecordManagement from '@/views/admin/AssessmentRecordManagement.vue'
 import NotFound from '@/views/common/404.vue'
 import Unauthorized from '@/views/common/401.vue'
 
@@ -88,6 +90,15 @@ const routes = [
                 component: OrderManagement,
                 meta: {
                     title: '订单管理',
+                    requiresAuth: true
+                }
+            },
+            {
+                path: 'admin/course-subscriptions',
+                name: 'CourseSubscriptionManagement',
+                component: CourseSubscriptionManagement,
+                meta: {
+                    title: '课程订阅管理',
                     requiresAuth: true
                 }
             },
@@ -205,6 +216,15 @@ const routes = [
                 component: AssessmentManagement,
                 meta: {
                     title: '心理测评管理',
+                    requiresAuth: true
+                }
+            },
+            {
+                path: 'admin/assessment-records',
+                name: 'AssessmentRecordManagement',
+                component: AssessmentRecordManagement,
+                meta: {
+                    title: '测评记录管理',
                     requiresAuth: true
                 }
             }

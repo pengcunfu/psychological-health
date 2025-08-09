@@ -3,7 +3,7 @@
 提供验证码的Redis存储、获取、删除等功能
 """
 from flask import session
-from utils.redis_client import RedisClient
+from utils.cache.redis_client import RedisClient
 from utils.logger_client import get_logger
 
 logger = get_logger(__name__)

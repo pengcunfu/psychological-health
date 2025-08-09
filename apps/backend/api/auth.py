@@ -4,7 +4,7 @@
 
 接口列表：
 - POST /login - 用户名登录
-- POST /phone-login - 手机号登录
+- POST /user-login - 通用账户登录（支持用户名、手机号、邮箱）
 - POST /register - 用户注册
 - POST /logout - 用户登出
 - POST /reset-password - 重置密码
@@ -21,10 +21,10 @@ from models.user_role import UserRole
 from utils.json_result import JsonResult
 from utils.auth_manager import AuthManager
 from models.base import db
-from utils.verify_code import VerifyCodeGenerator
+from utils.code.verify_code import VerifyCodeGenerator
 from utils.validate import validate_form
 from utils.auth import hash_password, generate_token, verify_password
-from form.auth import LoginForm, PhoneLoginForm, RegisterForm, UpdateProfileForm, ChangePasswordForm
+from form.auth import LoginForm, UserLoginForm, RegisterForm, UpdateProfileForm, ChangePasswordForm
 from utils.image import process_image_url
 from utils.cache.verify_code_cache import verify_code_cache
 from utils.auth_helper import get_user_id
@@ -98,21 +98,32 @@ def login():
     return response
 
 
-@login_bp.route('/phone-login', methods=['POST'])
-def phone_login():
-    """手机号登录"""
-    form = validate_form(PhoneLoginForm)
+@login_bp.route('/user-login', methods=['POST'])
+def user_login():
+    """通用账户登录（支持用户名、手机号、邮箱）"""
+    form = validate_form(UserLoginForm)
 
-    phone = form.phone.data
+    account = form.account.data
     password = form.password.data
 
-    # 通过手机号查找用户
-    user = User.query.filter_by(phone=phone).first()
+    # 判断账户类型并查找用户
+    user = None
+    
+    # 检查是否为邮箱格式
+    if '@' in account:
+        user = User.query.filter_by(email=account).first()
+    # 检查是否为手机号格式
+    elif account.isdigit() and len(account) == 11 and account.startswith('1'):
+        user = User.query.filter_by(phone=account).first()
+    # 否则按用户名查找
+    else:
+        user = User.query.filter_by(username=account).first()
+    
     if not user:
-        return JsonResult.error("手机号或密码错误", 401)
+        return JsonResult.error("账户或密码错误", 401)
 
     if not verify_password(password, user.password_hash):
-        return JsonResult.error("手机号或密码错误", 401)
+        return JsonResult.error("账户或密码错误", 401)
 
     # 获取用户角色信息
     user_roles_query = db.session.query(UserRole, Role).join(
@@ -124,7 +135,7 @@ def phone_login():
     # 检查用户是否具有'user'角色
     has_user_role = any(role.code == 'user' for role in user_roles)
     if not has_user_role:
-        return JsonResult.error("手机号或密码错误", 401)
+        return JsonResult.error("账户或密码错误", 401)
 
     # 生成访问令牌
     token = generate_token()
@@ -232,7 +243,7 @@ def register():
         'username': new_user.username,
         'avatar': new_user.avatar,
         'phone': new_user.phone,
-        'email': new_user.email
+        'code': new_user.email
     }, "注册成功", 201)
 
 

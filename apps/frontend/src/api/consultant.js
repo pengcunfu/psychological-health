@@ -7,26 +7,24 @@ export const consultantAPI = {
   /**
    * 获取咨询人列表
    * @param {Object} params - 查询参数
-   * @param {number} params.page - 页码
-   * @param {number} params.per_page - 每页数量
-   * @param {string} params.name - 咨询人姓名（可选）
-   * @param {string} params.phone - 电话号码（可选）
    * @param {string} params.keyword - 搜索关键词（可选）
-   * @param {string} params.sort_by - 排序字段：created_at(创建时间), birth_year(出生年份)（可选）
-   * @param {string} params.sort_order - 排序方向：asc(升序), desc(降序)（可选）
-   * @param {number} params.status - 状态（可选）
-   * @param {string} params.user_id - 关联用户ID（可选）
    * @returns {Promise} API响应
    */
   getConsultants(params = {}) {
+    const requestParams = {
+      page: params.page || 1,
+      per_page: params.per_page || 10
+    }
+    
+    // 如果有关键词，添加到请求参数
+    if (params.keyword) {
+      requestParams.keyword = params.keyword
+    }
+    
     return request({
       url: '/consultant',
       method: 'GET',
-      data: {
-        page: 1,
-        per_page: 10,
-        ...params
-      }
+      data: requestParams
     })
   },
 

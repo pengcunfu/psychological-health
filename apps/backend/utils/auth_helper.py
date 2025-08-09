@@ -1,12 +1,12 @@
 from flask import request
 from typing import List, Optional, Dict, Any
-from utils.redis_client import session_manager
+from utils.cache.redis_client import session_manager
 from utils.exceptions import UnauthorizedError
 
 
 def _get_current_user_from_redis() -> Optional[Dict[Any, Any]]:
     """从Redis获取当前用户信息
-    
+
     Returns:
         Optional[Dict]: 用户信息字典，如果未登录则返回None
     """
@@ -34,10 +34,10 @@ def _get_current_user_from_redis() -> Optional[Dict[Any, Any]]:
 
 def get_user_id() -> str:
     """获取当前登录用户的user_id
-    
+
     Returns:
         str: 用户ID
-        
+
     Raises:
         UnauthorizedError: 如果用户未登录
     """
@@ -67,7 +67,7 @@ def get_user_id() -> str:
 
 def get_roles() -> List[str]:
     """获取当前用户的角色列表
-    
+
     Returns:
         List[str]: 角色代码列表，如果未登录或无角色则返回空列表
     """
@@ -91,7 +91,7 @@ def get_roles() -> List[str]:
 
 def get_current_user() -> Optional[Dict[Any, Any]]:
     """获取当前用户完整信息
-    
+
     Returns:
         Optional[Dict]: 用户信息字典，如果未登录则返回None
     """
@@ -103,7 +103,7 @@ def get_current_user() -> Optional[Dict[Any, Any]]:
 
 def get_session_info() -> Optional[Dict[Any, Any]]:
     """获取完整的会话信息（包含user_data、token等）
-    
+
     Returns:
         Optional[Dict]: 会话信息字典，如果未登录则返回None
     """
@@ -112,7 +112,7 @@ def get_session_info() -> Optional[Dict[Any, Any]]:
 
 def get_role_objects() -> List[Dict[str, Any]]:
     """获取当前用户的角色对象列表（包含id、name、code）
-    
+
     Returns:
         List[Dict]: 角色对象列表，如果未登录或无角色则返回空列表
     """
@@ -128,7 +128,7 @@ def get_role_objects() -> List[Dict[str, Any]]:
 
 def get_role_names() -> List[str]:
     """获取当前用户的角色名称列表
-    
+
     Returns:
         List[str]: 角色名称列表，如果未登录或无角色则返回空列表
     """
@@ -141,7 +141,7 @@ def get_role_names() -> List[str]:
 
 def is_admin() -> bool:
     """检查当前用户是否为管理员
-    
+
     Returns:
         bool: 是否为管理员
     """
@@ -151,7 +151,7 @@ def is_admin() -> bool:
 
 def is_manager() -> bool:
     """检查当前用户是否为管理者
-    
+
     Returns:
         bool: 是否为管理者
     """
@@ -161,7 +161,7 @@ def is_manager() -> bool:
 
 def is_manager_user() -> bool:
     """检查当前用户是否具有管理权限（管理员或管理者）
-    
+
     Returns:
         bool: 是否为管理员或管理者
     """
@@ -172,10 +172,10 @@ def is_manager_user() -> bool:
 
 def has_role(role: str) -> bool:
     """检查当前用户是否具有指定角色
-    
+
     Args:
         role (str): 角色名称
-        
+
     Returns:
         bool: 是否具有该角色
     """
@@ -185,10 +185,10 @@ def has_role(role: str) -> bool:
 
 def has_any_role(required_roles: List[str]) -> bool:
     """检查当前用户是否具有任意一个指定角色
-    
+
     Args:
         required_roles (List[str]): 所需角色列表
-        
+
     Returns:
         bool: 是否具有任意一个角色
     """

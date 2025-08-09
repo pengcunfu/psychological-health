@@ -162,9 +162,7 @@ const getConsultantList = async (isRefresh = false) => {
 
     const params = {
       page: pagination.page,
-      per_page: pagination.per_page,
-      sort_by: 'created_at',
-      sort_order: 'desc'
+      per_page: pagination.per_page
     }
 
     if (searchKeyword.value.trim()) {
@@ -174,7 +172,7 @@ const getConsultantList = async (isRefresh = false) => {
     const result = await consultantAPI.getConsultants(params)
 
     if (result.success && result.data) {
-      const newData = result.data.data || []
+      const newData = result.data.list || []
       
       if (isRefresh || pagination.page === 1) {
         consultantList.value = newData

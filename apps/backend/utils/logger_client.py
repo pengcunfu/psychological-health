@@ -11,7 +11,7 @@ class LoggerClient:
     @classmethod
     def init_logging(cls, level: str = 'INFO', format_string: Optional[str] = None):
         """初始化日志配置
-        
+
         Args:
             level: 日志级别 ('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL')
             format_string: 自定义日志格式
@@ -36,10 +36,10 @@ class LoggerClient:
     @classmethod
     def get_logger(cls, name: str = None) -> logging.Logger:
         """获取logger实例
-        
+
         Args:
             name: logger名称，如果为None则使用调用模块的名称
-            
+
         Returns:
             logging.Logger: logger实例
         """

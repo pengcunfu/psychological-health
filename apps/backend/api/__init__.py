@@ -28,7 +28,7 @@ def session_stats():
 # Redis健康检查API
 def redis_health():
     """Redis健康检查"""
-    from utils.redis_client import session_manager
+    from utils.cache.redis_client import session_manager
     from utils.json_result import JsonResult
 
     try:

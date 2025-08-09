@@ -32,7 +32,7 @@ class User(BaseModel):
             'username': self.username,
             'avatar': self.avatar,
             'phone': self.phone,
-            'email': self.email,
+            'code': self.email,
             'real_name': self.real_name,
             'nick_name': self.nick_name,
             'gender': self.gender,

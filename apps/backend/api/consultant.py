@@ -18,9 +18,10 @@ def get_consultants():
     """获取咨询人列表（支持动态角色权限）"""
     # 获取当前用户信息
     current_user_id = get_user_id()
-    user_roles = get_roles()
     print(current_user_id)
+    user_roles = get_roles()
     print(user_roles)
+
     has_manage_permission = is_manager_user()
 
     form = validate_args(ConsultantListForm)
@@ -77,7 +78,7 @@ def get_consultants():
                 consultant_dict['user_info'] = {
                     'username': consultant.user.username,
                     'phone': consultant.user.phone,
-                    'email': consultant.user.email
+                    'code': consultant.user.email
                 }
             else:
                 consultant_dict['user_info'] = None
@@ -123,7 +124,7 @@ def get_consultant_detail(consultant_id):
             consultant_dict['user_info'] = {
                 'username': consultant.user.username,
                 'phone': consultant.user.phone,
-                'email': consultant.user.email
+                'code': consultant.user.email
             }
         else:
             consultant_dict['user_info'] = None
@@ -296,8 +297,15 @@ def delete_consultant(consultant_id):
             return JsonResult.error('无权限删除该咨询人信息', 403)
 
     # 检查是否有关联的预约记录
-    # if consultant.appointments:
-    #     return JsonResult.error('该咨询人存在预约记录，无法删除')
+    try:
+        # 使用直接查询而不是关系，避免potential schema issues
+        from models.appointment import Appointment
+        appointment_count = db.session.query(Appointment).filter_by(consultant_id=consultant_id).count()
+        if appointment_count > 0:
+            return JsonResult.error('该咨询人存在预约记录，无法删除')
+    except Exception as e:
+        # 如果预约表不存在或有其他问题，记录但不阻止删除
+        print(f"检查预约记录时出错: {str(e)}")
 
     try:
         db.session.delete(consultant)

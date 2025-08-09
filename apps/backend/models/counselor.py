@@ -44,7 +44,7 @@ class Counselor(BaseModel):
             'avatar': self.avatar,
             'title': self.title,
             'phone': self.phone,
-            'email': self.email,
+            'code': self.email,
             'tags': self.tags,
             'specialty': self.specialty,
             'bio': self.bio,

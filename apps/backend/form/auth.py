@@ -33,6 +33,18 @@ class PhoneLoginForm(BaseForm):
     ])
 
 
+class UserLoginForm(BaseForm):
+    """通用账户登录表单（支持用户名、手机号、邮箱）"""
+    account = StringField('账户', [
+        DataRequired(message='账户不能为空'),
+        Length(min=2, max=100, message='账户长度必须在2-100个字符之间')
+    ])
+    password = StringField('密码', [
+        DataRequired(message='密码不能为空'),
+        Length(min=6, max=20, message='密码长度必须在6-20个字符之间')
+    ])
+
+
 class RegisterForm(BaseForm):
     """用户注册表单"""
     username = StringField('用户名', [

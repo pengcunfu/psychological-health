@@ -12,6 +12,7 @@ class Config:
     SECRET_KEY: str = 'dev-secret-key'
     DATABASE_URI: str = 'sqlite:///dev.db'
     CORS_ORIGINS: str = '*'
+    domain: str = ''
 
     @classmethod
     def from_yaml(cls, config_path: str = None):
@@ -22,8 +23,13 @@ class Config:
             data = yaml.safe_load(f) or {}
         obj = cls()
         for k, v in data.items():
-            if hasattr(obj, k):
-                setattr(obj, k, v)
+            # 将配置键转换为小写进行匹配
+            lower_k = k.lower()
+            # 检查类中是否有对应的小写属性
+            for attr_name in dir(obj):
+                if attr_name.lower() == lower_k and not attr_name.startswith('_') and not callable(getattr(obj, attr_name)):
+                    setattr(obj, attr_name, v)
+                    break
         return obj
 
 
@@ -35,26 +41,35 @@ def get_config():
     if not os.path.exists(config_path):
         # 返回默认配置
         return {
-            'DEBUG': True,
-            'SECRET_KEY': 'dev-secret-key',
-            'DATABASE_URI': 'sqlite:///dev.db',
-            'CORS_ORIGINS': '*',
-            'REDIS': {
-                'HOST': 'localhost',
-                'PORT': 6379,
-                'DB': 0,
-                'PASSWORD': None,
-                'DECODE_RESPONSES': True
+            'debug': True,
+            'secret_key': 'dev-secret-key',
+            'database_uri': 'sqlite:///dev.db',
+            'cors_origins': '*',
+            'domain': '',
+            'code': {
+                'smtp_server': 'smtp.qq.com',
+                'smtp_port': 587,
+                'use_tls': True,
+                'sender_email': '',
+                'sender_password': '',
+                'sender_name': '心理健康平台'
             },
-            'SESSION': {
-                'TYPE': 'redis',
-                'PERMANENT': False,
-                'USE_SIGNER': True,
-                'KEY_PREFIX': 'session:',
-                'REDIS_KEY_PREFIX': 'session:',
-                'COOKIE_HTTPONLY': True,
-                'COOKIE_SECURE': False,
-                'EXPIRES': 7200
+            'redis': {
+                'host': 'localhost',
+                'port': 6379,
+                'db': 0,
+                'password': None,
+                'decode_responses': True
+            },
+            'session': {
+                'type': 'redis',
+                'permanent': False,
+                'use_signer': True,
+                'key_prefix': 'session:',
+                'redis_key_prefix': 'session:',
+                'cookie_httponly': True,
+                'cookie_secure': False,
+                'expires': 7200
             }
         }
     
@@ -64,26 +79,29 @@ def get_config():
     # 处理环境变量替换
     data = _process_env_vars(data)
     
+    # 将所有键转换为小写
+    data = _normalize_keys_to_lowercase(data)
+    
     # 确保包含默认的Redis和Session配置
-    if 'REDIS' not in data:
-        data['REDIS'] = {
-            'HOST': 'localhost',
-            'PORT': 6379,
-            'DB': 0,
-            'PASSWORD': None,
-            'DECODE_RESPONSES': True
+    if 'redis' not in data:
+        data['redis'] = {
+            'host': 'localhost',
+            'port': 6379,
+            'db': 0,
+            'password': None,
+            'decode_responses': True
         }
     
-    if 'SESSION' not in data:
-        data['SESSION'] = {
-            'TYPE': 'redis',
-            'PERMANENT': False,
-            'USE_SIGNER': True,
-            'KEY_PREFIX': 'session:',
-            'REDIS_KEY_PREFIX': 'session:',
-            'COOKIE_HTTPONLY': True,
-            'COOKIE_SECURE': False,
-            'EXPIRES': 7200
+    if 'session' not in data:
+        data['session'] = {
+            'type': 'redis',
+            'permanent': False,
+            'use_signer': True,
+            'key_prefix': 'session:',
+            'redis_key_prefix': 'session:',
+            'cookie_httponly': True,
+            'cookie_secure': False,
+            'expires': 7200
         }
     
     return data
@@ -119,5 +137,17 @@ def _process_env_vars(data):
             return int(value)
         else:
             return value
+    else:
+        return data
+
+
+def _normalize_keys_to_lowercase(data):
+    """
+    递归将配置字典的所有键转换为小写
+    """
+    if isinstance(data, dict):
+        return {k.lower(): _normalize_keys_to_lowercase(v) for k, v in data.items()}
+    elif isinstance(data, list):
+        return [_normalize_keys_to_lowercase(item) for item in data]
     else:
         return data

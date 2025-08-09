@@ -1,14 +1,13 @@
 from datetime import datetime
 from typing import Any, Optional
 from flask_wtf import FlaskForm
-from sqlalchemy.ext.declarative import DeclarativeMeta
 
 
 def update_model_from_form(model: Any, form: FlaskForm, exclude_fields: Optional[list] = None,
                            auto_update_time: bool = True) -> None:
     """
     通用模型更新函数，自动遍历表单字段并更新模型属性
-    
+
     Args:
         model: 要更新的模型实例
         form: 验证后的表单实例
@@ -46,7 +45,7 @@ def update_model_from_dict(model: Any, data: dict, exclude_fields: Optional[list
                            auto_update_time: bool = True) -> None:
     """
     通用模型更新函数，从字典数据更新模型属性
-    
+
     Args:
         model: 要更新的模型实例
         data: 包含更新数据的字典
@@ -81,13 +80,13 @@ def create_model_from_form(model_class: type, form: FlaskForm, exclude_fields: O
                            **extra_fields) -> Any:
     """
     从表单创建模型实例
-    
+
     Args:
         model_class: 模型类
         form: 验证后的表单实例
         exclude_fields: 要排除的字段列表，默认为None
         **extra_fields: 额外的字段值
-    
+
     Returns:
         创建的模型实例
     """

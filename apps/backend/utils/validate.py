@@ -39,13 +39,13 @@ def validate_data(base_form: Type[T]) -> T:
 
 def validate_form(base_form: Type[T]) -> T:
     """根据请求方法自动选择验证方式
-    
+
     Args:
         base_form: 表单类型
-        
+
     Returns:
         T: 验证后的表单实例
-        
+
     Raises:
         ValidationError: 验证失败时抛出异常
     """

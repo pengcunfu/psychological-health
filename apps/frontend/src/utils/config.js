@@ -3,8 +3,8 @@
  */
 export default {
     // API基础URL
-    apiBaseUrl: 'http://192.168.242.4:5000',
-    
+    apiBaseUrl: 'http://192.168.83.4:5000',
+
     // 请求超时时间（毫秒）
     timeout: 10000,
 

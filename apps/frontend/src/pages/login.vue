@@ -1,48 +1,57 @@
 <template>
   <view class="login-container">
     <view class="header">
-      <view class="logo">
-        <image src="/static/logo/3.png" mode="widthFix" style="width: 100%;"></image>
+      <view class="logo-container">
+        <view class="logo">
+          <image :src="imageUtils.processImageUrl('/logo/3.png')" mode="aspectFit"></image>
+        </view>
+        <view class="logo-shadow"></view>
       </view>
       <text class="title">美光心理</text>
       <text class="subtitle">专业的心理健康服务，为您的心灵护航</text>
     </view>
 
-    <!-- 登录方式切换 -->
-    <view class="login-tabs">
-      <view class="tab-item" :class="{ active: loginType === 'phone' }" @click="switchLoginType('phone')">
-        手机号登录
-      </view>
-      <view class="tab-item" :class="{ active: loginType === 'username' }" @click="switchLoginType('username')">
-        用户名登录
-      </view>
-    </view>
-
     <view class="form">
-      <!-- 手机号登录 -->
-      <template v-if="loginType === 'phone'">
-        <view class="form-group">
-          <text class="form-label">手机号</text>
-          <up--input v-model="form.phone" placeholder="请输入手机号" border="bottom" :clearable="true" type="number"
-            maxlength="11"></up--input>
+      <!-- 账户登录 -->
+      <view class="form-group">
+        <view class="input-wrapper">
+          <view class="input-icon">
+            <up-icon name="account" color="#999" size="30"></up-icon>
+          </view>
+          <up--input v-model="form.account" placeholder="请输入用户名、手机号或邮箱" border="none" :clearable="true" 
+            class="custom-input"></up--input>
         </view>
-      </template>
-
-      <!-- 用户名登录 -->
-      <template v-else>
-        <view class="form-group">
-          <text class="form-label">用户名</text>
-          <up--input v-model="form.username" placeholder="请输入用户名" border="bottom" :clearable="true"></up--input>
-        </view>
-      </template>
+      </view>
 
       <view class="form-group">
-        <text class="form-label">密码</text>
-        <up--input v-model="form.password" type="password" placeholder="请输入密码" border="bottom" :clearable="true"
-          :passwordIcon="true"></up--input>
+        <view class="input-wrapper">
+          <view class="input-icon">
+            <up-icon name="lock" color="#999" size="30"></up-icon>
+          </view>
+          <up--input v-model="form.password" type="password" placeholder="请输入密码" border="none" :clearable="true"
+            :passwordIcon="true" class="custom-input"></up--input>
+        </view>
       </view>
 
-      <button class="login-btn" @click="handleLogin">登 录</button>
+      <!-- 隐私协议勾选 -->
+      <view class="agreement-section">
+        <view class="agreement-checkbox" @click="toggleAgreement">
+          <view class="checkbox" :class="{ checked: form.agreePrivacy }">
+            <up-icon v-if="form.agreePrivacy" name="checkmark" color="#fff" size="24"></up-icon>
+          </view>
+          <text class="agreement-text">
+            我已阅读并同意<text class="agreement-link" @click="goToPrivacyPolicy">《隐私政策》</text>和<text class="agreement-link"
+              @click="goToUserAgreement">《用户协议》</text>
+          </text>
+        </view>
+      </view>
+
+      <button class="login-btn" @click="handleLogin">
+        <text class="btn-text">登 录</text>
+        <view class="btn-loading" v-if="loading">
+          <up-loading-icon mode="flower" color="#fff" size="30"></up-loading-icon>
+        </view>
+      </button>
 
       <view class="form-footer">
         <navigator url="/pages/register" class="form-link">注册账号</navigator>
@@ -67,12 +76,7 @@
       </view>
     </view>
 
-    <view class="footer">
-      <text>登录即代表同意</text>
-      <navigator url="/pages/profile/agreement" class="footer-link">《用户协议》</navigator>
-      <text>和</text>
-      <navigator url="/pages/profile/privacy-agreement" class="footer-link">《隐私政策》</navigator>
-    </view>
+
   </view>
 </template>
 
@@ -80,61 +84,51 @@
 import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { useUserStore } from '@/store/user'
-import { login, phoneLogin } from '@/api/auth'
+import { login, userLogin } from '@/api/auth'
+import { imageUtils } from '@/utils/image'
 
 const userStore = useUserStore()
 
-// 登录类型：phone 或 username
-const loginType = ref('phone')
 
 const form = ref({
-  username: '',
-  phone: '',
-  password: ''
+  account: '',
+  password: '',
+  agreePrivacy: false
 })
 
 // 重定向路径
 const redirectPath = ref('')
 
-// 切换登录方式
-const switchLoginType = (type) => {
-  loginType.value = type
-  // 清空表单
-  form.value = {
-    username: '',
-    phone: '',
-    password: ''
-  }
+// 加载状态
+const loading = ref(false)
+
+// 切换隐私协议同意状态
+const toggleAgreement = () => {
+  form.value.agreePrivacy = !form.value.agreePrivacy
+}
+
+// 跳转到隐私政策页面
+const goToPrivacyPolicy = () => {
+  uni.navigateTo({
+    url: '/pages/profile/privacy-agreement'
+  })
+}
+
+// 跳转到用户协议页面
+const goToUserAgreement = () => {
+  uni.navigateTo({
+    url: '/pages/profile/agreement'
+  })
 }
 
 const handleLogin = async () => {
   // 表单验证
-  if (loginType.value === 'phone') {
-    if (!form.value.phone) {
-      uni.showToast({
-        title: '请输入手机号',
-        icon: 'none'
-      })
-      return
-    }
-
-    // 验证手机号格式
-    const phoneRegex = /^1[3-9]\d{9}$/
-    if (!phoneRegex.test(form.value.phone)) {
-      uni.showToast({
-        title: '手机号格式不正确',
-        icon: 'none'
-      })
-      return
-    }
-  } else {
-    if (!form.value.username) {
-      uni.showToast({
-        title: '请输入用户名',
-        icon: 'none'
-      })
-      return
-    }
+  if (!form.value.account) {
+    uni.showToast({
+      title: '请输入账户',
+      icon: 'none'
+    })
+    return
   }
 
   if (!form.value.password) {
@@ -145,27 +139,24 @@ const handleLogin = async () => {
     return
   }
 
+  if (!form.value.agreePrivacy) {
+    uni.showToast({
+      title: '请先同意隐私政策和用户协议',
+      icon: 'none'
+    })
+    return
+  }
+
   try {
-    uni.showLoading({
-      title: '登录中...'
+    loading.value = true
+
+    // 统一使用账户登录
+    const result = await userLogin({
+      account: form.value.account,
+      password: form.value.password
     })
 
-    let result
-    if (loginType.value === 'phone') {
-      // 手机号登录
-      result = await phoneLogin({
-        phone: form.value.phone,
-        password: form.value.password
-      })
-    } else {
-      // 用户名登录
-      result = await login({
-        username: form.value.username,
-        password: form.value.password
-      })
-    }
-
-    uni.hideLoading()
+    loading.value = false
 
     if (result.code === 200 && result.success) {
       // 保存登录信息到store
@@ -210,7 +201,7 @@ const handleLogin = async () => {
       })
     }
   } catch (error) {
-    uni.hideLoading()
+    loading.value = false
     uni.showToast({
       title: '登录失败，请稍后重试',
       icon: 'none'
@@ -257,84 +248,134 @@ $transition: all 0.3s;
 
 .login-container {
   min-height: 100vh;
-  background-color: $white;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 50%, #f1f3f4 100%);
   padding: 0 30rpx;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      radial-gradient(circle at 15% 20%, rgba(74, 144, 226, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 85% 80%, rgba(147, 51, 234, 0.06) 0%, transparent 50%),
+      radial-gradient(circle at 50% 50%, rgba(34, 197, 94, 0.04) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 10%;
+    left: 20%;
+    width: 6rpx;
+    height: 6rpx;
+    background: rgba(74, 144, 226, 0.3);
+    border-radius: 50%;
+    box-shadow: 
+      100rpx 50rpx 0 rgba(147, 51, 234, 0.2),
+      -80rpx 120rpx 0 rgba(34, 197, 94, 0.25),
+      200rpx 200rpx 0 rgba(245, 158, 11, 0.2),
+      -50rpx 300rpx 0 rgba(239, 68, 68, 0.15),
+      300rpx 100rpx 0 rgba(168, 85, 247, 0.18);
+    pointer-events: none;
+  }
 }
 
 // 头部区域
 .header {
   text-align: center;
-  padding: 80rpx 0 40rpx;
+  padding: 80rpx 0 60rpx;
+  position: relative;
+  z-index: 1;
 
-  .logo {
-    width: 160rpx;
-    height: 160rpx;
-    margin: 0 auto 30rpx;
-    background-color: $primary-color;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: $white;
-    font-size: 48rpx;
-    font-weight: bold;
+  .logo-container {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 40rpx;
+
+    .logo {
+      width: 120rpx;
+      height: 120rpx;
+      background: $white;
+      border-radius: 30rpx;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1rpx solid rgba(0, 0, 0, 0.06);
+
+      image {
+        width: 80rpx;
+        height: 80rpx;
+      }
+    }
+
+    .logo-shadow {
+      display: none;
+    }
   }
 
   .title {
-    font-size: 48rpx;
-    font-weight: bold;
-    margin-bottom: 20rpx;
+    font-size: 56rpx;
+    font-weight: 700;
+    margin-bottom: 16rpx;
     color: $gray-dark;
     display: block;
   }
 
   .subtitle {
     font-size: 28rpx;
-    color: $gray;
-    margin-bottom: 60rpx;
-    display: block;
-  }
-}
-
-// 登录方式切换
-.login-tabs {
-  display: flex;
-  margin: 20rpx 30rpx 40rpx;
-  background: $gray-light;
-  border-radius: $border-radius;
-  padding: 6rpx;
-
-  .tab-item {
-    flex: 1;
-    text-align: center;
-    padding: 20rpx;
-    font-size: 28rpx;
     color: $gray-medium;
-    border-radius: $border-radius-small;
-    transition: $transition;
-
-    &.active {
-      background: $white;
-      color: $primary-color;
-      font-weight: bold;
-      box-shadow: 0 2rpx 8rpx rgba(74, 144, 226, 0.1);
-    }
+    margin-bottom: 20rpx;
+    display: block;
+    font-weight: 400;
   }
 }
+
+
 
 // 表单区域
 .form {
-  padding: 0 20rpx;
+  margin: 0 20rpx;
+  position: relative;
+  z-index: 1;
 
   &-group {
-    margin-bottom: 40rpx;
+    margin-bottom: 32rpx;
   }
 
-  &-label {
-    display: block;
-    font-size: 28rpx;
-    margin-bottom: 16rpx;
-    color: $gray-medium;
+  .input-wrapper {
+    position: relative;
+    background: $white;
+    border-radius: 12rpx;
+    display: flex;
+    align-items: center;
+    padding: 24rpx 20rpx;
+    transition: all 0.3s ease;
+    border: 1rpx solid rgba(0, 0, 0, 0.08);
+
+    &:focus-within {
+      border-color: $primary-color;
+    }
+
+    .input-icon {
+      margin-right: 20rpx;
+      display: flex;
+      align-items: center;
+    }
+
+    .custom-input {
+      flex: 1;
+      background: transparent;
+      
+      :deep(.up-input__content__field-wrapper) {
+        background: transparent !important;
+        border: none !important;
+      }
+    }
   }
 
   &-footer {
@@ -350,43 +391,118 @@ $transition: all 0.3s;
   }
 }
 
+// 隐私协议勾选
+.agreement-section {
+  margin-top: 40rpx;
+
+  .agreement-checkbox {
+    display: flex;
+    align-items: flex-start;
+    gap: 20rpx;
+    cursor: pointer;
+    padding: 16rpx;
+    border-radius: 12rpx;
+    transition: all 0.3s ease;
+
+    &:active {
+      background: rgba(74, 144, 226, 0.05);
+    }
+
+    .checkbox {
+      width: 40rpx;
+      height: 40rpx;
+      border: 1rpx solid #ddd;
+      border-radius: 6rpx;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2rpx;
+      transition: all 0.3s ease;
+      position: relative;
+
+      &.checked {
+        background: $primary-color;
+        border-color: $primary-color;
+      }
+    }
+
+    .agreement-text {
+      font-size: 26rpx;
+      color: #666;
+      line-height: 1.4;
+      flex: 1;
+
+      .agreement-link {
+        color: $primary-color;
+        font-size: 26rpx;
+        text-decoration: none;
+        font-weight: 500;
+        border-bottom: 1px solid transparent;
+        transition: border-color 0.3s ease;
+
+        &:active {
+          border-bottom-color: $primary-color;
+        }
+      }
+    }
+  }
+}
+
 .login-btn {
   width: 100%;
-  height: 90rpx;
-  background-color: $primary-color;
+  height: 100rpx;
+  background: $primary-color;
   color: $white;
   border: none;
-  border-radius: $border-radius;
+  border-radius: 12rpx;
   font-size: 32rpx;
-  font-weight: bold;
+  font-weight: 600;
   margin-top: 40rpx;
-  transition: $transition;
+  transition: all 0.3s ease;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &:active {
-    opacity: 0.8;
+    background: #3b7dd8;
+    transform: translateY(1rpx);
+  }
+
+  .btn-text {
+    font-size: 32rpx;
+    font-weight: 600;
+  }
+
+  .btn-loading {
+    margin-left: 20rpx;
   }
 }
 
 // 其他登录方式
 .other-login {
-  margin-top: 80rpx;
+  margin-top: 60rpx;
   text-align: center;
+  position: relative;
+  z-index: 1;
 
   .divider {
     display: flex;
     align-items: center;
-    margin: 40rpx 0;
+    margin: 40rpx 20rpx;
 
     &-line {
       flex: 1;
-      height: 2rpx;
-      background-color: $gray-border;
+      height: 1rpx;
+      background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.1), transparent);
     }
 
     &-text {
       padding: 0 30rpx;
-      font-size: 28rpx;
+      font-size: 26rpx;
       color: $gray;
+      font-weight: 400;
     }
   }
 
@@ -394,42 +510,23 @@ $transition: all 0.3s;
     display: flex;
     justify-content: center;
     gap: 60rpx;
-    margin-top: 40rpx;
+    margin: 60rpx;
+    padding-bottom: 120rpx;
 
     .social-btn {
-      width: 100rpx;
-      height: 100rpx;
-      border-radius: 50%;
-      background-color: $gray-bg;
+      width: 88rpx;
+      height: 88rpx;
+      border-radius: 16rpx;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: $transition;
+      transition: all 0.3s ease;
 
       &:active {
-        opacity: 0.7;
+        transform: scale(0.96);
+        background: #f8f9fa;
       }
     }
-  }
-}
-
-// 页脚
-.footer {
-  text-align: center;
-  padding: 40rpx 0;
-  font-size: 24rpx;
-  color: $gray;
-  margin-top: 80rpx;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-
-  &-link {
-    color: $primary-color;
-    text-decoration: none;
-    font-size: 24rpx;
-    margin: 0 4rpx;
   }
 }
 </style>

@@ -54,7 +54,7 @@ def get_counselors():
     # 排序逻辑
     sort_by = form.sort_by.data or 'create_time'
     sort_order = form.sort_order.data or 'desc'
-    
+
     # 验证排序字段
     valid_sort_fields = {
         'create_time': Counselor.create_time,
@@ -63,12 +63,12 @@ def get_counselors():
         'consultation_count': Counselor.consultation_count,
         'name': Counselor.name
     }
-    
+
     if sort_by not in valid_sort_fields:
         sort_by = 'create_time'
-    
+
     sort_column = valid_sort_fields[sort_by]
-    
+
     # 应用排序
     if sort_order.lower() == 'asc':
         query = query.order_by(sort_column.asc())
@@ -83,7 +83,7 @@ def get_counselors():
     # 处理咨询师数据中的图片URL
     counselors_data = [counselor.to_dict() for counselor in pagination.items]
     processed_counselors = process_counselor_images(counselors_data)
-    
+
     return JsonResult.success({
         'list': processed_counselors,
         'total': pagination.total,

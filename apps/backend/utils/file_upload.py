@@ -90,7 +90,8 @@ class FileUploader:
         file.seek(0)  # 重置到文件开头
 
         if file_size > self.max_file_size:
-            raise ValueError(f"文件大小超过限制 ({self.max_file_size / 1024 / 1024:.1f}MB)")
+            raise ValueError(
+                f"文件大小超过限制 ({self.max_file_size / 1024 / 1024:.1f}MB)")
 
         # 确定文件名
         if use_unique_name:
@@ -138,7 +139,8 @@ class FileUploader:
         file.seek(0)  # 重置到文件开头
 
         if file_size > self.max_file_size:
-            raise ValueError(f"文件大小超过限制 ({self.max_file_size / 1024 / 1024:.1f}MB)")
+            raise ValueError(
+                f"文件大小超过限制 ({self.max_file_size / 1024 / 1024:.1f}MB)")
 
         # 创建子目录
         target_dir = os.path.join(self.static_dir, subfolder)
@@ -326,7 +328,8 @@ class FileUploader:
         file_info = self.get_file_info(full_path)
 
         if file_info:
-            file_info['relative_path'] = file_path.replace('\\', '/').lstrip('/')
+            file_info['relative_path'] = file_path.replace(
+                '\\', '/').lstrip('/')
             file_info['cdn_url'] = self.get_cdn_url(file_path)
 
         return file_info

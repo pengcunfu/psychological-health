@@ -9,10 +9,10 @@ import uuid
 def hash_password(password: str) -> str:
     """
     密码哈希
-    
+
     Args:
         password: 明文密码
-        
+
     Returns:
         str: 哈希后的密码
     """
@@ -22,7 +22,7 @@ def hash_password(password: str) -> str:
 def generate_token() -> str:
     """
     生成访问令牌
-    
+
     Returns:
         str: 32位随机令牌
     """
@@ -32,11 +32,11 @@ def generate_token() -> str:
 def verify_password(password: str, hashed_password: str) -> bool:
     """
     验证密码
-    
+
     Args:
         password: 明文密码
         hashed_password: 哈希后的密码
-        
+
     Returns:
         bool: 密码是否匹配
     """

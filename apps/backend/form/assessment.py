@@ -157,6 +157,8 @@ class AssessmentRecordQueryForm(BaseForm):
     per_page = IntegerField('每页数量', [Optional()], default=10)
     user_id = StringField('用户ID', [Optional()])
     assessment_id = StringField('测评ID', [Optional()])
+    assessment_name = StringField('测评名称', [Optional()])
+    result_level = StringField('结果等级', [Optional()])
     status = SelectField('状态', [Optional()], choices=[
         ('', '全部'),
         ('in_progress', '进行中'),
@@ -167,6 +169,38 @@ class AssessmentRecordQueryForm(BaseForm):
     end_date = StringField('结束日期', [Optional()])  # YYYY-MM-DD格式
     sort_by = StringField('排序字段', [Optional()], default='create_time')
     sort_order = StringField('排序方向', [Optional()], default='desc')
+
+
+class AssessmentRecordCreateForm(BaseForm):
+    """测评记录创建表单"""
+    user_id = StringField('用户ID', [DataRequired(), Length(1, 50)])
+    assessment_id = StringField('测评ID', [DataRequired(), Length(1, 50)])
+    status = SelectField('状态', [Optional()], choices=[
+        ('in_progress', '进行中'),
+        ('completed', '已完成'),
+        ('expired', '已过期')
+    ], default='in_progress')
+    total_score = FloatField('总分', [Optional(), NumberRange(min=0)])
+    max_score = FloatField('满分', [Optional(), NumberRange(min=0)])
+    result_level = StringField('结果等级', [Optional(), Length(max=50)])
+    result_description = TextAreaField('结果描述', [Optional()])
+    result_suggestion = TextAreaField('建议', [Optional()])
+    is_anonymous = BooleanField('是否匿名', [Optional()], default=False)
+
+
+class AssessmentRecordUpdateForm(BaseForm):
+    """测评记录更新表单"""
+    status = SelectField('状态', [Optional()], choices=[
+        ('in_progress', '进行中'),
+        ('completed', '已完成'),
+        ('expired', '已过期')
+    ])
+    total_score = FloatField('总分', [Optional(), NumberRange(min=0)])
+    max_score = FloatField('满分', [Optional(), NumberRange(min=0)])
+    result_level = StringField('结果等级', [Optional(), Length(max=50)])
+    result_description = TextAreaField('结果描述', [Optional()])
+    result_suggestion = TextAreaField('建议', [Optional()])
+    is_anonymous = BooleanField('是否匿名', [Optional()])
 
 
 class AssessmentStartForm(BaseForm):

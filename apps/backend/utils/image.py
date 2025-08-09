@@ -27,27 +27,33 @@ processed_counselors = process_counselor_images(counselors_list)
 
 from flask import request
 from typing import List, Dict, Any, Union, Optional
+from .config import get_config
 
 
 def get_base_url() -> str:
     """
     获取当前应用的基础URL
-    
+
     Returns:
         str: 基础URL，例如 'http://localhost:5000'
     """
-    # return request.url_root.rstrip('/')
-    return 'http://192.168.242.4:5000'
+    config = get_config()
+    domain = config.get('domain', '')
+
+    if domain:
+        return domain.rstrip('/')
+    else:
+        return request.url_root.rstrip('/')
 
 
 def process_image_url(image_url: Optional[str], base_url: Optional[str] = None) -> Optional[str]:
     """
     处理单个图片URL，如果不是完整URL则添加域名前缀
-    
+
     Args:
         image_url (str, optional): 图片URL
         base_url (str, optional): 基础URL，如果不提供则自动获取
-        
+
     Returns:
         str: 处理后的完整图片URL
     """
@@ -73,12 +79,12 @@ def process_image_urls_in_dict(data: Dict[str, Any], image_fields: Union[str, Li
                                base_url: Optional[str] = None) -> Dict[str, Any]:
     """
     处理字典中指定字段的图片URL
-    
+
     Args:
         data (dict): 包含图片字段的字典
         image_fields (str or list): 需要处理的图片字段名，可以是单个字段名或字段名列表
         base_url (str, optional): 基础URL，如果不提供则自动获取
-        
+
     Returns:
         dict: 处理后的字典
     """
@@ -99,7 +105,8 @@ def process_image_urls_in_dict(data: Dict[str, Any], image_fields: Union[str, Li
     # 处理每个指定的图片字段
     for field in image_fields:
         if field in processed_data:
-            processed_data[field] = process_image_url(processed_data[field], base_url)
+            processed_data[field] = process_image_url(
+                processed_data[field], base_url)
 
     return processed_data
 
@@ -108,12 +115,12 @@ def process_image_urls_in_list(data_list: List[Dict[str, Any]], image_fields: Un
                                base_url: Optional[str] = None) -> List[Dict[str, Any]]:
     """
     处理列表中每个字典的指定图片字段
-    
+
     Args:
         data_list (list): 包含字典的列表
         image_fields (str or list): 需要处理的图片字段名，可以是单个字段名或字段名列表
         base_url (str, optional): 基础URL，如果不提供则自动获取
-        
+
     Returns:
         list: 处理后的列表
     """
@@ -128,7 +135,8 @@ def process_image_urls_in_list(data_list: List[Dict[str, Any]], image_fields: Un
     processed_list = []
     for item in data_list:
         if isinstance(item, dict):
-            processed_item = process_image_urls_in_dict(item, image_fields, base_url)
+            processed_item = process_image_urls_in_dict(
+                item, image_fields, base_url)
             processed_list.append(processed_item)
         else:
             processed_list.append(item)
@@ -140,11 +148,11 @@ def process_counselor_images(data: Union[Dict[str, Any], List[Dict[str, Any]]],
                              base_url: Optional[str] = None) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
     """
     专门处理咨询师数据中的图片字段
-    
+
     Args:
         data (dict or list): 咨询师数据，可以是单个字典或字典列表
         base_url (str, optional): 基础URL，如果不提供则自动获取
-        
+
     Returns:
         dict or list: 处理后的咨询师数据
     """
@@ -162,11 +170,11 @@ def process_course_images(data: Union[Dict[str, Any], List[Dict[str, Any]]],
                           base_url: Optional[str] = None) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
     """
     专门处理课程数据中的图片字段
-    
+
     Args:
         data (dict or list): 课程数据，可以是单个字典或字典列表
         base_url (str, optional): 基础URL，如果不提供则自动获取
-        
+
     Returns:
         dict or list: 处理后的课程数据
     """
@@ -184,11 +192,11 @@ def process_banner_images(data: Union[Dict[str, Any], List[Dict[str, Any]]],
                           base_url: Optional[str] = None) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
     """
     专门处理轮播图数据中的图片字段
-    
+
     Args:
         data (dict or list): 轮播图数据，可以是单个字典或字典列表
         base_url (str, optional): 基础URL，如果不提供则自动获取
-        
+
     Returns:
         dict or list: 处理后的轮播图数据
     """
@@ -206,11 +214,11 @@ def process_assessment_images(data: Union[Dict[str, Any], List[Dict[str, Any]]],
                               base_url: Optional[str] = None) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
     """
     专门处理测评数据中的图片字段
-    
+
     Args:
         data (dict or list): 测评数据，可以是单个字典或字典列表
         base_url (str, optional): 基础URL，如果不提供则自动获取
-        
+
     Returns:
         dict or list: 处理后的测评数据
     """

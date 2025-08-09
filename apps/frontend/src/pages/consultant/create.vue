@@ -375,17 +375,39 @@ const loadConsultantData = async () => {
 
     if (result.success && result.data) {
       const data = result.data
-      formData.name = data.name || ''
+      
+      // 基本信息 - 使用正确的字段名
+      formData.name = data.real_name || ''
       formData.birth_year = data.birth_year
       formData.birth_month = data.birth_month
       formData.gender = data.gender || ''
       formData.phone = data.phone || ''
-
-      // 解析备注中的紧急联系人信息（如果有的话）
-      if (data.notes) {
-        // 这里可以根据实际的数据结构来解析
-        // 暂时使用默认值
+      
+      // 紧急联系人信息
+      formData.emergencyContact.name = data.emergency_name || ''
+      formData.emergencyContact.relationship = data.emergency_relationship || ''
+      formData.emergencyContact.phone = data.emergency_phone || ''
+      
+      // 设置日期选择器的值
+      if (data.birth_year && data.birth_month) {
+        const year = data.birth_year.toString().padStart(4, '0')
+        const month = data.birth_month.toString().padStart(2, '0')
+        datePickerValue.value = `${year}-${month}`
       }
+      
+      // 设置关系选择器的值
+      if (data.emergency_relationship) {
+        const relationshipIdx = relationshipList.value.findIndex(item => item.value === data.emergency_relationship)
+        if (relationshipIdx !== -1) {
+          relationshipIndex.value = relationshipIdx
+        }
+      }
+      
+      // 默认同意协议（编辑模式下认为已经同意过）
+      formData.agreeToTerms = true
+      
+      console.log('数据加载成功:', data)
+      console.log('表单数据:', formData)
     }
 
     uni.hideLoading()

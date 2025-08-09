@@ -13,14 +13,11 @@
 - GET /review/course/<course_id> - 获取课程的评价列表
 """
 from flask import Blueprint, request
-from flask_restx import Namespace, Resource, fields
-from sqlalchemy.exc import SQLAlchemyError
 import uuid
 
 from models.review import Review
 from models.base import db
 from utils.json_result import JsonResult
-from utils.swagger_models import create_review_models
 from form.review import ReviewCreateForm, ReviewUpdateForm, ReviewQueryForm
 
 review_bp = Blueprint('review', __name__, url_prefix='/review')

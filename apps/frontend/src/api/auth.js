@@ -21,16 +21,15 @@ class AuthAPI {
   }
 
   /**
-   * 手机号登录
+   * 通用账户登录（支持用户名、手机号、邮箱）
    * @param {Object} data 登录数据
-   * @param {string} data.phone 手机号
+   * @param {string} data.account 账户（用户名、手机号或邮箱）
    * @param {string} data.password 密码
-   * @param {string} data.verify_code 验证码（可选）
    * @returns {Promise}
    */
-  phoneLogin(data) {
+  userLogin(data) {
     return request({
-      url: '/auth/phone-login',
+      url: '/auth/user-login',
       method: 'POST',
       data
     })
@@ -202,7 +201,7 @@ export { AuthAPI, authAPI }
 
 // 保留原有的导出方式以确保向后兼容
 export const login = (data) => authAPI.login(data)
-export const phoneLogin = (data) => authAPI.phoneLogin(data)
+export const userLogin = (data) => authAPI.userLogin(data)
 export const register = (data) => authAPI.register(data)
 export const logout = () => authAPI.logout()
 export const getUserProfile = () => authAPI.getUserProfile()

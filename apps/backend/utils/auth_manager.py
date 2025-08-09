@@ -2,7 +2,7 @@ from functools import wraps
 from flask import request
 from typing import List, Optional
 from utils.json_result import JsonResult
-from utils.redis_client import session_manager
+from utils.cache.redis_client import session_manager
 from utils.logger_client import get_logger
 
 logger = get_logger(__name__)
