@@ -45,6 +45,16 @@
         </view>
       </view>
 
+      <view class="menu-item" @click="navigateTo('/pages/order/index')">
+        <view class="item-icon">
+          <SvgIcon name="bookmark" path="profile" :size="32" color="#13C2C2" />
+        </view>
+        <view class="item-text">订单管理</view>
+        <view class="item-arrow">
+          <SvgIcon name="arrow-right" path="profile" :size="28" color="#999" />
+        </view>
+      </view>
+
       <view class="menu-item" @click="navigateTo('/pages/consultant/index')">
         <view class="item-icon">
           <SvgIcon name="account" path="profile" :size="32" color="#722ED1" />
