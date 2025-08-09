@@ -23,6 +23,12 @@ from api.banner import banner_bp
 from api.group import group_bp
 from api.menu import menu_bp
 from api.workspace import workspace_bp
+# 社区相关API
+from api.social_topic import social_topic_bp
+from api.social_post import social_post_bp
+from api.social_comment import social_comment_bp
+from api.social_like import social_like_bp
+from api.social_follow import social_follow_bp
 from api import index, static_files, session_stats, redis_health
 
 from utils.config import Config
@@ -79,6 +85,12 @@ app.register_blueprint(banner_bp)
 app.register_blueprint(group_bp)
 app.register_blueprint(menu_bp)
 app.register_blueprint(workspace_bp)
+# 注册社区相关蓝图
+app.register_blueprint(social_topic_bp)
+app.register_blueprint(social_post_bp)
+app.register_blueprint(social_comment_bp)
+app.register_blueprint(social_like_bp)
+app.register_blueprint(social_follow_bp)
 
 # 注册路由
 app.add_url_rule('/', 'index', index)

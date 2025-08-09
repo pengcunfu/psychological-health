@@ -14,6 +14,9 @@ export { uploadAPI, uploadAvatar, uploadBanner, uploadCourseCover, uploadCourseV
 // 从原来的 admin.js 导入咨询人API（如果存在的话）
 export { consultantAPI } from './consultant'
 
+// 社区管理API
+export { socialTopicAPI, socialPostAPI, socialCommentAPI, socialLikeAPI, socialFollowAPI } from './social'
+
 // 默认导出包含所有API的对象
 export default {
   // 用户管理

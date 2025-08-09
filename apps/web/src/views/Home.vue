@@ -1,17 +1,12 @@
 <template>
-  <div class="admin-layout">
+  <div class="admin-layout" :class="{ 'dark-mode': darkMode }">
     <!-- 左侧菜单 -->
-    <div class="sidebar" :class="{ collapsed: collapsed }">
-      <div class="logo">
-        <h2 v-if="!collapsed">美光心理后台管理系统</h2>
-        <h2 v-else>心理</h2>
-      </div>
-
+    <div class="sidebar">
       <div class="menu">
         <!-- 首页 -->
         <div class="menu-item" :class="{ active: activePath === '/' }" @click="navigateTo('/')">
           <span class="menu-icon"><home-outlined/></span>
-          <span class="menu-text" v-if="!collapsed">首页</span>
+          <span class="menu-text">首页</span>
         </div>
 
         <!-- 用户管理分类 -->
@@ -19,13 +14,13 @@
           <div class="category-header" @click="toggleCategory('user')"
                :class="{ active: activeCategoryKey === 'user' }">
             <span class="menu-icon"><team-outlined/></span>
-            <span class="menu-text" v-if="!collapsed">用户管理</span>
-            <span class="arrow" v-if="!collapsed">
+            <span class="menu-text">用户管理</span>
+            <span class="arrow">
               <down-outlined v-if="activeCategoryKey === 'user'"/>
               <right-outlined v-else/>
             </span>
           </div>
-          <div class="category-items" v-show="activeCategoryKey === 'user' && !collapsed">
+          <div class="category-items" v-show="activeCategoryKey === 'user'">
             <div class="menu-item sub-item" :class="{ active: activePath === '/admin/users' }"
                  @click="navigateTo('/admin/users')">
               <span class="menu-text">用户列表</span>
@@ -50,13 +45,13 @@
           <div class="category-header" @click="toggleCategory('content')"
                :class="{ active: activeCategoryKey === 'content' }">
             <span class="menu-icon"><read-outlined/></span>
-            <span class="menu-text" v-if="!collapsed">内容管理</span>
-            <span class="arrow" v-if="!collapsed">
+            <span class="menu-text">内容管理</span>
+            <span class="arrow">
               <down-outlined v-if="activeCategoryKey === 'content'"/>
               <right-outlined v-else/>
             </span>
           </div>
-          <div class="category-items" v-show="activeCategoryKey === 'content' && !collapsed">
+          <div class="category-items" v-show="activeCategoryKey === 'content'">
             <div class="menu-item sub-item" :class="{ active: activePath === '/admin/courses' }"
                  @click="navigateTo('/admin/courses')">
               <span class="menu-text">课程管理</span>
@@ -85,13 +80,13 @@
           <div class="category-header" @click="toggleCategory('business')"
                :class="{ active: activeCategoryKey === 'business' }">
             <span class="menu-icon"><shopping-outlined/></span>
-            <span class="menu-text" v-if="!collapsed">业务管理</span>
-            <span class="arrow" v-if="!collapsed">
+            <span class="menu-text">业务管理</span>
+            <span class="arrow">
               <down-outlined v-if="activeCategoryKey === 'business'"/>
               <right-outlined v-else/>
             </span>
           </div>
-          <div class="category-items" v-show="activeCategoryKey === 'business' && !collapsed">
+          <div class="category-items" v-show="activeCategoryKey === 'business'">
             <div class="menu-item sub-item" :class="{ active: activePath === '/admin/orders' }"
                  @click="navigateTo('/admin/orders')">
               <span class="menu-text">订单管理</span>
@@ -119,18 +114,49 @@
           </div>
         </div>
 
+        <!-- 社区管理分类 -->
+        <div class="menu-category">
+          <div class="category-header" @click="toggleCategory('social')"
+               :class="{ active: activeCategoryKey === 'social' }">
+            <span class="menu-icon"><message-outlined/></span>
+            <span class="menu-text">社区管理</span>
+            <span class="arrow">
+              <down-outlined v-if="activeCategoryKey === 'social'"/>
+              <right-outlined v-else/>
+            </span>
+          </div>
+          <div class="category-items" v-show="activeCategoryKey === 'social'">
+            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/social-topics' }"
+                 @click="navigateTo('/admin/social-topics')">
+              <span class="menu-text">话题管理</span>
+            </div>
+            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/social-posts' }"
+                 @click="navigateTo('/admin/social-posts')">
+              <span class="menu-text">帖子管理</span>
+            </div>
+            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/social-comments' }"
+                 @click="navigateTo('/admin/social-comments')">
+              <span class="menu-text">评论管理</span>
+            </div>
+            <div class="menu-item sub-item" :class="{ active: activePath === '/admin/social-stats' }"
+                 @click="navigateTo('/admin/social-stats')">
+              <span class="menu-text">社区统计</span>
+            </div>
+          </div>
+        </div>
+
         <!-- 系统设置分类 -->
         <div class="menu-category">
           <div class="category-header" @click="toggleCategory('system')"
                :class="{ active: activeCategoryKey === 'system' }">
             <span class="menu-icon"><setting-outlined/></span>
-            <span class="menu-text" v-if="!collapsed">系统设置</span>
-            <span class="arrow" v-if="!collapsed">
+            <span class="menu-text">系统设置</span>
+            <span class="arrow">
               <down-outlined v-if="activeCategoryKey === 'system'"/>
               <right-outlined v-else/>
             </span>
           </div>
-          <div class="category-items" v-show="activeCategoryKey === 'system' && !collapsed">
+          <div class="category-items" v-show="activeCategoryKey === 'system'">
             <div class="menu-item sub-item" :class="{ active: activePath === '/admin/categories' }"
                  @click="navigateTo('/admin/categories')">
               <span class="menu-text">分类管理</span>
@@ -155,10 +181,15 @@
         </div>
       </div>
 
-      <div class="collapse-button" @click="toggleCollapse">
-        <menu-fold-outlined v-if="!collapsed"/>
-        <menu-unfold-outlined v-else/>
-      </div>
+              <div class="sidebar-footer">
+          <div class="logo">
+            <h2>美光心理后台管理系统</h2>
+          </div>
+          <div class="copyright">
+            <p>© 2025 美光心理健康平台</p>
+            <p>版本 v1.0.0</p>
+          </div>
+        </div>
     </div>
 
     <!-- 右侧内容区 -->
@@ -181,6 +212,11 @@
                 <a-menu-item key="profile" @click="navigateToProfile">
                   <user-outlined/>
                   个人资料
+                </a-menu-item>
+                <a-menu-item key="theme" @click="toggleDarkMode">
+                  <bg-colors-outlined v-if="!darkMode"/>
+                  <bulb-outlined v-else/>
+                  {{ darkMode ? '明亮模式' : '暗黑模式' }}
                 </a-menu-item>
                 <a-menu-item key="settings">
                   <setting-outlined/>
@@ -308,15 +344,16 @@ import {
   TeamOutlined,
   ReadOutlined,
   ShoppingOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined
+  MessageOutlined,
+  BgColorsOutlined,
+  BulbOutlined
 } from '@ant-design/icons-vue'
 
 const router = useRouter()
 const route = useRoute()
 const user = ref(null)
-const collapsed = ref(false)
 const activeCategoryKey = ref('')
+const darkMode = ref(false)
 
 const activePath = computed(() => {
   return route.path
@@ -333,6 +370,9 @@ const initActiveCategory = () => {
   } else if (path.includes('/admin/orders') || path.includes('/admin/course-subscriptions') || path.includes('/admin/appointments') ||
       path.includes('/admin/assessment-records') || path.includes('/admin/favorites') || path.includes('/admin/reviews')) {
     activeCategoryKey.value = 'business'
+  } else if (path.includes('/admin/social-topics') || path.includes('/admin/social-posts') || 
+      path.includes('/admin/social-comments') || path.includes('/admin/social-stats')) {
+    activeCategoryKey.value = 'social'
   } else if (path.includes('/admin/categories') || path.includes('/admin/disease-tags') ||
       path.includes('/admin/menus') || path.includes('/admin/groups') ||
       path.includes('/admin/workspaces')) {
@@ -341,12 +381,12 @@ const initActiveCategory = () => {
 }
 
 const toggleCategory = (key) => {
-  if (collapsed.value) {
-    collapsed.value = false
-    activeCategoryKey.value = key
-  } else {
-    activeCategoryKey.value = activeCategoryKey.value === key ? '' : key
-  }
+  activeCategoryKey.value = activeCategoryKey.value === key ? '' : key
+}
+
+const toggleDarkMode = () => {
+  darkMode.value = !darkMode.value
+  localStorage.setItem('darkMode', darkMode.value.toString())
 }
 
 const handleLogout = async () => {
@@ -365,14 +405,7 @@ const handleLogout = async () => {
   }
 }
 
-const toggleCollapse = () => {
-  collapsed.value = !collapsed.value
-  if (collapsed.value) {
-    activeCategoryKey.value = ''
-  } else {
-    initActiveCategory()
-  }
-}
+
 
 const navigateTo = (path) => {
   router.push(path)
@@ -402,6 +435,12 @@ onMounted(() => {
     }
   }
 
+  // 初始化暗黑模式设置
+  const savedDarkMode = localStorage.getItem('darkMode')
+  if (savedDarkMode) {
+    darkMode.value = savedDarkMode === 'true'
+  }
+
   // 初始化激活的菜单分类
   initActiveCategory()
 })
@@ -417,38 +456,61 @@ onMounted(() => {
 /* 左侧菜单样式 */
 .sidebar {
   width: 220px;
-  background: #001529;
-  color: white;
+  background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 50%, #f0f2f5 100%);
+  color: #333333;
   display: flex;
   flex-direction: column;
-  transition: width 0.3s;
   position: relative;
   overflow-y: auto;
   overflow-x: hidden;
-
-  &.collapsed {
-    width: 80px;
+  border-right: 1px solid #e8e8e8;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+  
+  /* 添加装饰性元素 */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      /* 小圆点装饰 */
+      radial-gradient(circle at 20% 20%, rgba(24, 144, 255, 0.04) 2px, transparent 2px),
+      radial-gradient(circle at 80% 40%, rgba(82, 196, 26, 0.03) 1.5px, transparent 1.5px),
+      radial-gradient(circle at 40% 80%, rgba(245, 34, 45, 0.02) 1px, transparent 1px),
+      radial-gradient(circle at 70% 10%, rgba(250, 173, 20, 0.03) 1.5px, transparent 1.5px),
+      /* 微妙的线条 */
+      linear-gradient(135deg, transparent 45%, rgba(24, 144, 255, 0.01) 50%, transparent 55%);
+    background-size: 60px 60px, 80px 80px, 40px 40px, 70px 70px, 120px 120px;
+    background-position: 0 0, 30px 20px, 10px 50px, 50px 10px, 0 0;
+    pointer-events: none;
+    z-index: 0;
   }
-}
-
-.logo {
-  height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-
-  h2 {
-    color: white;
-    margin: 0;
-    font-size: 18px;
-    white-space: nowrap;
+  
+  /* 添加顶部微妙的高光效果 */
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+    z-index: 1;
+  }
+  
+  /* 确保内容在装饰层之上 */
+  > * {
+    position: relative;
+    z-index: 1;
   }
 }
 
 .menu {
   flex: 1;
-  padding: 16px 0;
+  // padding: 16px 0;
+  overflow-y: auto;
 }
 
 .menu-item {
@@ -456,15 +518,22 @@ onMounted(() => {
   align-items: center;
   padding: 12px 16px;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: all 0.3s;
   margin-bottom: 4px;
+  border-radius: 6px;
+  margin: 4px 8px;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, #f0f2f5 0%, #e6f4ff 100%);
+    color: #1890ff;
+    transform: translateX(2px);
+    box-shadow: 0 2px 4px rgba(24, 144, 255, 0.1);
   }
 
   &.active {
-    background: #1890ff;
+    background: #e6f4ff;
+    color: #1890ff;
+    box-shadow: 0 2px 8px rgba(24, 144, 255, 0.15);
   }
 }
 
@@ -480,8 +549,6 @@ onMounted(() => {
 
 .menu-text {
   white-space: nowrap;
-  opacity: 1;
-  transition: opacity 0.3s;
 }
 
 /* 菜单分类样式 */
@@ -494,15 +561,21 @@ onMounted(() => {
   align-items: center;
   padding: 12px 16px;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: all 0.3s;
   position: relative;
+  border-radius: 6px;
+  margin: 4px 8px;
+  font-weight: 500;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, #f5f7fa 0%, #e6f4ff 100%);
+    color: #1890ff;
+    transform: translateX(1px);
   }
 
   &.active {
-    background: rgba(24, 144, 255, 0.2);
+    background: #f0f6ff;
+    color: #1890ff;
   }
 }
 
@@ -521,13 +594,38 @@ onMounted(() => {
   margin-bottom: 2px;
 }
 
-.collapse-button {
-  height: 40px;
+.sidebar-footer {
+  border-top: 1px solid #e8e8e8;
+  padding: 16px 0;
+  background: linear-gradient(180deg, #f0f2f5 0%, #e8eaed 100%);
+  backdrop-filter: blur(10px);
+}
+
+.sidebar-footer .logo {
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 8px;
+
+  h2 {
+    color: #333333;
+    margin: 0;
+    font-size: 16px;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+}
+
+.copyright {
+  text-align: center;
+  font-size: 11px;
+  color: #666666;
+  line-height: 1.4;
+  
+  p {
+    margin: 2px 0;
+    white-space: nowrap;
+  }
 }
 
 /* 右侧内容区样式 */
@@ -656,6 +754,54 @@ onMounted(() => {
   color: #333;
 }
 
+/* 暗黑模式样式 */
+.dark-mode {
+  .sidebar {
+    background: #001529;
+    color: white;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .menu-item {
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    &.active {
+      background: #1890ff;
+      color: white;
+      box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3);
+    }
+  }
+
+  .category-header {
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    &.active {
+      background: rgba(24, 144, 255, 0.2);
+      color: white;
+    }
+  }
+
+  .sidebar-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: #002140;
+  }
+
+  .sidebar-footer .logo h2 {
+    color: white;
+  }
+
+  .copyright {
+    color: rgba(255, 255, 255, 0.65);
+  }
+}
+
 /* 响应式样式 */
 @media (max-width: 768px) {
   .sidebar {
@@ -664,10 +810,12 @@ onMounted(() => {
     height: 100vh;
     left: 0;
     top: 0;
+    transform: translateX(-100%);
+    transition: transform 0.3s;
+  }
 
-    &.collapsed {
-      left: -80px;
-    }
+  .sidebar:hover {
+    transform: translateX(0);
   }
 
   .main-content {

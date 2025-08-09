@@ -22,6 +22,11 @@ import CourseOutlineManagement from '@/views/admin/CourseOutlineManagement.vue'
 import AssessmentManagement from '@/views/admin/AssessmentManagement.vue'
 import AssessmentRecordManagement from '@/views/admin/AssessmentRecordManagement.vue'
 import FavoriteManagement from '@/views/admin/FavoriteManagement.vue'
+// 社区管理
+import SocialTopicManagement from '@/views/admin/SocialTopicManagement.vue'
+import SocialPostManagement from '@/views/admin/SocialPostManagement.vue'
+import SocialCommentManagement from '@/views/admin/SocialCommentManagement.vue'
+import SocialStatsManagement from '@/views/admin/SocialStatsManagement.vue'
 import NotFound from '@/views/common/404.vue'
 import Unauthorized from '@/views/common/401.vue'
 
@@ -235,6 +240,43 @@ const routes = [
                 component: FavoriteManagement,
                 meta: {
                     title: '收藏管理',
+                    requiresAuth: true
+                }
+            },
+            // 社区管理路由
+            {
+                path: 'admin/social-topics',
+                name: 'SocialTopicManagement',
+                component: SocialTopicManagement,
+                meta: {
+                    title: '话题管理',
+                    requiresAuth: true
+                }
+            },
+            {
+                path: 'admin/social-posts',
+                name: 'SocialPostManagement',
+                component: SocialPostManagement,
+                meta: {
+                    title: '帖子管理',
+                    requiresAuth: true
+                }
+            },
+            {
+                path: 'admin/social-comments',
+                name: 'SocialCommentManagement',
+                component: SocialCommentManagement,
+                meta: {
+                    title: '评论管理',
+                    requiresAuth: true
+                }
+            },
+            {
+                path: 'admin/social-stats',
+                name: 'SocialStatsManagement',
+                component: SocialStatsManagement,
+                meta: {
+                    title: '社区统计',
                     requiresAuth: true
                 }
             }
