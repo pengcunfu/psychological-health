@@ -509,7 +509,7 @@ onMounted(() => {
 
 .menu {
   flex: 1;
-  // padding: 16px 0;
+  padding: 4px 0;
   overflow-y: auto;
 }
 
