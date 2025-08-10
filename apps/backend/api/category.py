@@ -1,75 +1,64 @@
 """
 分类管理API
 提供系统分类的增删改查功能
-
-接口列表：
-- GET /category - 获取分类列表
-- GET /category/<category_id> - 获取单个分类详情
-- POST /category - 创建分类
-- PUT /category/<category_id> - 更新分类
-- DELETE /category/<category_id> - 删除分类
-- GET /category/tree - 获取分类树结构
-- GET /category/<category_id>/items - 获取分类下的项目
 """
-from flask import Blueprint, request
-from sqlalchemy.exc import SQLAlchemyError
+from flask import Blueprint
 import uuid
 
 from models.category import Category
 from models.base import db
 from utils.json_result import JsonResult
+from utils.validate import assert_id_exists
+from utils.query import create_query_builder, assert_exists
+from utils.model_helper import update_model_fields
 from form.category import CategoryCreateForm, CategoryUpdateForm, CategoryQueryForm, CategoryStatusUpdateForm
-from utils.validate import validate_data, validate_args
-from utils.model_helper import update_model_from_form
+from decorator.form import validate_form
+from decorator.permission import role_required, permission_required
 
 category_bp = Blueprint('category', __name__, url_prefix='/category')
 
 
 @category_bp.route('', methods=['GET'])
-def get_categories():
+@validate_form(CategoryQueryForm)
+@role_required(['admin', 'manager', 'user'])
+@permission_required("category:get_categories")
+def get_categories(form):
     """获取分类列表"""
-    # 使用表单验证查询参数
-    form = validate_args(CategoryQueryForm)
-
-    # 构建查询
-    query = Category.query
-
-    if form.name.data:
-        query = query.filter(Category.name.like(f'%{form.name.data}%'))
-    if form.type.data:
-        query = query.filter(Category.type == form.type.data)
-    if form.status.data is not None:
-        query = query.filter(Category.status == form.status.data)
-
-    # 分页查询
-    pagination = query.order_by(Category.sort_order.asc()).paginate(
-        page=form.page.data, per_page=form.per_page.data, error_out=False
-    )
+    # 使用QueryBuilder构建查询并分页
+    result = create_query_builder(Category) \
+        .when(form.name.data, Category.name.like(f'%{form.name.data}%')) \
+        .when(form.type.data, Category.type == form.type.data) \
+        .when(form.status.data is not None, Category.status == form.status.data) \
+        .order_by(Category.sort_order.asc()) \
+        .paginate(form.page.data, form.per_page.data, 100)
 
     return JsonResult.success({
-        'list': [category.to_dict() for category in pagination.items],
-        'total': pagination.total,
-        'page': form.page.data,
-        'per_page': form.per_page.data
+        'list': [category.to_dict() for category in result['items']],
+        'total': result['total'],
+        'page': result['page'],
+        'per_page': result['per_page'],
+        'pages': result['pages']
     })
 
 
 @category_bp.route('/<category_id>', methods=['GET'])
+@role_required(['admin', 'manager', 'user'])
+@permission_required("category:get_category")
 def get_category(category_id):
     """获取单个分类详情"""
-    category = Category.query.filter_by(id=category_id).first()
-    if not category:
-        return JsonResult.error('分类不存在', 404)
+    assert_id_exists(category_id, "分类ID不能为空")
+    
+    category = assert_exists(Category, Category.id == category_id, "分类不存在")
 
     return JsonResult.success(category.to_dict())
 
 
 @category_bp.route('', methods=['POST'])
-def create_category():
+@validate_form(CategoryCreateForm)
+@role_required(['admin', 'manager'])
+@permission_required("category:create_category")
+def create_category(form):
     """创建分类"""
-    # 使用表单验证
-    form = validate_data(CategoryCreateForm)
-
     # 创建分类
     category = Category(
         id=str(uuid.uuid4()),
@@ -89,17 +78,17 @@ def create_category():
 
 
 @category_bp.route('/<category_id>', methods=['PUT'])
-def update_category(category_id):
+@validate_form(CategoryUpdateForm)
+@role_required(['admin', 'manager'])
+@permission_required("category:update_category")
+def update_category(category_id, form):
     """更新分类"""
-    category = Category.query.filter_by(id=category_id).first()
-    if not category:
-        return JsonResult.error('分类不存在', 404)
+    assert_id_exists(category_id, "分类ID不能为空")
+    
+    category = assert_exists(Category, Category.id == category_id, "分类不存在")
 
-    # 使用表单验证
-    form = validate_data(CategoryUpdateForm)
-
-    # 更新字段
-    update_model_from_form(category, form)
+    # 使用统一的更新函数
+    update_model_fields(category, form)
 
     db.session.commit()
 
@@ -107,11 +96,13 @@ def update_category(category_id):
 
 
 @category_bp.route('/<category_id>', methods=['DELETE'])
+@role_required(['admin', 'manager'])
+@permission_required("category:delete_category")
 def delete_category(category_id):
     """删除分类"""
-    category = Category.query.filter_by(id=category_id).first()
-    if not category:
-        return JsonResult.error('分类不存在', 404)
+    assert_id_exists(category_id, "分类ID不能为空")
+    
+    category = assert_exists(Category, Category.id == category_id, "分类不存在")
 
     # 这里可以添加检查是否有关联数据的逻辑
     # 例如：检查是否有课程或产品使用了该分类
@@ -124,14 +115,14 @@ def delete_category(category_id):
 
 
 @category_bp.route('/<category_id>/status', methods=['PATCH'])
-def update_category_status(category_id):
+@validate_form(CategoryStatusUpdateForm)
+@role_required(['admin', 'manager'])
+@permission_required("category:update_category_status")
+def update_category_status(category_id, form):
     """更新分类状态（启用/禁用）"""
-    category = Category.query.filter_by(id=category_id).first()
-    if not category:
-        return JsonResult.error('分类不存在', 404)
-
-    # 使用表单验证
-    form = validate_data(CategoryStatusUpdateForm)
+    assert_id_exists(category_id, "分类ID不能为空")
+    
+    category = assert_exists(Category, Category.id == category_id, "分类不存在")
 
     category.status = form.status.data
     db.session.commit()

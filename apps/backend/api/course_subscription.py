@@ -1,72 +1,55 @@
+"""
+课程订阅
+"""
 from flask import Blueprint
-from sqlalchemy import and_, or_
 from models.course_subscription import CourseSubscription
 from models.course import Course
 from models.user import User
+from models.base import db
+from utils.json_result import JsonResult
+from utils.validate import assert_id_exists
+from utils.query import create_query_builder
+from utils.auth_helper import get_roles, assert_current_user_id, is_manager_user
 from form.course_subscription import (
-    CourseSubscriptionCreateForm, 
-    CourseSubscriptionUpdateForm, 
+    CourseSubscriptionCreateForm,
+    CourseSubscriptionUpdateForm,
     CourseSubscriptionListForm,
     ProgressUpdateForm,
     SubscriptionExtendForm,
     SubscriptionCancelForm
 )
+from decorator.form import validate_form
+from decorator.permission import role_required, permission_required
 import uuid
-
-from models.base import db
-from utils.json_result import JsonResult
-from utils.validate import validate_args, validate_data
-from utils.auth_helper import get_roles, get_user_id, is_manager_user
 
 course_subscription_bp = Blueprint('course_subscription', __name__, url_prefix='/course-subscription')
 
 
 @course_subscription_bp.route('', methods=['GET'])
-def get_course_subscriptions():
+@validate_form(CourseSubscriptionListForm)
+@role_required(['admin', 'manager', 'user'])
+@permission_required("course_subscription:get_course_subscriptions")
+def get_course_subscriptions(form):
     """获取课程订阅列表（支持权限控制）"""
     # 获取当前用户信息
-    current_user_id = get_user_id()
+    current_user_id = assert_current_user_id()
     user_roles = get_roles()
     has_manage_permission = is_manager_user()
 
-    form = validate_args(CourseSubscriptionListForm)
-
-    # 构建查询基础
-    query = CourseSubscription.query
-
-    # 根据角色限制查询范围
-    if not has_manage_permission:
-        # 普通用户只能查看自己的订阅
-        query = query.filter(CourseSubscription.user_id == current_user_id)
-    
-    # 管理员可以按用户ID筛选
-    if has_manage_permission and form.user_id.data:
-        query = query.filter(CourseSubscription.user_id == form.user_id.data)
-    
-    # 按课程ID筛选
-    if form.course_id.data:
-        query = query.filter(CourseSubscription.course_id == form.course_id.data)
-    
-    # 按状态筛选
-    if form.status.data:
-        query = query.filter(CourseSubscription.status == form.status.data)
-    
-    # 按订阅类型筛选
-    if form.subscription_type.data:
-        query = query.filter(CourseSubscription.subscription_type == form.subscription_type.data)
-
-    # 排序：按订阅时间倒序
-    query = query.order_by(CourseSubscription.subscription_date.desc())
-
-    # 分页
-    page = form.page.data or 1
-    per_page = form.per_page.data or 10
-    pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+    # 使用QueryBuilder构建查询并分页
+    result = create_query_builder(CourseSubscription) \
+        .unless(has_manage_permission, CourseSubscription.user_id == current_user_id) \
+        .when(has_manage_permission and form.user_id.data, CourseSubscription.user_id == form.user_id.data) \
+        .when(form.course_id.data, CourseSubscription.course_id == form.course_id.data) \
+        .when(form.status.data, CourseSubscription.status == form.status.data) \
+        .when(form.subscription_type.data, CourseSubscription.subscription_type == form.subscription_type.data) \
+        .order_by(CourseSubscription.subscription_date.desc()) \
+        .paginate(form.page.data or 1, form.per_page.data or 10, 100)
 
     subscriptions_data = []
-    for subscription in pagination.items:
+    for subscription in result['items']:
         subscription_dict = subscription.to_dict()
-        
+
         # 根据权限决定是否显示用户信息
         if has_manage_permission:
             # 管理员可以看到用户信息
@@ -77,7 +60,7 @@ def get_course_subscriptions():
                     'phone': user.phone,
                     'email': user.email
                 }
-        
+
         # 添加课程信息
         course = Course.query.filter_by(id=subscription.course_id).first()
         if course:
@@ -86,24 +69,28 @@ def get_course_subscriptions():
                 'teacher': course.teacher,
                 'cover_image': course.cover_image
             }
-        
+
         subscriptions_data.append(subscription_dict)
 
     return JsonResult.success({
         'list': subscriptions_data,
-        'total': pagination.total,
-        'page': page,
-        'per_page': per_page,
-        'pages': pagination.pages,
+        'total': result['total'],
+        'page': result['page'],
+        'per_page': result['per_page'],
+        'pages': result['pages'],
         'user_roles': user_roles,
         'has_manage_permission': has_manage_permission
     })
 
 
 @course_subscription_bp.route('/<subscription_id>', methods=['GET'])
+@role_required(['admin', 'manager', 'user'])
+@permission_required("course_subscription:get_subscription_detail")
 def get_subscription_detail(subscription_id):
     """获取订阅详情（支持权限控制）"""
-    current_user_id = get_user_id()
+    assert_id_exists(subscription_id, "订阅ID不能为空")
+
+    current_user_id = assert_current_user_id()
     has_manage_permission = is_manager_user()
 
     subscription = CourseSubscription.query.filter_by(id=subscription_id).first()
@@ -137,12 +124,13 @@ def get_subscription_detail(subscription_id):
 
 
 @course_subscription_bp.route('', methods=['POST'])
-def create_subscription():
+@validate_form(CourseSubscriptionCreateForm)
+@role_required(['admin', 'manager', 'user'])
+@permission_required("course_subscription:create_subscription")
+def create_subscription(form):
     """创建课程订阅（普通用户只能为自己创建）"""
-    current_user_id = get_user_id()
+    current_user_id = assert_current_user_id()
     has_manage_permission = is_manager_user()
-
-    form = validate_data(CourseSubscriptionCreateForm)
 
     # 生成唯一ID
     subscription_id = str(uuid.uuid4())
@@ -162,13 +150,13 @@ def create_subscription():
             return JsonResult.error('指定的用户不存在')
 
     # 检查是否已有有效订阅
-    existing = CourseSubscription.query.filter(
-        and_(
-            CourseSubscription.user_id == target_user_id,
-            CourseSubscription.course_id == form.course_id.data,
-            CourseSubscription.status == 'active'
-        )
-    ).first()
+    existing = create_query_builder(CourseSubscription) \
+        .filter(
+        CourseSubscription.user_id == target_user_id,
+        CourseSubscription.course_id == form.course_id.data,
+        CourseSubscription.status == 'active'
+    ) \
+        .first()
     if existing:
         return JsonResult.error('您已经订阅了该课程')
 
@@ -189,17 +177,20 @@ def create_subscription():
 
     db.session.add(subscription)
     db.session.commit()
-    
+
     return JsonResult.success(subscription.to_dict(), '订阅创建成功')
 
 
 @course_subscription_bp.route('/<subscription_id>', methods=['PUT'])
-def update_subscription(subscription_id):
+@validate_form(CourseSubscriptionUpdateForm)
+@role_required(['admin', 'manager', 'user'])
+@permission_required("course_subscription:update_subscription")
+def update_subscription(subscription_id, form):
     """更新订阅信息（支持权限控制）"""
-    current_user_id = get_user_id()
-    has_manage_permission = is_manager_user()
+    assert_id_exists(subscription_id, "订阅ID不能为空")
 
-    form = validate_data(CourseSubscriptionUpdateForm)
+    current_user_id = assert_current_user_id()
+    has_manage_permission = is_manager_user()
 
     subscription = CourseSubscription.query.filter_by(id=subscription_id).first()
     if not subscription:
@@ -213,19 +204,19 @@ def update_subscription(subscription_id):
     # 更新字段
     if form.subscription_type.data:
         subscription.subscription_type = form.subscription_type.data
-    
+
     if form.status.data:
         subscription.status = form.status.data
-    
+
     if form.completed_lessons.data is not None:
         subscription.completed_lessons = form.completed_lessons.data
         # 简单的进度计算
         if form.completed_lessons.data > 0:
             subscription.progress_percentage = min(form.completed_lessons.data * 10, 100)
-    
+
     if form.total_study_time.data is not None:
         subscription.total_study_time = form.total_study_time.data
-    
+
     if form.notes.data is not None:
         subscription.notes = form.notes.data
 
@@ -238,11 +229,14 @@ def update_subscription(subscription_id):
 
 
 @course_subscription_bp.route('/<subscription_id>/progress', methods=['PUT'])
-def update_progress(subscription_id):
+@validate_form(ProgressUpdateForm)
+@role_required(['admin', 'manager', 'user'])
+@permission_required("course_subscription:update_progress")
+def update_progress(subscription_id, form):
     """更新学习进度（用户只能更新自己的）"""
-    current_user_id = get_user_id()
-    
-    form = validate_data(ProgressUpdateForm)
+    assert_id_exists(subscription_id, "订阅ID不能为空")
+
+    current_user_id = assert_current_user_id()
 
     subscription = CourseSubscription.query.filter_by(id=subscription_id).first()
     if not subscription:
@@ -269,13 +263,12 @@ def update_progress(subscription_id):
 
 
 @course_subscription_bp.route('/<subscription_id>/extend', methods=['PUT'])
-def extend_subscription(subscription_id):
+@validate_form(SubscriptionExtendForm)
+@role_required(['admin', 'manager'])
+@permission_required("course_subscription:extend_subscription")
+def extend_subscription(subscription_id, form):
     """延长订阅（管理员操作）"""
-    has_manage_permission = is_manager_user()
-    if not has_manage_permission:
-        return JsonResult.error('无权限执行此操作', 403)
-
-    form = validate_data(SubscriptionExtendForm)
+    assert_id_exists(subscription_id, "订阅ID不能为空")
 
     subscription = CourseSubscription.query.filter_by(id=subscription_id).first()
     if not subscription:
@@ -291,12 +284,15 @@ def extend_subscription(subscription_id):
 
 
 @course_subscription_bp.route('/<subscription_id>/cancel', methods=['PUT'])
-def cancel_subscription(subscription_id):
+@validate_form(SubscriptionCancelForm)
+@role_required(['admin', 'manager', 'user'])
+@permission_required("course_subscription:cancel_subscription")
+def cancel_subscription(subscription_id, form):
     """取消订阅（用户可以取消自己的，管理员可以取消任何）"""
-    current_user_id = get_user_id()
-    has_manage_permission = is_manager_user()
+    assert_id_exists(subscription_id, "订阅ID不能为空")
 
-    form = validate_data(SubscriptionCancelForm)
+    current_user_id = assert_current_user_id()
+    has_manage_permission = is_manager_user()
 
     subscription = CourseSubscription.query.filter_by(id=subscription_id).first()
     if not subscription:
@@ -320,11 +316,11 @@ def cancel_subscription(subscription_id):
 
 
 @course_subscription_bp.route('/<subscription_id>', methods=['DELETE'])
+@role_required(['admin', 'manager'])
+@permission_required("course_subscription:delete_subscription")
 def delete_subscription(subscription_id):
     """删除订阅记录（管理员专用）"""
-    has_manage_permission = is_manager_user()
-    if not has_manage_permission:
-        return JsonResult.error('无权限删除订阅记录', 403)
+    assert_id_exists(subscription_id, "订阅ID不能为空")
 
     subscription = CourseSubscription.query.filter_by(id=subscription_id).first()
     if not subscription:
@@ -340,35 +336,25 @@ def delete_subscription(subscription_id):
 
 
 @course_subscription_bp.route('/my', methods=['GET'])
-def get_my_subscriptions():
+@validate_form(CourseSubscriptionListForm)
+@role_required(['admin', 'manager', 'user'])
+@permission_required("course_subscription:get_my_subscriptions")
+def get_my_subscriptions(form):
     """获取当前用户的订阅列表"""
-    current_user_id = get_user_id()
-    
-    form = validate_args(CourseSubscriptionListForm)
-    
-    # 只查询当前用户的订阅
-    query = CourseSubscription.query.filter_by(user_id=current_user_id)
-    
-    # 按状态筛选
-    if form.status.data:
-        query = query.filter(CourseSubscription.status == form.status.data)
-    
-    # 按订阅类型筛选
-    if form.subscription_type.data:
-        query = query.filter(CourseSubscription.subscription_type == form.subscription_type.data)
+    current_user_id = assert_current_user_id()
 
-    # 排序：按订阅时间倒序
-    query = query.order_by(CourseSubscription.subscription_date.desc())
-
-    # 分页
-    page = form.page.data or 1
-    per_page = form.per_page.data or 10
-    pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+    # 使用QueryBuilder构建查询并分页
+    result = create_query_builder(CourseSubscription) \
+        .filter(CourseSubscription.user_id == current_user_id) \
+        .when(form.status.data, CourseSubscription.status == form.status.data) \
+        .when(form.subscription_type.data, CourseSubscription.subscription_type == form.subscription_type.data) \
+        .order_by(CourseSubscription.subscription_date.desc()) \
+        .paginate(form.page.data or 1, form.per_page.data or 10, 100)
 
     subscriptions_data = []
-    for subscription in pagination.items:
+    for subscription in result['items']:
         subscription_dict = subscription.to_simple_dict()
-        
+
         # 添加课程信息
         course = Course.query.filter_by(id=subscription.course_id).first()
         if course:
@@ -378,36 +364,38 @@ def get_my_subscriptions():
                 'cover_image': course.cover_image,
                 'lesson_count': course.lesson_count
             }
-        
+
         subscriptions_data.append(subscription_dict)
 
     return JsonResult.success({
         'list': subscriptions_data,
-        'total': pagination.total,
-        'page': page,
-        'per_page': per_page,
-        'pages': pagination.pages
+        'total': result['total'],
+        'page': result['page'],
+        'per_page': result['per_page'],
+        'pages': result['pages']
     })
 
 
 @course_subscription_bp.route('/stats', methods=['GET'])
+@role_required(['admin', 'manager', 'user'])
+@permission_required("course_subscription:get_subscription_stats")
 def get_subscription_stats():
     """获取订阅统计信息（支持权限）"""
-    current_user_id = get_user_id()
+    current_user_id = assert_current_user_id()
     has_manage_permission = is_manager_user()
 
     if has_manage_permission:
         # 管理员看全局统计
-        base_query = CourseSubscription.query
+        base_builder = create_query_builder(CourseSubscription)
     else:
         # 普通用户看自己的统计
-        base_query = CourseSubscription.query.filter_by(user_id=current_user_id)
+        base_builder = create_query_builder(CourseSubscription).filter(CourseSubscription.user_id == current_user_id)
 
-    total_count = base_query.count()
-    active_count = base_query.filter_by(status='active').count()
-    expired_count = base_query.filter_by(status='expired').count()
-    cancelled_count = base_query.filter_by(status='cancelled').count()
-    
+    total_count = base_builder.count()
+    active_count = base_builder.filter(CourseSubscription.status == 'active').count()
+    expired_count = base_builder.filter(CourseSubscription.status == 'expired').count()
+    cancelled_count = base_builder.filter(CourseSubscription.status == 'cancelled').count()
+
     # 计算总收入（仅管理员）
     total_revenue = 0
     if has_manage_permission:

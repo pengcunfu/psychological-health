@@ -1,27 +1,20 @@
 """
 菜单管理API
 提供系统菜单的增删改查功能
-
-接口列表：
-- GET /menu - 获取菜单列表
-- GET /menu/<menu_id> - 获取单个菜单详情
-- POST /menu - 创建菜单
-- PUT /menu/<menu_id> - 更新菜单
-- DELETE /menu/<menu_id> - 删除菜单
-- GET /menu/user/<user_id>/permissions - 获取用户的权限菜单
-- GET /menu/tree - 获取菜单树结构
 """
-from flask import Blueprint, request
+from flask import Blueprint
 from models.base import db
 from models.menu import Menu
 from models.role import Role
 from models.user import User
 from models.user_role import UserRole
-from sqlalchemy.exc import SQLAlchemyError
 from utils.json_result import JsonResult
+from utils.validate import assert_id_exists
+from utils.query import create_query_builder
+from utils.model_helper import update_model_fields
 from form.menu import MenuQueryForm, MenuCreateForm, MenuUpdateForm
-from utils.validate import validate_data, validate_args
-from utils.model_helper import update_model_from_form
+from decorator.form import validate_form
+from decorator.permission import role_required, permission_required
 from datetime import datetime
 import uuid
 
@@ -29,43 +22,37 @@ menu_bp = Blueprint("menu", __name__, url_prefix="/menu")
 
 
 @menu_bp.route('', methods=['GET'])
-def get_menus():
+@validate_form(MenuQueryForm)
+@role_required(['admin', 'manager'])
+@permission_required("menu:get_menus")
+def get_menus(form):
     """获取菜单列表"""
-    # 参数验证
-    form = validate_args(MenuQueryForm)
-
     keyword = form.keyword.data
     page = form.page.data or 1
     size = form.size.data or 10
 
-    # 构建查询
-    query = Menu.query
-    if keyword:
-        query = query.filter(Menu.name.contains(keyword))
-
-    # 添加排序
-    query = query.order_by(Menu.sort_order.asc(), Menu.create_time.desc())
-
     # 如果有搜索关键词，返回平铺列表用于搜索
     if keyword:
-        # 分页查询
-        pagination = query.paginate(
-            page=page,
-            per_page=size,
-            error_out=False
-        )
+        # 使用QueryBuilder构建查询并分页
+        result = create_query_builder(Menu) \
+            .filter(Menu.name.contains(keyword)) \
+            .order_by(Menu.sort_order.asc(), Menu.create_time.desc()) \
+            .paginate(page, size, 100)
 
         return JsonResult.success({
-            'list': [menu.to_dict() for menu in pagination.items],
-            'total': pagination.total,
-            'page': page,
-            'per_page': size,
+            'list': [menu.to_dict() for menu in result['items']],
+            'total': result['total'],
+            'page': result['page'],
+            'per_page': result['per_page'],
+            'pages': result['pages'],
             'is_tree': False
         })
-    
+
     # 没有搜索关键词时，返回树形结构
-    all_menus = query.all()
-    
+    all_menus = create_query_builder(Menu) \
+        .order_by(Menu.sort_order.asc(), Menu.create_time.desc()) \
+        .all()
+
     def build_menu_tree(parent_id=""):
         """构建菜单树"""
         children = []
@@ -75,22 +62,22 @@ def get_menus():
                 # 递归获取子菜单
                 menu_dict['children'] = build_menu_tree(menu.id)
                 children.append(menu_dict)
-        
+
         # 按排序字段排序
         children.sort(key=lambda x: x['sort_order'])
         return children
-    
+
     # 构建树形结构
     tree_data = build_menu_tree()
-    
+
     # 计算总数（扁平化计算）
     total_count = len(all_menus)
-    
+
     # 对树形数据进行分页（只对顶级菜单分页，子菜单全部返回）
     start = (page - 1) * size
     end = start + size
     paginated_tree = tree_data[start:end]
-    
+
     return JsonResult.success({
         'list': paginated_tree,
         'total': len(tree_data),  # 顶级菜单数量作为分页基数
@@ -102,13 +89,16 @@ def get_menus():
 
 
 @menu_bp.route('', methods=['POST'])
-def create_menu():
+@validate_form(MenuCreateForm)
+@role_required(['admin', 'manager'])
+@permission_required("menu:create_menu")
+def create_menu(form):
     """创建菜单"""
-    # 参数验证
-    form = validate_data(MenuCreateForm)
-
     # 检查菜单名称是否重复
-    if Menu.query.filter_by(name=form.name.data).first():
+    existing_menu = create_query_builder(Menu) \
+        .filter(Menu.name == form.name.data) \
+        .first()
+    if existing_menu:
         return JsonResult.error("菜单名称已存在", 400)
 
     # 创建菜单
@@ -138,23 +128,28 @@ def create_menu():
 
 
 @menu_bp.route('/<menu_id>', methods=['PUT'])
-def update_menu(menu_id):
+@validate_form(MenuUpdateForm)
+@role_required(['admin', 'manager'])
+@permission_required("menu:update_menu")
+def update_menu(menu_id, form):
     """更新菜单"""
+    assert_id_exists(menu_id, "菜单ID不能为空")
+
     # 查找菜单
     menu = Menu.query.filter_by(id=menu_id).first()
     if not menu:
         return JsonResult.error("菜单不存在", 404)
 
-    # 参数验证
-    form = validate_data(MenuUpdateForm)
-
     # 检查菜单名称是否重复（排除自己）
     if form.name.data and form.name.data != menu.name:
-        if Menu.query.filter_by(name=form.name.data).first():
+        existing_menu = create_query_builder(Menu) \
+            .filter(Menu.name == form.name.data) \
+            .first()
+        if existing_menu:
             return JsonResult.error("菜单名称已存在", 400)
 
-    # 更新菜单信息
-    update_model_from_form(menu, form)
+    # 使用统一的更新函数
+    update_model_fields(menu, form)
     menu.update_time = datetime.now()
     db.session.commit()
 
@@ -162,19 +157,29 @@ def update_menu(menu_id):
 
 
 @menu_bp.route('/<menu_id>', methods=['DELETE'])
+@role_required(['admin', 'manager'])
+@permission_required("menu:delete_menu")
 def delete_menu(menu_id):
     """删除菜单"""
+    assert_id_exists(menu_id, "菜单ID不能为空")
+
     # 查找菜单
     menu = Menu.query.filter_by(id=menu_id).first()
     if not menu:
         return JsonResult.error("菜单不存在", 404)
 
     # 检查是否有子菜单
-    if Menu.query.filter_by(parent_id=menu_id).first():
+    child_menu = create_query_builder(Menu) \
+        .filter(Menu.parent_id == menu_id) \
+        .first()
+    if child_menu:
         return JsonResult.error("该菜单存在子菜单，无法删除", 400)
 
     # 检查是否有角色使用该菜单
-    if Role.query.filter(Role.menu_ids.contains(menu_id)).first():
+    role_using_menu = create_query_builder(Role) \
+        .filter(Role.menu_ids.contains(menu_id)) \
+        .first()
+    if role_using_menu:
         return JsonResult.error("该菜单正在被角色使用，无法删除", 400)
 
     db.session.delete(menu)
@@ -183,26 +188,43 @@ def delete_menu(menu_id):
 
 
 @menu_bp.route('/user/<user_id>/permissions', methods=['GET'])
+@role_required(['admin', 'manager', 'user'])
+@permission_required("menu:get_user_permissions")
 def get_user_permissions(user_id):
     """获取用户权限（菜单列表）"""
+    assert_id_exists(user_id, "用户ID不能为空")
+
     # 查找用户
-    user = User.query.filter_by(id=user_id).first()
+    user = create_query_builder(User) \
+        .filter(User.id == user_id) \
+        .first()
     if not user:
         return JsonResult.error("用户不存在", 404)
 
     # 获取用户角色
-    user_roles = UserRole.query.filter_by(user_id=user_id).all()
+    user_roles = create_query_builder(UserRole) \
+        .filter(UserRole.user_id == user_id) \
+        .all()
     user_role_ids = [ur.role_id for ur in user_roles]
 
     # 收集所有菜单权限
     menu_ids = set()
-    roles = Role.query.filter(Role.id.in_(user_role_ids)).all()
-    for role in roles:
-        if role.is_enabled():
-            menu_ids.update(role.menu_ids)
+    if user_role_ids:
+        roles = create_query_builder(Role) \
+            .filter(Role.id.in_(user_role_ids)) \
+            .all()
+        for role in roles:
+            if role.is_enabled():
+                menu_ids.update(role.menu_ids)
 
     # 获取菜单详情并构建树形结构
-    user_menus = Menu.query.filter(Menu.id.in_(list(menu_ids))).order_by(Menu.sort_order.asc()).all()
+    if menu_ids:
+        user_menus = create_query_builder(Menu) \
+            .filter(Menu.id.in_(list(menu_ids))) \
+            .order_by(Menu.sort_order.asc()) \
+            .all()
+    else:
+        user_menus = []
 
     def build_permission_tree(parent_id=""):
         children = []
@@ -223,7 +245,8 @@ def get_user_permissions(user_id):
                 }
                 children.append(menu_dict)
 
-        children.sort(key=lambda x: next((m.sort_order for m in user_menus if m.id == x['id']), 0))
+        children.sort(key=lambda x: next(
+            (m.sort_order for m in user_menus if m.id == x['id']), 0))
         return children
 
     result = build_permission_tree()
@@ -231,11 +254,16 @@ def get_user_permissions(user_id):
 
 
 @menu_bp.route('/tree', methods=['GET'])
+@role_required(['admin', 'manager'])
+@permission_required("menu:get_menu_tree")
 def get_menu_tree():
     """获取完整的菜单树结构（用于角色权限配置等）"""
     # 获取所有启用的菜单
-    all_menus = Menu.query.filter_by(status=1).order_by(Menu.sort_order.asc(), Menu.create_time.desc()).all()
-    
+    all_menus = create_query_builder(Menu) \
+        .filter(Menu.status == 1) \
+        .order_by(Menu.sort_order.asc(), Menu.create_time.desc()) \
+        .all()
+
     def build_tree(parent_id=""):
         """构建菜单树"""
         children = []
@@ -252,10 +280,10 @@ def get_menu_tree():
                     'children': build_tree(menu.id)
                 }
                 children.append(menu_node)
-        
+
         # 按排序字段排序
         children.sort(key=lambda x: x['sort_order'])
         return children
-    
+
     tree_data = build_tree()
     return JsonResult.success(tree_data, "获取菜单树成功")

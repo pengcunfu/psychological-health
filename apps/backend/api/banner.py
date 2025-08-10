@@ -1,71 +1,60 @@
 """
 横幅管理API
 提供系统横幅的增删改查功能
-
-接口列表：
-- GET /banner - 获取横幅列表
-- GET /banner/<banner_id> - 获取单个横幅详情
-- POST /banner - 创建横幅
-- PUT /banner/<banner_id> - 更新横幅
-- DELETE /banner/<banner_id> - 删除横幅
 """
-from flask import Blueprint, request
+from flask import Blueprint
 from models.banner import Banner
-from form.banner import BannerQueryForm, BannerCreateForm, BannerUpdateForm
-from sqlalchemy.exc import SQLAlchemyError
-from utils.json_result import JsonResult
 from models.base import db
-from utils.validate import validate_data, validate_args
-from utils.model_helper import update_model_from_form
+from utils.json_result import JsonResult
+from utils.validate import assert_id_exists
+from utils.query import create_query_builder, assert_exists
+from utils.model_helper import update_model_fields
 from utils.image import process_banner_images
+from form.banner import BannerQueryForm, BannerCreateForm, BannerUpdateForm
+from decorator.form import validate_form
+from decorator.permission import role_required, permission_required
 import uuid
 
 banner_bp = Blueprint("banner", __name__, url_prefix="/banner")
 
 
 @banner_bp.route("", methods=['GET'])
-def get_banners():
-    form = validate_args(BannerQueryForm)
+@validate_form(BannerQueryForm)
+@role_required(['admin', 'manager', 'user'])
+@permission_required("banner:get_banners")
+def get_banners(form):
+    """获取横幅列表 - 使用查询参数验证装饰器"""
+    # 使用QueryBuilder构建查询并分页
+    result = create_query_builder(Banner) \
+        .when(form.title.data, Banner.title.like(f'%{form.title.data}%')) \
+        .order_by(Banner.sort_order.asc()) \
+        .paginate(form.page.data, form.per_page.data, 100)
 
-    page = form.page.data
-    per_page = form.per_page.data
-    title = form.title.data
-
-    query = Banner.query
-    if title:
-        query = query.filter(Banner.title.like(f'%{title}%'))
-
-    paginate = query.order_by(Banner.sort_order.asc()).paginate(
-        page=page, per_page=per_page, error_out=False
-    )
-    banners = paginate.items
-
-    # 处理轮播图数据中的图片URL
-    banners_data = [banner.to_dict() for banner in banners]
-    processed_banners = process_banner_images(banners_data)
-    
     return JsonResult.success({
-        'list': processed_banners,
-        'total': paginate.total,
-        'page': page,
-        'per_page': per_page
+        'list': process_banner_images([banner.to_dict() for banner in result['items']]),
+        'total': result['total'],
+        'page': result['page'],
+        'per_page': result['per_page']
     })
 
 
 @banner_bp.route("/<banner_id>", methods=['GET'])
+@role_required(['admin', 'manager', 'user'])
+@permission_required("banner:get_banner")
 def get_banner(banner_id):
-    banner = Banner.query.get(banner_id)
-    if not banner:
-        return JsonResult.error("横幅不存在", 404)
+    assert_id_exists(banner_id, "横幅ID不能为空")
+    
+    banner = assert_exists(Banner, Banner.id == banner_id, "横幅不存在")
     # 处理轮播图数据中的图片URL
-    banner_data = process_banner_images(banner.to_dict())
-    return JsonResult.success(banner_data)
+    return JsonResult.success(process_banner_images(banner.to_dict()))
 
 
 @banner_bp.route("", methods=['POST'])
-def create_banner():
-    form = validate_data(BannerCreateForm)
-
+@validate_form(BannerCreateForm)
+@role_required(['admin', 'manager'])
+@permission_required("banner:create_banner")
+def create_banner(form):
+    """创建横幅 - 使用JSON验证和权限装饰器"""
     # 创建横幅
     banner = Banner(
         id=str(uuid.uuid4()),
@@ -74,32 +63,37 @@ def create_banner():
         link_url=form.link_url.data,
         sort_order=form.sort_order.data if form.sort_order.data is not None else 0,
     )
-    
+
     db.session.add(banner)
     db.session.commit()
     return JsonResult.success(banner.to_dict(), "创建成功", 201)
 
 
 @banner_bp.route("/<banner_id>", methods=['PUT'])
-def update_banner(banner_id):
-    banner = Banner.query.get(banner_id)
-    if not banner:
-        return JsonResult.error("横幅不存在", 404)
-
-    form = validate_data(BannerUpdateForm)
+@validate_form(BannerUpdateForm)
+@role_required(['admin', 'manager'])
+@permission_required("banner:update_banner")
+def update_banner(banner_id, form):
+    """更新横幅 - 使用JSON验证和权限装饰器"""
+    assert_id_exists(banner_id, "横幅ID不能为空")
+    
+    banner = assert_exists(Banner, Banner.id == banner_id, "横幅不存在")
 
     # 更新字段
-    update_model_from_form(banner, form)
+    update_model_fields(banner, form)
 
     db.session.commit()
     return JsonResult.success(banner.to_dict(), "更新成功")
 
 
 @banner_bp.route("/<banner_id>", methods=['DELETE'])
+@role_required(['admin', 'manager'])
+@permission_required("banner:delete_banner")
 def delete_banner(banner_id):
-    banner = Banner.query.get(banner_id)
-    if not banner:
-        return JsonResult.error("横幅不存在", 404)
+    """删除横幅 - 需要管理员权限"""
+    assert_id_exists(banner_id, "横幅ID不能为空")
+    
+    banner = assert_exists(Banner, Banner.id == banner_id, "横幅不存在")
 
     db.session.delete(banner)
     db.session.commit()

@@ -12,7 +12,7 @@ class ValidationError(Exception):
         super().__init__(self.message)
 
 
-def check_id(form_id, message: str = "ID is required"):
+def assert_id_exists(form_id, message: str = "ID is required"):
     if not form_id or not form_id.strip():
         raise ValidationError(message)
 

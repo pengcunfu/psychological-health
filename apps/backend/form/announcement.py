@@ -1,8 +1,17 @@
 from wtforms import StringField, IntegerField, TextAreaField, DateTimeField, BooleanField
-from wtforms.validators import DataRequired, Length, Optional, AnyOf, NumberRange
+from wtforms.validators import DataRequired, Length, Optional, AnyOf, NumberRange, ValidationError
 from datetime import datetime
 
 from .base import BaseForm
+
+
+def validate_datetime_format(form, field):
+    """验证日期时间格式"""
+    if field.data:
+        try:
+            datetime.strptime(field.data, '%Y-%m-%d %H:%M:%S')
+        except ValueError:
+            raise ValidationError('日期时间格式错误，请使用 YYYY-MM-DD HH:MM:SS 格式')
 
 
 class AnnouncementCreateForm(BaseForm):
@@ -38,11 +47,13 @@ class AnnouncementCreateForm(BaseForm):
     ])
 
     start_time = StringField('生效时间', [
-        Optional()
+        Optional(),
+        validate_datetime_format
     ])
 
     end_time = StringField('失效时间', [
-        Optional()
+        Optional(),
+        validate_datetime_format
     ])
 
     is_pinned = BooleanField('是否置顶', [
@@ -83,11 +94,13 @@ class AnnouncementUpdateForm(BaseForm):
     ])
 
     start_time = StringField('生效时间', [
-        Optional()
+        Optional(),
+        validate_datetime_format
     ])
 
     end_time = StringField('失效时间', [
-        Optional()
+        Optional(),
+        validate_datetime_format
     ])
 
     is_pinned = BooleanField('是否置顶', [

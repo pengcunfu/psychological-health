@@ -3,8 +3,8 @@ from typing import Any, Optional
 from flask_wtf import FlaskForm
 
 
-def update_model_from_form(model: Any, form: FlaskForm, exclude_fields: Optional[list] = None,
-                           auto_update_time: bool = True) -> None:
+def update_model_fields(model: Any, form: FlaskForm, exclude_fields: Optional[list] = None,
+                        auto_update_time: bool = True) -> None:
     """
     通用模型更新函数，自动遍历表单字段并更新模型属性
 

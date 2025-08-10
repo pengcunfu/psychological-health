@@ -1,41 +1,33 @@
 """
 登录认证API
 提供用户登录、注册、密码重置等认证相关功能
-
-接口列表：
-- POST /login - 用户名登录
-- POST /user-login - 通用账户登录（支持用户名、手机号、邮箱）
-- POST /register - 用户注册
-- POST /logout - 用户登出
-- POST /reset-password - 重置密码
-- POST /verify-code - 验证码验证
-- POST /send-code - 发送验证码
-- GET /user/info - 获取当前用户信息
-- POST /refresh-token - 刷新访问令牌
 """
 from flask import Blueprint, request, send_file, make_response
 import uuid
 from models.user import User
 from models.role import Role
 from models.user_role import UserRole
+from models.base import db
 from utils.json_result import JsonResult
 from utils.auth_manager import AuthManager
-from models.base import db
+from utils.query import create_query_builder, assert_not_exists, assert_exists
+from utils.model_helper import update_model_fields
 from utils.code.verify_code import VerifyCodeGenerator
-from utils.validate import validate_form
 from utils.auth import hash_password, generate_token, verify_password
-from form.auth import LoginForm, UserLoginForm, RegisterForm, UpdateProfileForm, ChangePasswordForm
 from utils.image import process_image_url
 from utils.cache.verify_code_cache import verify_code_cache
-from utils.auth_helper import get_user_id
+from utils.auth_helper import assert_current_user_id
+from form.auth import LoginForm, UserLoginForm, RegisterForm, UpdateProfileForm, ChangePasswordForm
+from decorator.form import validate_form
+from decorator.permission import role_required, permission_required
 
 login_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 
 @login_bp.route('/login', methods=['POST'])
-def login():
+@validate_form(LoginForm)
+def login(form):
     """用户登录"""
-    form = validate_form(LoginForm)
 
     username = form.username.data
     password = form.password.data
@@ -50,9 +42,7 @@ def login():
         return JsonResult.error("验证码错误", 400)
 
     # 查找用户
-    user = User.query.filter_by(username=username).first()
-    if not user:
-        return JsonResult.error("用户名或密码错误", 401)
+    user = assert_exists(User, User.username == username, "用户不存在")
 
     if not verify_password(password, user.password_hash):
         return JsonResult.error("用户名或密码错误", 401)
@@ -61,11 +51,10 @@ def login():
     token = generate_token()
 
     # 获取用户角色信息
-    user_roles_query = db.session.query(UserRole, Role).join(
-        Role, UserRole.role_id == Role.id
-    ).filter(UserRole.user_id == user.id)
-
-    user_roles = [role for _, role in user_roles_query.all()]
+    user_roles = create_query_builder(Role) \
+        .join(UserRole) \
+        .filter(UserRole.user_id == user.id) \
+        .all()
 
     # 创建会话 - user_data包含User模型的所有数据（除了密码）
     user_data = user.to_dict()  # 使用User模型的to_dict方法
@@ -78,7 +67,6 @@ def login():
         'name': role.name,
         'code': role.code
     } for role in user_roles]
-    print("角色信息", roles_data)
 
     # 创建会话并检查结果
     session_created = AuthManager.create_session(user.id, token, user_data, roles_data)
@@ -99,38 +87,32 @@ def login():
 
 
 @login_bp.route('/user-login', methods=['POST'])
-def user_login():
+@validate_form(UserLoginForm)
+def user_login(form):
     """通用账户登录（支持用户名、手机号、邮箱）"""
-    form = validate_form(UserLoginForm)
 
     account = form.account.data
     password = form.password.data
 
     # 判断账户类型并查找用户
-    user = None
-    
     # 检查是否为邮箱格式
     if '@' in account:
-        user = User.query.filter_by(email=account).first()
+        user = assert_exists(User, User.email == account, "账户或密码错误", 401)
     # 检查是否为手机号格式
     elif account.isdigit() and len(account) == 11 and account.startswith('1'):
-        user = User.query.filter_by(phone=account).first()
+        user = assert_exists(User, User.phone == account, "账户或密码错误", 401)
     # 否则按用户名查找
     else:
-        user = User.query.filter_by(username=account).first()
-    
-    if not user:
-        return JsonResult.error("账户或密码错误", 401)
+        user = assert_exists(User, User.username == account, "账户或密码错误", 401)
 
     if not verify_password(password, user.password_hash):
         return JsonResult.error("账户或密码错误", 401)
 
     # 获取用户角色信息
-    user_roles_query = db.session.query(UserRole, Role).join(
-        Role, UserRole.role_id == Role.id
-    ).filter(UserRole.user_id == user.id)
-
-    user_roles = [role for _, role in user_roles_query.all()]
+    user_roles = create_query_builder(Role) \
+        .join(UserRole) \
+        .filter(UserRole.user_id == user.id) \
+        .all()
 
     # 检查用户是否具有'user'角色
     has_user_role = any(role.code == 'user' for role in user_roles)
@@ -172,6 +154,8 @@ def user_login():
 
 
 @login_bp.route('/logout', methods=['POST'])
+@role_required(['admin', 'manager', 'user'])
+@permission_required("auth:logout")
 def logout():
     """用户登出"""
     token = request.headers.get('Authorization')
@@ -183,52 +167,41 @@ def logout():
 
 
 @login_bp.route('/register', methods=['POST'])
-def register():
+@validate_form(RegisterForm)
+def register(form):
     """用户注册"""
-    form = validate_form(RegisterForm)
-
-    username = form.username.data
-    password = form.password.data
-    phone = form.phone.data
-    email = form.email.data
 
     # 检查用户名是否已存在
-    existing_user = User.query.filter_by(username=username).first()
-    if existing_user:
-        return JsonResult.error("用户名已存在", 400)
+    assert_not_exists(User, User.username == form.username.data, "用户名已存在")
 
     # 检查手机号是否已存在
-    if phone:
-        existing_phone = User.query.filter_by(phone=phone).first()
-        if existing_phone:
-            return JsonResult.error("手机号已存在", 400)
+    if form.phone.data:
+        assert_not_exists(User, User.phone == form.phone.data, "手机号已存在")
 
     # 检查邮箱是否已存在
-    if email:
-        existing_email = User.query.filter_by(email=email).first()
-        if existing_email:
-            return JsonResult.error("邮箱已存在", 400)
+    if form.email.data:
+        assert_not_exists(User, User.email == form.email.data, "邮箱已存在")
 
     # 创建新用户
     user_id = str(uuid.uuid4())
     new_user = User(
         id=user_id,
-        username=username,
+        username=form.username.data,
         avatar=form.avatar.data or process_image_url(
             '/static/images/default_avatar.png'),
-        phone=phone or '',
-        email=email or '',
-        password_hash=hash_password(password)
+        phone=form.phone.data or '',
+        email=form.email.data or '',
+        password_hash=hash_password(form.password.data)
     )
 
-    # 保存用户
-    db.session.add(new_user)
-    db.session.flush()  # 获取用户ID
+    try:
+        # 保存用户
+        db.session.add(new_user)
+        db.session.flush()  # 获取用户ID
 
-    # 分配默认角色（普通用户）
-    default_role = Role.query.filter_by(code='user').first()
-    print("默认角色", default_role)
-    if default_role:
+        # 分配默认角色（普通用户）
+        default_role = assert_exists(Role, Role.code == 'user', "系统错误：默认用户角色不存在", 500)
+
         user_role = UserRole(
             id=str(uuid.uuid4()),
             user_id=user_id,
@@ -236,7 +209,10 @@ def register():
         )
         db.session.add(user_role)
 
-    db.session.commit()
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return JsonResult.error(f"注册失败: {str(e)}", 500)
 
     return JsonResult.success({
         'id': new_user.id,
@@ -248,9 +224,11 @@ def register():
 
 
 @login_bp.route('/profile', methods=['GET'])
+@role_required(['admin', 'manager', 'user'])
+@permission_required("auth:get_profile")
 def get_profile():
     """获取当前用户信息"""
-    _ = get_user_id()
+    _ = assert_current_user_id()
 
     current_user = AuthManager.get_current_user()
     if not current_user:
@@ -260,61 +238,44 @@ def get_profile():
 
 
 @login_bp.route('/profile', methods=['PUT'])
-def update_profile():
+@validate_form(UpdateProfileForm)
+@role_required(['admin', 'manager', 'user'])
+@permission_required("auth:update_profile")
+def update_profile(form):
     """更新当前用户信息"""
-    form = validate_form(UpdateProfileForm)
 
     current_user = AuthManager.get_current_user()
     if not current_user:
         return JsonResult.error("获取用户信息失败", 401)
 
     user_id = current_user['user_id']
-    user = User.query.filter_by(id=user_id).first()
-    if not user:
-        return JsonResult.error("用户不存在", 404)
+    user = assert_exists(User, User.id == user_id, "用户不存在")
 
-    # 更新用户信息
-    if form.avatar.data is not None:
-        user.avatar = form.avatar.data
+    # 检查手机号和邮箱唯一性（如果有更新的话）
     if form.phone.data:
-        # 检查手机号是否已被其他用户使用
-        existing_phone = User.query.filter(
-            User.phone == form.phone.data,
-            User.id != user_id
-        ).first()
-        if existing_phone:
-            return JsonResult.error("手机号已被其他用户使用", 400)
-        user.phone = form.phone.data
-    if form.email.data:
-        # 检查邮箱是否已被其他用户使用
-        existing_email = User.query.filter(
-            User.email == form.email.data,
-            User.id != user_id
-        ).first()
-        if existing_email:
-            return JsonResult.error("邮箱已被其他用户使用", 400)
-        user.email = form.email.data
-    if form.real_name.data is not None:
-        user.real_name = form.real_name.data
-    if form.gender.data is not None:
-        user.gender = form.gender.data
-    if form.birth_date.data is not None:
-        user.birth_date = form.birth_date.data
-    if form.brief_introduction.data is not None:
-        user.brief_introduction = form.brief_introduction.data
+        assert_not_exists(User, [User.phone == form.phone.data, User.id != user_id], "手机号已被其他用户使用")
 
-    db.session.commit()
+    if form.email.data:
+        assert_not_exists(User, [User.email == form.email.data, User.id != user_id], "邮箱已被其他用户使用")
+
+    # 使用update_model_from_form简化更新逻辑
+    update_model_fields(user, form)
+
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return JsonResult.error(f"更新失败: {str(e)}", 500)
 
     # 更新Redis中的用户会话信息
     updated_user_data = user.to_dict()
     updated_user_data['avatar'] = user.avatar
 
     # 获取用户角色信息
-    user_roles_query = db.session.query(UserRole, Role).join(
-        Role, UserRole.role_id == Role.id
-    ).filter(UserRole.user_id == user.id)
-
-    user_roles = [role for _, role in user_roles_query.all()]
+    user_roles = create_query_builder(Role) \
+        .join(UserRole) \
+        .filter(UserRole.user_id == user.id) \
+        .all()
     roles_data = [{
         'id': role.id,
         'name': role.name,
@@ -332,9 +293,11 @@ def update_profile():
 
 
 @login_bp.route('/change-password', methods=['PUT'])
-def change_password():
+@validate_form(ChangePasswordForm)
+@role_required(['admin', 'manager', 'user'])
+@permission_required("auth:change_password")
+def change_password(form):
     """修改密码"""
-    form = validate_form(ChangePasswordForm)
 
     current_user = AuthManager.get_current_user()
     if not current_user:
@@ -345,9 +308,7 @@ def change_password():
     new_password = form.new_password.data
 
     # 获取用户信息
-    user = User.query.filter_by(id=user_id).first()
-    if not user:
-        return JsonResult.error("用户不存在", 404)
+    user = assert_exists(User, User.id == user_id, "用户不存在")
 
     # 验证旧密码
     if not user.password_hash:
@@ -362,12 +323,19 @@ def change_password():
 
     # 更新密码
     user.password_hash = hash_password(new_password)
-    db.session.commit()
+
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return JsonResult.error(f"密码修改失败: {str(e)}", 500)
 
     return JsonResult.success(None, "密码修改成功")
 
 
 @login_bp.route('/refresh-token', methods=['POST'])
+@role_required(['admin', 'manager', 'user'])
+@permission_required("auth:refresh_token")
 def refresh_token():
     """刷新访问令牌"""
     current_user = AuthManager.get_current_user()
@@ -382,16 +350,13 @@ def refresh_token():
     AuthManager.destroy_session(old_token)
 
     # 获取用户最新信息
-    user = User.query.filter_by(id=current_user['user_id']).first()
-    if not user:
-        return JsonResult.error("用户不存在", 404)
+    user = assert_exists(User, User.id == current_user['user_id'], "用户不存在")
 
     # 获取用户角色信息
-    user_roles_query = db.session.query(UserRole, Role).join(
-        Role, UserRole.role_id == Role.id
-    ).filter(UserRole.user_id == user.id)
-
-    user_roles = [role for _, role in user_roles_query.all()]
+    user_roles = create_query_builder(Role) \
+        .join(UserRole) \
+        .filter(UserRole.user_id == user.id) \
+        .all()
 
     # 创建最新的用户数据
     user_data = user.to_dict()
@@ -425,7 +390,7 @@ def refresh_token():
 
 @login_bp.route('/verify-code', methods=['GET'])
 def get_verify_code():
-    """获取验证码"""
+    """获取验证码（公开接口）"""
     # 生成验证码UUID
     verify_code_uuid = str(uuid.uuid4())
 

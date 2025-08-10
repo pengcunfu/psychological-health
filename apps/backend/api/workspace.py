@@ -1,60 +1,51 @@
 """
 工作室API
 提供工作室的增删改查功能
-
-接口列表：
-- GET /workspace - 获取工作室列表
-- GET /workspace/<workspace_id> - 获取单个工作室详情
-- POST /workspace - 创建工作室
-- PUT /workspace/<workspace_id> - 更新工作室
-- DELETE /workspace/<workspace_id> - 删除工作室
 """
-from flask import Blueprint, request
+from flask import Blueprint
 from models import db
 from models.workspace import Workspace
-from sqlalchemy.exc import SQLAlchemyError
 from form.workspace import WorkspaceQueryForm, WorkspaceCreateForm, WorkspaceUpdateForm
 from utils.json_result import JsonResult
-from utils.validate import validate_args, validate_data
+from utils.validate import assert_id_exists
+from utils.model_helper import update_model_fields
+from utils.query import create_query_builder
+from decorator.form import validate_form
+from decorator.permission import role_required, permission_required
 import uuid
 
 workspace_bp = Blueprint('workspace', __name__, url_prefix='/workspace')
 
 
 @workspace_bp.route('', methods=['GET'])
-def get_workspaces():
+@validate_form(WorkspaceQueryForm)
+@role_required(['admin', 'manager', 'user'])
+@permission_required("workspace:get_workspaces")
+def get_workspaces(form):
     """获取工作室列表"""
-    form = validate_args(WorkspaceQueryForm)
 
-    page = form.page.data
-    per_page = form.per_page.data
-    name = form.name.data
-    status = form.status.data
-
-    query = Workspace.query
-
-    if name:
-        query = query.filter(Workspace.name.like(f'%{name}%'))
-    if status is not None:
-        query = query.filter(Workspace.status == status)
-
-    paginate = query.order_by(Workspace.sort_order.asc(), Workspace.create_time.desc()).paginate(
-        page=page, per_page=per_page, error_out=False
-    )
+    # 使用QueryBuilder构建查询并分页
+    result = create_query_builder(Workspace) \
+        .when(form.name.data, Workspace.name.like(f'%{form.name.data}%')) \
+        .when(form.status.data, Workspace.status == form.status.data) \
+        .order_by(Workspace.sort_order.asc(), Workspace.create_time.desc()) \
+        .paginate(form.page.data, form.per_page.data, 100)
 
     return JsonResult.success({
-        'list': [workspace.to_dict() for workspace in paginate.items],
-        'total': paginate.total,
-        'page': page,
-        'per_page': per_page
+        'list': [workspace.to_dict() for workspace in result['items']],
+        'total': result['total'],
+        'page': result['page'],
+        'per_page': result['per_page'],
+        'pages': result['pages']
     })
 
 
 @workspace_bp.route('/<workspace_id>', methods=['GET'])
+@role_required(['admin', 'manager', 'user'])
+@permission_required("workspace:get_workspace")
 def get_workspace(workspace_id):
     """获取单个工作室"""
-    if not workspace_id or not workspace_id.strip():
-        return JsonResult.error('工作室ID不能为空', 400)
+    assert_id_exists(workspace_id, "工作室ID不能为空")
 
     workspace = Workspace.query.get(workspace_id)
     if not workspace:
@@ -64,9 +55,11 @@ def get_workspace(workspace_id):
 
 
 @workspace_bp.route('', methods=['POST'])
-def create_workspace():
+@validate_form(WorkspaceCreateForm)
+@role_required(['admin', 'manager'])
+@permission_required("workspace:create_workspace")
+def create_workspace(form):
     """创建工作室"""
-    form = validate_data(WorkspaceCreateForm)
 
     # 检查名称唯一性
     if form.validate_name_unique():
@@ -98,7 +91,7 @@ def create_workspace():
         status=form.status.data or 1,
         sort_order=form.sort_order.data or 100
     )
-    
+
     # 设置环境照片
     workspace.environment_images = environment_images
 
@@ -109,12 +102,12 @@ def create_workspace():
 
 
 @workspace_bp.route('/<workspace_id>', methods=['PUT'])
-def update_workspace(workspace_id):
+@validate_form(WorkspaceUpdateForm)
+@role_required(['admin', 'manager'])
+@permission_required("workspace:update_workspace")
+def update_workspace(workspace_id, form):
     """更新工作室"""
-    if not workspace_id or not workspace_id.strip():
-        return JsonResult.error('工作室ID不能为空', 400)
-
-    form = validate_data(WorkspaceUpdateForm)
+    assert_id_exists(workspace_id, "工作室ID不能为空")
 
     workspace = Workspace.query.get(workspace_id)
     if not workspace:
@@ -126,17 +119,8 @@ def update_workspace(workspace_id):
             return JsonResult.error('工作室名称已存在', 409)
         workspace.name = form.name.data
 
-    # 更新所有字段
-    if form.cover_image.data is not None:
-        workspace.cover_image = form.cover_image.data
-    if form.address.data is not None:
-        workspace.address = form.address.data
-    if form.distance.data is not None:
-        workspace.distance = form.distance.data
-    if form.business_hours.data is not None:
-        workspace.business_hours = form.business_hours.data
+    # 处理环境照片JSON格式（特殊字段需要单独处理）
     if form.environment_images.data is not None:
-        # 处理环境照片JSON格式
         try:
             import json
             if isinstance(form.environment_images.data, str):
@@ -148,28 +132,20 @@ def update_workspace(workspace_id):
             workspace.environment_images = environment_images
         except (json.JSONDecodeError, TypeError):
             pass
-    if form.introduction.data is not None:
-        workspace.introduction = form.introduction.data
-    if form.slogan.data is not None:
-        workspace.slogan = form.slogan.data
-    if form.latitude.data is not None:
-        workspace.latitude = form.latitude.data
-    if form.longitude.data is not None:
-        workspace.longitude = form.longitude.data
-    if form.status.data is not None:
-        workspace.status = form.status.data
-    if form.sort_order.data is not None:
-        workspace.sort_order = form.sort_order.data
+
+    # 使用统一的更新函数更新其他字段
+    update_model_fields(workspace, form, exclude_fields=['environment_images'])
 
     db.session.commit()
     return JsonResult.success(workspace.to_dict(), '更新成功')
 
 
 @workspace_bp.route('/<workspace_id>', methods=['DELETE'])
+@role_required(['admin', 'manager'])
+@permission_required("workspace:delete_workspace")
 def delete_workspace(workspace_id):
     """删除工作室"""
-    if not workspace_id or not workspace_id.strip():
-        return JsonResult.error('工作室ID不能为空', 400)
+    assert_id_exists(workspace_id, "工作室ID不能为空")
 
     workspace = Workspace.query.get(workspace_id)
     if not workspace:

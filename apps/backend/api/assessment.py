@@ -1,97 +1,60 @@
 """
 测评管理API
 提供心理测评的完整管理功能，包含权限控制
-
-管理员接口：
-- GET /assessment - 获取测评列表（可查看所有状态）
-- GET /assessment/<assessment_id> - 获取测评详情（可查看所有状态）
-- POST /assessment - 创建测评
-- PUT /assessment/<assessment_id> - 更新测评
-- DELETE /assessment/<assessment_id> - 删除测评
-- POST /assessment/<assessment_id>/questions - 创建题目
-- PUT /assessment/<assessment_id>/questions/<question_id> - 更新题目
-- DELETE /assessment/<assessment_id>/questions/<question_id> - 删除题目
-- GET /assessment/<assessment_id>/questions/<question_id>/options - 获取选项
-- POST /assessment/<assessment_id>/questions/<question_id>/options - 保存选项
-- DELETE /assessment/<assessment_id>/questions/<question_id>/options/<option_id> - 删除选项
-- GET /assessment/records - 获取所有测评记录（可查看所有用户）
-- GET /assessment/records/<record_id> - 获取测评记录详情（可查看所有记录）
-
-普通用户接口：
-- GET /assessment/public - 获取公开测评列表（仅已发布）
-- GET /assessment/<assessment_id> - 获取测评详情（仅已发布）
-- POST /assessment/start - 开始测评
-- POST /assessment/submit - 提交测评
-- GET /assessment/records - 获取我的测评记录
-- GET /assessment/records/<record_id> - 获取我的测评记录详情
-
-权限说明：
-- 管理员（admin/manager角色）：可以管理所有测评和查看所有记录
-- 普通用户：只能查看已发布的测评，只能查看自己的测评记录
 """
-
 import uuid
 from datetime import datetime
-from flask import Blueprint, request, g
-from sqlalchemy import and_, or_
+from flask import Blueprint, request
+from sqlalchemy import or_
 from models import Assessment, AssessmentQuestion, AssessmentOption, AssessmentRecord, AssessmentAnswer
 from models.base import db
+from utils.json_result import JsonResult
+from utils.validate import assert_id_exists
+from utils.query import create_query_builder
+from utils.model_helper import update_model_fields
+from utils.image import process_assessment_images
+from utils.auth_helper import is_manager_user, assert_current_user_id
 from form.assessment import (
     AssessmentQueryForm, AssessmentCreateForm, AssessmentUpdateForm,
     AssessmentQuestionCreateForm, AssessmentQuestionUpdateForm,
     AssessmentStartForm, AssessmentSubmitForm, AssessmentRecordQueryForm
 )
-from utils.json_result import JsonResult
-from utils.validate import validate_args, check_id
-from utils.image import process_assessment_images
-from utils.auth_helper import is_manager_user, get_user_id
+from decorator.form import validate_form
+from decorator.permission import role_required, permission_required
 import json
 
 assessment_bp = Blueprint('assessment', __name__, url_prefix='/assessment')
 
 
 @assessment_bp.route('', methods=['GET'])
-def get_assessments():
+@validate_form(AssessmentQueryForm)
+@role_required(['admin', 'manager', 'user'])
+@permission_required("assessment:get_assessments")
+def get_assessments(form):
     """获取测评列表"""
-    form = validate_args(AssessmentQueryForm)
-    query = Assessment.query
-    
-    # 权限控制：普通用户只能查看已发布的测评
-    if not is_manager_user():
-        query = query.filter(Assessment.status == 'published')
-    
-    # 搜索条件
-    if form.name.data:
-        query = query.filter(Assessment.name.like(f'%{form.name.data}%'))
-    
-    if form.category.data:
-        query = query.filter(Assessment.category == form.category.data)
-    
-    if form.difficulty.data:
-        query = query.filter(Assessment.difficulty == form.difficulty.data)
-    
-    if form.is_free.data:
-        query = query.filter(Assessment.is_free == form.is_free.data)
-    
-    if form.status.data:
-        # 普通用户不能按状态筛选（已经限制为published）
-        if is_manager_user():
-            query = query.filter(Assessment.status == form.status.data)
-    
+    is_manager = is_manager_user()
+
+    # 构建查询
+    builder = create_query_builder(Assessment) \
+        .unless(is_manager, Assessment.status == 'published') \
+        .when(form.name.data, Assessment.name.like(f'%{form.name.data}%')) \
+        .when(form.category.data, Assessment.category == form.category.data) \
+        .when(form.difficulty.data, Assessment.difficulty == form.difficulty.data) \
+        .when(form.is_free.data, Assessment.is_free == form.is_free.data) \
+        .when(form.status.data and is_manager, Assessment.status == form.status.data)
+
+    # 关键词搜索
     if form.keyword.data:
         keyword = f'%{form.keyword.data}%'
-        query = query.filter(
+        builder.filter(
             or_(
                 Assessment.name.like(keyword),
                 Assessment.subtitle.like(keyword),
                 Assessment.description.like(keyword)
             )
         )
-    
-    # 排序逻辑
-    sort_by = form.sort_by.data or 'sort_order'
-    sort_order = form.sort_order.data or 'asc'
-    
+
+    # 动态排序
     valid_sort_fields = {
         'create_time': Assessment.create_time,
         'update_time': Assessment.update_time,
@@ -101,84 +64,80 @@ def get_assessments():
         'participant_count': Assessment.participant_count,
         'sort_order': Assessment.sort_order
     }
-    
+
+    sort_by = form.sort_by.data or 'sort_order'
+    sort_order = form.sort_order.data or 'asc'
+
     if sort_by not in valid_sort_fields:
         sort_by = 'sort_order'
-    
-    sort_column = valid_sort_fields[sort_by]
-    
-    if sort_order.lower() == 'desc':
-        query = query.order_by(sort_column.desc())
-    else:
-        query = query.order_by(sort_column.asc())
-    
-    # 分页
-    pagination = query.paginate(
-        page=form.page.data, per_page=form.per_page.data, error_out=False
-    )
-    
-    assessments_data = [assessment.to_dict() for assessment in pagination.items]
-    
+
+    sort_expr = valid_sort_fields[sort_by].desc() if sort_order.lower() == 'desc' else valid_sort_fields[sort_by].asc()
+
+    # 分页查询
+    result = builder.order_by(sort_expr).paginate(form.page.data, form.per_page.data, 100)
+
+    assessments_data = [assessment.to_dict() for assessment in result['items']]
+
     # 处理图片URL
     assessments_data = process_assessment_images(assessments_data)
-    
+
     return JsonResult.success({
         'list': assessments_data,
-        'total': pagination.total,
-        'page': form.page.data,
-        'per_page': form.per_page.data,
-        'pages': pagination.pages,
+        'total': result['total'],
+        'page': result['page'],
+        'per_page': result['per_page'],
+        'pages': result['pages'],
         'sort_by': sort_by,
         'sort_order': sort_order
     })
 
 
 @assessment_bp.route('/<assessment_id>', methods=['GET'])
+@role_required(['admin', 'manager', 'user'])
+@permission_required("assessment:get_assessment_detail")
 def get_assessment_detail(assessment_id):
     """获取测评详情"""
-    check_id(assessment_id, "测评ID不能为空")
-    
+    assert_id_exists(assessment_id, "测评ID不能为空")
+
     # 构建查询
-    query = Assessment.query.filter_by(id=assessment_id)
-    
-    # 权限控制：普通用户只能查看已发布的测评
-    if not is_manager_user():
-        query = query.filter(Assessment.status == 'published')
-    
-    assessment = query.first()
+    builder = create_query_builder(Assessment) \
+        .filter(Assessment.id == assessment_id) \
+        .unless(is_manager_user(), Assessment.status == 'published')
+
+    assessment = builder.first()
     if not assessment:
         return JsonResult.error('测评不存在或未发布', 404)
-    
+
     # 获取题目列表（按顺序）
-    questions = AssessmentQuestion.query.filter_by(assessment_id=assessment_id)\
-        .order_by(AssessmentQuestion.question_order.asc()).all()
-    
+    questions = create_query_builder(AssessmentQuestion) \
+        .filter(AssessmentQuestion.assessment_id == assessment_id) \
+        .order_by(AssessmentQuestion.question_order.asc()) \
+        .all()
+
     assessment_data = assessment.to_dict()
     assessment_data['questions'] = [q.to_dict() for q in questions]
-    
+
     # 处理图片URL
     assessment_data = process_assessment_images(assessment_data)
-    
+
     return JsonResult.success(assessment_data)
 
 
 @assessment_bp.route('', methods=['POST'])
-def create_assessment():
+@validate_form(AssessmentCreateForm)
+@role_required(['admin', 'manager'])
+@permission_required("assessment:create_assessment")
+def create_assessment(form):
     """创建测评（仅管理员）"""
-    # 检查管理员权限
-    if not is_manager_user():
-        return JsonResult.error('权限不足，只有管理员可以创建测评', 403)
-    
-    form = validate_args(AssessmentCreateForm)
-    
+
     # 生成唯一ID
     assessment_id = str(uuid.uuid4())
-    
+
     # 处理标签
     tags = []
     if form.tags.data:
         tags = [tag.strip() for tag in form.tags.data.split(',') if tag.strip()]
-    
+
     assessment = Assessment(
         id=assessment_id,
         name=form.name.data,
@@ -196,7 +155,7 @@ def create_assessment():
         sort_order=form.sort_order.data
     )
     assessment.tags = tags
-    
+
     try:
         db.session.add(assessment)
         db.session.commit()
@@ -207,52 +166,24 @@ def create_assessment():
 
 
 @assessment_bp.route('/<assessment_id>', methods=['PUT'])
-def update_assessment(assessment_id):
+@validate_form(AssessmentUpdateForm)
+@role_required(['admin', 'manager'])
+@permission_required("assessment:update_assessment")
+def update_assessment(assessment_id, form):
     """更新测评（仅管理员）"""
-    # 检查管理员权限
-    if not is_manager_user():
-        return JsonResult.error('权限不足，只有管理员可以更新测评', 403)
-    
-    check_id(assessment_id, "测评ID不能为空")
+    assert_id_exists(assessment_id, "测评ID不能为空")
     assessment = Assessment.query.filter_by(id=assessment_id).first()
     if not assessment:
         return JsonResult.error('测评不存在', 404)
-    
-    form = validate_args(AssessmentUpdateForm)
-    
-    # 更新字段
-    if form.name.data:
-        assessment.name = form.name.data
-    if form.subtitle.data is not None:
-        assessment.subtitle = form.subtitle.data
-    if form.description.data is not None:
-        assessment.description = form.description.data
-    if form.cover_image.data is not None:
-        assessment.cover_image = form.cover_image.data
-    if form.price.data is not None:
-        assessment.price = form.price.data
-    if form.original_price.data is not None:
-        assessment.original_price = form.original_price.data
-    if form.duration.data is not None:
-        assessment.duration = form.duration.data
-    if form.difficulty.data:
-        assessment.difficulty = form.difficulty.data
-    if form.category.data is not None:
-        assessment.category = form.category.data
-    if form.status.data:
-        assessment.status = form.status.data
-    if form.instructions.data is not None:
-        assessment.instructions = form.instructions.data
-    if form.is_free.data is not None:
-        assessment.is_free = form.is_free.data
-    if form.sort_order.data is not None:
-        assessment.sort_order = form.sort_order.data
-    
-    # 处理标签
+
+    # 处理标签（特殊逻辑）
     if form.tags.data is not None:
         tags = [tag.strip() for tag in form.tags.data.split(',') if tag.strip()]
         assessment.tags = tags
-    
+
+    # 使用update_model_from_form处理其他标准字段
+    update_model_fields(assessment, form, exclude_fields=['tags'])
+
     try:
         db.session.commit()
         return JsonResult.success(assessment.to_dict(), '更新成功')
@@ -262,17 +193,15 @@ def update_assessment(assessment_id):
 
 
 @assessment_bp.route('/<assessment_id>', methods=['DELETE'])
+@role_required(['admin', 'manager'])
+@permission_required("assessment:delete_assessment")
 def delete_assessment(assessment_id):
     """删除测评（仅管理员）"""
-    # 检查管理员权限
-    if not is_manager_user():
-        return JsonResult.error('权限不足，只有管理员可以删除测评', 403)
-    
-    check_id(assessment_id, "测评ID不能为空")
+    assert_id_exists(assessment_id, "测评ID不能为空")
     assessment = Assessment.query.filter_by(id=assessment_id).first()
     if not assessment:
         return JsonResult.error('测评不存在', 404)
-    
+
     try:
         db.session.delete(assessment)
         db.session.commit()
@@ -283,22 +212,19 @@ def delete_assessment(assessment_id):
 
 
 @assessment_bp.route('/<assessment_id>/questions', methods=['POST'])
-def create_question(assessment_id):
+@validate_form(AssessmentQuestionCreateForm)
+@role_required(['admin', 'manager'])
+@permission_required("assessment:create_question")
+def create_question(assessment_id, form):
     """创建测评题目（仅管理员）"""
-    # 检查管理员权限
-    if not is_manager_user():
-        return JsonResult.error('权限不足，只有管理员可以创建题目', 403)
-    
-    check_id(assessment_id, "测评ID不能为空")
+    assert_id_exists(assessment_id, "测评ID不能为空")
     assessment = Assessment.query.filter_by(id=assessment_id).first()
     if not assessment:
         return JsonResult.error('测评不存在', 404)
-    
-    form = validate_args(AssessmentQuestionCreateForm)
-    
+
     # 生成唯一ID
     question_id = str(uuid.uuid4())
-    
+
     question = AssessmentQuestion(
         id=question_id,
         assessment_id=assessment_id,
@@ -310,13 +236,15 @@ def create_question(assessment_id):
         dimension=form.dimension.data,
         description=form.description.data
     )
-    
+
     try:
         db.session.add(question)
-        
+
         # 更新测评的题目数量
-        assessment.question_count = AssessmentQuestion.query.filter_by(assessment_id=assessment_id).count() + 1
-        
+        assessment.question_count = create_query_builder(AssessmentQuestion) \
+                                        .filter(AssessmentQuestion.assessment_id == assessment_id) \
+                                        .count() + 1
+
         db.session.commit()
         return JsonResult.success(question.to_dict(), '创建成功')
     except Exception as e:
@@ -325,38 +253,22 @@ def create_question(assessment_id):
 
 
 @assessment_bp.route('/<assessment_id>/questions/<question_id>', methods=['PUT'])
-def update_question(assessment_id, question_id):
+@validate_form(AssessmentQuestionUpdateForm)
+@role_required(['admin', 'manager'])
+@permission_required("assessment:update_question")
+def update_question(assessment_id, question_id, form):
     """更新测评题目（仅管理员）"""
-    # 检查管理员权限
-    if not is_manager_user():
-        return JsonResult.error('权限不足，只有管理员可以更新题目', 403)
-    
-    check_id(assessment_id, "测评ID不能为空")
-    check_id(question_id, "题目ID不能为空")
+    assert_id_exists(assessment_id, "测评ID不能为空")
+    assert_id_exists(question_id, "题目ID不能为空")
     question = AssessmentQuestion.query.filter_by(
         id=question_id, assessment_id=assessment_id
     ).first()
     if not question:
         return JsonResult.error('题目不存在', 404)
-    
-    form = validate_args(AssessmentQuestionUpdateForm)
-    
-    # 更新字段
-    if form.question_text.data:
-        question.question_text = form.question_text.data
-    if form.question_type.data:
-        question.question_type = form.question_type.data
-    if form.question_order.data is not None:
-        question.question_order = form.question_order.data
-    if form.is_required.data is not None:
-        question.is_required = form.is_required.data
-    if form.score_weight.data is not None:
-        question.score_weight = form.score_weight.data
-    if form.dimension.data is not None:
-        question.dimension = form.dimension.data
-    if form.description.data is not None:
-        question.description = form.description.data
-    
+
+    # 使用update_model_from_form简化更新逻辑
+    update_model_fields(question, form)
+
     try:
         db.session.commit()
         return JsonResult.success(question.to_dict(), '更新成功')
@@ -366,28 +278,28 @@ def update_question(assessment_id, question_id):
 
 
 @assessment_bp.route('/<assessment_id>/questions/<question_id>', methods=['DELETE'])
+@role_required(['admin', 'manager'])
+@permission_required("assessment:delete_question")
 def delete_question(assessment_id, question_id):
     """删除测评题目（仅管理员）"""
-    # 检查管理员权限
-    if not is_manager_user():
-        return JsonResult.error('权限不足，只有管理员可以删除题目', 403)
-    
-    check_id(assessment_id, "测评ID不能为空")
-    check_id(question_id, "题目ID不能为空")
+    assert_id_exists(assessment_id, "测评ID不能为空")
+    assert_id_exists(question_id, "题目ID不能为空")
     question = AssessmentQuestion.query.filter_by(
         id=question_id, assessment_id=assessment_id
     ).first()
     if not question:
         return JsonResult.error('题目不存在', 404)
-    
+
     try:
         db.session.delete(question)
-        
+
         # 更新测评的题目数量
         assessment = Assessment.query.filter_by(id=assessment_id).first()
         if assessment:
-            assessment.question_count = AssessmentQuestion.query.filter_by(assessment_id=assessment_id).count() - 1
-        
+            assessment.question_count = create_query_builder(AssessmentQuestion) \
+                                            .filter(AssessmentQuestion.assessment_id == assessment_id) \
+                                            .count() - 1
+
         db.session.commit()
         return JsonResult.success(None, '删除成功')
     except Exception as e:
@@ -396,60 +308,60 @@ def delete_question(assessment_id, question_id):
 
 
 @assessment_bp.route('/<assessment_id>/questions/<question_id>/options', methods=['GET'])
+@role_required(['admin', 'manager'])
+@permission_required("assessment:get_question_options")
 def get_question_options(assessment_id, question_id):
     """获取题目选项列表（仅管理员）"""
-    # 检查管理员权限
-    if not is_manager_user():
-        return JsonResult.error('权限不足，只有管理员可以查看选项', 403)
-    
-    check_id(assessment_id, "测评ID不能为空")
-    check_id(question_id, "题目ID不能为空")
-    
+    assert_id_exists(assessment_id, "测评ID不能为空")
+    assert_id_exists(question_id, "题目ID不能为空")
+
     # 检查题目是否存在
     question = AssessmentQuestion.query.filter_by(
         id=question_id, assessment_id=assessment_id
     ).first()
     if not question:
         return JsonResult.error('题目不存在', 404)
-    
+
     # 获取选项列表（按顺序）
-    options = AssessmentOption.query.filter_by(question_id=question_id)\
-        .order_by(AssessmentOption.option_order.asc()).all()
-    
+    options = create_query_builder(AssessmentOption) \
+        .filter(AssessmentOption.question_id == question_id) \
+        .order_by(AssessmentOption.option_order.asc()) \
+        .all()
+
     options_data = [option.to_dict() for option in options]
     return JsonResult.success(options_data)
 
 
 @assessment_bp.route('/<assessment_id>/questions/<question_id>/options', methods=['POST'])
+@role_required(['admin', 'manager'])
+@permission_required("assessment:save_question_options")
 def save_question_options(assessment_id, question_id):
     """批量保存题目选项（仅管理员）"""
-    # 检查管理员权限
-    if not is_manager_user():
-        return JsonResult.error('权限不足，只有管理员可以保存选项', 403)
-    
-    check_id(assessment_id, "测评ID不能为空")
-    check_id(question_id, "题目ID不能为空")
-    
+    assert_id_exists(assessment_id, "测评ID不能为空")
+    assert_id_exists(question_id, "题目ID不能为空")
+
     # 检查题目是否存在
     question = AssessmentQuestion.query.filter_by(
         id=question_id, assessment_id=assessment_id
     ).first()
     if not question:
         return JsonResult.error('题目不存在', 404)
-    
+
     options_data = request.get_json()
     if not options_data or not isinstance(options_data, list):
         return JsonResult.error('选项数据格式错误')
-    
+
     try:
         # 删除现有选项
-        AssessmentOption.query.filter_by(question_id=question_id).delete()
-        
+        create_query_builder(AssessmentOption) \
+            .filter(AssessmentOption.question_id == question_id) \
+            .delete()
+
         # 创建新选项
         for i, option_data in enumerate(options_data):
             if not option_data.get('option_text'):
                 continue
-                
+
             option = AssessmentOption(
                 id=str(uuid.uuid4()),
                 question_id=question_id,
@@ -459,40 +371,38 @@ def save_question_options(assessment_id, question_id):
                 option_order=i
             )
             db.session.add(option)
-        
+
         db.session.commit()
         return JsonResult.success(None, '选项保存成功')
-        
+
     except Exception as e:
         db.session.rollback()
         return JsonResult.error(f'保存失败: {str(e)}')
 
 
 @assessment_bp.route('/<assessment_id>/questions/<question_id>/options/<option_id>', methods=['DELETE'])
+@role_required(['admin', 'manager'])
+@permission_required("assessment:delete_option")
 def delete_option(assessment_id, question_id, option_id):
     """删除选项（仅管理员）"""
-    # 检查管理员权限
-    if not is_manager_user():
-        return JsonResult.error('权限不足，只有管理员可以删除选项', 403)
-    
-    check_id(assessment_id, "测评ID不能为空")
-    check_id(question_id, "题目ID不能为空")
-    check_id(option_id, "选项ID不能为空")
-    
+    assert_id_exists(assessment_id, "测评ID不能为空")
+    assert_id_exists(question_id, "题目ID不能为空")
+    assert_id_exists(option_id, "选项ID不能为空")
+
     # 检查题目是否存在
     question = AssessmentQuestion.query.filter_by(
         id=question_id, assessment_id=assessment_id
     ).first()
     if not question:
         return JsonResult.error('题目不存在', 404)
-    
+
     # 检查选项是否存在
     option = AssessmentOption.query.filter_by(
         id=option_id, question_id=question_id
     ).first()
     if not option:
         return JsonResult.error('选项不存在', 404)
-    
+
     try:
         db.session.delete(option)
         db.session.commit()
@@ -503,26 +413,32 @@ def delete_option(assessment_id, question_id, option_id):
 
 
 @assessment_bp.route('/start', methods=['POST'])
-def start_assessment():
+@validate_form(AssessmentStartForm)
+@role_required(['admin', 'manager', 'user'])
+@permission_required("assessment:start_assessment")
+def start_assessment(form):
     """开始测评"""
-    form = validate_args(AssessmentStartForm)
-    user_id = get_user_id()
-    
+    user_id = assert_current_user_id()
+
     # 检查测评是否存在
-    assessment = Assessment.query.filter_by(id=form.assessment_id.data, status='published').first()
+    assessment = create_query_builder(Assessment) \
+        .filter(Assessment.id == form.assessment_id.data, Assessment.status == 'published') \
+        .first()
     if not assessment:
         return JsonResult.error('测评不存在或未发布', 404)
-    
+
     # 检查是否已有进行中的记录
-    existing_record = AssessmentRecord.query.filter_by(
-        user_id=user_id,
-        assessment_id=form.assessment_id.data,
-        status='in_progress'
-    ).first()
-    
+    existing_record = create_query_builder(AssessmentRecord) \
+        .filter(
+        AssessmentRecord.user_id == user_id,
+        AssessmentRecord.assessment_id == form.assessment_id.data,
+        AssessmentRecord.status == 'in_progress'
+    ) \
+        .first()
+
     if existing_record:
         return JsonResult.success(existing_record.to_dict(), '继续之前的测评')
-    
+
     # 创建新的测评记录
     record = AssessmentRecord(
         id=str(uuid.uuid4()),
@@ -532,7 +448,7 @@ def start_assessment():
         start_time=datetime.utcnow(),
         is_anonymous=form.is_anonymous.data
     )
-    
+
     try:
         db.session.add(record)
         db.session.commit()
@@ -543,77 +459,84 @@ def start_assessment():
 
 
 @assessment_bp.route('/submit', methods=['POST'])
-def submit_assessment():
+@validate_form(AssessmentSubmitForm)
+@role_required(['admin', 'manager', 'user'])
+@permission_required("assessment:submit_assessment")
+def submit_assessment(form):
     """提交测评"""
-    form = validate_args(AssessmentSubmitForm)
-    user_id = get_user_id()
-    
+    user_id = assert_current_user_id()
+
     # 检查测评记录是否存在
-    record = AssessmentRecord.query.filter_by(
-        user_id=user_id,
-        assessment_id=form.assessment_id.data,
-        status='in_progress'
-    ).first()
-    
+    record = create_query_builder(AssessmentRecord) \
+        .filter(
+        AssessmentRecord.user_id == user_id,
+        AssessmentRecord.assessment_id == form.assessment_id.data,
+        AssessmentRecord.status == 'in_progress'
+    ) \
+        .first()
+
     if not record:
         return JsonResult.error('测评记录不存在或已完成', 404)
-    
+
     try:
         # 删除之前的答案
-        AssessmentAnswer.query.filter_by(record_id=record.id).delete()
-        
+        create_query_builder(AssessmentAnswer) \
+            .filter(AssessmentAnswer.record_id == record.id) \
+            .delete()
+
         total_score = 0.0
         dimension_scores = {}
-        
+
         # 保存答案并计算分数
         for answer_data in form.answers.data:
             question = AssessmentQuestion.query.filter_by(
                 id=answer_data['question_id'],
                 assessment_id=form.assessment_id.data
             ).first()
-            
+
             if not question:
                 continue
-            
+
             answer = AssessmentAnswer(
                 id=str(uuid.uuid4()),
                 record_id=record.id,
                 question_id=answer_data['question_id'],
                 answer_text=answer_data.get('answer_text')
             )
-            
+
             # 处理选项答案
             if answer_data.get('option_ids'):
                 try:
-                    option_ids = json.loads(answer_data['option_ids']) if isinstance(answer_data['option_ids'], str) else answer_data['option_ids']
+                    option_ids = json.loads(answer_data['option_ids']) if isinstance(answer_data['option_ids'],
+                                                                                     str) else answer_data['option_ids']
                     answer.selected_options = option_ids
-                    
+
                     # 计算得分
                     options = AssessmentOption.query.filter(
                         AssessmentOption.id.in_(option_ids)
                     ).all()
-                    
+
                     question_score = sum(option.score for option in options) * question.score_weight
                     answer.score = question_score
                     total_score += question_score
-                    
+
                     # 维度得分统计
                     if question.dimension:
                         if question.dimension not in dimension_scores:
                             dimension_scores[question.dimension] = 0
                         dimension_scores[question.dimension] += question_score
-                        
+
                 except (json.JSONDecodeError, TypeError):
                     pass
-            
+
             db.session.add(answer)
-        
+
         # 更新测评记录
         record.status = 'completed'
         record.complete_time = datetime.utcnow()
         record.total_score = total_score
         record.dimension_score_dict = dimension_scores
-        
+
         # 简单的结果评估逻辑（可根据实际需求调整）
         if total_score >= 80:
             record.result_level = 'excellent'
@@ -624,62 +547,53 @@ def submit_assessment():
         else:
             record.result_level = 'poor'
             record.result_description = '需要关注心理健康'
-        
+
         # 更新测评参与人数
         assessment = Assessment.query.filter_by(id=form.assessment_id.data).first()
         if assessment:
             assessment.participant_count += 1
-        
+
         db.session.commit()
-        
+
         return JsonResult.success(record.to_dict(), '测评提交成功')
-        
+
     except Exception as e:
         db.session.rollback()
         return JsonResult.error(f'提交测评失败: {str(e)}')
 
 
 @assessment_bp.route('/records', methods=['GET'])
-def get_assessment_records():
+@validate_form(AssessmentRecordQueryForm)
+@role_required(['admin', 'manager', 'user'])
+@permission_required("assessment:get_assessment_records")
+def get_assessment_records(form):
     """获取测评记录列表"""
-    form = validate_args(AssessmentRecordQueryForm)
-    current_user_id = get_user_id()
-    
-    # 权限控制：普通用户只能查看自己的记录
-    if is_manager_user():
-        query = AssessmentRecord.query
-        # 管理员可以通过参数查询特定用户的记录
-        if form.user_id.data:
-            query = query.filter(AssessmentRecord.user_id == form.user_id.data)
-    else:
-        # 普通用户只能查看自己的记录
-        query = AssessmentRecord.query.filter_by(user_id=current_user_id)
-    
-    # 搜索条件
-    if form.assessment_id.data:
-        query = query.filter(AssessmentRecord.assessment_id == form.assessment_id.data)
-    
-    if form.status.data:
-        query = query.filter(AssessmentRecord.status == form.status.data)
-    
+    current_user_id = assert_current_user_id()
+    is_manager = is_manager_user()
+
+    # 构建查询
+    builder = create_query_builder(AssessmentRecord) \
+        .unless(is_manager, AssessmentRecord.user_id == current_user_id) \
+        .when(form.user_id.data and is_manager, AssessmentRecord.user_id == form.user_id.data) \
+        .when(form.assessment_id.data, AssessmentRecord.assessment_id == form.assessment_id.data) \
+        .when(form.status.data, AssessmentRecord.status == form.status.data)
+
+    # 日期范围过滤
     if form.start_date.data:
         try:
             start_date = datetime.strptime(form.start_date.data, '%Y-%m-%d')
-            query = query.filter(AssessmentRecord.create_time >= start_date)
+            builder.filter(AssessmentRecord.create_time >= start_date)
         except ValueError:
             pass
-    
+
     if form.end_date.data:
         try:
             end_date = datetime.strptime(form.end_date.data, '%Y-%m-%d')
-            query = query.filter(AssessmentRecord.create_time <= end_date)
+            builder.filter(AssessmentRecord.create_time <= end_date)
         except ValueError:
             pass
-    
-    # 排序
-    sort_by = form.sort_by.data or 'create_time'
-    sort_order = form.sort_order.data or 'desc'
-    
+
+    # 动态排序
     valid_sort_fields = {
         'create_time': AssessmentRecord.create_time,
         'update_time': AssessmentRecord.update_time,
@@ -687,21 +601,20 @@ def get_assessment_records():
         'complete_time': AssessmentRecord.complete_time,
         'total_score': AssessmentRecord.total_score
     }
-    
+
+    sort_by = form.sort_by.data or 'create_time'
+    sort_order = form.sort_order.data or 'desc'
+
     if sort_by in valid_sort_fields:
-        sort_column = valid_sort_fields[sort_by]
-        if sort_order.lower() == 'desc':
-            query = query.order_by(sort_column.desc())
-        else:
-            query = query.order_by(sort_column.asc())
-    
-    # 分页
-    pagination = query.paginate(
-        page=form.page.data, per_page=form.per_page.data, error_out=False
-    )
-    
+        sort_expr = valid_sort_fields[sort_by].desc() if sort_order.lower() == 'desc' else valid_sort_fields[
+            sort_by].asc()
+        builder.order_by(sort_expr)
+
+    # 分页查询
+    result = builder.paginate(form.page.data, form.per_page.data, 100)
+
     records_data = []
-    for record in pagination.items:
+    for record in result['items']:
         record_dict = record.to_dict()
         # 添加测评基本信息
         if record.assessment:
@@ -713,83 +626,77 @@ def get_assessment_records():
             # 处理测评信息中的图片URL
             record_dict['assessment_info'] = process_assessment_images(record_dict['assessment_info'])
         records_data.append(record_dict)
-    
+
     return JsonResult.success({
         'list': records_data,
-        'total': pagination.total,
-        'page': form.page.data,
-        'per_page': form.per_page.data,
-        'pages': pagination.pages
+        'total': result['total'],
+        'page': result['page'],
+        'per_page': result['per_page'],
+        'pages': result['pages']
     })
 
 
 @assessment_bp.route('/records/<record_id>', methods=['GET'])
+@role_required(['admin', 'manager', 'user'])
+@permission_required("assessment:get_assessment_record_detail")
 def get_assessment_record_detail(record_id):
     """获取测评记录详情"""
-    check_id(record_id, "记录ID不能为空")
-    current_user_id = get_user_id()
-    
+    assert_id_exists(record_id, "记录ID不能为空")
+    current_user_id = assert_current_user_id()
+
     # 构建查询
-    query = AssessmentRecord.query.filter_by(id=record_id)
-    
-    # 权限控制：普通用户只能查看自己的记录
-    if not is_manager_user():
-        query = query.filter(AssessmentRecord.user_id == current_user_id)
-    
-    record = query.first()
+    builder = create_query_builder(AssessmentRecord) \
+        .filter(AssessmentRecord.id == record_id) \
+        .unless(is_manager_user(), AssessmentRecord.user_id == current_user_id)
+
+    record = builder.first()
     if not record:
         return JsonResult.error('测评记录不存在或权限不足', 404)
-    
+
     record_data = record.to_dict()
-    
+
     # 添加测评信息
     if record.assessment:
         record_data['assessment_info'] = record.assessment.to_dict()
         # 处理测评信息中的图片URL
         record_data['assessment_info'] = process_assessment_images(record_data['assessment_info'])
-    
+
     # 添加答案详情
-    answers = AssessmentAnswer.query.filter_by(record_id=record_id).all()
+    answers = create_query_builder(AssessmentAnswer) \
+        .filter(AssessmentAnswer.record_id == record_id) \
+        .all()
     record_data['answers'] = [answer.to_dict() for answer in answers]
-    
+
     return JsonResult.success(record_data)
 
 
 @assessment_bp.route('/public', methods=['GET'])
-def get_public_assessments():
+@validate_form(AssessmentQueryForm)
+@role_required(['admin', 'manager', 'user'])
+@permission_required("assessment:get_public_assessments")
+def get_public_assessments(form):
     """获取公开的测评列表（普通用户接口）"""
-    form = validate_args(AssessmentQueryForm)
-    
-    # 只显示已发布的测评
-    query = Assessment.query.filter(Assessment.status == 'published')
-    
-    # 搜索条件
-    if form.name.data:
-        query = query.filter(Assessment.name.like(f'%{form.name.data}%'))
-    
-    if form.category.data:
-        query = query.filter(Assessment.category == form.category.data)
-    
-    if form.difficulty.data:
-        query = query.filter(Assessment.difficulty == form.difficulty.data)
-    
-    if form.is_free.data is not None:
-        query = query.filter(Assessment.is_free == form.is_free.data)
-    
+
+    # 构建查询
+    builder = create_query_builder(Assessment) \
+        .filter(Assessment.status == 'published') \
+        .when(form.name.data, Assessment.name.like(f'%{form.name.data}%')) \
+        .when(form.category.data, Assessment.category == form.category.data) \
+        .when(form.difficulty.data, Assessment.difficulty == form.difficulty.data) \
+        .when(form.is_free.data is not None, Assessment.is_free == form.is_free.data)
+
+    # 关键词搜索
     if form.keyword.data:
         keyword = f'%{form.keyword.data}%'
-        query = query.filter(
+        builder.filter(
             or_(
                 Assessment.name.like(keyword),
                 Assessment.subtitle.like(keyword),
                 Assessment.description.like(keyword)
             )
         )
-    
+
     # 排序逻辑（按推荐度排序）
-    sort_by = form.sort_by.data or 'sort_order'
-    sort_order = form.sort_order.data or 'asc'
-    
     valid_sort_fields = {
         'create_time': Assessment.create_time,
         'name': Assessment.name,
@@ -798,33 +705,29 @@ def get_public_assessments():
         'participant_count': Assessment.participant_count,
         'sort_order': Assessment.sort_order
     }
-    
+
+    sort_by = form.sort_by.data or 'sort_order'
+    sort_order = form.sort_order.data or 'asc'
+
     if sort_by not in valid_sort_fields:
         sort_by = 'sort_order'
-    
-    sort_column = valid_sort_fields[sort_by]
-    
-    if sort_order.lower() == 'desc':
-        query = query.order_by(sort_column.desc())
-    else:
-        query = query.order_by(sort_column.asc())
-    
-    # 分页
-    pagination = query.paginate(
-        page=form.page.data, per_page=form.per_page.data, error_out=False
-    )
-    
-    assessments_data = [assessment.to_dict() for assessment in pagination.items]
-    
+
+    sort_expr = valid_sort_fields[sort_by].desc() if sort_order.lower() == 'desc' else valid_sort_fields[sort_by].asc()
+
+    # 分页查询
+    result = builder.order_by(sort_expr).paginate(form.page.data, form.per_page.data, 100)
+
+    assessments_data = [assessment.to_dict() for assessment in result['items']]
+
     # 处理图片URL
     assessments_data = process_assessment_images(assessments_data)
-    
+
     return JsonResult.success({
         'list': assessments_data,
-        'total': pagination.total,
-        'page': form.page.data,
-        'per_page': form.per_page.data,
-        'pages': pagination.pages,
+        'total': result['total'],
+        'page': result['page'],
+        'per_page': result['per_page'],
+        'pages': result['pages'],
         'sort_by': sort_by,
         'sort_order': sort_order
-    }) 
+    })

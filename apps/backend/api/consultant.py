@@ -1,40 +1,49 @@
+"""
+咨询人管理
+"""
 from flask import Blueprint
-from sqlalchemy import or_, and_
+from sqlalchemy import or_
 from models.consultant import Consultant, GenderEnum, RelationshipEnum
 from models.user import User
-from form.consultant import ConsultantCreateForm, ConsultantUpdateForm, ConsultantListForm
-import uuid
-
 from models.base import db
 from utils.json_result import JsonResult
-from utils.validate import validate_args, validate_data
-from utils.auth_helper import get_roles, get_user_id, is_manager_user
+from utils.validate import assert_id_exists
+from utils.query import create_query_builder, assert_exists, assert_not_exists
+from utils.model_helper import update_model_fields
+from utils.auth_helper import get_roles, assert_current_user_id, is_manager_user
+from form.consultant import ConsultantCreateForm, ConsultantUpdateForm, ConsultantListForm
+from decorator.form import validate_form
+from decorator.permission import role_required, permission_required
+import uuid
 
 consultant_bp = Blueprint('consultant', __name__, url_prefix='/consultant')
 
 
 @consultant_bp.route('', methods=['GET'])
-def get_consultants():
+@validate_form(ConsultantListForm)
+@role_required(['admin', 'manager', 'user'])
+@permission_required("consultant:get_consultants")
+def get_consultants(form):
     """获取咨询人列表（支持动态角色权限）"""
     # 获取当前用户信息
-    current_user_id = get_user_id()
-    print(current_user_id)
+    current_user_id = assert_current_user_id()
     user_roles = get_roles()
-    print(user_roles)
-
     has_manage_permission = is_manager_user()
 
-    form = validate_args(ConsultantListForm)
+    if form.gender.data:
+        gender = GenderEnum(form.gender.data)
+    else:
+        gender = None
 
-    # 构建查询基础
-    query = Consultant.query.outerjoin(User, Consultant.user_id == User.id)
+    # 使用QueryBuilder构建查询
+    builder = create_query_builder(Consultant) \
+        .outerjoin(User) \
+        .unless(has_manage_permission, Consultant.user_id == current_user_id) \
+        .when(form.gender.data, Consultant.gender == gender) \
+        .when(form.status.data, Consultant.status == form.status.data) \
+        .order_by(Consultant.is_default.desc(), Consultant.create_time.desc())
 
-    # 根据角色限制查询范围
-    if not has_manage_permission:
-        # 普通用户只能查看自己的咨询人信息
-        query = query.filter(Consultant.user_id == current_user_id)
-
-    # 关键词搜索
+    # 处理关键词搜索
     if form.keyword.data:
         keyword = f"%{form.keyword.data}%"
         search_conditions = [
@@ -48,27 +57,13 @@ def get_consultants():
         if has_manage_permission:
             search_conditions.append(User.username.like(keyword))
 
-        query = query.filter(or_(*search_conditions))
-
-    # 性别筛选
-    if form.gender.data:
-        query = query.filter(Consultant.gender == GenderEnum(form.gender.data))
-
-    # 状态筛选
-    if form.status.data is not None:
-        query = query.filter(Consultant.status == form.status.data)
-
-    # 排序：默认咨询人优先，然后按创建时间倒序
-    query = query.order_by(Consultant.is_default.desc(),
-                           Consultant.create_time.desc())
+        builder.filter(or_(*search_conditions))
 
     # 分页
-    page = form.page.data or 1
-    per_page = form.per_page.data or 10
-    pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+    result = builder.paginate(form.page.data or 1, form.per_page.data or 10, 100)
 
     consultants_data = []
-    for consultant in pagination.items:
+    for consultant in result['items']:
         consultant_dict = consultant.to_dict()
 
         # 根据角色决定是否包含用户信息
@@ -90,30 +85,32 @@ def get_consultants():
 
     return JsonResult.success({
         'list': consultants_data,
-        'total': pagination.total,
-        'page': page,
-        'per_page': per_page,
-        'pages': pagination.pages,
+        'total': result['total'],
+        'page': result['page'],
+        'per_page': result['per_page'],
+        'pages': result['pages'],
         'user_roles': user_roles,  # 返回用户角色信息，前端可用于权限控制
         'has_manage_permission': has_manage_permission
     })
 
 
 @consultant_bp.route('/<consultant_id>', methods=['GET'])
+@role_required(['admin', 'manager', 'user'])
+@permission_required("consultant:get_consultant_detail")
 def get_consultant_detail(consultant_id):
     """获取咨询人详情（支持动态角色权限）"""
+    assert_id_exists(consultant_id, "咨询人ID不能为空")
+
     # 获取当前用户信息
-    current_user_id = get_user_id()
+    current_user_id = assert_current_user_id()
     has_manage_permission = is_manager_user()
 
-    consultant = Consultant.query.filter_by(id=consultant_id).first()
-    if not consultant:
-        return JsonResult.error('咨询人不存在')
+    consultant = assert_exists(Consultant, Consultant.id == consultant_id, "咨询人不存在")
 
     # 权限检查：管理员和管理者可以查看所有咨询人，普通用户只能查看自己的
     if not has_manage_permission:
         if consultant.user_id != current_user_id:
-            return JsonResult.error('无权限查看该咨询人信息', 403)
+            raise ValueError('无权限查看该咨询人信息')
 
     consultant_dict = consultant.to_dict()
 
@@ -136,21 +133,20 @@ def get_consultant_detail(consultant_id):
 
 
 @consultant_bp.route('', methods=['POST'])
-def create_consultant():
+@validate_form(ConsultantCreateForm)
+@role_required(['admin', 'manager', 'user'])
+@permission_required("consultant:create_consultant")
+def create_consultant(form):
     """创建咨询人（支持动态角色权限）"""
     # 获取当前用户信息
-    current_user_id = get_user_id()
+    current_user_id = assert_current_user_id()
     has_manage_permission = is_manager_user()
-
-    form = validate_data(ConsultantCreateForm)
 
     # 生成唯一ID
     consultant_id = str(uuid.uuid4())
 
     # 检查手机号是否已存在（全局检查）
-    existing = Consultant.query.filter_by(phone=form.phone.data).first()
-    if existing:
-        return JsonResult.error('该手机号已存在咨询人信息')
+    assert_not_exists(Consultant, Consultant.phone == form.phone.data, "该手机号已存在咨询人信息")
 
     # 权限控制：确定user_id
     target_user_id = None
@@ -159,9 +155,7 @@ def create_consultant():
         if form.user_id.data and str(form.user_id.data).strip():
             target_user_id = form.user_id.data
             # 检查用户是否存在
-            user = User.query.filter_by(id=target_user_id).first()
-            if not user:
-                return JsonResult.error('指定的用户不存在')
+            assert_exists(User, User.id == target_user_id, "指定的用户不存在")
         # 如果没有指定user_id，则不关联用户（管理员可以创建独立的咨询人）
     else:
         # 普通用户只能为自己创建咨询人
@@ -174,14 +168,12 @@ def create_consultant():
         real_name=form.real_name.data,
         birth_year=form.birth_year.data or 0,
         birth_month=form.birth_month.data or 0,
-        gender=GenderEnum(form.gender.data),
+        gender=GenderEnum(form.gender.data) if form.gender.data and form.gender.data.strip() else GenderEnum.MALE,
         phone=form.phone.data,
         emergency_name=form.emergency_name.data,
-        emergency_relationship=RelationshipEnum(
-            form.emergency_relationship.data),
+        emergency_relationship=RelationshipEnum(form.emergency_relationship.data) if form.emergency_relationship.data and form.emergency_relationship.data.strip() else RelationshipEnum.OTHER,
         emergency_phone=form.emergency_phone.data,
-        notes=form.notes.data if form.notes.data and str(
-            form.notes.data).strip() else None,
+        notes=form.notes.data if form.notes.data and str(form.notes.data).strip() else None,
         is_default=form.is_default.data or 0
     )
 
@@ -191,33 +183,31 @@ def create_consultant():
 
 
 @consultant_bp.route('/<consultant_id>', methods=['PUT'])
-def update_consultant(consultant_id):
+@validate_form(ConsultantUpdateForm)
+@role_required(['admin', 'manager', 'user'])
+@permission_required("consultant:update_consultant")
+def update_consultant(consultant_id, form):
     """更新咨询人信息（支持动态角色权限）"""
+    assert_id_exists(consultant_id, "咨询人ID不能为空")
+
     # 获取当前用户信息
-    current_user_id = get_user_id()
+    current_user_id = assert_current_user_id()
     has_manage_permission = is_manager_user()
 
-    form = validate_data(ConsultantUpdateForm)
-
     # 查找咨询人
-    consultant = Consultant.query.filter_by(id=consultant_id).first()
-    if not consultant:
-        return JsonResult.error('咨询人不存在')
+    consultant = assert_exists(Consultant, Consultant.id == consultant_id, "咨询人不存在")
 
     # 权限检查：管理员和管理者可以修改所有咨询人，普通用户只能修改自己的
     if not has_manage_permission:
         if consultant.user_id != current_user_id:
-            return JsonResult.error('无权限修改该咨询人信息', 403)
+            raise ValueError('无权限修改该咨询人信息')
 
     # 检查手机号是否已存在（排除当前咨询人）
-    existing = Consultant.query.filter(
-        and_(
-            Consultant.phone == form.phone.data,
-            Consultant.id != consultant_id
-        )
-    ).first()
-    if existing:
-        return JsonResult.error('该手机号已存在其他咨询人信息')
+    assert_not_exists(
+        Consultant,
+        [Consultant.phone == form.phone.data, Consultant.id != consultant_id],
+        "该手机号已存在其他咨询人信息"
+    )
 
     # 处理 is_default 字段
     is_default = 0
@@ -230,47 +220,42 @@ def update_consultant(consultant_id):
             except (ValueError, TypeError):
                 is_default = 0
 
-    # 处理年份和月份字段
-    birth_year = None
-    if form.birth_year.data is not None and form.birth_year.data != '':
-        try:
-            birth_year = int(form.birth_year.data)
-        except (ValueError, TypeError):
-            birth_year = None
-
-    birth_month = None
-    if form.birth_month.data is not None and form.birth_month.data != '':
-        try:
-            birth_month = int(form.birth_month.data)
-        except (ValueError, TypeError):
-            birth_month = None
-
     # 如果设置为默认咨询人，需要取消该用户的其他默认咨询人
     if is_default == 1 and consultant.user_id:
-        Consultant.query.filter(
-            and_(
-                Consultant.user_id == consultant.user_id,
-                Consultant.is_default == 1,
-                Consultant.id != consultant_id
-            )
-        ).update({'is_default': 0})
+        create_query_builder(Consultant) \
+            .filter(
+            Consultant.user_id == consultant.user_id,
+            Consultant.is_default == 1,
+            Consultant.id != consultant_id
+        ) \
+            .update({'is_default': 0})
 
-    # 更新咨询人信息
-    consultant.real_name = form.real_name.data
-    consultant.birth_year = birth_year
-    consultant.birth_month = birth_month
-    consultant.gender = GenderEnum(form.gender.data)
-    consultant.phone = form.phone.data
-    consultant.emergency_name = form.emergency_name.data
-    consultant.emergency_relationship = RelationshipEnum(
-        form.emergency_relationship.data)
-    consultant.emergency_phone = form.emergency_phone.data
-    consultant.notes = form.notes.data if form.notes.data and str(
-        form.notes.data).strip() else None
+    # 手动处理特殊字段，然后使用update_model_from_form处理其他字段
+    if form.birth_year.data is not None and form.birth_year.data != '':
+        try:
+            consultant.birth_year = int(form.birth_year.data)
+        except (ValueError, TypeError):
+            consultant.birth_year = None
+
+    if form.birth_month.data is not None and form.birth_month.data != '':
+        try:
+            consultant.birth_month = int(form.birth_month.data)
+        except (ValueError, TypeError):
+            consultant.birth_month = None
+
+    # 处理枚举字段
+    if form.gender.data and form.gender.data.strip():
+        consultant.gender = GenderEnum(form.gender.data)
+    if form.emergency_relationship.data and form.emergency_relationship.data.strip():
+        consultant.emergency_relationship = RelationshipEnum(form.emergency_relationship.data)
+
+    # 设置is_default
     consultant.is_default = is_default
 
-    if form.status.data is not None:
-        consultant.status = form.status.data
+    # 使用update_model_from_form处理其他标准字段
+    update_model_fields(consultant, form,
+                        exclude_fields=['birth_year', 'birth_month', 'gender', 'emergency_relationship',
+                                           'is_default'])
 
     try:
         db.session.commit()
@@ -281,20 +266,22 @@ def update_consultant(consultant_id):
 
 
 @consultant_bp.route('/<consultant_id>', methods=['DELETE'])
+@role_required(['admin', 'manager', 'user'])
+@permission_required("consultant:delete_consultant")
 def delete_consultant(consultant_id):
     """删除咨询人（支持动态角色权限）"""
+    assert_id_exists(consultant_id, "咨询人ID不能为空")
+
     # 获取当前用户信息
-    current_user_id = get_user_id()
+    current_user_id = assert_current_user_id()
     has_manage_permission = is_manager_user()
 
-    consultant = Consultant.query.filter_by(id=consultant_id).first()
-    if not consultant:
-        return JsonResult.error('咨询人不存在')
+    consultant = assert_exists(Consultant, Consultant.id == consultant_id, "咨询人不存在")
 
     # 权限检查：管理员和管理者可以删除所有咨询人，普通用户只能删除自己的
     if not has_manage_permission:
         if consultant.user_id != current_user_id:
-            return JsonResult.error('无权限删除该咨询人信息', 403)
+            raise ValueError('无权限删除该咨询人信息')
 
     # 检查是否有关联的预约记录
     try:
@@ -302,7 +289,7 @@ def delete_consultant(consultant_id):
         from models.appointment import Appointment
         appointment_count = db.session.query(Appointment).filter_by(consultant_id=consultant_id).count()
         if appointment_count > 0:
-            return JsonResult.error('该咨询人存在预约记录，无法删除')
+            raise ValueError('该咨询人存在预约记录，无法删除')
     except Exception as e:
         # 如果预约表不存在或有其他问题，记录但不阻止删除
         print(f"检查预约记录时出错: {str(e)}")
@@ -317,33 +304,35 @@ def delete_consultant(consultant_id):
 
 
 @consultant_bp.route('/<consultant_id>/set-default', methods=['PUT'])
+@role_required(['admin', 'manager', 'user'])
+@permission_required("consultant:set_default_consultant")
 def set_default_consultant(consultant_id):
     """设置默认咨询人（支持动态角色权限）"""
+    assert_id_exists(consultant_id, "咨询人ID不能为空")
+
     # 获取当前用户信息
-    current_user_id = get_user_id()
+    current_user_id = assert_current_user_id()
     has_manage_permission = is_manager_user()
 
-    consultant = Consultant.query.filter_by(id=consultant_id).first()
-    if not consultant:
-        return JsonResult.error('咨询人不存在')
+    consultant = assert_exists(Consultant, Consultant.id == consultant_id, "咨询人不存在")
 
     if not consultant.user_id:
-        return JsonResult.error('该咨询人未关联用户，无法设置为默认')
+        raise ValueError('该咨询人未关联用户，无法设置为默认')
 
     # 权限检查：管理员和管理者可以设置所有咨询人，普通用户只能设置自己的
     if not has_manage_permission:
         if consultant.user_id != current_user_id:
-            return JsonResult.error('无权限设置该咨询人为默认', 403)
+            raise ValueError('无权限设置该咨询人为默认')
 
     try:
         # 取消该用户的其他默认咨询人
-        Consultant.query.filter(
-            and_(
-                Consultant.user_id == consultant.user_id,
-                Consultant.is_default == 1,
-                Consultant.id != consultant_id
-            )
-        ).update({'is_default': 0})
+        create_query_builder(Consultant) \
+            .filter(
+            Consultant.user_id == consultant.user_id,
+            Consultant.is_default == 1,
+            Consultant.id != consultant_id
+        ) \
+            .update({'is_default': 0})
 
         # 设置当前为默认
         consultant.is_default = 1
@@ -356,25 +345,27 @@ def set_default_consultant(consultant_id):
 
 
 @consultant_bp.route('/stats', methods=['GET'])
+@role_required(['admin', 'manager', 'user'])
+@permission_required("consultant:get_consultant_stats")
 def get_consultant_stats():
     """获取咨询人统计信息（支持动态角色权限）"""
     # 获取当前用户信息
-    current_user_id = get_user_id()
+    current_user_id = assert_current_user_id()
     has_manage_permission = is_manager_user()
 
     # 根据角色决定统计范围
     if has_manage_permission:
         # 管理员和管理者可以看到全局统计
-        base_query = Consultant.query
+        base_builder = create_query_builder(Consultant)
     else:
         # 普通用户只能看到自己的咨询人统计
-        base_query = Consultant.query.filter_by(user_id=current_user_id)
+        base_builder = create_query_builder(Consultant).filter(Consultant.user_id == current_user_id)
 
-    total_count = base_query.count()
-    active_count = base_query.filter_by(status=1).count()
-    male_count = base_query.filter_by(gender=GenderEnum.MALE).count()
-    female_count = base_query.filter_by(gender=GenderEnum.FEMALE).count()
-    default_count = base_query.filter_by(is_default=1).count()
+    total_count = base_builder.count()
+    active_count = base_builder.filter(Consultant.status == 1).count()
+    male_count = base_builder.filter(Consultant.gender == GenderEnum.MALE).count()
+    female_count = base_builder.filter(Consultant.gender == GenderEnum.FEMALE).count()
+    default_count = base_builder.filter(Consultant.is_default == 1).count()
 
     return JsonResult.success({
         'total_count': total_count,
@@ -388,6 +379,8 @@ def get_consultant_stats():
 
 
 @consultant_bp.route('/enums', methods=['GET'])
+@role_required(['admin', 'manager', 'user'])
+@permission_required("consultant:get_consultant_enums")
 def get_consultant_enums():
     """获取咨询人相关枚举值"""
     return JsonResult.success({

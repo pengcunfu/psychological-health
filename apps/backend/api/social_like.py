@@ -1,3 +1,6 @@
+"""
+社交点赞
+"""
 import uuid
 from flask import Blueprint, request, g
 from sqlalchemy import and_, or_
@@ -9,7 +12,7 @@ from models.base import db
 from form.social import SocialLikeCreateForm
 from utils.json_result import JsonResult
 from utils.validate import validate_args
-from utils.auth_helper import get_user_id
+from utils.auth_helper import assert_current_user_id
 
 social_like_bp = Blueprint('social_like', __name__, url_prefix='/social-like')
 
@@ -17,7 +20,7 @@ social_like_bp = Blueprint('social_like', __name__, url_prefix='/social-like')
 @social_like_bp.route('/toggle', methods=['POST'])
 def toggle_like():
     """切换点赞状态"""
-    current_user_id = get_user_id()
+    current_user_id = assert_current_user_id()
     if not current_user_id:
         return JsonResult.error('用户未登录', 401)
     
@@ -149,7 +152,7 @@ def toggle_like():
 @social_like_bp.route('/check', methods=['POST'])
 def check_like_status():
     """检查点赞状态"""
-    current_user_id = get_user_id()
+    current_user_id = assert_current_user_id()
     if not current_user_id:
         return JsonResult.error('用户未登录', 401)
     
@@ -172,7 +175,7 @@ def check_like_status():
 @social_like_bp.route('/my', methods=['GET'])
 def get_my_likes():
     """获取我的点赞记录"""
-    current_user_id = get_user_id()
+    current_user_id = assert_current_user_id()
     if not current_user_id:
         return JsonResult.error('用户未登录', 401)
     
@@ -232,7 +235,7 @@ def get_my_likes():
 @social_like_bp.route('/received', methods=['GET'])
 def get_received_likes():
     """获取收到的点赞"""
-    current_user_id = get_user_id()
+    current_user_id = assert_current_user_id()
     if not current_user_id:
         return JsonResult.error('用户未登录', 401)
     

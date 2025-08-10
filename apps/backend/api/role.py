@@ -1,14 +1,8 @@
 """
 角色管理API
 提供系统角色的增删改查功能
-
-接口列表：
-- GET /role - 获取角色列表
-- POST /role - 创建角色
-- PUT /role/<role_id> - 更新角色信息
-- DELETE /role/<role_id> - 删除角色
 """
-from flask import Blueprint, request
+from flask import Blueprint
 import uuid
 
 from models.role import Role
@@ -16,56 +10,45 @@ from models.user_role import UserRole
 from models.base import db
 from form.role import RoleQueryForm, RoleCreateForm, RoleUpdateForm
 from utils.json_result import JsonResult
-from utils.validate import validate_data, validate_args
-from utils.model_helper import update_model_from_form
+from utils.model_helper import update_model_fields
+from utils.query import create_query_builder
+from utils.validate import assert_id_exists
+from decorator.form import validate_form
+from decorator.permission import role_required, permission_required
 
 role_bp = Blueprint("role", __name__, url_prefix="/role")
 
 
 @role_bp.route('', methods=['GET'])
-def get_roles():
-    """获取角色列表"""
-    form = validate_args(RoleQueryForm)
+@validate_form(RoleQueryForm)
+@role_required(['admin'])
+@permission_required("role:get_roles")
+def get_roles(form):
+    """获取角色列表（仅管理员）"""
 
-    page = form.page.data
-    per_page = form.per_page.data
-    keyword = form.keyword.data
-
-    # 构建查询
-    query = Role.query
-
-    # 关键词搜索
-    if keyword:
-        query = query.filter(
-            (Role.name.like(f'%{keyword}%')) |
-            (Role.code.like(f'%{keyword}%'))
-        )
-
-    # 分页查询
-    pagination = query.order_by(Role.sort_order.asc(), Role.create_time.desc()).paginate(
-        page=page, per_page=per_page, error_out=False
-    )
-
-    result = []
-    for role in pagination.items:
-        role_dict = role.to_dict()
-        if hasattr(role, 'get_data_scope_name'):
-            role_dict['data_scope_name'] = role.get_data_scope_name()
-        result.append(role_dict)
+    # 构建查询并分页
+    result = create_query_builder(Role) \
+        .when(form.keyword.data,
+              (Role.name.like(f'%{form.keyword.data}%')) |
+              (Role.code.like(f'%{form.keyword.data}%'))) \
+        .order_by(Role.sort_order.asc(), Role.create_time.desc()) \
+        .paginate(form.page.data, form.per_page.data, 100)
 
     return JsonResult.success({
-        'roles': result,
-        'total': pagination.total,
-        'page': page,
-        'per_page': per_page,
-        'pages': pagination.pages
+        'roles': [role.to_dict() for role in result['items']],
+        'total': result['total'],
+        'page': result['page'],
+        'per_page': result['per_page'],
+        'pages': result['pages']
     })
 
 
 @role_bp.route('', methods=['POST'])
-def create_role():
-    """创建角色"""
-    form = validate_data(RoleCreateForm)
+@validate_form(RoleCreateForm)
+@role_required(['admin'])
+@permission_required("role:create_role")
+def create_role(form):
+    """创建角色（仅管理员）"""
 
     role = Role(
         id=str(uuid.uuid4()),
@@ -78,7 +61,7 @@ def create_role():
         is_default=form.is_default.data or False,
         remark=form.remark.data or ''
     )
-    
+
     # 处理菜单权限
     if form.menu_ids.data:
         if isinstance(form.menu_ids.data, str):
@@ -96,18 +79,19 @@ def create_role():
 
 
 @role_bp.route('/<role_id>', methods=['PUT'])
-def update_role(role_id):
-    """更新角色"""
-    if not role_id or not role_id.strip():
-        return JsonResult.error('角色ID不能为空', 400)
+@validate_form(RoleUpdateForm)
+@role_required(['admin'])
+@permission_required("role:update_role")
+def update_role(role_id, form):
+    """更新角色（仅管理员）"""
+    assert_id_exists(role_id, "角色ID不能为空")
 
     role = Role.query.filter_by(id=role_id).first()
     if not role:
         return JsonResult.error('角色不存在', 404)
 
-    # 使用统一的验证和更新函数
-    form = validate_data(RoleUpdateForm)
-    update_model_from_form(role, form, exclude_fields=['menu_ids'])
+    # 使用统一的更新函数
+    update_model_fields(role, form, exclude_fields=['menu_ids'])
 
     # 特殊处理菜单权限
     if form.menu_ids.data is not None:
@@ -124,10 +108,11 @@ def update_role(role_id):
 
 
 @role_bp.route('/<role_id>', methods=['DELETE'])
+@role_required(['admin'])
+@permission_required("role:delete_role")
 def delete_role(role_id):
-    """删除角色"""
-    if not role_id or not role_id.strip():
-        return JsonResult.error('角色ID不能为空', 400)
+    """删除角色（仅管理员）"""
+    assert_id_exists(role_id, "角色ID不能为空")
 
     role = Role.query.filter_by(id=role_id).first()
     if not role:

@@ -1,71 +1,57 @@
 """
 课程管理API
 提供课程的增删改查功能
-
-接口列表：
-- GET /course - 获取课程列表
-- GET /course/<course_id> - 获取单个课程详情
-- POST /course - 创建课程
-- PUT /course/<course_id> - 更新课程
-- DELETE /course/<course_id> - 删除课程
-- GET /course/category/<category_id> - 获取分类下的课程
-- POST /course/<course_id>/cover - 上传课程封面
 """
-from unicodedata import category
-from flask import Blueprint, request
-from sqlalchemy.exc import SQLAlchemyError
+from flask import Blueprint
 import uuid
 
 from models.course import Course
 from models.base import db
 from utils.json_result import JsonResult
-from form.course import CourseQueryForm, CourseCreateForm, CourseUpdateForm
-from utils.validate import validate_data, validate_args
-from utils.model_helper import update_model_from_form
+from utils.validate import assert_id_exists
+from utils.query import create_query_builder
+from utils.model_helper import update_model_fields
 from utils.image import process_course_images
+from form.course import CourseQueryForm, CourseCreateForm, CourseUpdateForm
+from decorator.form import validate_form
+from decorator.permission import role_required, permission_required
 
 course_bp = Blueprint('course', __name__, url_prefix='/course')
 
 
 @course_bp.route('', methods=['GET'])
-def get_courses():
+@validate_form(CourseQueryForm)
+@role_required(['admin', 'manager', 'user'])
+@permission_required("course:get_courses")
+def get_courses(form):
     """获取课程列表"""
-    form = validate_args(CourseQueryForm)
+    # 使用QueryBuilder构建查询并分页
+    result = create_query_builder(Course) \
+        .when(form.title.data, Course.title.like(f'%{form.title.data}%')) \
+        .when(form.status.data, Course.status == form.status.data) \
+        .order_by(Course.create_time.desc()) \
+        .paginate(form.page.data, form.per_page.data, 100)
 
-    page = form.page.data
-    per_page = form.per_page.data
-    title = form.title.data
-    status = form.status.data
-
-    # 构建查询
-    query = Course.query
-
-    if title:
-        query = query.filter(Course.title.like(f'%{title}%'))
-    
-    if status:
-        query = query.filter(Course.status == status)
-
-    # 分页查询
-    pagination = query.order_by(Course.create_time.desc()).paginate(
-        page=page, per_page=per_page, error_out=False
-    )
-
-    courses = [course.to_dict() for course in pagination.items]
     # 处理课程数据中的图片URL
+    courses = [course.to_dict() for course in result['items']]
     processed_courses = process_course_images(courses)
 
     return JsonResult.success({
         'list': processed_courses,
-        'total': pagination.total,
-        'page': page,
-        'per_page': per_page
+        'total': result['total'],
+        'page': result['page'],
+        'per_page': result['per_page'],
+        'pages': result['pages']
     })
 
 
 @course_bp.route('/<course_id>', methods=['GET'])
+@role_required(['admin', 'manager', 'user'])
+@permission_required("course:get_course")
 def get_course(course_id):
     """获取单个课程详情"""
+    assert_id_exists(course_id, "课程ID不能为空")
+    
     course = Course.query.filter_by(id=course_id).first()
     if not course:
         return JsonResult.error('课程不存在', 404)
@@ -76,10 +62,11 @@ def get_course(course_id):
 
 
 @course_bp.route('', methods=['POST'])
-def create_course():
+@validate_form(CourseCreateForm)
+@role_required(['admin', 'manager'])
+@permission_required("course:create_course")
+def create_course(form):
     """创建课程"""
-    form = validate_data(CourseCreateForm)
-
     # 处理标签数据
     tags_data = []
     if form.tags.data:
@@ -123,15 +110,18 @@ def create_course():
 
 
 @course_bp.route('/<course_id>', methods=['PUT'])
-def update_course(course_id):
+@validate_form(CourseUpdateForm)
+@role_required(['admin', 'manager'])
+@permission_required("course:update_course")
+def update_course(course_id, form):
     """更新课程"""
+    assert_id_exists(course_id, "课程ID不能为空")
+    
     course = Course.query.filter_by(id=course_id).first()
     if not course:
         return JsonResult.error('课程不存在', 404)
 
-    form = validate_data(CourseUpdateForm)
-
-    # 处理标签数据
+    # 处理标签数据（特殊字段需要单独处理）
     if form.tags.data is not None:
         import json
         try:
@@ -145,8 +135,8 @@ def update_course(course_id):
         except (json.JSONDecodeError, TypeError):
             course.tags = []
 
-    # 更新其他字段
-    update_model_from_form(course, form, exclude_fields=['tags'])
+    # 使用统一的更新函数更新其他字段
+    update_model_fields(course, form, exclude_fields=['tags'])
 
     db.session.commit()
 
@@ -154,8 +144,12 @@ def update_course(course_id):
 
 
 @course_bp.route('/<course_id>', methods=['DELETE'])
+@role_required(['admin', 'manager'])
+@permission_required("course:delete_course")
 def delete_course(course_id):
     """删除课程"""
+    assert_id_exists(course_id, "课程ID不能为空")
+    
     course = Course.query.filter_by(id=course_id).first()
     if not course:
         return JsonResult.error('课程不存在', 404)

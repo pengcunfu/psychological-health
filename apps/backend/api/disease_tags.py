@@ -1,59 +1,51 @@
 """
 疾病标签API
 提供疾病标签的增删改查功能
-
-接口列表：
-- GET /disease-tags - 获取疾病标签列表
-- GET /disease-tags/<tag_id> - 获取单个疾病标签详情
-- POST /disease-tags - 创建疾病标签
-- PUT /disease-tags/<tag_id> - 更新疾病标签
-- DELETE /disease-tags/<tag_id> - 删除疾病标签
 """
-from flask import Blueprint, request
-from sqlalchemy.exc import SQLAlchemyError
+from flask import Blueprint
 import uuid
 
 from models.disease_tags import DiseaseTags
 from models.base import db
 from utils.json_result import JsonResult
+from utils.validate import assert_id_exists
+from utils.query import create_query_builder
+from utils.model_helper import update_model_fields
 from form.disease_tags import DiseaseTagsQueryForm, DiseaseTagsCreateForm
-from utils.validate import validate_data, validate_args
-from utils.model_helper import update_model_from_form
+from decorator.form import validate_form
+from decorator.permission import role_required, permission_required
 
 disease_tags_bp = Blueprint('disease_tag', __name__, url_prefix='/disease-tag')
 
 
 @disease_tags_bp.route('', methods=['GET'])
-def get_disease_tags():
+@validate_form(DiseaseTagsQueryForm)
+@role_required(['admin', 'manager', 'user'])
+@permission_required("disease_tags:get_disease_tags")
+def get_disease_tags(form):
     """获取疾病标签列表"""
-    form = validate_args(DiseaseTagsQueryForm)
-
-    query = DiseaseTags.query
-
-    name = form.name.data
-    if name:
-        query = query.filter(DiseaseTags.name.like(f'%{name}%'))
-
-    page = form.page.data
-    per_page = form.per_page.data
-
-    pagination = query.order_by(DiseaseTags.create_time.desc()).paginate(
-        page=page, per_page=per_page, error_out=False
-    )
-
-    tags = [tag.to_dict() for tag in pagination.items]
+    # 使用QueryBuilder构建查询并分页
+    result = create_query_builder(DiseaseTags) \
+        .when(form.name.data, DiseaseTags.name.like(f'%{form.name.data}%')) \
+        .order_by(DiseaseTags.create_time.desc()) \
+        .paginate(form.page.data, form.per_page.data, 100)
 
     return JsonResult.success({
-        'list': tags,
-        'total': pagination.total,
-        'page': page,
-        'per_page': per_page
+        'list': [tag.to_dict() for tag in result['items']],
+        'total': result['total'],
+        'page': result['page'],
+        'per_page': result['per_page'],
+        'pages': result['pages']
     })
 
 
 @disease_tags_bp.route('/<tag_id>', methods=['GET'])
+@role_required(['admin', 'manager', 'user'])
+@permission_required("disease_tags:get_disease_tag")
 def get_disease_tag(tag_id):
     """获取单个疾病标签详情"""
+    assert_id_exists(tag_id, "疾病标签ID不能为空")
+    
     tag = DiseaseTags.query.filter_by(id=tag_id).first()
     if not tag:
         return JsonResult.error('疾病标签不存在', 404)
@@ -62,12 +54,15 @@ def get_disease_tag(tag_id):
 
 
 @disease_tags_bp.route('', methods=['POST'])
-def create_disease_tag():
+@validate_form(DiseaseTagsCreateForm)
+@role_required(['admin', 'manager'])
+@permission_required("disease_tags:create_disease_tag")
+def create_disease_tag(form):
     """创建疾病标签"""
-    form = validate_data(DiseaseTagsCreateForm)
-
     # 检查标签名称是否已存在
-    existing_tag = DiseaseTags.query.filter_by(name=form.name.data).first()
+    existing_tag = create_query_builder(DiseaseTags) \
+        .filter(DiseaseTags.name == form.name.data) \
+        .first()
     if existing_tag:
         return JsonResult.error('标签名称已存在', 400)
 
@@ -85,22 +80,27 @@ def create_disease_tag():
 
 
 @disease_tags_bp.route('/<tag_id>', methods=['PUT'])
-def update_disease_tag(tag_id):
+@validate_form(DiseaseTagsCreateForm)
+@role_required(['admin', 'manager'])
+@permission_required("disease_tags:update_disease_tag")
+def update_disease_tag(tag_id, form):
     """更新疾病标签"""
+    assert_id_exists(tag_id, "疾病标签ID不能为空")
+    
     tag = DiseaseTags.query.filter_by(id=tag_id).first()
     if not tag:
         return JsonResult.error('疾病标签不存在', 404)
 
-    form = validate_data(DiseaseTagsCreateForm)
-
     # 检查新名称是否与其他标签重复
     if form.name.data and form.name.data != tag.name:
-        existing_tag = DiseaseTags.query.filter_by(name=form.name.data).first()
+        existing_tag = create_query_builder(DiseaseTags) \
+            .filter(DiseaseTags.name == form.name.data) \
+            .first()
         if existing_tag:
             return JsonResult.error('标签名称已存在', 400)
 
-    # 更新字段
-    update_model_from_form(tag, form)
+    # 使用统一的更新函数
+    update_model_fields(tag, form)
 
     db.session.commit()
 
@@ -108,8 +108,12 @@ def update_disease_tag(tag_id):
 
 
 @disease_tags_bp.route('/<tag_id>', methods=['DELETE'])
+@role_required(['admin', 'manager'])
+@permission_required("disease_tags:delete_disease_tag")
 def delete_disease_tag(tag_id):
     """删除疾病标签"""
+    assert_id_exists(tag_id, "疾病标签ID不能为空")
+    
     tag = DiseaseTags.query.filter_by(id=tag_id).first()
     if not tag:
         return JsonResult.error('疾病标签不存在', 404)

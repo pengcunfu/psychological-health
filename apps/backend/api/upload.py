@@ -1,14 +1,5 @@
 """
 文件上传API
-提供文件上传、下载和管理功能
-
-接口列表：
-- POST /upload - 上传文件
-- POST /upload/avatar - 上传头像（保存到static/uploads/avatar目录，UUID命名）
-- POST /upload/banner - 上传横幅图（保存到static/uploads/banner目录，UUID命名）
-- POST /upload/course-cover - 上传课程封面（保存到static/uploads/course_cover目录，UUID命名）
-- POST /upload/course-video - 上传课程视频（保存到static/uploads/course_video目录，UUID命名）
-- POST /upload/assessment - 上传测评封面（保存到static/uploads/assessment目录，UUID命名）
 """
 import os
 import uuid
@@ -153,9 +144,9 @@ def upload_banner():
         original_filename = file.filename
         if '.' not in original_filename:
             return JsonResult.error('文件必须包含后缀名')
-        
+
         file_ext = original_filename.rsplit('.', 1)[1].lower()
-        
+
         # 检查文件类型（仅允许图片）
         allowed_extensions = {'jpg', 'jpeg', 'png', 'gif', 'webp'}
         if file_ext not in allowed_extensions:
@@ -163,19 +154,19 @@ def upload_banner():
 
         # 生成唯一文件名：UUID + 后缀
         unique_filename = f"{str(uuid.uuid4())}.{file_ext}"
-        
+
         # 确保目录存在
         banner_dir = os.path.join(
             current_app.root_path, 'static', 'uploads', 'banner')
         os.makedirs(banner_dir, exist_ok=True)
-        
+
         # 保存文件
         file_path = os.path.join(banner_dir, unique_filename)
         file.save(file_path)
-        
+
         # 生成可访问的URL路径
         url_path = f"/static/uploads/banner/{unique_filename}"
-        
+
         # 返回文件信息
         file_info = {
             'filename': unique_filename,
@@ -185,7 +176,7 @@ def upload_banner():
             'file_type': file_ext,
             'upload_path': f"uploads/banner/{unique_filename}"
         }
-        
+
         return JsonResult.success(file_info, '横幅图上传成功')
 
     except ValueError as e:
@@ -217,9 +208,9 @@ def upload_course_cover():
         original_filename = file.filename
         if '.' not in original_filename:
             return JsonResult.error('文件必须包含后缀名')
-        
+
         file_ext = original_filename.rsplit('.', 1)[1].lower()
-        
+
         # 检查文件类型（仅允许图片）
         allowed_extensions = {'jpg', 'jpeg', 'png', 'gif', 'webp'}
         if file_ext not in allowed_extensions:
@@ -227,19 +218,19 @@ def upload_course_cover():
 
         # 生成唯一文件名：UUID + 后缀
         unique_filename = f"{str(uuid.uuid4())}.{file_ext}"
-        
+
         # 确保目录存在
         course_cover_dir = os.path.join(
             current_app.root_path, 'static', 'uploads', 'course_cover')
         os.makedirs(course_cover_dir, exist_ok=True)
-        
+
         # 保存文件
         file_path = os.path.join(course_cover_dir, unique_filename)
         file.save(file_path)
-        
+
         # 生成可访问的URL路径
         url_path = f"/static/uploads/course_cover/{unique_filename}"
-        
+
         # 返回文件信息
         file_info = {
             'filename': unique_filename,
@@ -249,7 +240,7 @@ def upload_course_cover():
             'file_type': file_ext,
             'upload_path': f"uploads/course_cover/{unique_filename}"
         }
-        
+
         return JsonResult.success(file_info, '课程封面上传成功')
 
     except ValueError as e:
@@ -281,9 +272,9 @@ def upload_course_video():
         original_filename = file.filename
         if '.' not in original_filename:
             return JsonResult.error('文件必须包含后缀名')
-        
+
         file_ext = original_filename.rsplit('.', 1)[1].lower()
-        
+
         # 检查文件类型（仅允许视频）
         allowed_extensions = {'mp4', 'avi', 'mov', 'wmv', 'flv', 'mkv', 'webm'}
         if file_ext not in allowed_extensions:
@@ -291,19 +282,19 @@ def upload_course_video():
 
         # 生成唯一文件名：UUID + 后缀
         unique_filename = f"{str(uuid.uuid4())}.{file_ext}"
-        
+
         # 确保目录存在
         course_video_dir = os.path.join(
             current_app.root_path, 'static', 'uploads', 'course_video')
         os.makedirs(course_video_dir, exist_ok=True)
-        
+
         # 保存文件
         file_path = os.path.join(course_video_dir, unique_filename)
         file.save(file_path)
-        
+
         # 生成可访问的URL路径
         url_path = f"/static/uploads/course_video/{unique_filename}"
-        
+
         # 返回文件信息
         file_info = {
             'filename': unique_filename,
@@ -313,7 +304,7 @@ def upload_course_video():
             'file_type': file_ext,
             'upload_path': f"uploads/course_video/{unique_filename}"
         }
-        
+
         return JsonResult.success(file_info, '课程视频上传成功')
 
     except ValueError as e:
@@ -345,9 +336,9 @@ def upload_assessment():
         original_filename = file.filename
         if '.' not in original_filename:
             return JsonResult.error('文件必须包含后缀名')
-        
+
         file_ext = original_filename.rsplit('.', 1)[1].lower()
-        
+
         # 检查文件类型（仅允许图片）
         allowed_extensions = {'jpg', 'jpeg', 'png', 'gif', 'webp'}
         if file_ext not in allowed_extensions:
@@ -355,19 +346,19 @@ def upload_assessment():
 
         # 生成唯一文件名：UUID + 后缀
         unique_filename = f"{str(uuid.uuid4())}.{file_ext}"
-        
+
         # 确保目录存在
         assessment_dir = os.path.join(
             current_app.root_path, 'static', 'uploads', 'assessment')
         os.makedirs(assessment_dir, exist_ok=True)
-        
+
         # 保存文件
         file_path = os.path.join(assessment_dir, unique_filename)
         file.save(file_path)
-        
+
         # 生成可访问的URL路径
         url_path = f"/static/uploads/assessment/{unique_filename}"
-        
+
         # 返回文件信息
         file_info = {
             'filename': unique_filename,
@@ -377,7 +368,7 @@ def upload_assessment():
             'file_type': file_ext,
             'upload_path': f"uploads/assessment/{unique_filename}"
         }
-        
+
         return JsonResult.success(file_info, '测评封面上传成功')
 
     except ValueError as e:

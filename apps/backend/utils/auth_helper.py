@@ -32,7 +32,7 @@ def _get_current_user_from_redis() -> Optional[Dict[Any, Any]]:
         return None
 
 
-def get_user_id() -> str:
+def assert_current_user_id() -> str:
     """获取当前登录用户的user_id
 
     Returns:

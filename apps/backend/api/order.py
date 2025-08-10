@@ -1,95 +1,85 @@
 """
 订单管理API
 提供订单的增删改查及状态管理功能
-
-接口列表：
-- GET /order - 获取订单列表
-- GET /order/<order_id> - 获取单个订单详情
-- POST /order - 创建订单
-- PUT /order/<order_id> - 更新订单
-- DELETE /order/<order_id> - 删除订单
-- PUT /order/<order_id>/status - 更新订单状态
-- POST /order/<order_id>/pay - 支付订单
-- POST /order/<order_id>/cancel - 取消订单
-- POST /order/<order_id>/refund - 退款订单
-- GET /order/user/<user_id> - 获取用户的订单列表
-- GET /order/stats - 获取订单统计数据
 """
-from flask import Blueprint, request
-from sqlalchemy.exc import SQLAlchemyError
+from flask import Blueprint
 import uuid
 from models.order import Order
 from models.user import User
 from utils.json_result import JsonResult
+from utils.validate import assert_id_exists
+from utils.query import create_query_builder
+from utils.model_helper import update_model_fields
+from utils.auth_helper import assert_current_user_id, is_manager_user
 from models.base import db
 from form.order import OrderQueryForm, OrderCreateForm, OrderUpdateForm
+from decorator.form import validate_form
+from decorator.permission import role_required, permission_required
 
 order_bp = Blueprint('order', __name__, url_prefix='/order')
 
 
 @order_bp.route('', methods=['GET'])
-def get_orders():
+@validate_form(OrderQueryForm)
+@role_required(['admin', 'manager', 'user'])
+@permission_required("order:get_orders")
+def get_orders(form):
     """获取订单列表"""
-    # 使用表单验证查询参数
-    form = OrderQueryForm(data=request.args)
-    if not form.validate():
-        return JsonResult.error(f'参数验证失败: {form.get_first_error()}', 400)
+    # 获取当前用户信息
+    current_user_id = assert_current_user_id()
+    is_manager = is_manager_user()
 
-    # 构建查询
-    query = Order.query
-
-    if form.user_id.data:
-        query = query.filter(Order.user_id == form.user_id.data)
-    if form.product_id.data:
-        query = query.filter(Order.product_id == form.product_id.data)
-    if form.type.data:
-        query = query.filter(Order.type == form.get_type())
-    if form.status.data:
-        query = query.filter(Order.status == form.status.data)
-
-    # 分页查询
-    pagination = query.order_by(Order.create_time.desc()).paginate(
-        page=form.page.data,
-        per_page=form.per_page.data,
-        error_out=False
-    )
+    # 使用QueryBuilder构建查询并分页
+    result = create_query_builder(Order) \
+        .unless(is_manager, Order.user_id == current_user_id) \
+        .when(form.user_id.data, Order.user_id == form.user_id.data) \
+        .when(form.product_id.data, Order.product_id == form.product_id.data) \
+        .when(form.type.data, Order.type == form.type.data) \
+        .when(form.status.data, Order.status == form.status.data) \
+        .order_by(Order.create_time.desc()) \
+        .paginate(form.page.data, form.per_page.data, 100)
 
     return JsonResult.success({
-        'orders': [order.to_dict() for order in pagination.items],
-        'total': pagination.total,
-        'page': form.page.data,
-        'per_page': form.per_page.data,
-        'pages': pagination.pages
+        'orders': [order.to_dict() for order in result['items']],
+        'total': result['total'],
+        'page': result['page'],
+        'per_page': result['per_page'],
+        'pages': result['pages']
     })
 
 
 @order_bp.route('/<order_id>', methods=['GET'])
+@role_required(['admin', 'manager', 'user'])
+@permission_required("order:get_order")
 def get_order(order_id):
     """获取单个订单详情"""
-    if not order_id or not order_id.strip():
-        return JsonResult.error('订单ID不能为空', 400)
+    assert_id_exists(order_id, "订单ID不能为空")
+
+    # 获取当前用户信息
+    current_user_id = assert_current_user_id()
+    is_manager = is_manager_user()
 
     order = Order.query.filter_by(id=order_id).first()
     if not order:
         return JsonResult.error('订单不存在', 404)
 
+    # 权限检查：普通用户只能查看自己的订单
+    if not is_manager and order.user_id != current_user_id:
+        return JsonResult.error('无权限查看该订单', 403)
+
     return JsonResult.success(order.to_dict())
 
 
 @order_bp.route('', methods=['POST'])
-def create_order():
+@validate_form(OrderCreateForm)
+@role_required(['admin', 'manager', 'user'])
+@permission_required("order:create_order")
+def create_order(form):
     """创建订单"""
-    data = request.get_json()
-    if not data:
-        return JsonResult.error('请求数据不能为空', 400)
-
-    # 使用表单验证数据
-    form = OrderCreateForm(data=data)
-    if not form.validate():
-        return JsonResult.error(f'参数验证失败: {form.get_first_error()}', 400)
-
     # 验证用户是否存在
-    user = User.query.filter_by(id=form.user_id.data).first()
+    user = create_query_builder(User) \
+        .filter(User.id == form.user_id.data) \
+        .first()
     if not user:
         return JsonResult.error('用户不存在', 400)
 
@@ -110,43 +100,30 @@ def create_order():
 
 
 @order_bp.route('/<order_id>', methods=['PUT'])
-def update_order(order_id):
+@validate_form(OrderUpdateForm)
+@role_required(['admin', 'manager'])
+@permission_required("order:update_order")
+def update_order(order_id, form):
     """更新订单"""
-    if not order_id or not order_id.strip():
-        return JsonResult.error('订单ID不能为空', 400)
+    assert_id_exists(order_id, "订单ID不能为空")
 
     order = Order.query.filter_by(id=order_id).first()
     if not order:
         return JsonResult.error('订单不存在', 404)
 
-    data = request.get_json()
-    if not data:
-        return JsonResult.error('请求数据不能为空', 400)
-
-    # 使用表单验证数据
-    form = OrderUpdateForm(data=data)
-    if not form.validate():
-        return JsonResult.error(f'参数验证失败: {form.get_first_error()}', 400)
-
-    # 更新订单信息
-    if form.product_id.data is not None:
-        order.product_id = form.product_id.data
-    if form.type.data is not None:
-        order.type = form.type.data
-    if form.amount.data is not None:
-        order.amount = form.amount.data
-    if form.status.data is not None:
-        order.status = form.status.data
+    # 使用统一的更新函数
+    update_model_fields(order, form)
 
     db.session.commit()
     return JsonResult.success(order.to_dict(), '订单更新成功')
 
 
 @order_bp.route('/<order_id>', methods=['DELETE'])
+@role_required(['admin', 'manager'])
+@permission_required("order:delete_order")
 def delete_order(order_id):
     """删除订单"""
-    if not order_id or not order_id.strip():
-        return JsonResult.error('订单ID不能为空', 400)
+    assert_id_exists(order_id, "订单ID不能为空")
 
     order = Order.query.filter_by(id=order_id).first()
     if not order:
@@ -162,14 +139,23 @@ def delete_order(order_id):
 
 
 @order_bp.route('/<order_id>/pay', methods=['POST'])
+@role_required(['admin', 'manager', 'user'])
+@permission_required("order:pay_order")
 def pay_order(order_id):
     """支付订单"""
-    if not order_id or not order_id.strip():
-        return JsonResult.error('订单ID不能为空', 400)
+    assert_id_exists(order_id, "订单ID不能为空")
+
+    # 获取当前用户信息
+    current_user_id = assert_current_user_id()
+    is_manager = is_manager_user()
 
     order = Order.query.filter_by(id=order_id).first()
     if not order:
         return JsonResult.error('订单不存在', 404)
+
+    # 权限检查：普通用户只能支付自己的订单
+    if not is_manager and order.user_id != current_user_id:
+        return JsonResult.error('无权限支付该订单', 403)
 
     if order.status != 'pending':
         return JsonResult.error('只有待支付的订单才能进行支付', 400)
@@ -182,14 +168,23 @@ def pay_order(order_id):
 
 
 @order_bp.route('/<order_id>/cancel', methods=['POST'])
+@role_required(['admin', 'manager', 'user'])
+@permission_required("order:cancel_order")
 def cancel_order(order_id):
     """取消订单"""
-    if not order_id or not order_id.strip():
-        return JsonResult.error('订单ID不能为空', 400)
+    assert_id_exists(order_id, "订单ID不能为空")
+
+    # 获取当前用户信息
+    current_user_id = assert_current_user_id()
+    is_manager = is_manager_user()
 
     order = Order.query.filter_by(id=order_id).first()
     if not order:
         return JsonResult.error('订单不存在', 404)
+
+    # 权限检查：普通用户只能取消自己的订单
+    if not is_manager and order.user_id != current_user_id:
+        return JsonResult.error('无权限取消该订单', 403)
 
     if order.status not in ['pending', 'paid']:
         return JsonResult.error('只有待支付或已支付的订单才能取消', 400)
@@ -206,10 +201,11 @@ def cancel_order(order_id):
 
 
 @order_bp.route('/<order_id>/complete', methods=['POST'])
+@role_required(['admin', 'manager'])
+@permission_required("order:complete_order")
 def complete_order(order_id):
     """完成订单"""
-    if not order_id or not order_id.strip():
-        return JsonResult.error('订单ID不能为空', 400)
+    assert_id_exists(order_id, "订单ID不能为空")
 
     order = Order.query.filter_by(id=order_id).first()
     if not order:
