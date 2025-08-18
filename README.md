@@ -6,6 +6,7 @@
 [![Python](https://img.shields.io/badge/python-3.8+-brightgreen.svg)](https://python.org)
 [![Vue](https://img.shields.io/badge/vue-3.x-green.svg)](https://vuejs.org)
 [![Flask](https://img.shields.io/badge/flask-2.x-orange.svg)](https://flask.palletsprojects.com)
+[![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://docker.com)
 
 一个现代化的心理健康服务平台，提供专业的心理咨询、课程学习和心理测评服务
 
@@ -30,13 +31,13 @@
 
 ```mermaid
 graph TB
-    A[微信小程序端] --> D[API Gateway]
-    B[PC管理后台] --> D
-    C[Web前端] --> D
-    D --> E[Flask Backend]
-    E --> F[MySQL数据库]
-    E --> G[Redis缓存]
-    E --> H[文件存储]
+    A[微信小程序端<br/>uni-app] --> E[Flask Backend<br/>API服务]
+    B[PC管理后台<br/>Vue.js] --> E
+    C[Web前端<br/>Vue.js + Nginx] --> E
+    
+    E --> F[MySQL 8.0<br/>数据库]
+    E --> G[Redis 7.0<br/>缓存]
+    E --> H[文件存储<br/>uploads]
     
     subgraph "前端应用"
         A
@@ -50,32 +51,50 @@ graph TB
         G
         H
     end
+    
+    subgraph "部署方式"
+        I[Docker Compose<br/>容器化部署]
+    end
 ```
 
 ## 📁 项目结构
 
 ```
 psychological-health/
-├── apps/
-│   ├── backend/              # Flask后端应用
-│   │   ├── api/             # API路由
-│   │   ├── models/          # 数据模型
-│   │   ├── form/            # 表单验证
-│   │   ├── middleware/      # 中间件
-│   │   ├── utils/           # 工具函数
-│   │   └── static/          # 静态文件
-│   ├── frontend/            # 微信小程序端
-│   │   ├── src/
-│   │   ├── pages/           # 页面文件
-│   │   └── components/      # 组件文件
-│   └── web/                 # PC管理后台
-│       ├── src/
-│       ├── views/           # 视图组件
-│       └── components/      # 公共组件
-├── config/                  # 配置文件
-├── docs/                    # 项目文档
-├── scripts/                 # 脚本文件
-└── docker-compose.yml       # Docker配置
+├── apps/                    # 应用目录
+│   ├── backend/            # Flask后端应用
+│   │   ├── api/           # API路由
+│   │   ├── models/        # 数据模型
+│   │   ├── form/          # 表单验证
+│   │   ├── middleware/    # 中间件
+│   │   ├── utils/         # 工具函数
+│   │   ├── static/        # 静态文件
+│   │   ├── Dockerfile     # 后端Docker配置
+│   │   └── requirements.txt # Python依赖
+│   ├── frontend/          # 微信小程序端 (uni-app)
+│   │   ├── src/           # 源代码
+│   │   ├── pages/         # 页面文件
+│   │   ├── components/    # 组件文件
+│   │   └── package.json   # 小程序依赖
+│   └── web/               # PC管理后台 (Vue.js)
+│       ├── src/           # 源代码
+│       ├── views/         # 视图组件
+│       ├── components/    # 公共组件
+│       ├── Dockerfile     # 前端Docker配置
+│       ├── nginx.conf     # Nginx配置
+│       └── package.json   # 前端依赖
+├── mysql/                  # MySQL数据库配置
+│   ├── init/              # 数据库初始化脚本
+│   │   └── 01-init.sql    # 初始化SQL
+│   ├── my.cnf             # MySQL配置文件
+│   └── README.md          # MySQL使用说明
+├── config/                 # 配置文件
+│   └── config.yaml        # 主配置文件
+├── docs/                   # 项目文档
+├── scripts/                # 脚本文件
+├── docker-compose.yml      # Docker编排配置
+├── .gitignore             # Git忽略文件
+└── README.md              # 项目说明文档
 ```
 
 ## 🚀 技术栈
@@ -84,11 +103,12 @@ psychological-health/
 - **Python 3.8+** - 主要编程语言
 - **Flask 2.x** - Web框架
 - **SQLAlchemy** - ORM框架
-- **MySQL** - 主数据库
-- **Redis** - 缓存数据库
+- **MySQL 8.0** - 主数据库
+- **Redis 7.0** - 缓存数据库
 - **JWT** - 身份认证
 - **WTForms** - 表单验证
 - **Flask-CORS** - 跨域处理
+- **Gunicorn** - WSGI服务器
 
 ### 前端技术
 - **Vue.js 3.x** - 渐进式JavaScript框架
@@ -104,14 +124,37 @@ psychological-health/
 
 ### 开发工具
 - **Docker** - 容器化部署
+- **Docker Compose** - 多服务编排
 - **pnpm** - 包管理工具
 - **ESLint** - 代码检查
 - **Git** - 版本控制
 
 ## 🛠️ 快速开始
 
+### 🚀 一键部署（推荐）
+
+如果你只想快速体验项目，使用Docker一键部署：
+
+```bash
+# 克隆项目
+git clone https://github.com/your-username/psychological-health.git
+cd psychological-health
+
+# 一键启动所有服务
+docker-compose up -d
+
+# 访问 http://localhost 即可使用
+```
+
 ### 环境要求
 
+#### Docker部署（推荐）
+- Docker 20.10+
+- Docker Compose 2.0+
+- 至少 2GB 可用内存
+- 至少 10GB 可用磁盘空间
+
+#### 本地开发
 - Python 3.8+
 - Node.js 16+
 - MySQL 5.7+
@@ -184,7 +227,7 @@ pnpm dev
 ### 5. 使用Docker（推荐）
 
 ```bash
-# 构建并启动所有服务
+# 一键部署所有服务
 docker-compose up -d
 
 # 查看服务状态
@@ -192,6 +235,12 @@ docker-compose ps
 
 # 查看日志
 docker-compose logs -f
+
+# 停止服务
+docker-compose down
+
+# 重新构建并启动
+docker-compose up -d --build
 ```
 
 ## 🔧 配置说明
@@ -316,6 +365,29 @@ pnpm test
 ```
 
 ## 📦 部署
+
+### 🐳 Docker一键部署（推荐）
+
+```bash
+# 1. 克隆项目
+git clone https://github.com/your-username/psychological-health.git
+cd psychological-health
+
+# 2. 一键启动所有服务
+docker-compose up -d
+
+# 3. 查看服务状态
+docker-compose ps
+
+# 4. 查看服务日志
+docker-compose logs -f
+```
+
+**服务访问地址：**
+- 🌐 Web前端: http://localhost:80
+- 🔧 后端API: http://localhost:5000
+- 🗄️ MySQL数据库: localhost:3306
+- 🚀 Redis缓存: localhost:6379
 
 ### 生产环境部署
 
