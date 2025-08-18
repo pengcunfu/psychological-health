@@ -3,7 +3,7 @@ version: '3.8'
 services:
   backend:
     build:
-      context: .
+      context: ./apps/backend
       dockerfile: Dockerfile
       target: production
     ports:
@@ -25,7 +25,7 @@ services:
       - SECRET_KEY=your-super-secret-key-here
       
       # CORS 配置
-      - CORS_ORIGINS=https://yourdomain.com,https://admin.yourdomain.com
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:80,https://yourdomain.com
       
       # Gunicorn 配置
       - PORT=5000
@@ -57,6 +57,29 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+
+  # Web前端服务
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+      target: production
+    ports:
+      - "80:80"
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - web_logs:/var/log/nginx
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+    
+    depends_on:
+      - backend
 
   # MySQL 数据库服务
   db:
@@ -103,6 +126,7 @@ volumes:
   db_data:
   mysql_data:
   redis_data:
+  web_logs:
 
 networks:
   default:
