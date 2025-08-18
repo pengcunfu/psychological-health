@@ -50,7 +50,7 @@ def get_menus(form):
 
     # 没有搜索关键词时，返回树形结构
     all_menus = create_query_builder(Menu) \
-        .order_by(Menu.sort_order.asc(), Menu.create_time.desc()) \
+        .order_by(Menu.sort_order.asc(), Menu.create_time.asc()) \
         .all()
 
     def build_menu_tree(parent_id=""):

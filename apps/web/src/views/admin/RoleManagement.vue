@@ -4,26 +4,29 @@
     <div class="search-and-action-bar">
       <a-form layout="inline" class="search-form">
         <a-form-item label="关键词">
-          <a-input v-model:value="searchForm.keyword" placeholder="角色名称/代码" allowClear />
+          <a-input v-model:value="searchForm.keyword" placeholder="角色名称/代码" allowClear/>
         </a-form-item>
         <a-form-item>
           <a-button type="primary" @click="handleSearch">
-            <search-outlined /> 搜索
+            <search-outlined/>
+            搜索
           </a-button>
           <a-button style="margin-left: 8px" @click="handleReset">
-            <reload-outlined /> 重置
+            <reload-outlined/>
+            重置
           </a-button>
         </a-form-item>
       </a-form>
 
       <a-button type="primary" @click="showAddModal">
-        <plus-outlined /> 添加角色
+        <plus-outlined/>
+        添加角色
       </a-button>
     </div>
 
     <!-- 数据表格 -->
     <a-table :columns="columns" :data-source="roles" :loading="loading" :pagination="pagination"
-      @change="handleTableChange" rowKey="id">
+             @change="handleTableChange" rowKey="id">
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'status'">
           <a-tag :color="record.status === 1 ? 'green' : 'red'">
@@ -38,8 +41,9 @@
         <template v-if="column.key === 'action'">
           <a-space>
             <a @click="showEditModal(record)">编辑</a>
-            <a-divider type="vertical" />
-            <a-popconfirm title="确定要删除该角色吗?" ok-text="确定" cancel-text="取消" @confirm="handleDelete(record.id)">
+            <a-divider type="vertical"/>
+            <a-popconfirm title="确定要删除该角色吗?" ok-text="确定" cancel-text="取消"
+                          @confirm="handleDelete(record.id)">
               <a class="danger-link">删除</a>
             </a-popconfirm>
           </a-space>
@@ -49,19 +53,19 @@
 
     <!-- 添加/编辑角色弹窗 -->
     <a-modal v-model:visible="modalVisible" :title="modalTitle" @ok="handleModalOk" @cancel="handleModalCancel"
-      width="700px">
+             width="700px">
       <a-form ref="roleFormRef" :model="roleForm" :rules="rules" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }">
         <a-form-item label="角色名称" name="name">
-          <a-input v-model:value="roleForm.name" placeholder="请输入角色名称" />
+          <a-input v-model:value="roleForm.name" placeholder="请输入角色名称"/>
         </a-form-item>
         <a-form-item label="角色代码" name="code">
-          <a-input v-model:value="roleForm.code" placeholder="请输入角色代码" />
+          <a-input v-model:value="roleForm.code" placeholder="请输入角色代码"/>
         </a-form-item>
         <a-form-item label="描述" name="description">
-          <a-textarea v-model:value="roleForm.description" placeholder="请输入角色描述" :rows="3" />
+          <a-textarea v-model:value="roleForm.description" placeholder="请输入角色描述" :rows="3"/>
         </a-form-item>
         <a-form-item label="排序" name="sort_order">
-          <a-input-number v-model:value="roleForm.sort_order" :min="0" style="width: 100%" />
+          <a-input-number v-model:value="roleForm.sort_order" :min="0" style="width: 100%"/>
         </a-form-item>
         <a-form-item label="数据范围" name="data_scope">
           <a-select v-model:value="roleForm.data_scope">
@@ -72,7 +76,7 @@
         </a-form-item>
         <a-form-item label="菜单权限" name="menu_ids">
           <a-tree v-model:checkedKeys="roleForm.menu_ids" :tree-data="menuTree" checkable :check-strictly="false"
-            :default-expand-all="true" />
+                  :default-expand-all="true"/>
         </a-form-item>
         <a-form-item label="状态" name="status">
           <a-radio-group v-model:value="roleForm.status">
@@ -81,10 +85,10 @@
           </a-radio-group>
         </a-form-item>
         <a-form-item label="是否默认" name="is_default">
-          <a-switch v-model:checked="roleForm.is_default" />
+          <a-switch v-model:checked="roleForm.is_default"/>
         </a-form-item>
         <a-form-item label="备注" name="remark">
-          <a-textarea v-model:value="roleForm.remark" placeholder="请输入备注" :rows="2" />
+          <a-textarea v-model:value="roleForm.remark" placeholder="请输入备注" :rows="2"/>
         </a-form-item>
       </a-form>
     </a-modal>
@@ -92,10 +96,10 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
-import { message } from 'ant-design-vue'
-import { PlusOutlined, SearchOutlined, ReloadOutlined } from '@ant-design/icons-vue'
-import { roleAPI, menuAPI } from '@/api'
+import {ref, reactive, onMounted} from 'vue'
+import {message} from 'ant-design-vue'
+import {PlusOutlined, SearchOutlined, ReloadOutlined} from '@ant-design/icons-vue'
+import {roleAPI, menuAPI} from '@/api'
 
 defineOptions({
   name: 'RoleManagement'
@@ -147,12 +151,12 @@ const columns = [
     title: '创建时间',
     dataIndex: 'create_time',
     key: 'create_time',
-    width: 180
+    width: 240
   },
   {
     title: '操作',
     key: 'action',
-    width: 120
+    width: 200
   }
 ]
 
@@ -190,15 +194,15 @@ const roleForm = reactive({
 // 表单校验规则
 const rules = {
   name: [
-    { required: true, message: '请输入角色名称', trigger: 'blur' },
-    { max: 50, message: '角色名称不能超过50个字符', trigger: 'blur' }
+    {required: true, message: '请输入角色名称', trigger: 'blur'},
+    {max: 50, message: '角色名称不能超过50个字符', trigger: 'blur'}
   ],
   code: [
-    { required: true, message: '请输入角色代码', trigger: 'blur' },
-    { max: 50, message: '角色代码不能超过50个字符', trigger: 'blur' }
+    {required: true, message: '请输入角色代码', trigger: 'blur'},
+    {max: 50, message: '角色代码不能超过50个字符', trigger: 'blur'}
   ],
   sort_order: [
-    { required: true, message: '请输入排序值', trigger: 'blur' }
+    {required: true, message: '请输入排序值', trigger: 'blur'}
   ]
 }
 
@@ -317,7 +321,7 @@ const handleModalOk = () => {
   roleFormRef.value.validate().then(async () => {
     try {
       // 准备表单数据（保持菜单ID为数组格式）
-      const formData = { ...roleForm }
+      const formData = {...roleForm}
 
       if (isEdit.value) {
         await roleAPI.updateRole(formData.id, formData)

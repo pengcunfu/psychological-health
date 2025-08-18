@@ -1,13 +1,14 @@
 from flask import redirect, send_from_directory
 import os
+from utils.cache.redis_client import session_manager
+from utils.json_result import JsonResult
 
-# 首页重定向到Swagger文档
+
 def index():
     """首页重定向到Swagger API文档"""
     return redirect('/api/docs/')
 
 
-# 配置静态文件CDN访问
 def static_files(filename):
     """静态文件CDN访问"""
     from flask import current_app
@@ -15,7 +16,6 @@ def static_files(filename):
     return send_from_directory(static_dir, filename)
 
 
-# 会话统计API（用于监控）
 def session_stats():
     """获取会话统计信息"""
     from utils.auth_manager import AuthManager
@@ -25,12 +25,8 @@ def session_stats():
     return JsonResult.success(stats)
 
 
-# Redis健康检查API
 def redis_health():
     """Redis健康检查"""
-    from utils.cache.redis_client import session_manager
-    from utils.json_result import JsonResult
-
     try:
         is_available = session_manager.redis_client.is_available()
         if is_available:
@@ -50,4 +46,3 @@ def redis_health():
             'status': 'error',
             'message': f'Redis检查失败: {str(e)}'
         }, code=500)
-
