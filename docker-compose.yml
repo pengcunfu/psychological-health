@@ -13,8 +13,8 @@ services:
       - FLASK_ENV=production
       - CONFIG_PATH=config-prod.yaml
       
-      # 数据库配置 (示例使用 PostgreSQL)
-      - DATABASE_URI=postgresql://user:password@db:5432/psychological_health
+      # 数据库配置 (MySQL)
+      - DATABASE_URI=mysql://app_user:app_password@db:3306/psychological_health
       
       # Redis配置
       - REDIS_HOST=redis
@@ -53,20 +53,33 @@ services:
     restart: unless-stopped
     
     depends_on:
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
-  # 可选：PostgreSQL 数据库服务
-  # db:
-  #   image: postgres:15
-  #   environment:
-  #     - POSTGRES_DB=psychological_health
-  #     - POSTGRES_USER=user
-  #     - POSTGRES_PASSWORD=password
-  #   volumes:
-  #     - postgres_data:/var/lib/postgresql/data
-  #   ports:
-  #     - "5432:5432"
-  #   restart: unless-stopped
+  # MySQL 数据库服务
+  db:
+    image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_DATABASE=psychological_health
+      - MYSQL_USER=app_user
+      - MYSQL_PASSWORD=app_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d
+      - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+    ports:
+      - "3306:3306"
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
 
   # Redis 会话存储服务
   redis:
@@ -88,8 +101,8 @@ volumes:
   uploads_data:
   static_data:
   db_data:
+  mysql_data:
   redis_data:
-  # postgres_data:
 
 networks:
   default:
