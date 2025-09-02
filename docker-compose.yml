@@ -37,11 +37,11 @@ services:
     
     volumes:
       # 持久化上传文件
-      - uploads_data:/app/uploads
-      - static_data:/app/static
+      - ~/data/psychological-health/uploads:/app/uploads
+      - ~/data/psychological-health/static:/app/static
       
       # 持久化数据库 (如果使用 SQLite)
-      - db_data:/app/instance
+      - ~/data/psychological-health/instance:/app/instance
     
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/"]
@@ -69,7 +69,7 @@ services:
     environment:
       - NODE_ENV=production
     volumes:
-      - web_logs:/var/log/nginx
+      - ~/data/psychological-health/web-logs:/var/log/nginx
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/health"]
       interval: 30s
@@ -90,7 +90,7 @@ services:
       - MYSQL_USER=app_user
       - MYSQL_PASSWORD=app_password
     volumes:
-      - mysql_data:/var/lib/mysql
+      - ~/data/psychological-health/mysql:/var/lib/mysql
       - ./mysql/init:/docker-entrypoint-initdb.d
       - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf
     ports:
@@ -109,7 +109,7 @@ services:
     image: redis:7-alpine
     command: redis-server --appendonly yes
     volumes:
-      - redis_data:/data
+      - ~/data/psychological-health/redis:/data
     ports:
       - "6379:6379"
     healthcheck:
@@ -119,14 +119,6 @@ services:
       retries: 3
       start_period: 10s
     restart: unless-stopped
-
-volumes:
-  uploads_data:
-  static_data:
-  db_data:
-  mysql_data:
-  redis_data:
-  web_logs:
 
 networks:
   default:

@@ -373,13 +373,19 @@ pnpm test
 git clone https://github.com/your-username/psychological-health.git
 cd psychological-health
 
-# 2. 一键启动所有服务
+# 2. 设置数据目录（可选，Docker会自动创建）
+# Linux/macOS
+bash scripts/setup-dirs.sh
+# Windows
+scripts\setup-dirs.bat
+
+# 3. 一键启动所有服务
 docker-compose up -d
 
-# 3. 查看服务状态
+# 4. 查看服务状态
 docker-compose ps
 
-# 4. 查看服务日志
+# 5. 查看服务日志
 docker-compose logs -f
 ```
 
