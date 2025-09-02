@@ -15,7 +15,7 @@ email:
 
 # Redis配置
 redis:
-  host: ${REDIS_HOST:-localhost}
+  host: ${REDIS_HOST:-123.56.170.116}
   port: ${REDIS_PORT:-6379}
   db: ${REDIS_DB:-0}
   password: ${REDIS_PASSWORD:-null}

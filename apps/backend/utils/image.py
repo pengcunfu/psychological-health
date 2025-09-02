@@ -4,7 +4,7 @@
 
 # 处理单个图片URL
 image_url = process_image_url('/static/images/avatar.jpg')
-# 结果: 'http://localhost:5000/static/images/avatar.jpg'
+# 结果: 'http://123.56.170.116:5000/static/images/avatar.jpg'
 
 # 处理字典中的图片字段
 counselor_data = {
@@ -35,7 +35,7 @@ def get_base_url() -> str:
     获取当前应用的基础URL
 
     Returns:
-        str: 基础URL，例如 'http://localhost:5000'
+        str: 基础URL，例如 'http://123.56.170.116:5000'
     """
     config = get_config()
     domain = config.get('domain', '')

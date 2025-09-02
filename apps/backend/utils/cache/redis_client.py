@@ -37,7 +37,7 @@ class RedisClient:
             redis_config = config.get('REDIS', {})
 
             self._redis_client = redis.Redis(
-                host=redis_config.get('HOST', 'localhost'),
+                host=redis_config.get('HOST', '123.56.170.116'),
                 port=redis_config.get('PORT', 6379),
                 db=redis_config.get('DB', 0),
                 password=redis_config.get('PASSWORD'),

@@ -25,7 +25,7 @@ services:
       - SECRET_KEY=your-super-secret-key-here
       
       # CORS 配置
-      - CORS_ORIGINS=http://localhost:3000,http://localhost:80,https://yourdomain.com
+      - CORS_ORIGINS=http://123.56.170.116:3000,http://123.56.170.116:80,https://yourdomain.com
       
       # Gunicorn 配置
       - PORT=5000

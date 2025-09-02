@@ -65,7 +65,7 @@ ENV PATH=/home/appuser/.local/bin:$PATH
 
 # 健康检查
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:5000/ || exit 1
+    CMD curl -f http://123.56.170.116:5000/ || exit 1
 
 # 暴露端口
 EXPOSE 5000
