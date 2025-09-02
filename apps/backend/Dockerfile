@@ -13,6 +13,14 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     FLASK_ENV=production \
     CONFIG_PATH=config-prod.yaml
 
+# 配置中科大镜像源
+RUN sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list.d/debian.sources && \
+    sed -i 's/security.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list.d/debian.sources
+
+# 配置 pip 使用中科大镜像
+RUN pip config set global.index-url https://mirrors.ustc.edu.cn/pypi/web/simple && \
+    pip config set global.trusted-host mirrors.ustc.edu.cn
+
 # 安装系统依赖
 RUN apt-get update && apt-get install -y \
     gcc \
