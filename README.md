@@ -143,7 +143,7 @@ cd psychological-health
 # 一键启动所有服务
 docker-compose up -d
 
-# 访问 http://123.56.170.116 即可使用
+# 访问 http://localhost 即可使用
 ```
 
 ### 环境要求
@@ -250,7 +250,7 @@ docker-compose up -d --build
 ```yaml
 # 数据库配置
 database:
-  host: 123.56.170.116
+  host: localhost
   port: 3306
   user: root
   password: your_password
@@ -258,7 +258,7 @@ database:
 
 # Redis配置
 redis:
-  host: 123.56.170.116
+  host: localhost
   port: 6379
   password: ""
   db: 0
@@ -279,8 +279,8 @@ upload:
 
 ```javascript
 // apps/web/src/utils/config.js
-export const API_BASE_URL = 'http://123.56.170.116:5000/api'
-export const UPLOAD_URL = 'http://123.56.170.116:5000/api/upload'
+export const API_BASE_URL = 'http://localhost:5000/api'
+export const UPLOAD_URL = 'http://localhost:5000/api/upload'
 ```
 
 ## 📚 核心功能
@@ -390,10 +390,10 @@ docker-compose logs -f
 ```
 
 **服务访问地址：**
-- 🌐 Web前端: http://123.56.170.116:80
-- 🔧 后端API: http://123.56.170.116:5000
-- 🗄️ MySQL数据库: 123.56.170.116:3306
-- 🚀 Redis缓存: 123.56.170.116:6379
+- 🌐 Web前端: http://localhost:80
+- 🔧 后端API: http://localhost:5000
+- 🗄️ MySQL数据库: localhost:3306
+- 🚀 Redis缓存: localhost:6379
 
 ### 生产环境部署
 
@@ -434,13 +434,13 @@ docker-compose -f docker-compose.prod.yml up -d
 systemctl status mysql
 
 # 检查连接配置
-mysql -h 123.56.170.116 -u root -p
+mysql -h localhost -u root -p
 ```
 
 **Q: 前端API请求失败**
 ```bash
 # 检查后端服务状态
-curl http://123.56.170.116:5000/api/health
+curl http://localhost:5000/api/health
 
 # 检查CORS配置
 ```

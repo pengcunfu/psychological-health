@@ -9,10 +9,10 @@ export default {
     timeout: 10000,
 
     // 上传文件URL
-    uploadUrl: 'http://123.56.170.116:5000/file/upload',
+    uploadUrl: 'http://localhost:5000/file/upload',
 
     // 静态资源URL
-    staticUrl: 'http://123.56.170.116:5000/static',
+    staticUrl: 'http://localhost:5000/static',
 
     // 默认头像
     defaultAvatar: '/static/images/default-avatar.png',

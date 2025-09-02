@@ -17,7 +17,7 @@
 
 ### 数据库连接信息
 
-- **主机**: 123.56.170.116 (本地) 或 服务器IP
+- **主机**: localhost (本地) 或 服务器IP
 - **端口**: 3306
 - **数据库名**: psychological_health
 - **用户名**: app_user
@@ -48,9 +48,9 @@ docker exec -it psychological-health_db_1 mysql -u root -p
 ```
 
 #### 使用图形化工具
-- **Navicat**: 连接123.56.170.116:3306
-- **phpMyAdmin**: 访问 http://123.56.170.116:8080 (如果部署了phpMyAdmin)
-- **MySQL Workbench**: 连接123.56.170.116:3306
+- **Navicat**: 连接localhost:3306
+- **phpMyAdmin**: 访问 http://localhost:8080 (如果部署了phpMyAdmin)
+- **MySQL Workbench**: 连接localhost:3306
 
 ### 3. 查看日志
 
