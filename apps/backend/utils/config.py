@@ -85,10 +85,10 @@ def get_config():
     # 确保包含默认的Redis和Session配置
     if 'redis' not in data:
         data['redis'] = {
-            'host': 'localhost',
-            'port': 6379,
-            'db': 0,
-            'password': None,
+            'host': os.environ.get('REDIS_HOST', 'localhost'),
+            'port': int(os.environ.get('REDIS_PORT', 6379)),
+            'db': int(os.environ.get('REDIS_DB', 0)),
+            'password': os.environ.get('REDIS_PASSWORD'),
             'decode_responses': True
         }
     
