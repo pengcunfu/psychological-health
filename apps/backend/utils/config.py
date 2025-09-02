@@ -55,10 +55,10 @@ def get_config():
                 'sender_name': '心理健康平台'
             },
             'redis': {
-                'host': '123.56.170.116',
-                'port': 6379,
-                'db': 0,
-                'password': None,
+                'host': os.environ.get('REDIS_HOST', 'redis'),
+                'port': int(os.environ.get('REDIS_PORT', 6379)),
+                'db': int(os.environ.get('REDIS_DB', 0)),
+                'password': os.environ.get('REDIS_PASSWORD'),
                 'decode_responses': True
             },
             'session': {
@@ -85,7 +85,7 @@ def get_config():
     # 确保包含默认的Redis和Session配置
     if 'redis' not in data:
         data['redis'] = {
-            'host': os.environ.get('REDIS_HOST', '123.56.170.116'),
+            'host': os.environ.get('REDIS_HOST', 'redis'),
             'port': int(os.environ.get('REDIS_PORT', 6379)),
             'db': int(os.environ.get('REDIS_DB', 0)),
             'password': os.environ.get('REDIS_PASSWORD'),

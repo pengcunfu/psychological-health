@@ -11,7 +11,6 @@ services:
     environment:
       # 应用配置
       - FLASK_ENV=production
-      - CONFIG_PATH=config-prod.yaml
       
       # 数据库配置 (MySQL)
       - DATABASE_URI=mysql://app_user:app_password@db:3306/psychological_health
