@@ -84,7 +84,7 @@ services:
   # Redis 会话存储服务
   redis:
     image: redis:7-alpine
-    command: redis-server --appendonly yes
+    command: redis-psychological --appendonly yes
     volumes:
       - ~/data/psychological-health/redis:/data
     ports:
