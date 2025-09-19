@@ -7,7 +7,7 @@
           <view class="search-icon" @click="performSearch">
             <SvgIcon name="search" :size="20" color="#999" />
           </view>
-          <up--input v-model="searchKeyword" placeholder="搜索课程、测评、咨询师..." border="none" :clearable="true" :focus="true"
+          <u-input v-model="searchKeyword" placeholder="搜索课程、测评、咨询师..." border="none" :clearable="true" :focus="true"
             @change="onSearchInput" @confirm="performSearch" shape="round" height="64" backgroundColor="#f5f7fa"
             fontSize="26" placeholderStyle="color: #999; font-size: 26rpx;"
             :customStyle="{ padding: '0', margin: '0' }" />
@@ -21,17 +21,17 @@
       <view class="history-section" v-if="searchHistory.length > 0">
         <view class="section-title">
           <text>搜索历史</text>
-          <up-icon class="clear-icon" name="trash" :size="32" color="#999" @click="clearHistory"></up-icon>
+          <u-icon class="clear-icon" name="trash" :size="32" color="#999" @click="clearHistory"></u-icon>
         </view>
         <view class="history-list">
           <view class="history-item" v-for="(item, index) in searchHistory" :key="index"
             @click="selectHistoryItem(item)">
             <view class="history-text">
-              <up-icon class="history-icon" name="clock" :size="32" color="#999"></up-icon>
+              <u-icon class="history-icon" name="clock" :size="32" color="#999"></u-icon>
               <text>{{ item }}</text>
             </view>
-            <up-icon class="delete-icon" name="close" :size="32" color="#999"
-              @click.stop="removeHistoryItem(index)"></up-icon>
+            <u-icon class="delete-icon" name="close" :size="32" color="#999"
+              @click.stop="removeHistoryItem(index)"></u-icon>
           </view>
         </view>
       </view>
@@ -51,7 +51,7 @@
 
     <!-- 空状态 -->
     <view class="empty-state" v-show="showResults && searchResults.length === 0">
-      <up-icon name="search" :size="120" color="#ccc"></up-icon>
+      <u-icon name="search" :size="120" color="#ccc"></u-icon>
       <text class="empty-text">暂无相关内容</text>
     </view>
 

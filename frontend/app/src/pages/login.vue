@@ -16,20 +16,20 @@
       <view class="form-group">
         <view class="input-wrapper">
           <view class="input-icon">
-            <up-icon name="account" color="#999" size="30"></up-icon>
+            <u-icon name="account" color="#999" size="30"></u-icon>
           </view>
-          <up--input v-model="form.account" placeholder="请输入用户名、手机号或邮箱" border="none" :clearable="true" 
-            class="custom-input"></up--input>
+          <u-input v-model="form.account" placeholder="请输入用户名、手机号或邮箱" border="none" :clearable="true" 
+            class="custom-input"></u-input>
         </view>
       </view>
 
       <view class="form-group">
         <view class="input-wrapper">
           <view class="input-icon">
-            <up-icon name="lock" color="#999" size="30"></up-icon>
+            <u-icon name="lock" color="#999" size="30"></u-icon>
           </view>
-          <up--input v-model="form.password" type="password" placeholder="请输入密码" border="none" :clearable="true"
-            :passwordIcon="true" class="custom-input"></up--input>
+          <u-input v-model="form.password" type="password" placeholder="请输入密码" border="none" :clearable="true"
+            :passwordIcon="true" class="custom-input"></u-input>
         </view>
       </view>
 
@@ -37,7 +37,7 @@
       <view class="agreement-section">
         <view class="agreement-checkbox" @click="toggleAgreement">
           <view class="checkbox" :class="{ checked: form.agreePrivacy }">
-            <up-icon v-if="form.agreePrivacy" name="checkmark" color="#fff" size="24"></up-icon>
+            <u-icon v-if="form.agreePrivacy" name="checkmark" color="#fff" size="24"></u-icon>
           </view>
           <text class="agreement-text">
             我已阅读并同意<text class="agreement-link" @click="goToPrivacyPolicy">《隐私政策》</text>和<text class="agreement-link"
@@ -49,7 +49,7 @@
       <button class="login-btn" @click="handleLogin">
         <text class="btn-text">登 录</text>
         <view class="btn-loading" v-if="loading">
-          <up-loading-icon mode="flower" color="#fff" size="30"></up-loading-icon>
+          <u-loading-icon mode="flower" color="#fff" size="30"></u-loading-icon>
         </view>
       </button>
 
@@ -68,10 +68,10 @@
 
       <view class="social-login">
         <view class="social-btn" @click="handleWechatLogin">
-          <up-icon name="weixin-fill" color="#09BB07" size="60"></up-icon>
+          <u-icon name="weixin-fill" color="#09BB07" size="60"></u-icon>
         </view>
         <view class="social-btn" @click="handleQQLogin">
-          <up-icon name="qq-fill" color="#1296db" size="60"></up-icon>
+          <u-icon name="qq-fill" color="#1296db" size="60"></u-icon>
         </view>
       </view>
     </view>

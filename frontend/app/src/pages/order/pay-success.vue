@@ -11,7 +11,7 @@
     <!-- 成功状态区域 -->
     <view class="success-header">
       <view class="success-icon">
-        <up-icon name="checkmark-circle-fill" size="80" color="#52c41a"></up-icon>
+        <u-icon name="checkmark-circle-fill" size="80" color="#52c41a"></u-icon>
       </view>
       <view class="success-title">支付成功</view>
       <view class="success-subtitle">您的咨询预约已确认</view>
@@ -32,7 +32,7 @@
           <view class="counselor-title">心理咨询师</view>
         </view>
         <view class="contact-btn" @click="contactCounselor">
-          <up-icon name="chat" size="16" color="#4A90E2"></up-icon>
+          <u-icon name="chat" size="16" color="#4A90E2"></u-icon>
           <text class="contact-text">联系</text>
         </view>
       </view>
@@ -65,7 +65,7 @@
       <!-- 温馨提示 -->
       <view class="tips-card">
         <view class="tips-title">
-          <up-icon name="info-circle" size="16" color="#1890ff"></up-icon>
+          <u-icon name="info-circle" size="16" color="#1890ff"></u-icon>
           <text class="tips-title-text">温馨提示</text>
         </view>
         <view class="tips-content">

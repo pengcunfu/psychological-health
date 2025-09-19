@@ -14,7 +14,7 @@
     <view class="contact-section">
       <view class="contact-card">
         <view class="contact-item">
-          <up-icon name="phone" color="#4A90E2" size="40"></up-icon>
+          <u-icon name="phone" color="#4A90E2" size="40"></u-icon>
           <view class="contact-info">
             <text class="contact-title">客服热线</text>
             <text class="contact-value">400-123-4567</text>
@@ -25,7 +25,7 @@
 
       <view class="contact-card">
         <view class="contact-item">
-          <up-icon name="email" color="#4A90E2" size="40"></up-icon>
+          <u-icon name="email" color="#4A90E2" size="40"></u-icon>
           <view class="contact-info">
             <text class="contact-title">电子邮箱</text>
             <text class="contact-value">support@psychhealth.com</text>
@@ -36,7 +36,7 @@
 
       <view class="contact-card">
         <view class="contact-item">
-          <up-icon name="weixin-fill" color="#4A90E2" size="40"></up-icon>
+          <u-icon name="weixin-fill" color="#4A90E2" size="40"></u-icon>
           <view class="contact-info">
             <text class="contact-title">微信公众号</text>
             <text class="contact-value">心理健康平台</text>
@@ -47,7 +47,7 @@
 
       <view class="contact-card">
         <view class="contact-item">
-          <up-icon name="home" color="#4A90E2" size="40"></up-icon>
+          <u-icon name="home" color="#4A90E2" size="40"></u-icon>
           <view class="contact-info">
             <text class="contact-title">公司地址</text>
             <text class="contact-value">北京市海淀区中关村南大街5号</text>
@@ -62,31 +62,31 @@
       <view class="form-content">
         <view class="form-item">
           <text class="form-label">姓名</text>
-          <up--input
+          <u-input
             v-model="form.name"
             placeholder="请输入您的姓名"
             border="bottom"
-          ></up--input>
+          ></u-input>
         </view>
         
         <view class="form-item">
           <text class="form-label">联系方式</text>
-          <up--input
+          <u-input
             v-model="form.contact"
             placeholder="请输入您的手机号或邮箱"
             border="bottom"
-          ></up--input>
+          ></u-input>
         </view>
         
         <view class="form-item">
           <text class="form-label">留言内容</text>
-          <up--textarea
+          <u-textarea
             v-model="form.content"
             placeholder="请输入您的留言内容"
             height="200"
             count
             maxlength="500"
-          ></up--textarea>
+          ></u-textarea>
         </view>
         
         <button class="submit-btn" @click="handleSubmit">提交留言</button>
@@ -99,7 +99,7 @@
         <view class="faq-item" v-for="(item, index) in faqList" :key="index" @click="toggleFaq(index)">
           <view class="faq-question">
             <text>{{ item.question }}</text>
-            <up-icon :name="item.expanded ? 'arrow-up' : 'arrow-down'" color="#999" size="30"></up-icon>
+            <u-icon :name="item.expanded ? 'arrow-up' : 'arrow-down'" color="#999" size="30"></u-icon>
           </view>
           <view class="faq-answer" v-if="item.expanded">
             <text>{{ item.answer }}</text>

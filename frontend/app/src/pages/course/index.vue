@@ -29,21 +29,21 @@
     <!-- 空状态 -->
     <view v-if="!loading && courseList.length === 0" class="empty-state">
       <view class="empty-content">
-        <up-icon name="search" size="60" color="#ccc"></up-icon>
+        <u-icon name="search" size="60" color="#ccc"></u-icon>
         <text class="empty-title">暂无课程</text>
         <text class="empty-subtitle">试试切换其他分类</text>
-        <up-button text="重新加载" type="primary" size="normal" @click="fetchCourses(true)" :customStyle="{
+        <u-button text="重新加载" type="primary" size="normal" @click="fetchCourses(true)" :customStyle="{
           marginTop: '30rpx',
           width: '160rpx',
           borderRadius: '22rpx',
           background: '#4A90E2'
-        }"></up-button>
+        }"></u-button>
       </view>
     </view>
 
     <!-- 加载更多 -->
     <view class="load-more-container">
-      <up-loadmore :status="loadMoreStatus" @loadmore="loadMore" :loading-text="'正在加载更多课程...'" :loadmore-text="'上拉加载更多'"
+      <u-loadmore :status="loadMoreStatus" @loadmore="loadMore" :loading-text="'正在加载更多课程...'" :loadmore-text="'上拉加载更多'"
         :nomore-text="'已加载全部课程'" icon-size="20" :margin-top="20" :margin-bottom="20" />
     </view>
 

@@ -11,7 +11,7 @@
     <!-- 失败状态区域 -->
     <view class="error-header">
       <view class="error-icon">
-        <up-icon name="close-circle-fill" size="80" color="#ff4d4f"></up-icon>
+        <u-icon name="close-circle-fill" size="80" color="#ff4d4f"></u-icon>
       </view>
       <view class="error-title">支付失败</view>
       <view class="error-subtitle">很抱歉，您的支付未能成功</view>
@@ -48,19 +48,19 @@
         <view class="solution-title">解决方案</view>
         <view class="solution-list">
           <view class="solution-item">
-            <up-icon name="checkmark-circle" size="16" color="#52c41a"></up-icon>
+            <u-icon name="checkmark-circle" size="16" color="#52c41a"></u-icon>
             <text class="solution-text">检查网络连接是否正常</text>
           </view>
           <view class="solution-item">
-            <up-icon name="checkmark-circle" size="16" color="#52c41a"></up-icon>
+            <u-icon name="checkmark-circle" size="16" color="#52c41a"></u-icon>
             <text class="solution-text">确认银行卡余额是否充足</text>
           </view>
           <view class="solution-item">
-            <up-icon name="checkmark-circle" size="16" color="#52c41a"></up-icon>
+            <u-icon name="checkmark-circle" size="16" color="#52c41a"></u-icon>
             <text class="solution-text">联系银行确认是否限制交易</text>
           </view>
           <view class="solution-item">
-            <up-icon name="checkmark-circle" size="16" color="#52c41a"></up-icon>
+            <u-icon name="checkmark-circle" size="16" color="#52c41a"></u-icon>
             <text class="solution-text">尝试使用其他支付方式</text>
           </view>
         </view>
@@ -74,11 +74,11 @@
         </view>
         <view class="contact-info">
           <view class="contact-item" @click="callService">
-            <up-icon name="phone" size="16" color="#4A90E2"></up-icon>
+            <u-icon name="phone" size="16" color="#4A90E2"></u-icon>
             <text class="contact-text">400-123-4567</text>
           </view>
           <view class="contact-item" @click="chatService">
-            <up-icon name="chat" size="16" color="#4A90E2"></up-icon>
+            <u-icon name="chat" size="16" color="#4A90E2"></u-icon>
             <text class="contact-text">在线客服</text>
           </view>
         </view>

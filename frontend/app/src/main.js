@@ -3,12 +3,12 @@ import App from './App.vue'
 import pinia from './store'
 
 // 导入uView-plus
-import uviewPlus from 'uview-plus'
+import uviewPlus, { setConfig } from 'uview-plus'
 // 导入uViewPlus样式
 import 'uview-plus/index.scss'
 
 // 配置uViewPlus
-uviewPlus.setConfig({
+setConfig({
     // 修改$u.config对象的属性
     config: {
         // 修改默认单位为rpx，相当于执行 uni.$u.config.unit = 'rpx'

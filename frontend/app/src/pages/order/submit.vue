@@ -16,7 +16,7 @@
         <view class="counselor-info">
           <view class="counselor-name">{{ orderData.counselor?.name || '明翠莲' }}</view>
           <view class="counselor-arrow">
-            <up-icon name="arrow-right" size="16" color="#999"></up-icon>
+            <u-icon name="arrow-right" size="16" color="#999"></u-icon>
           </view>
         </view>
       </view>
@@ -66,11 +66,11 @@
 
         <view class="agreement-checkbox">
           <view class="checkbox-item" @click="toggleAgreement">
-            <up-icon 
+            <u-icon 
               :name="agreedToTerms ? 'checkbox-mark' : 'checkbox'" 
               size="16" 
               :color="agreedToTerms ? '#4A90E2' : '#999'"
-            ></up-icon>
+            ></u-icon>
             <text class="checkbox-text">我同意并签署《心理咨询知情同意书》</text>
           </view>
         </view>
@@ -80,7 +80,7 @@
     <!-- 固定底部支付区域 -->
     <view class="fixed-bottom">
       <view class="more-options" @click="showMoreOptions">
-        <up-icon name="more-circle" size="20" color="#666"></up-icon>
+        <u-icon name="more-circle" size="20" color="#666"></u-icon>
         <text class="more-text">更多</text>
       </view>
       <button class="pay-btn" :disabled="!canPay" @click="handlePayment">

@@ -12,7 +12,7 @@
       <view class="form-group">
         <view class="form-item">
           <text class="form-label">新手机号</text>
-          <up--input 
+          <u-input 
             v-model="form.phone" 
             placeholder="请输入新手机号" 
             border="bottom"
@@ -25,7 +25,7 @@
         <view class="form-item">
           <text class="form-label">验证码</text>
           <view class="verify-code-input">
-            <up--input 
+            <u-input 
               v-model="form.verifyCode" 
               placeholder="请输入验证码" 
               border="bottom"

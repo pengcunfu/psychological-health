@@ -21,7 +21,7 @@
         <!-- 空状态 -->
         <view v-else class="banner-empty">
             <slot name="empty">
-                <up-empty text="暂无轮播图" icon="https://cdn.uviewui.com/uview/empty/list.png" iconSize="80" textSize="12"
+                <u-empty text="暂无轮播图" icon="https://cdn.uviewui.com/uview/empty/list.png" iconSize="80" textSize="12"
                     textColor="#999999" marginTop="50" />
             </slot>
         </view>
@@ -29,7 +29,7 @@
         <!-- 加载状态 -->
         <view v-if="loading" class="banner-loading">
             <slot name="loading">
-                <up-loading-icon mode="flower" size="40"></up-loading-icon>
+                <u-loading-icon mode="flower" size="40"></u-loading-icon>
                 <text class="loading-text">加载中...</text>
             </slot>
         </view>

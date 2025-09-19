@@ -15,55 +15,55 @@
       <view class="form-group">
         <view class="input-wrapper">
           <view class="input-icon">
-            <up-icon name="account" color="#999" size="30"></up-icon>
+            <u-icon name="account" color="#999" size="30"></u-icon>
           </view>
-          <up--input
+          <u-input
             v-model="form.username"
             placeholder="请输入用户名"
             border="none"
             :clearable="true"
             class="custom-input"
-          ></up--input>
+          ></u-input>
         </view>
       </view>
       
       <view class="form-group">
         <view class="input-wrapper">
           <view class="input-icon">
-            <up-icon name="phone" color="#999" size="30"></up-icon>
+            <u-icon name="phone" color="#999" size="30"></u-icon>
           </view>
-          <up--input
+          <u-input
             v-model="form.phone"
             placeholder="请输入手机号"
             border="none"
             :clearable="true"
             type="number"
             class="custom-input"
-          ></up--input>
+          ></u-input>
         </view>
       </view>
 
       <view class="form-group">
         <view class="input-wrapper">
           <view class="input-icon">
-            <up-icon name="email" color="#999" size="30"></up-icon>
+            <u-icon name="email" color="#999" size="30"></u-icon>
           </view>
-          <up--input
+          <u-input
             v-model="form.email"
             placeholder="请输入邮箱（可选）"
             border="none"
             :clearable="true"
             class="custom-input"
-          ></up--input>
+          ></u-input>
         </view>
       </view>
       
       <view class="form-group">
         <view class="input-wrapper">
           <view class="input-icon">
-            <up-icon name="lock" color="#999" size="30"></up-icon>
+            <u-icon name="lock" color="#999" size="30"></u-icon>
           </view>
-          <up--input
+          <u-input
             v-model="form.password"
             type="password"
             placeholder="请输入密码"
@@ -71,16 +71,16 @@
             :clearable="true"
             :passwordIcon="true"
             class="custom-input"
-          ></up--input>
+          ></u-input>
         </view>
       </view>
       
       <view class="form-group">
         <view class="input-wrapper">
           <view class="input-icon">
-            <up-icon name="lock-fill" color="#999" size="30"></up-icon>
+            <u-icon name="lock-fill" color="#999" size="30"></u-icon>
           </view>
-          <up--input
+          <u-input
             v-model="form.confirmPassword"
             type="password"
             placeholder="请再次输入密码"
@@ -88,7 +88,7 @@
             :clearable="true"
             :passwordIcon="true"
             class="custom-input"
-          ></up--input>
+          ></u-input>
         </view>
       </view>
 
@@ -96,7 +96,7 @@
       <view class="agreement-section">
         <view class="agreement-checkbox" @click="toggleAgreement">
           <view class="checkbox" :class="{ checked: form.agreePrivacy }">
-            <up-icon v-if="form.agreePrivacy" name="checkmark" color="#fff" size="24"></up-icon>
+            <u-icon v-if="form.agreePrivacy" name="checkmark" color="#fff" size="24"></u-icon>
           </view>
           <text class="agreement-text">
             我已阅读并同意<text class="agreement-link" @click="goToPrivacyPolicy">《隐私政策》</text>和<text class="agreement-link" @click="goToUserAgreement">《用户协议》</text>
@@ -107,7 +107,7 @@
       <button class="register-btn" @click="handleRegister">
         <text class="btn-text">注 册</text>
         <view class="btn-loading" v-if="loading">
-          <up-loading-icon mode="flower" color="#fff" size="30"></up-loading-icon>
+          <u-loading-icon mode="flower" color="#fff" size="30"></u-loading-icon>
         </view>
       </button>
       
@@ -126,10 +126,10 @@
 
       <view class="social-login">
         <view class="social-btn" @click="handleWechatRegister">
-          <up-icon name="weixin-fill" color="#09BB07" size="60"></up-icon>
+          <u-icon name="weixin-fill" color="#09BB07" size="60"></u-icon>
         </view>
         <view class="social-btn" @click="handleQQRegister">
-          <up-icon name="qq-fill" color="#1296db" size="60"></up-icon>
+          <u-icon name="qq-fill" color="#1296db" size="60"></u-icon>
         </view>
       </view>
     </view>

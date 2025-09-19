@@ -96,37 +96,37 @@
         </view>
       </view>
       <view v-else class="empty-content">
-        <up-empty mode="order" icon="order" :text="`暂无${getTabText()}订单`"></up-empty>
+        <u-empty mode="order" icon="order" :text="`暂无${getTabText()}订单`"></u-empty>
       </view>
     </view>
     
     <!-- 取消订单弹窗 -->
-    <up-popup :show="showCancelModal" mode="center" @close="showCancelModal = false" round="10">
+    <u-popup :show="showCancelModal" mode="center" @close="showCancelModal = false" round="10">
       <view class="cancel-popup">
         <view class="popup-title">取消订单</view>
         
         <view class="cancel-section">
           <view class="reason-section">
             <text class="reason-label">取消原因</text>
-            <up-radio-group v-model="cancelForm.reason">
-              <up-radio 
+            <u-radio-group v-model="cancelForm.reason">
+              <u-radio 
                 v-for="(item, index) in cancelReasons" 
                 :key="index"
                 :name="item.value"
                 :label="item.label"
                 :customStyle="{marginBottom: '16px'}"
-              ></up-radio>
-            </up-radio-group>
+              ></u-radio>
+            </u-radio-group>
           </view>
           
           <view class="remark-section" v-if="cancelForm.reason === 'other'">
-            <up--textarea
+            <u-textarea
               v-model="cancelForm.remark"
               placeholder="请输入取消原因"
               height="150"
               count
               maxlength="200"
-            ></up--textarea>
+            ></u-textarea>
           </view>
         </view>
         
@@ -135,7 +135,7 @@
           <button class="confirm-btn danger" @click="submitCancel">确认取消</button>
         </view>
       </view>
-    </up-popup>
+    </u-popup>
   </view>
 </template>
 

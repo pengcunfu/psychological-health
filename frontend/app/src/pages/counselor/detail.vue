@@ -5,7 +5,7 @@
     
     <!-- 加载状态 -->
     <view v-if="loading" class="loading-container">
-      <up-loading-page :loading="true" loading-text="加载中..."></up-loading-page>
+      <u-loading-page :loading="true" loading-text="加载中..."></u-loading-page>
     </view>
 
     <!-- 主要内容 -->
@@ -35,7 +35,7 @@
             <view class="name-section">
               <text class="counselor-name">{{ counselorInfo.name || '未知咨询师' }}</text>
               <view class="counselor-badge" v-if="counselorInfo.title">
-                <up-icon name="checkmark-circle" size="16" color="#faad14"></up-icon>
+                <u-icon name="checkmark-circle" size="16" color="#faad14"></u-icon>
                 <text class="badge-text">{{ counselorInfo.title }}</text>
               </view>
             </view>
@@ -53,9 +53,9 @@
 
         <!-- 咨询经验条 -->
         <view class="experience-bar">
-          <up-icon name="star" size="16" color="#faad14"></up-icon>
+          <u-icon name="star" size="16" color="#faad14"></u-icon>
           <text class="experience-text">咨询经验 · {{ getExperienceText() }}</text>
-          <up-icon name="arrow-right" size="12" color="#999"></up-icon>
+          <u-icon name="arrow-right" size="12" color="#999"></u-icon>
         </view>
 
         <!-- 统计数据 -->
@@ -112,7 +112,7 @@
 
     <!-- 错误状态 -->
     <view v-else-if="error" class="error-container">
-      <up-empty 
+      <u-empty 
         text="咨询师信息加载失败"
         icon="https://cdn.uviewui.com/uview/empty/error.png"
         iconSize="120"
@@ -121,7 +121,7 @@
         marginTop="100"
       >
         <template #button>
-          <up-button
+          <u-button
             text="重新加载"
             type="primary"
             size="normal"
@@ -132,20 +132,20 @@
               borderRadius: '22rpx',
               background: '#4A90E2'
             }"
-          ></up-button>
+          ></u-button>
         </template>
-      </up-empty>
+      </u-empty>
     </view>
 
     <!-- 固定底部操作栏 -->
     <view v-if="counselorInfo.id && !loading" class="fixed-bottom-bar">
       <view class="bottom-actions">
         <view class="favorite-btn" @click="toggleFavorite">
-          <up-icon 
+          <u-icon 
             :name="isFavorite ? 'heart-fill' : 'heart'" 
             :color="isFavorite ? '#ff6b6b' : '#666'" 
             size="24"
-          ></up-icon>
+          ></u-icon>
           <text class="favorite-text">收藏</text>
         </view>
         <button 

@@ -50,11 +50,11 @@
             </view>
             <view class="course-stats">
               <view class="stat-item">
-                <up-icon name="clock" size="24" color="#999"></up-icon>
+                <u-icon name="clock" size="24" color="#999"></u-icon>
                 <text class="stat-text">{{ item.duration || '0小时' }}</text>
               </view>
               <view class="stat-item">
-                <up-icon name="file-text" size="24" color="#999"></up-icon>
+                <u-icon name="file-text" size="24" color="#999"></u-icon>
                 <text class="stat-text">{{ item.lesson_count || 0 }}课时</text>
               </view>
               <text class="course-status" :class="`status-${item.status}`">{{ getStatusText(item.status) }}</text>
@@ -63,7 +63,7 @@
         </view>
       </view>
       <view v-else class="empty-content">
-        <up-empty mode="list" icon="order" :text="`暂无${getTabText()}课程`"></up-empty>
+        <u-empty mode="list" icon="order" :text="`暂无${getTabText()}课程`"></u-empty>
       </view>
     </view>
   </view>

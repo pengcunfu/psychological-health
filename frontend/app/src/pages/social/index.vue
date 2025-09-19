@@ -78,7 +78,7 @@
 
     <!-- 加载更多 -->
     <view class="load-more-container">
-      <up-loadmore 
+      <u-loadmore 
         :status="loadMoreStatus" 
         @loadmore="loadMore" 
         loading-text="正在加载更多..."

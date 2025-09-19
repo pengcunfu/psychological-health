@@ -18,14 +18,14 @@
           <view class="counselor-card" v-for="(item, index) in counselors" :key="index"
             @click="navigateToCounselor(item.id)">
             <view class="card-left">
-              <up-avatar :src="item.avatar || '/static/images/default-avatar.png'" :size="120"></up-avatar>
+              <u-avatar :src="item.avatar || '/static/images/default-avatar.png'" :size="120"></u-avatar>
               <view class="counselor-info">
                 <view class="counselor-name-row">
                   <text class="counselor-name">{{ item.name }}</text>
                   <text class="counselor-title">{{ item.title }}</text>
                 </view>
                 <view class="counselor-rating">
-                  <up-icon name="star-fill" color="#faad14" :size="24"></up-icon>
+                  <u-icon name="star-fill" color="#faad14" :size="24"></u-icon>
                   <text class="rating-text">{{ item.rating }}</text>
                   <text class="consultation-count">{{ item.consultation_count }}次咨询</text>
                 </view>
@@ -38,14 +38,14 @@
               <text class="price">¥{{ item.price }}/次</text>
               <view class="action-btns">
                 <button class="action-btn cancel-btn" @click.stop="handleCancelFavorite('counselor', item.id)">
-                  <up-icon name="close" :size="24" color="#999"></up-icon>
+                  <u-icon name="close" :size="24" color="#999"></u-icon>
                 </button>
               </view>
             </view>
           </view>
         </view>
         <view v-else class="empty-content">
-          <up-empty mode="list" icon="star" text="暂无收藏的咨询师"></up-empty>
+          <u-empty mode="list" icon="star" text="暂无收藏的咨询师"></u-empty>
         </view>
       </view>
 
@@ -58,30 +58,30 @@
             <view class="course-info">
               <text class="course-name">{{ item.name }}</text>
               <view class="course-teacher">
-                <up-avatar :src="item.teacher_avatar || '/static/images/default-avatar.png'" :size="40"></up-avatar>
+                <u-avatar :src="item.teacher_avatar || '/static/images/default-avatar.png'" :size="40"></u-avatar>
                 <text class="teacher-name">{{ item.teacher_name }}</text>
               </view>
               <view class="course-stats">
                 <view class="stat-item">
-                  <up-icon name="clock" :size="24" color="#999"></up-icon>
+                  <u-icon name="clock" :size="24" color="#999"></u-icon>
                   <text class="stat-text">{{ item.duration || '0小时' }}</text>
                 </view>
                 <view class="stat-item">
-                  <up-icon name="account" :size="24" color="#999"></up-icon>
+                  <u-icon name="account" :size="24" color="#999"></u-icon>
                   <text class="stat-text">{{ item.sales || 0 }}人学习</text>
                 </view>
               </view>
               <view class="course-footer">
                 <text class="course-price">¥{{ item.price }}</text>
                 <button class="action-btn cancel-btn" @click.stop="handleCancelFavorite('course', item.id)">
-                  <up-icon name="close" :size="24" color="#999"></up-icon>
+                  <u-icon name="close" :size="24" color="#999"></u-icon>
                 </button>
               </view>
             </view>
           </view>
         </view>
         <view v-else class="empty-content">
-          <up-empty mode="list" icon="star" text="暂无收藏的课程"></up-empty>
+          <u-empty mode="list" icon="star" text="暂无收藏的课程"></u-empty>
         </view>
       </view>
     </view>

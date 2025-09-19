@@ -5,7 +5,7 @@
       <view class="avatar-upload" @click="chooseAvatar">
         <image class="avatar" :src="form.avatar || '/static/images/default-avatar.png'" mode="aspectFill"></image>
         <view class="upload-btn">
-          <up-icon name="camera-fill" color="#fff" size="36"></up-icon>
+          <u-icon name="camera-fill" color="#fff" size="36"></u-icon>
         </view>
       </view>
     </view>
@@ -16,7 +16,7 @@
         <text class="form-label">昵称</text>
         <view class="form-value">
           <text class="value-text">{{ form.nickname || '请输入昵称' }}</text>
-          <up-icon name="arrow-right" size="20" color="#C7C7CC"></up-icon>
+          <u-icon name="arrow-right" size="20" color="#C7C7CC"></u-icon>
         </view>
       </view>
 
@@ -27,7 +27,7 @@
             <text></text>
           </picker>
           <text class="value-text">{{ getGenderLabel() }}</text>
-          <up-icon name="arrow-right" size="20" color="#C7C7CC"></up-icon>
+          <u-icon name="arrow-right" size="20" color="#C7C7CC"></u-icon>
         </view>
       </view>
 
@@ -35,7 +35,7 @@
         <text class="form-label">手机号</text>
         <view class="form-value">
           <text class="value-text">{{ maskPhone(form.phone) || '请绑定手机号' }}</text>
-          <up-icon name="arrow-right" size="20" color="#C7C7CC"></up-icon>
+          <u-icon name="arrow-right" size="20" color="#C7C7CC"></u-icon>
         </view>
       </view>
 
@@ -43,7 +43,7 @@
         <text class="form-label">邮箱</text>
         <view class="form-value">
           <text class="value-text">{{ maskEmail(form.email) || '请绑定邮箱' }}</text>
-          <up-icon name="arrow-right" size="20" color="#C7C7CC"></up-icon>
+          <u-icon name="arrow-right" size="20" color="#C7C7CC"></u-icon>
         </view>
       </view>
 
@@ -54,7 +54,7 @@
             <text></text>
           </picker>
           <text class="value-text">{{ form.birthday || '请选择生日' }}</text>
-          <up-icon name="arrow-right" size="20" color="#C7C7CC"></up-icon>
+          <u-icon name="arrow-right" size="20" color="#C7C7CC"></u-icon>
         </view>
       </view>
     </view>
@@ -65,7 +65,7 @@
         <text class="form-label">个人简介</text>
         <view class="form-value">
           <text class="value-text">{{ form.bio || '编辑个签' }}</text>
-          <up-icon name="arrow-right" size="20" color="#C7C7CC"></up-icon>
+          <u-icon name="arrow-right" size="20" color="#C7C7CC"></u-icon>
         </view>
       </view>
     </view>
@@ -76,7 +76,7 @@
         <text class="form-label">修改密码</text>
         <view class="form-value">
           <text class="value-text">••••••</text>
-          <up-icon name="arrow-right" size="20" color="#C7C7CC"></up-icon>
+          <u-icon name="arrow-right" size="20" color="#C7C7CC"></u-icon>
         </view>
       </view>
     </view>

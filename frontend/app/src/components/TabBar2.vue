@@ -1,5 +1,5 @@
 <template>
-  <up-tabbar
+  <u-tabbar
     :value="currentIndex"
     @change="handleChange"
     :fixed="true"
@@ -11,14 +11,14 @@
     :zIndex="9999"
     v-if="currentIndex >= 0"
   >
-    <up-tabbar-item 
+    <u-tabbar-item 
       v-for="(item, index) in tabList" 
       :key="index"
       :text="item.text" 
       :icon="getIcon(item, index)"
       @click="switchTab(index)"
-    ></up-tabbar-item>
-  </up-tabbar>
+    ></u-tabbar-item>
+  </u-tabbar>
 </template>
 
 <script setup>

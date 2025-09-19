@@ -10,7 +10,7 @@
       @load="onLoad"
     />
     <!-- 如果SVG加载失败，显示备用图标 -->
-    <up-icon 
+    <u-icon 
       v-else-if="fallbackIcon"
       :name="fallbackIcon" 
       :size="iconSize"

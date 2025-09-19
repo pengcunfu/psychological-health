@@ -35,7 +35,7 @@
           @click="handleCounselorClick" />
       </view>
       <view v-else class="section-empty">
-        <up-empty text="暂无推荐咨询师" icon="https://cdn.uviewui.com/uview/empty/list.png" iconSize="100" textSize="14"
+        <u-empty text="暂无推荐咨询师" icon="https://cdn.uviewui.com/uview/empty/list.png" iconSize="100" textSize="14"
           textColor="#999999" marginTop="40" />
       </view>
     </view>
@@ -57,7 +57,7 @@
         <CourseCard v-for="(item, index) in courseList" :key="index" :course="item" @click="handleCourseClick" />
       </view>
       <view v-else class="section-empty">
-        <up-empty text="暂无推荐课程" icon="https://cdn.uviewui.com/uview/empty/list.png" iconSize="100" textSize="14"
+        <u-empty text="暂无推荐课程" icon="https://cdn.uviewui.com/uview/empty/list.png" iconSize="100" textSize="14"
           textColor="#999999" marginTop="40" />
       </view>
     </view>
@@ -80,7 +80,7 @@
           @click="handleAssessmentClick" />
       </view>
       <view v-else class="section-empty">
-        <up-empty text="暂无心理测评" icon="https://cdn.uviewui.com/uview/empty/list.png" iconSize="100" textSize="14"
+        <u-empty text="暂无心理测评" icon="https://cdn.uviewui.com/uview/empty/list.png" iconSize="100" textSize="14"
           textColor="#999999" marginTop="40" />
       </view>
     </view>

@@ -12,7 +12,7 @@
           <slot name="left" v-if="$slots.left"></slot>
           <view v-else>
             <view class="navbar-left-icon" v-if="leftIcon">
-              <up-icon :name="leftIcon" size="20" color="#333"></up-icon>
+              <u-icon :name="leftIcon" size="20" color="#333"></u-icon>
             </view>
             <text class="navbar-left-text" v-if="leftText">{{ leftText }}</text>
           </view>
@@ -29,7 +29,7 @@
           <slot name="right" v-if="$slots.right"></slot>
           <view v-else>
             <view class="navbar-right-icon" v-if="rightIcon">
-              <up-icon :name="rightIcon" size="20" color="#333"></up-icon>
+              <u-icon :name="rightIcon" size="20" color="#333"></u-icon>
             </view>
             <text class="navbar-right-text" v-if="rightText">{{ rightText }}</text>
           </view>

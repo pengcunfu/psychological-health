@@ -24,19 +24,19 @@
                 <text class="detail-text">{{ consultant.phone }}</text>
               </view>
             </view>
-            <up-icon 
+            <u-icon 
               v-if="selectedConsultant?.id === consultant.id" 
               name="checkmark" 
               size="16" 
               color="#4A90E2"
-            ></up-icon>
+            ></u-icon>
           </view>
         </view>
         
         <!-- 添加新咨询人按钮 -->
         <view class="client-card" @click="showClientPicker">
           <view class="add-client">
-            <up-icon name="plus" size="24" color="#999"></up-icon>
+            <u-icon name="plus" size="24" color="#999"></u-icon>
             <text class="add-client-text">新增咨询人</text>
           </view>
         </view>

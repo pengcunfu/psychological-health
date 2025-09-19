@@ -50,7 +50,7 @@
           <view class="block-title">适合人群</view>
           <view class="block-content">
             <view class="target-item" v-for="(target, index) in targetUsers" :key="index">
-              <up-icon name="checkmark-circle" color="#4A90E2" size="30"></up-icon>
+              <u-icon name="checkmark-circle" color="#4A90E2" size="30"></u-icon>
               <text class="target-text">{{ target }}</text>
             </view>
           </view>
@@ -70,7 +70,7 @@
           <view class="block-title">讲师介绍</view>
           <view class="block-content">
             <view class="teacher-card">
-              <up-avatar :src="courseInfo.teacher_avatar || '/static/images/default-avatar.png'" size="120"></up-avatar>
+              <u-avatar :src="courseInfo.teacher_avatar || '/static/images/default-avatar.png'" size="120"></u-avatar>
               <view class="teacher-info">
                 <text class="teacher-name">{{ courseInfo.teacher_name || '未知讲师' }}</text>
                 <text class="teacher-title">{{ courseInfo.teacher_title || '' }}</text>
@@ -90,7 +90,7 @@
                 <text class="chapter-index">{{ chapterIndex + 1 }}</text>
                 <text class="chapter-name">{{ chapter.name }}</text>
               </view>
-              <up-icon :name="chapter.expanded ? 'arrow-down' : 'arrow-right'" size="30" color="#999"></up-icon>
+              <u-icon :name="chapter.expanded ? 'arrow-down' : 'arrow-right'" size="30" color="#999"></u-icon>
             </view>
             <view class="chapter-lessons" v-if="chapter.expanded">
               <view 
@@ -104,7 +104,7 @@
                   <text class="lesson-name">{{ lesson.name }}</text>
                 </view>
                 <view class="lesson-duration">
-                  <up-icon name="clock" size="24" color="#999"></up-icon>
+                  <u-icon name="clock" size="24" color="#999"></u-icon>
                   <text class="duration-text">{{ lesson.duration || '00:00' }}</text>
                 </view>
               </view>
@@ -112,7 +112,7 @@
           </view>
         </view>
         <view v-else class="empty-content">
-          <up-empty mode="list" icon="list" text="暂无课程目录"></up-empty>
+          <u-empty mode="list" icon="list" text="暂无课程目录"></u-empty>
         </view>
       </view>
       
@@ -121,11 +121,11 @@
         <view v-if="comments.length > 0">
           <view class="comment-item" v-for="(comment, index) in comments" :key="index">
             <view class="comment-header">
-              <up-avatar :src="comment.user_avatar || '/static/images/default-avatar.png'" size="80"></up-avatar>
+              <u-avatar :src="comment.user_avatar || '/static/images/default-avatar.png'" size="80"></u-avatar>
               <view class="comment-user">
                 <text class="comment-username">{{ comment.username }}</text>
                 <view class="comment-rating">
-                  <up-rate :value="comment.rating" readonly size="16" active-color="#faad14"></up-rate>
+                  <u-rate :value="comment.rating" readonly size="16" active-color="#faad14"></u-rate>
                   <text class="comment-time">{{ comment.create_time }}</text>
                 </view>
               </view>
@@ -140,7 +140,7 @@
           </view>
         </view>
         <view v-else class="empty-content">
-          <up-empty mode="comment" icon="chat" text="暂无评价"></up-empty>
+          <u-empty mode="comment" icon="chat" text="暂无评价"></u-empty>
         </view>
       </view>
     </view>
@@ -148,11 +148,11 @@
     <view class="bottom-action">
       <view class="action-btn-group">
         <view class="action-btn" @click="handleCollect">
-          <up-icon :name="isCollected ? 'star-fill' : 'star'" :color="isCollected ? '#faad14' : '#999'" size="40"></up-icon>
+          <u-icon :name="isCollected ? 'star-fill' : 'star'" :color="isCollected ? '#faad14' : '#999'" size="40"></u-icon>
           <text class="btn-text">{{ isCollected ? '已收藏' : '收藏' }}</text>
         </view>
         <view class="action-btn" @click="handleShare">
-          <up-icon name="share" color="#999" size="40"></up-icon>
+          <u-icon name="share" color="#999" size="40"></u-icon>
           <text class="btn-text">分享</text>
         </view>
       </view>

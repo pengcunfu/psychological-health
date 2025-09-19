@@ -3,7 +3,7 @@
     <!-- 搜索栏 -->
     <view class="search-section">
       <view class="search-bar">
-        <up-icon name="search" size="20" color="#999"></up-icon>
+        <u-icon name="search" size="20" color="#999"></u-icon>
         <input 
           v-model="searchKeyword" 
           placeholder="搜索咨询人姓名或电话" 
@@ -12,7 +12,7 @@
           @confirm="handleSearch"
         />
         <view v-if="searchKeyword" class="clear-btn" @click="clearSearch">
-          <up-icon name="close" size="16" color="#999"></up-icon>
+          <u-icon name="close" size="16" color="#999"></u-icon>
         </view>
       </view>
     </view>
@@ -20,7 +20,7 @@
     <!-- 添加咨询人按钮 -->
     <view class="add-section">
       <view class="add-btn" @click="addConsultant">
-        <up-icon name="plus" size="20" color="#007AFF"></up-icon>
+        <u-icon name="plus" size="20" color="#007AFF"></u-icon>
         <text class="add-text">添加咨询人</text>
       </view>
     </view>
@@ -58,17 +58,17 @@
 
         <view class="consultant-actions" @click.stop="">
           <view class="action-btn" @click="editConsultant(consultant)">
-            <up-icon name="edit-pen" size="16" color="#007AFF"></up-icon>
+            <u-icon name="edit-pen" size="16" color="#007AFF"></u-icon>
           </view>
           <view 
             class="action-btn" 
             @click="setDefault(consultant)"
             v-if="!consultant.is_default"
           >
-            <up-icon name="star" size="16" color="#FA8C16"></up-icon>
+            <u-icon name="star" size="16" color="#FA8C16"></u-icon>
           </view>
           <view class="action-btn danger" @click="deleteConsultant(consultant)">
-            <up-icon name="trash" size="16" color="#FF3B30"></up-icon>
+            <u-icon name="trash" size="16" color="#FF3B30"></u-icon>
           </view>
         </view>
       </view>
@@ -85,7 +85,7 @@
 
     <!-- 加载状态 -->
     <view class="loading-state" v-if="loading">
-      <up-loading-icon mode="spinner"></up-loading-icon>
+      <u-loading-icon mode="spinner"></u-loading-icon>
       <text class="loading-text">加载中...</text>
     </view>
 

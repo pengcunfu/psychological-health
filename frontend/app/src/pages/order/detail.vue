@@ -2,7 +2,7 @@
   <view class="container">
     <!-- 加载状态 -->
     <view class="loading-state" v-if="loading">
-      <up-loading-icon mode="spinner"></up-loading-icon>
+      <u-loading-icon mode="spinner"></u-loading-icon>
       <text class="loading-text">加载中...</text>
     </view>
 
@@ -12,7 +12,7 @@
       <view class="status-card">
         <view class="status-icon">
           <view class="icon-wrapper" :class="`status-${orderDetail.status}`">
-            <up-icon :name="getStatusIcon(orderDetail.status)" size="32" color="#fff"></up-icon>
+            <u-icon :name="getStatusIcon(orderDetail.status)" size="32" color="#fff"></u-icon>
           </view>
         </view>
         <view class="status-info">

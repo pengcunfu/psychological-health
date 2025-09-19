@@ -17,15 +17,15 @@
     <view class="filter-bar">
       <view class="filter-item" @click="showCategoryFilter">
         <text>{{ currentCategory || '全部分类' }}</text>
-        <up-icon name="arrow-down" size="12" color="#999"></up-icon>
+        <u-icon name="arrow-down" size="12" color="#999"></u-icon>
       </view>
       <view class="filter-item" @click="showDifficultyFilter">
         <text>{{ currentDifficulty ? getDifficultyText(currentDifficulty) : '全部难度' }}</text>
-        <up-icon name="arrow-down" size="12" color="#999"></up-icon>
+        <u-icon name="arrow-down" size="12" color="#999"></u-icon>
       </view>
       <view class="filter-item" @click="showPriceFilter">
         <text>{{ currentPriceFilter || '全部价格' }}</text>
-        <up-icon name="arrow-down" size="12" color="#999"></up-icon>
+        <u-icon name="arrow-down" size="12" color="#999"></u-icon>
       </view>
     </view>
 
@@ -42,10 +42,10 @@
     <!-- 空状态 -->
     <view v-if="!loading && assessmentList.length === 0" class="empty-state">
       <view class="empty-content">
-        <up-icon name="file-text" size="60" color="#ccc"></up-icon>
+        <u-icon name="file-text" size="60" color="#ccc"></u-icon>
         <text class="empty-title">暂无相关测评</text>
         <text class="empty-subtitle">试试调整搜索条件或筛选选项</text>
-        <up-button
+        <u-button
             text="重新搜索"
             type="primary"
             size="normal"
@@ -56,13 +56,13 @@
               borderRadius: '22rpx',
               background: '#52c41a'
             }"
-        ></up-button>
+        ></u-button>
       </view>
     </view>
 
     <!-- 加载更多 -->
     <view class="load-more-container">
-      <up-loadmore :status="loadMoreStatus" @loadmore="loadMore" 
+      <u-loadmore :status="loadMoreStatus" @loadmore="loadMore" 
         :loading-text="'正在加载更多测评...'"
         :loadmore-text="'上拉加载更多'"
         :nomore-text="'已加载全部测评'"
@@ -73,11 +73,11 @@
     </view>
 
     <!-- 分类筛选弹窗 -->
-    <up-popup v-model:show="categoryFilterVisible" mode="bottom" :round="10">
+    <u-popup v-model:show="categoryFilterVisible" mode="bottom" :round="10">
       <view class="filter-popup">
         <view class="filter-header">
           <text class="filter-title">选择分类</text>
-          <up-icon name="close" size="20" color="#999" @click="categoryFilterVisible = false"></up-icon>
+          <u-icon name="close" size="20" color="#999" @click="categoryFilterVisible = false"></u-icon>
         </view>
         <view class="filter-options">
           <view 
@@ -91,14 +91,14 @@
           </view>
         </view>
       </view>
-    </up-popup>
+    </u-popup>
 
     <!-- 难度筛选弹窗 -->
-    <up-popup v-model:show="difficultyFilterVisible" mode="bottom" :round="10">
+    <u-popup v-model:show="difficultyFilterVisible" mode="bottom" :round="10">
       <view class="filter-popup">
         <view class="filter-header">
           <text class="filter-title">选择难度</text>
-          <up-icon name="close" size="20" color="#999" @click="difficultyFilterVisible = false"></up-icon>
+          <u-icon name="close" size="20" color="#999" @click="difficultyFilterVisible = false"></u-icon>
         </view>
         <view class="filter-options">
           <view 
@@ -112,14 +112,14 @@
           </view>
         </view>
       </view>
-    </up-popup>
+    </u-popup>
 
     <!-- 价格筛选弹窗 -->
-    <up-popup v-model:show="priceFilterVisible" mode="bottom" :round="10">
+    <u-popup v-model:show="priceFilterVisible" mode="bottom" :round="10">
       <view class="filter-popup">
         <view class="filter-header">
           <text class="filter-title">选择价格</text>
-          <up-icon name="close" size="20" color="#999" @click="priceFilterVisible = false"></up-icon>
+          <u-icon name="close" size="20" color="#999" @click="priceFilterVisible = false"></u-icon>
         </view>
         <view class="filter-options">
           <view 
@@ -133,7 +133,7 @@
           </view>
         </view>
       </view>
-    </up-popup>
+    </u-popup>
 
     <!-- 悬浮搜索按钮 -->
     <view class="floating-search-btn" @click="handleSearchClick">

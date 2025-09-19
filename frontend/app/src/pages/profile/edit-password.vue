@@ -5,7 +5,7 @@
       <view class="form-group">
         <view class="form-item">
           <text class="form-label">当前密码</text>
-          <up--input 
+          <u-input 
             v-model="form.oldPassword" 
             type="password" 
             placeholder="请输入当前密码" 
@@ -17,7 +17,7 @@
 
         <view class="form-item">
           <text class="form-label">新密码</text>
-          <up--input 
+          <u-input 
             v-model="form.newPassword" 
             type="password" 
             placeholder="请输入新密码" 
@@ -29,7 +29,7 @@
 
         <view class="form-item">
           <text class="form-label">确认新密码</text>
-          <up--input 
+          <u-input 
             v-model="form.confirmPassword" 
             type="password" 
             placeholder="请再次输入新密码" 

@@ -2,7 +2,7 @@
   <view class="container">
     <!-- 加载状态 -->
     <view v-if="loading" class="loading-container">
-      <up-loading-page :loading="true" loading-text="加载中..."></up-loading-page>
+      <u-loading-page :loading="true" loading-text="加载中..."></u-loading-page>
     </view>
 
     <!-- 主要内容 -->
@@ -22,15 +22,15 @@
             
             <view class="assessment-meta">
               <view class="meta-item">
-                <up-icon name="clock" size="14" color="#fff"></up-icon>
+                <u-icon name="clock" size="14" color="#fff"></u-icon>
                 <text>{{ assessment.duration || 30 }}分钟</text>
               </view>
               <view class="meta-item">
-                <up-icon name="file-text" size="14" color="#fff"></up-icon>
+                <u-icon name="file-text" size="14" color="#fff"></u-icon>
                 <text>{{ assessment.question_count || 0 }}题</text>
               </view>
               <view class="meta-item">
-                <up-icon name="account" size="14" color="#fff"></up-icon>
+                <u-icon name="account" size="14" color="#fff"></u-icon>
                 <text>{{ formatParticipantCount(assessment.participant_count) }}人已测</text>
               </view>
             </view>
@@ -99,7 +99,7 @@
           
           <view v-if="questions.length > 3" class="more-questions" @click="showAllQuestions">
             <text class="more-text">查看全部 {{ questions.length }} 道题目</text>
-            <up-icon name="arrow-right" size="14" color="#52c41a"></up-icon>
+            <u-icon name="arrow-right" size="14" color="#52c41a"></u-icon>
           </view>
         </view>
       </view>
@@ -121,7 +121,7 @@
             <view class="record-score" v-if="record.status === 'completed'">
               <text class="score-text">{{ record.total_score || 0 }}分</text>
             </view>
-            <up-icon name="arrow-right" size="14" color="#999"></up-icon>
+            <u-icon name="arrow-right" size="14" color="#999"></u-icon>
           </view>
         </view>
       </view>
@@ -152,7 +152,7 @@
 
     <!-- 错误状态 -->
     <view v-else-if="error" class="error-container">
-      <up-empty 
+      <u-empty 
         text="测评信息加载失败"
         icon="https://cdn.uviewui.com/uview/empty/error.png"
         iconSize="120"
@@ -161,7 +161,7 @@
         marginTop="100"
       >
         <template #button>
-          <up-button
+          <u-button
             text="重新加载"
             type="primary"
             size="normal"
@@ -172,9 +172,9 @@
               borderRadius: '22rpx',
               background: '#52c41a'
             }"
-          ></up-button>
+          ></u-button>
         </template>
-      </up-empty>
+      </u-empty>
     </view>
 
     <!-- 底部操作栏 -->
@@ -185,7 +185,7 @@
         <text v-if="assessment.original_price && assessment.original_price > assessment.price" class="original-price">¥{{ assessment.original_price }}</text>
       </view>
       <view class="action-buttons">
-        <up-button
+        <u-button
           v-if="hasInProgressRecord"
           text="继续测评"
           type="warning"
@@ -196,8 +196,8 @@
             borderRadius: '22rpx',
             marginRight: '20rpx'
           }"
-        ></up-button>
-        <up-button
+        ></u-button>
+        <u-button
           :text="assessment.price > 0 ? '立即购买' : '开始测评'"
           type="primary"
           size="normal"
@@ -208,16 +208,16 @@
             borderRadius: '22rpx',
             background: '#52c41a'
           }"
-        ></up-button>
+        ></u-button>
       </view>
     </view>
 
     <!-- 全部题目弹窗 -->
-    <up-popup v-model:show="questionsModalVisible" mode="bottom" :round="10">
+    <u-popup v-model:show="questionsModalVisible" mode="bottom" :round="10">
       <view class="questions-modal">
         <view class="modal-header">
           <text class="modal-title">全部题目 ({{ questions.length }}题)</text>
-          <up-icon name="close" size="20" color="#999" @click="questionsModalVisible = false"></up-icon>
+          <u-icon name="close" size="20" color="#999" @click="questionsModalVisible = false"></u-icon>
         </view>
         <scroll-view class="questions-scroll" scroll-y :style="{ height: '60vh' }">
           <view 
@@ -235,7 +235,7 @@
           </view>
         </scroll-view>
       </view>
-    </up-popup>
+    </u-popup>
   </view>
 </template>
 

@@ -9,25 +9,25 @@
     <view class="form">
       <view class="form-group">
         <text class="form-label">手机号</text>
-        <up--input
+        <u-input
           v-model="form.phone"
           placeholder="请输入手机号"
           border="bottom"
           :clearable="true"
           type="number"
-        ></up--input>
+        ></u-input>
       </view>
       
       <view class="form-group">
         <text class="form-label">验证码</text>
         <view class="verify-code-input">
-          <up--input
+          <u-input
             v-model="form.verifyCode"
             placeholder="请输入验证码"
             border="bottom"
             :clearable="true"
             style="flex: 1;"
-          ></up--input>
+          ></u-input>
           <button class="verify-code-btn" :disabled="counting" @click="handleSendCode">
             {{ counting ? `${countdown}s后重新获取` : '获取验证码' }}
           </button>
@@ -36,26 +36,26 @@
       
       <view class="form-group">
         <text class="form-label">新密码</text>
-        <up--input
+        <u-input
           v-model="form.password"
           type="password"
           placeholder="请输入新密码"
           border="bottom"
           :clearable="true"
           :passwordIcon="true"
-        ></up--input>
+        ></u-input>
       </view>
       
       <view class="form-group">
         <text class="form-label">确认密码</text>
-        <up--input
+        <u-input
           v-model="form.confirmPassword"
           type="password"
           placeholder="请再次输入新密码"
           border="bottom"
           :clearable="true"
           :passwordIcon="true"
-        ></up--input>
+        ></u-input>
       </view>
       
       <button class="reset-btn" @click="handleResetPassword">重置密码</button>

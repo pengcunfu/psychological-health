@@ -19,15 +19,15 @@
     <view class="filter-bar">
       <view class="filter-item">
         <text>专业领域</text>
-        <up-icon name="arrow-down" size="12" color="#999"></up-icon>
+        <u-icon name="arrow-down" size="12" color="#999"></u-icon>
       </view>
       <view class="filter-item">
         <text>价格区间</text>
-        <up-icon name="arrow-down" size="12" color="#999"></up-icon>
+        <u-icon name="arrow-down" size="12" color="#999"></u-icon>
       </view>
       <view class="filter-item">
         <text>综合排序</text>
-        <up-icon name="arrow-down" size="12" color="#999"></up-icon>
+        <u-icon name="arrow-down" size="12" color="#999"></u-icon>
       </view>
     </view>
 
@@ -44,10 +44,10 @@
     <!-- 空状态 -->
     <view v-if="!loading && counselorList.length === 0" class="empty-state">
       <view class="empty-content">
-        <up-icon name="search" size="60" color="#ccc"></up-icon>
+        <u-icon name="search" size="60" color="#ccc"></u-icon>
         <text class="empty-title">暂未找到合适的咨询师</text>
         <text class="empty-subtitle">试试调整搜索条件或筛选选项</text>
-        <up-button
+        <u-button
             text="重新搜索"
             type="primary"
             size="normal"
@@ -58,13 +58,13 @@
               borderRadius: '22rpx',
               background: '#4A90E2'
             }"
-        ></up-button>
+        ></u-button>
       </view>
     </view>
 
     <!-- 加载更多 -->
     <view class="load-more-container">
-      <up-loadmore :status="loadMoreStatus" @loadmore="loadMore" 
+      <u-loadmore :status="loadMoreStatus" @loadmore="loadMore" 
         :loading-text="'正在加载更多咨询师...'"
         :loadmore-text="'上拉加载更多'"
         :nomore-text="'已加载全部咨询师'"

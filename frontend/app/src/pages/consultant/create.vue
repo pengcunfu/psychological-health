@@ -123,7 +123,7 @@
       <view class="agreement-item" @click="toggleAgreement">
         <view class="checkbox-wrapper">
           <view class="checkbox" :class="{ checked: formData.agreeToTerms }">
-            <up-icon v-if="formData.agreeToTerms" name="checkmark" size="16" color="#fff"></up-icon>
+            <u-icon v-if="formData.agreeToTerms" name="checkmark" size="16" color="#fff"></u-icon>
           </view>
         </view>
         <view class="agreement-content">

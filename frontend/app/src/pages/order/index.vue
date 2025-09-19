@@ -3,7 +3,7 @@
     <!-- 搜索栏 -->
     <view class="search-section">
       <view class="search-bar">
-        <up-icon name="search" size="20" color="#999"></up-icon>
+        <u-icon name="search" size="20" color="#999"></u-icon>
         <input 
           v-model="searchKeyword" 
           placeholder="搜索订单号或商品名称" 
@@ -12,7 +12,7 @@
           @confirm="handleSearch"
         />
         <view v-if="searchKeyword" class="clear-btn" @click="clearSearch">
-          <up-icon name="close" size="16" color="#999"></up-icon>
+          <u-icon name="close" size="16" color="#999"></u-icon>
         </view>
       </view>
     </view>
@@ -96,7 +96,7 @@
 
     <!-- 加载状态 -->
     <view class="loading-state" v-if="loading">
-      <up-loading-icon mode="spinner"></up-loading-icon>
+      <u-loading-icon mode="spinner"></u-loading-icon>
       <text class="loading-text">加载中...</text>
     </view>
 
