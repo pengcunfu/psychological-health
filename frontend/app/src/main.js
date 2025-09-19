@@ -2,12 +2,13 @@ import {createSSRApp} from 'vue'
 import App from './App.vue'
 import pinia from './store'
 
-import {setConfig} from 'uview-plus'
+// 导入uView-plus
+import uviewPlus from 'uview-plus'
 // 导入uViewPlus样式
 import 'uview-plus/index.scss'
 
 // 配置uViewPlus
-setConfig({
+uviewPlus.setConfig({
     // 修改$u.config对象的属性
     config: {
         // 修改默认单位为rpx，相当于执行 uni.$u.config.unit = 'rpx'
@@ -30,6 +31,9 @@ export function createApp() {
 
     // 使用Pinia状态管理
     app.use(pinia)
+    
+    // 使用uView-plus
+    app.use(uviewPlus)
 
 
     // 在H5环境下确保uViewPlus正确初始化

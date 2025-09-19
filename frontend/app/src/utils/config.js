@@ -3,7 +3,7 @@
  */
 export default {
     // API基础URL
-    apiBaseUrl: 'http://172.20.10.2:5000',
+    apiBaseUrl: 'http://localhost:5000',
 
     // 请求超时时间（毫秒）
     timeout: 10000,
