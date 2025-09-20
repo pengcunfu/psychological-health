@@ -27,7 +27,7 @@ user_bp = Blueprint('user', __name__, url_prefix='/user')
 @validate_form(UserQueryForm)
 @role_required(['admin', 'manager', 'user'])
 @permission_required("user:get_users")
-def get_users(form):
+def get_users(form: UserQueryForm):
     """获取用户列表（支持动态角色权限）"""
     # 获取当前用户信息
     current_user_id = assert_current_user_id()
@@ -181,7 +181,7 @@ def update_user(user_id):
     # 处理密码特殊情况
     if form.password.data:
         user.password_hash = hash_password(form.password.data)
-    
+
     # 更新用户信息
     update_model_fields(user, form, exclude_fields=['password'])
 

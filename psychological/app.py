@@ -37,6 +37,7 @@ from .utils.swagger.swagger_config import api_bp
 from .utils.logger_client import init_logging
 from .models.base import db
 from .middleware.global_exception_handler import GlobalExceptionHandler
+from .commands.data_init import data
 
 # 初始化日志配置
 init_logging()
@@ -101,6 +102,9 @@ app.add_url_rule('/api/health/redis', 'redis_health', redis_health)
 # 初始化全局异常处理器（这是关键步骤）
 exception_handler = GlobalExceptionHandler()
 exception_handler.init_app(app)
+
+# 注册CLI命令
+app.cli.add_command(data)
 
 with app.app_context():
     # 创建数据库表
