@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>邮箱验证码</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f8f9fa;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        .email-container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+        
+        .email-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 30px;
+            text-align: center;
+            color: white;
+        }
+        
+        .email-header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .email-header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .email-body {
+            padding: 40px 30px;
+        }
+        
+        .greeting {
+            font-size: 18px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        
+        .message {
+            font-size: 16px;
+            color: #5a6c7d;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+        
+        .verification-code-container {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            margin: 30px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .verification-code-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="50" r="0.5" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(2deg); }
+        }
+        
+        .verification-code-label {
+            color: white;
+            font-size: 16px;
+            margin-bottom: 15px;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .verification-code {
+            background-color: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 0 auto;
+            max-width: 280px;
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(10px);
+        }
+        
+        .code-digits {
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 8px;
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .expiry-notice {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 25px 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .expiry-notice::before {
+            content: '⏰';
+            font-size: 18px;
+            margin-right: 10px;
+        }
+        
+        .expiry-notice p {
+            margin: 0;
+            color: #856404;
+            font-size: 14px;
+        }
+        
+        .security-notice {
+            background-color: #e8f4fd;
+            border: 1px solid #bee5eb;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        
+        .security-notice h3 {
+            color: #0c5460;
+            font-size: 16px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .security-notice h3::before {
+            content: '🔐';
+            margin-right: 8px;
+        }
+        
+        .security-notice p {
+            color: #0c5460;
+            font-size: 14px;
+            margin: 0;
+            line-height: 1.6;
+        }
+        
+        .email-footer {
+            background-color: #f8f9fa;
+            padding: 30px;
+            text-align: center;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .footer-text {
+            color: #6c757d;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .footer-text strong {
+            color: #495057;
+        }
+        
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #e9ecef, transparent);
+            margin: 30px 0;
+        }
+        
+        @media only screen and (max-width: 600px) {
+            .email-container {
+                margin: 20px;
+                border-radius: 8px;
+            }
+            
+            .email-header, .email-body, .email-footer {
+                padding: 25px 20px;
+            }
+            
+            .email-header h1 {
+                font-size: 24px;
+            }
+            
+            .code-digits {
+                font-size: 28px;
+                letter-spacing: 6px;
+            }
+            
+            .verification-code {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            <h1>🧠 心理健康平台</h1>
+            <p>您的专业心理健康伙伴</p>
+        </div>
+        
+        <div class="email-body">
+            <div class="greeting">
+                您好！
+            </div>
+            
+            <div class="message">
+                感谢您使用我们的心理健康平台。为了保障您的账户安全，请使用以下验证码完成身份验证：
+            </div>
+            
+            <div class="verification-code-container">
+                <div class="verification-code-label">您的验证码</div>
+                <div class="verification-code">
+                    <div class="code-digits">{verification_code}</div>
+                </div>
+            </div>
+            
+            <div class="expiry-notice">
+                <p><strong>请注意：</strong>此验证码将在 <strong>{expires_minutes} 分钟</strong> 后过期，请尽快使用。</p>
+            </div>
+            
+            <div class="security-notice">
+                <h3>安全提醒</h3>
+                <p>• 请勿将此验证码泄露给他人<br>
+                   • 我们的工作人员不会向您索要验证码<br>
+                   • 如果您没有进行此操作，请忽略此邮件</p>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <div class="message" style="margin-bottom: 0;">
+                如果您在使用过程中遇到任何问题，请随时联系我们的客服团队，我们将竭诚为您服务。
+            </div>
+        </div>
+        
+        <div class="email-footer">
+            <div class="footer-text">
+                <strong>心理健康平台团队</strong><br>
+                致力于为您提供专业、可靠的心理健康服务<br><br>
+                <em>此邮件由系统自动发送，请勿直接回复</em>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
