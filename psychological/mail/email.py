@@ -6,22 +6,64 @@
 import smtplib
 import os
 import random
-import string
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.header import Header
-from typing import Optional, Dict, Any
 
 from .config import (
-    SMTP_CONFIG, 
-    EMAIL_CONFIG, 
-    EMAIL_TEMPLATES, 
-    VERIFICATION_CODE_CONFIG
+    smtp_config,
+    email_config,
+    email_templates,
+    verification_code_config
 )
-from ..utils.logger_client import get_logger
-from ..utils.json_result import success_result, error_result
+from loguru import logger
 
-logger = get_logger(__name__)
+
+def generate_verification_code(length: int = None) -> str:
+    """
+    生成验证码
+    
+    Args:
+        length: 验证码长度，默认从配置读取
+        
+    Returns:
+        str: 生成的验证码
+    """
+    if not length:
+        length = verification_code_config.length
+
+    chars = verification_code_config.chars
+    return ''.join(random.choice(chars) for _ in range(length))
+
+
+def load_email_template(template_name: str) -> str:
+    """
+    加载邮件HTML模板
+    
+    Args:
+        template_name: 模板文件名
+        
+    Returns:
+        str: HTML模板内容
+        
+    Raises:
+        FileNotFoundError: 模板文件不存在
+        Exception: 读取模板文件失败
+    """
+    template_path = os.path.join(os.path.dirname(__file__), template_name)
+
+    if not os.path.exists(template_path):
+        error_msg = f"邮件模板文件不存在: {template_path}"
+        logger.error(error_msg)
+        raise FileNotFoundError(error_msg)
+
+    try:
+        with open(template_path, 'r', encoding='utf-8') as f:
+            return f.read()
+    except Exception as e:
+        error_msg = f"加载邮件模板失败: {template_name}, 错误: {str(e)}"
+        logger.error(error_msg)
+        raise Exception(error_msg) from e
 
 
 class EmailService:
@@ -29,76 +71,23 @@ class EmailService:
 
     def __init__(self):
         """初始化邮件服务"""
-        self.email_config = EMAIL_CONFIG
-        self.smtp_config = SMTP_CONFIG.get(EMAIL_CONFIG['provider'], {})
+        self.email_config = email_config
+        self.smtp_provider = smtp_config.get(email_config.provider)
         self._validate_config()
 
     def _validate_config(self):
         """验证邮件配置"""
-        if not self.smtp_config:
-            raise ValueError(f"不支持的邮件服务商: {EMAIL_CONFIG['provider']}")
-        
-        required_fields = ['sender_email', 'sender_password']
-        for field in required_fields:
-            if not self.email_config.get(field):
-                raise ValueError(f"邮件配置缺少必要字段: {field}")
-    
-    def _get_smtp_config(self):
-        """获取SMTP配置"""
-        return {
-            'smtp_server': self.smtp_config['smtp_server'],
-            'smtp_port': self.smtp_config['smtp_port'],
-            'use_tls': self.smtp_config.get('use_tls', True),
-            'use_ssl': self.smtp_config.get('use_ssl', False),
-        }
+        if not self.smtp_provider:
+            raise ValueError(f"不支持的邮件服务商: {self.email_config.provider}")
 
-    def generate_verification_code(self, length: int = None) -> str:
-        """
-        生成验证码
-        
-        Args:
-            length: 验证码长度，默认从配置读取
-            
-        Returns:
-            str: 生成的验证码
-        """
-        if not length:
-            length = VERIFICATION_CODE_CONFIG['length']
-        
-        chars = VERIFICATION_CODE_CONFIG['chars']
-        return ''.join(random.choice(chars) for _ in range(length))
+        if not self.email_config.sender_email:
+            raise ValueError("邮件配置缺少必要字段: sender_email")
 
-    def load_email_template(self, template_name: str) -> str:
-        """
-        加载邮件HTML模板
-        
-        Args:
-            template_name: 模板文件名
-            
-        Returns:
-            str: HTML模板内容
-            
-        Raises:
-            FileNotFoundError: 模板文件不存在
-            Exception: 读取模板文件失败
-        """
-        template_path = os.path.join(os.path.dirname(__file__), template_name)
+        if not self.email_config.sender_password:
+            raise ValueError("邮件配置缺少必要字段: sender_password")
 
-        if not os.path.exists(template_path):
-            error_msg = f"邮件模板文件不存在: {template_path}"
-            logger.error(error_msg)
-            raise FileNotFoundError(error_msg)
-
-        try:
-            with open(template_path, 'r', encoding='utf-8') as f:
-                return f.read()
-        except Exception as e:
-            error_msg = f"加载邮件模板失败: {template_name}, 错误: {str(e)}"
-            logger.error(error_msg)
-            raise Exception(error_msg) from e
-
-    def send_email(self, to_email: str, subject: str, html_content: str, 
-                   text_content: str = None) -> Dict[str, Any]:
+    def send_email(self, to_email: str, subject: str, html_content: str,
+                   text_content: str = None) -> bool:
         """
         发送邮件的通用函数
         
@@ -109,27 +98,29 @@ class EmailService:
             text_content: 纯文本内容（可选）
             
         Returns:
-            dict: 发送结果
+            bool: 成功返回True
+            
+        Raises:
+            ValueError: 参数验证失败
+            smtplib.SMTPAuthenticationError: 邮箱认证失败
+            smtplib.SMTPRecipientsRefused: 收件人邮箱地址无效
+            smtplib.SMTPServerDisconnected: 邮件服务器连接失败
+            Exception: 其他发送失败情况
         """
+        # 参数验证
+        if not to_email:
+            raise ValueError("收件人邮箱不能为空")
+
+        if not subject:
+            raise ValueError("邮件主题不能为空")
+
+        if not html_content:
+            raise ValueError("邮件内容不能为空")
+
         try:
-            # 参数验证
-            if not to_email:
-                return error_result("收件人邮箱不能为空")
-            
-            if not subject:
-                return error_result("邮件主题不能为空")
-            
-            if not html_content:
-                return error_result("邮件内容不能为空")
-
-            # 获取SMTP配置
-            smtp_config = self._get_smtp_config()
-
             # 创建邮件
             message = MIMEMultipart('alternative')
-            message['From'] = Header(
-                f"{self.email_config.get('sender_name', '心理健康平台')} <{self.email_config['sender_email']}>",
-                'utf-8')
+            message['From'] = Header(f"{self.email_config.sender_name} <{self.email_config.sender_email}>", 'utf-8')
             message['To'] = Header(to_email, 'utf-8')
             message['Subject'] = Header(subject, 'utf-8')
 
@@ -143,42 +134,39 @@ class EmailService:
             message.attach(html_part)
 
             # 发送邮件
-            with smtplib.SMTP(smtp_config['smtp_server'], smtp_config['smtp_port']) as server:
+            with smtplib.SMTP(self.smtp_provider.smtp_server, self.smtp_provider.smtp_port) as server:
                 # 启用安全传输
-                if smtp_config['use_tls']:
+                if self.smtp_provider.use_tls:
                     server.starttls()
 
                 # 登录
-                server.login(self.email_config['sender_email'], self.email_config['sender_password'])
+                server.login(self.email_config.sender_email, self.email_config.sender_password)
 
                 # 发送邮件
                 server.send_message(message)
 
             logger.info(f"邮件发送成功: {to_email}, 主题: {subject}")
-            return success_result("邮件发送成功", {
-                'to_email': to_email,
-                'subject': subject
-            })
+            return True
 
         except smtplib.SMTPAuthenticationError as e:
             error_msg = "邮箱认证失败，请检查邮箱配置"
             logger.error(f"{error_msg}: {e}")
-            return error_result(error_msg)
+            raise smtplib.SMTPAuthenticationError(e.smtp_code, error_msg) from e
         except smtplib.SMTPRecipientsRefused as e:
             error_msg = "收件人邮箱地址无效"
             logger.error(f"{error_msg}: {e}")
-            return error_result(error_msg)
+            raise smtplib.SMTPRecipientsRefused(e.recipients) from e
         except smtplib.SMTPServerDisconnected as e:
             error_msg = "邮件服务器连接失败"
             logger.error(f"{error_msg}: {e}")
-            return error_result(error_msg)
+            raise smtplib.SMTPServerDisconnected(error_msg) from e
         except Exception as e:
             error_msg = f"发送邮件失败: {str(e)}"
             logger.error(error_msg)
-            return error_result(error_msg)
-    
+            raise Exception(error_msg) from e
+
     def send_verification_code(self, to_email: str, verification_code: str = None,
-                               expires_minutes: int = None) -> Dict[str, Any]:
+                               expires_minutes: int = None) -> str:
         """
         发送验证码邮件
         
@@ -188,49 +176,45 @@ class EmailService:
             expires_minutes: 验证码有效期（分钟），默认从配置读取
             
         Returns:
-            dict: 发送结果
-        """
-        try:
-            # 如果没有提供验证码，则生成一个
-            if not verification_code:
-                verification_code = self.generate_verification_code()
-
-            # 如果没有提供过期时间，使用配置中的默认值
-            if not expires_minutes:
-                expires_minutes = VERIFICATION_CODE_CONFIG['expire_minutes']
-
-            # 获取模板配置
-            template_config = EMAIL_TEMPLATES.get('verification_code', {})
-            template_file = template_config.get('template_file', 'verification_code.html')
+            str: 生成的验证码
             
+        Raises:
+            Exception: 发送失败时抛出异常
+        """
+        # 如果没有提供验证码，则生成一个
+        if not verification_code:
+            verification_code = generate_verification_code()
+
+        # 如果没有提供过期时间，使用配置中的默认值
+        if not expires_minutes:
+            expires_minutes = verification_code_config.expire_minutes
+
+        try:
+            # 获取模板配置
+            template_config = email_templates.get('verification_code')
+            template_file = template_config.template_file
+
             # 加载邮件模板
-            html_template = self.load_email_template(template_file)
+            html_template = load_email_template(template_file)
 
             # 替换模板中的变量
-            html_content = html_template.format(
-                verification_code=verification_code,
-                expires_minutes=expires_minutes
-            )
+            html_content = html_template.replace('{verification_code}', verification_code)
+            html_content = html_content.replace('{expires_minutes}', str(expires_minutes))
 
             # 获取邮件主题
-            subject = template_config.get('subject', '邮箱验证码')
+            subject = template_config.subject
 
             # 发送邮件
-            result = self.send_email(to_email, subject, html_content)
-            
-            # 如果发送成功，添加验证码到返回结果
-            if result['code'] == 200:
-                result['data']['verification_code'] = verification_code
-                result['data']['expires_minutes'] = expires_minutes
+            self.send_email(to_email, subject, html_content)
 
-            return result
+            return verification_code
 
         except Exception as e:
             error_msg = f"发送验证码邮件失败: {str(e)}"
             logger.error(error_msg)
-            return error_result(error_msg)
+            raise Exception(error_msg) from e
 
-    def send_welcome_email(self, to_email: str, username: str = None) -> Dict[str, Any]:
+    def send_welcome_email(self, to_email: str, username: str = None) -> bool:
         """
         发送欢迎邮件
         
@@ -239,31 +223,34 @@ class EmailService:
             username: 用户名
             
         Returns:
-            dict: 发送结果
+            bool: 成功返回True
+            
+        Raises:
+            Exception: 发送失败时抛出异常
         """
         try:
             # 获取模板配置
-            template_config = EMAIL_TEMPLATES.get('welcome', {})
-            template_file = template_config.get('template_file', 'welcome.html')
-            
+            template_config = email_templates.get('welcome')
+            template_file = template_config.template_file
+
             # 加载邮件模板
-            html_template = self.load_email_template(template_file)
+            html_template = load_email_template(template_file)
 
             # 替换模板中的变量
-            html_content = html_template.format(username=username or "用户")
-            
+            html_content = html_template.replace('{username}', username)
+
             # 获取邮件主题
-            subject = template_config.get('subject', '欢迎加入心理健康平台')
+            subject = template_config.subject
 
             return self.send_email(to_email, subject, html_content)
 
         except Exception as e:
             error_msg = f"发送欢迎邮件失败: {str(e)}"
             logger.error(error_msg)
-            return error_result(error_msg)
-    
+            raise Exception(error_msg) from e
+
     def send_password_reset(self, to_email: str, reset_code: str = None,
-                           expires_minutes: int = None) -> Dict[str, Any]:
+                            expires_minutes: int = None) -> str:
         """
         发送密码重置邮件
         
@@ -273,46 +260,43 @@ class EmailService:
             expires_minutes: 重置码有效期（分钟）
             
         Returns:
-            dict: 发送结果
-        """
-        try:
-            if not reset_code:
-                reset_code = self.generate_verification_code()
-
-            if not expires_minutes:
-                expires_minutes = VERIFICATION_CODE_CONFIG['expire_minutes']
-
-            # 获取模板配置
-            template_config = EMAIL_TEMPLATES.get('password_reset', {})
-            template_file = template_config.get('template_file', 'password_reset.html')
+            str: 生成的重置码
             
+        Raises:
+            Exception: 发送失败时抛出异常
+        """
+        if not reset_code:
+            reset_code = generate_verification_code()
+
+        if not expires_minutes:
+            expires_minutes = verification_code_config.expire_minutes
+
+        try:
+            # 获取模板配置
+            template_config = email_templates.get('password_reset')
+            template_file = template_config.template_file
+
             # 加载邮件模板
-            html_template = self.load_email_template(template_file)
+            html_template = load_email_template(template_file)
 
             # 替换模板中的变量
-            html_content = html_template.format(
-                reset_code=reset_code,
-                expires_minutes=expires_minutes
-            )
-            
+            html_content = html_template.replace('{reset_code}', reset_code)
+            html_content = html_content.replace('{expires_minutes}', str(expires_minutes))
+
             # 获取邮件主题
-            subject = template_config.get('subject', '密码重置验证码')
+            subject = template_config.subject
 
-            result = self.send_email(to_email, subject, html_content)
-            
-            if result['code'] == 200:
-                result['data']['reset_code'] = reset_code
-                result['data']['expires_minutes'] = expires_minutes
+            self.send_email(to_email, subject, html_content)
 
-            return result
+            return reset_code
 
         except Exception as e:
             error_msg = f"发送密码重置邮件失败: {str(e)}"
             logger.error(error_msg)
-            return error_result(error_msg)
-    
-    def send_appointment_reminder(self, to_email: str, appointment_time: str, 
-                                 doctor_name: str, location: str = None) -> Dict[str, Any]:
+            raise Exception(error_msg) from e
+
+    def send_appointment_reminder(self, to_email: str, appointment_time: str,
+                                  doctor_name: str, location: str = None) -> bool:
         """
         发送预约提醒邮件
         
@@ -323,15 +307,18 @@ class EmailService:
             location: 预约地点
             
         Returns:
-            dict: 发送结果
+            bool: 成功返回True
+            
+        Raises:
+            Exception: 发送失败时抛出异常
         """
         try:
             # 获取模板配置
-            template_config = EMAIL_TEMPLATES.get('appointment_reminder', {})
-            template_file = template_config.get('template_file', 'appointment_reminder.html')
-            
+            template_config = email_templates.get('appointment_reminder')
+            template_file = template_config.template_file
+
             # 加载邮件模板
-            html_template = self.load_email_template(template_file)
+            html_template = load_email_template(template_file)
 
             # 准备模板变量
             location_row = ''
@@ -342,27 +329,25 @@ class EmailService:
                     <span class="detail-label">咨询地点：</span>
                     <span class="detail-value">{location}</span>
                 </div>'''
-            
+
             # 替换模板中的变量
-            html_content = html_template.format(
-                appointment_time=appointment_time,
-                doctor_name=doctor_name,
-                location_row=location_row
-            )
-            
+            html_content = html_template.replace('{appointment_time}', appointment_time)
+            html_content = html_content.replace('{doctor_name}', doctor_name)
+            html_content = html_content.replace('{location_row}', location_row)
+
             # 获取邮件主题
-            subject = template_config.get('subject', '预约提醒')
+            subject = template_config.subject
 
             return self.send_email(to_email, subject, html_content)
 
         except Exception as e:
             error_msg = f"发送预约提醒邮件失败: {str(e)}"
             logger.error(error_msg)
-            return error_result(error_msg)
-    
+            raise Exception(error_msg) from e
+
     def send_order_notification(self, to_email: str, order_number: str, order_status: str,
-                               order_time: str = None, service_name: str = None, 
-                               order_amount: str = None) -> Dict[str, Any]:
+                                order_time: str = None, service_name: str = None,
+                                order_amount: str = None) -> bool:
         """
         发送订单通知邮件
         
@@ -375,20 +360,23 @@ class EmailService:
             order_amount: 订单金额
             
         Returns:
-            dict: 发送结果
+            bool: 成功返回True
+            
+        Raises:
+            Exception: 发送失败时抛出异常
         """
         try:
             # 获取模板配置
-            template_config = EMAIL_TEMPLATES.get('order_notification', {})
-            template_file = template_config.get('template_file', 'order_notification.html')
-            
+            template_config = email_templates.get('order_notification')
+            template_file = template_config.template_file
+
             # 加载邮件模板
-            html_template = self.load_email_template(template_file)
+            html_template = load_email_template(template_file)
 
             # 准备订单状态相关的样式和内容
             status_class = 'pending'
             status_content = ''
-            
+
             if order_status == '支付成功' or order_status == '已完成':
                 status_class = 'success'
                 status_content = '''
@@ -425,107 +413,22 @@ class EmailService:
                     </ul>
                 </div>
                 '''
-            
+
             # 替换模板中的变量
-            html_content = html_template.format(
-                order_number=order_number,
-                order_status=order_status,
-                order_status_class=status_class,
-                order_time=order_time or '未知',
-                service_name=service_name or '心理健康服务',
-                order_amount=order_amount or '未知',
-                status_specific_content=status_content
-            )
-            
+            html_content = html_template.replace('{order_number}', order_number)
+            html_content = html_content.replace('{order_status}', order_status)
+            html_content = html_content.replace('{order_status_class}', status_class)
+            html_content = html_content.replace('{order_time}', order_time)
+            html_content = html_content.replace('{service_name}', service_name)
+            html_content = html_content.replace('{order_amount}', order_amount)
+            html_content = html_content.replace('{status_specific_content}', status_content)
+
             # 获取邮件主题
-            subject = template_config.get('subject', '订单通知')
+            subject = template_config.subject
 
             return self.send_email(to_email, subject, html_content)
 
         except Exception as e:
             error_msg = f"发送订单通知邮件失败: {str(e)}"
             logger.error(error_msg)
-            return error_result(error_msg)
-
-
-# 创建全局邮件服务实例
-email_service = EmailService()
-
-
-# 便捷函数
-def send_email(to_email: str, subject: str, html_content: str, text_content: str = None) -> Dict[str, Any]:
-    """
-    发送邮件的便捷函数
-    
-    Args:
-        to_email: 收件人邮箱
-        subject: 邮件主题
-        html_content: HTML内容
-        text_content: 纯文本内容
-        
-    Returns:
-        dict: 发送结果
-    """
-    return email_service.send_email(to_email, subject, html_content, text_content)
-
-
-def send_verification_code(to_email: str, verification_code: str = None, 
-                          expires_minutes: int = None) -> Dict[str, Any]:
-    """
-    发送验证码邮件的便捷函数
-    
-    Args:
-        to_email: 收件人邮箱
-        verification_code: 验证码
-        expires_minutes: 过期时间（分钟）
-        
-    Returns:
-        dict: 发送结果
-    """
-    return email_service.send_verification_code(to_email, verification_code, expires_minutes)
-
-
-def send_welcome_email(to_email: str, username: str = None) -> Dict[str, Any]:
-    """
-    发送欢迎邮件的便捷函数
-    """
-    return email_service.send_welcome_email(to_email, username)
-
-
-def send_password_reset(to_email: str, reset_code: str = None, 
-                       expires_minutes: int = None) -> Dict[str, Any]:
-    """
-    发送密码重置邮件的便捷函数
-    """
-    return email_service.send_password_reset(to_email, reset_code, expires_minutes)
-
-
-def send_appointment_reminder(to_email: str, appointment_time: str, 
-                             doctor_name: str, location: str = None) -> Dict[str, Any]:
-    """
-    发送预约提醒邮件的便捷函数
-    """
-    return email_service.send_appointment_reminder(to_email, appointment_time, doctor_name, location)
-
-
-def send_order_notification(to_email: str, order_number: str, order_status: str,
-                           order_time: str = None, service_name: str = None, 
-                           order_amount: str = None) -> Dict[str, Any]:
-    """
-    发送订单通知邮件的便捷函数
-    """
-    return email_service.send_order_notification(to_email, order_number, order_status, 
-                                                order_time, service_name, order_amount)
-
-
-def generate_verification_code(length: int = None) -> str:
-    """
-    生成验证码的便捷函数
-    
-    Args:
-        length: 验证码长度
-        
-    Returns:
-        str: 验证码
-    """
-    return email_service.generate_verification_code(length)
+            raise Exception(error_msg) from e

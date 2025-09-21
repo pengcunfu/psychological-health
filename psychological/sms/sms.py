@@ -39,12 +39,12 @@ class SmsService:
         @return: Client
         """
         try:
-            config = open_api_models.Config(
+        config = open_api_models.Config(
                 access_key_id=ALIYUN_ACCESS_KEY_ID,
                 access_key_secret=ALIYUN_ACCESS_KEY_SECRET
-            )
+        )
             config.endpoint = SMS_ENDPOINT
-            return Dysmsapi20170525Client(config)
+        return Dysmsapi20170525Client(config)
         except Exception as e:
             logger.error(f"创建阿里云短信客户端失败: {e}")
             raise

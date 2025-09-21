@@ -1,7 +1,9 @@
 import os
 import yaml
 
-DEFAULT_CONFIG_PATH = 'config.yaml'
+DEFAULT_CONFIG_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config.yaml')
+
+print(DEFAULT_CONFIG_PATH)
 
 
 class Config:
@@ -27,7 +29,8 @@ class Config:
             lower_k = k.lower()
             # 检查类中是否有对应的小写属性
             for attr_name in dir(obj):
-                if attr_name.lower() == lower_k and not attr_name.startswith('_') and not callable(getattr(obj, attr_name)):
+                if attr_name.lower() == lower_k and not attr_name.startswith('_') and not callable(
+                        getattr(obj, attr_name)):
                     setattr(obj, attr_name, v)
                     break
         return obj
@@ -72,16 +75,16 @@ def get_config():
                 'expires': 7200
             }
         }
-    
+
     with open(config_path, 'r', encoding='utf-8') as f:
         data = yaml.safe_load(f) or {}
-    
+
     # 处理环境变量替换
     data = _process_env_vars(data)
-    
+
     # 将所有键转换为小写
     data = _normalize_keys_to_lowercase(data)
-    
+
     # 确保包含默认的Redis和Session配置
     if 'redis' not in data:
         data['redis'] = {
@@ -91,7 +94,7 @@ def get_config():
             'password': os.environ.get('REDIS_PASSWORD'),
             'decode_responses': True
         }
-    
+
     if 'session' not in data:
         data['session'] = {
             'type': 'redis',
@@ -103,7 +106,7 @@ def get_config():
             'cookie_secure': False,
             'expires': 7200
         }
-    
+
     return data
 
 
@@ -125,7 +128,7 @@ def _process_env_vars(data):
         else:
             var_name = env_expr.strip()
             value = os.environ.get(var_name, data)
-        
+
         # 尝试转换数据类型
         if value == 'null' or value == 'None':
             return None

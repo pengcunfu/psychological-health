@@ -2,6 +2,13 @@
   <div class="admin-layout" :class="{ 'dark-mode': darkMode }">
     <!-- 左侧菜单 -->
     <div class="sidebar">
+      <!-- 系统标题 -->
+      <div class="sidebar-header">
+        <div class="logo">
+          <h2>美光心理后台管理系统</h2>
+        </div>
+      </div>
+      
       <div class="menu">
         <!-- 首页 -->
         <div class="menu-item" :class="{ active: activePath === '/' }" @click="navigateTo('/')">
@@ -181,15 +188,12 @@
         </div>
       </div>
 
-              <div class="sidebar-footer">
-          <div class="logo">
-            <h2>美光心理后台管理系统</h2>
-          </div>
-          <div class="copyright">
-            <p>© 2025 美光心理健康平台</p>
-            <p>版本 v1.0.0</p>
-          </div>
+      <div class="sidebar-footer">
+        <div class="copyright">
+          <p>© 2025 美光心理健康平台</p>
+          <p>版本 v1.0.0</p>
         </div>
+      </div>
     </div>
 
     <!-- 右侧内容区 -->
@@ -507,6 +511,25 @@ onMounted(() => {
   }
 }
 
+/* 顶部标题样式 */
+.sidebar-header {
+  border-bottom: 1px solid #e8e8e8;
+  padding: 20px 16px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  text-align: center;
+  
+  .logo {
+    h2 {
+      color: #001529;
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+      white-space: nowrap;
+      text-shadow: 0 1px 2px rgba(24, 144, 255, 0.1);
+    }
+  }
+}
+
 .menu {
   flex: 1;
   padding: 4px 0;
@@ -601,20 +624,6 @@ onMounted(() => {
   backdrop-filter: blur(10px);
 }
 
-.sidebar-footer .logo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 8px;
-
-  h2 {
-    color: #333333;
-    margin: 0;
-    font-size: 16px;
-    white-space: nowrap;
-    font-weight: 500;
-  }
-}
 
 .copyright {
   text-align: center;
@@ -788,13 +797,19 @@ onMounted(() => {
     }
   }
 
+  .sidebar-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, #001529 0%, #002140 100%);
+    
+    .logo h2 {
+      color: white;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+  }
+
   .sidebar-footer {
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     background: #002140;
-  }
-
-  .sidebar-footer .logo h2 {
-    color: white;
   }
 
   .copyright {

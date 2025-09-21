@@ -16,20 +16,21 @@ from ..config import get_config
 
 class EmailService:
     """邮箱服务类，用于发送验证码邮件"""
-    
+
     def __init__(self):
         """初始化邮箱服务"""
         self.config = get_config()
         self.email_config = self.config.get('code', {})
+        print(self.email_config)
         self._validate_config()
-    
+
     def _validate_config(self):
         """验证邮箱配置"""
         required_fields = ['smtp_server', 'smtp_port', 'sender_email', 'sender_password']
         for field in required_fields:
             if not self.email_config.get(field):
                 raise ValueError(f"邮箱配置缺少必要字段: {field}")
-    
+
     def generate_verification_code(self, length: int = 6) -> str:
         """
         生成验证码
@@ -41,7 +42,7 @@ class EmailService:
             str: 生成的验证码
         """
         return ''.join(random.choices(string.digits, k=length))
-    
+
     def load_email_template(self, template_name: str = 'verification_code.html') -> str:
         """
         加载邮件HTML模板
@@ -53,18 +54,18 @@ class EmailService:
             str: HTML模板内容
         """
         template_path = os.path.join(os.path.dirname(__file__), template_name)
-        
+
         if not os.path.exists(template_path):
             # 如果模板不存在，返回默认模板
             return self._get_default_template()
-        
+
         try:
             with open(template_path, 'r', encoding='utf-8') as f:
                 return f.read()
         except Exception as e:
             print(f"加载邮件模板失败: {e}")
             return self._get_default_template()
-    
+
     def _get_default_template(self) -> str:
         """获取默认邮件模板"""
         return """
@@ -82,9 +83,9 @@ class EmailService:
         </body>
         </html>
         """
-    
-    def send_verification_code(self, to_email: str, verification_code: str = None, 
-                             expires_minutes: int = 10, subject: str = "邮箱验证码") -> Dict[str, Any]:
+
+    def send_verification_code(self, to_email: str, verification_code: str = None,
+                               expires_minutes: int = 10, subject: str = "邮箱验证码") -> Dict[str, Any]:
         """
         发送验证码邮件
         
@@ -101,44 +102,46 @@ class EmailService:
             # 如果没有提供验证码，则生成一个
             if not verification_code:
                 verification_code = self.generate_verification_code()
-            
+
             # 加载邮件模板
             html_template = self.load_email_template()
-            
+
             # 替换模板中的变量
             html_content = html_template.format(
                 verification_code=verification_code,
                 expires_minutes=expires_minutes
             )
-            
+
             # 创建邮件
             message = MIMEMultipart('alternative')
-            message['From'] = Header(f"{self.email_config.get('sender_name', '心理健康平台')} <{self.email_config['sender_email']}>", 'utf-8')
+            message['From'] = Header(
+                f"{self.email_config.get('sender_name', '心理健康平台')} <{self.email_config['sender_email']}>",
+                'utf-8')
             message['To'] = Header(to_email, 'utf-8')
             message['Subject'] = Header(subject, 'utf-8')
-            
+
             # 添加HTML内容
             html_part = MIMEText(html_content, 'html', 'utf-8')
             message.attach(html_part)
-            
+
             # 发送邮件
             with smtplib.SMTP(self.email_config['smtp_server'], self.email_config['smtp_port']) as server:
                 # 启用安全传输
                 if self.email_config.get('use_tls', True):
                     server.starttls()
-                
+
                 # 登录
                 server.login(self.email_config['sender_email'], self.email_config['sender_password'])
-                
+
                 # 发送邮件
                 server.send_message(message)
-            
+
             return {
                 'success': True,
                 'message': '验证码发送成功',
                 'code': verification_code
             }
-            
+
         except smtplib.SMTPAuthenticationError:
             return {
                 'success': False,
@@ -163,7 +166,7 @@ class EmailService:
                 'message': f'发送邮件失败: {str(e)}',
                 'code': verification_code
             }
-    
+
     def send_welcome_email(self, to_email: str, username: str = None) -> Dict[str, Any]:
         """
         发送欢迎邮件
@@ -198,28 +201,30 @@ class EmailService:
             </body>
             </html>
             """
-            
+
             html_content = welcome_template.format(username=username or "用户")
-            
+
             message = MIMEMultipart('alternative')
-            message['From'] = Header(f"{self.email_config.get('sender_name', '心理健康平台')} <{self.email_config['sender_email']}>", 'utf-8')
+            message['From'] = Header(
+                f"{self.email_config.get('sender_name', '心理健康平台')} <{self.email_config['sender_email']}>",
+                'utf-8')
             message['To'] = Header(to_email, 'utf-8')
             message['Subject'] = Header("欢迎加入心理健康平台", 'utf-8')
-            
+
             html_part = MIMEText(html_content, 'html', 'utf-8')
             message.attach(html_part)
-            
+
             with smtplib.SMTP(self.email_config['smtp_server'], self.email_config['smtp_port']) as server:
                 if self.email_config.get('use_tls', True):
                     server.starttls()
                 server.login(self.email_config['sender_email'], self.email_config['sender_password'])
                 server.send_message(message)
-            
+
             return {
                 'success': True,
                 'message': '欢迎邮件发送成功'
             }
-            
+
         except Exception as e:
             return {
                 'success': False,
@@ -228,4 +233,4 @@ class EmailService:
 
 
 # 创建全局邮箱服务实例
-email_service = EmailService() 
+email_service = EmailService()

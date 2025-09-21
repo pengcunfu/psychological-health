@@ -5,3 +5,5 @@ node_modules/
 docs/
 venv/
 mysql/
+tst_*.py
+__pycache__/
