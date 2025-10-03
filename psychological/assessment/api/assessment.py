@@ -12,7 +12,6 @@ from pcf_flask_helper.common import json_success, json_error
 from pcf_flask_helper.form.validate import assert_id_exists
 from pcf_flask_helper.model.query import create_query_builder
 from psychological.utils.model_helper import update_model_fields
-from psychological.utils.image import process_assessment_images
 from psychological.utils.auth_helper import is_manager_user, assert_current_user_id
 from ..form import (
     AssessmentQueryForm, AssessmentCreateForm, AssessmentUpdateForm,
@@ -78,8 +77,6 @@ def get_assessments(form):
 
     assessments_data = [assessment.to_dict() for assessment in result['items']]
 
-    # 处理图片URL
-    assessments_data = process_assessment_images(assessments_data)
 
     return json_success({
         'list': assessments_data,
@@ -117,8 +114,6 @@ def get_assessment_detail(assessment_id):
     assessment_data = assessment.to_dict()
     assessment_data['questions'] = [q.to_dict() for q in questions]
 
-    # 处理图片URL
-    assessment_data = process_assessment_images(assessment_data)
 
     return json_success(assessment_data)
 
@@ -623,8 +618,6 @@ def get_assessment_records(form):
                 'cover_image': record.assessment.cover_image,
                 'duration': record.assessment.duration
             }
-            # 处理测评信息中的图片URL
-            record_dict['assessment_info'] = process_assessment_images(record_dict['assessment_info'])
         records_data.append(record_dict)
 
     return json_success({
@@ -658,8 +651,6 @@ def get_assessment_record_detail(record_id):
     # 添加测评信息
     if record.assessment:
         record_data['assessment_info'] = record.assessment.to_dict()
-        # 处理测评信息中的图片URL
-        record_data['assessment_info'] = process_assessment_images(record_data['assessment_info'])
 
     # 添加答案详情
     answers = create_query_builder(AssessmentAnswer) \
@@ -719,8 +710,6 @@ def get_public_assessments(form):
 
     assessments_data = [assessment.to_dict() for assessment in result['items']]
 
-    # 处理图片URL
-    assessments_data = process_assessment_images(assessments_data)
 
     return json_success({
         'list': assessments_data,

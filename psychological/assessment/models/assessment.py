@@ -3,6 +3,7 @@ import json
 from sqlalchemy import Column, String, Integer, DateTime, Float, Text, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 from pcf_flask_helper.model.base import BaseModel
+from pcf_flask_helper.common import process_image_url
 
 
 class Assessment(BaseModel):
@@ -52,7 +53,7 @@ class Assessment(BaseModel):
             'name': self.name,
             'subtitle': self.subtitle,
             'description': self.description,
-            'cover_image': self.cover_image,
+            'cover_image': process_image_url(self.cover_image),
             'price': self.price,
             'original_price': self.original_price,
             'duration': self.duration,
