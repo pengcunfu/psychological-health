@@ -5,11 +5,11 @@
 from datetime import datetime, timedelta
 from typing import Dict, Optional
 
-from ..utils.logger_client import get_logger
+from loguru import logger
 from .service import notification_service
 from .types import NotificationType, NotificationPriority
 
-logger = get_logger(__name__)
+
 
 
 class NotificationTriggers:

@@ -344,7 +344,8 @@ class BusinessIntegrationExamples:
                 )
                 
                 # 3. 发送欢迎邮件（如果需要）
-                # email_service.send_welcome_email(email, username)
+                # from psychological.mail import send_welcome_email
+                # send_welcome_email(email, username)
                 
                 return {"success": True, "user_id": user_id}
                 

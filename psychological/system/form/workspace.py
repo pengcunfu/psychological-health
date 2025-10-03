@@ -1,7 +1,7 @@
-from wtforms import StringField, IntegerField, SelectField, FloatField, TextAreaField
+from wtforms import StringField, IntegerField, FloatField, TextAreaField
 from wtforms.validators import DataRequired, Optional, Length, NumberRange, Regexp
-from .base import BaseForm
-from psychological.models.workspace import Workspace
+from pcf_flask_helper.form.base import BaseForm
+from psychological.system.models.workspace import Workspace
 
 
 class WorkspaceQueryForm(BaseForm):

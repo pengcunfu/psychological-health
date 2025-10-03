@@ -1,6 +1,5 @@
-from datetime import datetime
-from sqlalchemy import Column, String, DateTime, func
-from .base import BaseModel
+from sqlalchemy import Column, String
+from pcf_flask_helper.model.base import BaseModel
 
 
 class UserFavorite(BaseModel):
@@ -13,7 +12,7 @@ class UserFavorite(BaseModel):
     create_time: 创建时间
     """
     __tablename__ = 'user_favorites'
-    
+
     id = Column(String(50), primary_key=True)  # 收藏ID
     user_id = Column(String(50), nullable=False)  # 用户ID
     item_id = Column(String(50), nullable=False)  # 收藏项ID

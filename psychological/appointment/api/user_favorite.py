@@ -5,13 +5,13 @@
 import uuid
 
 from flask import Blueprint
-from psychological.models.user_favorite import UserFavorite
-from psychological.models.base import db
-from pcf_flask_helper.common import json_success, json_error
-from psychological.utils.validate import assert_id_exists
-from psychological.utils.query import create_query_builder, assert_exists, assert_not_exists
+from ..models import UserFavorite
+from pcf_flask_helper.model.base import db
+from pcf_flask_helper.common import json_success
+from pcf_flask_helper.form.validate import assert_id_exists
+from pcf_flask_helper.model.query import create_query_builder, assert_exists, assert_not_exists
 from psychological.utils.auth_helper import assert_current_user_id
-from psychological.form.user_favorite import UserFavoriteCreateForm, UserFavoriteQueryForm
+from ..form import UserFavoriteCreateForm, UserFavoriteQueryForm
 from psychological.decorator.form import validate_form
 from psychological.decorator.permission import role_required, permission_required
 

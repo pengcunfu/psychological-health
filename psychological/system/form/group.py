@@ -1,7 +1,6 @@
-from .base import BaseForm
 from wtforms import StringField, IntegerField, FloatField, SelectField
 from wtforms.validators import DataRequired, Length, Optional, NumberRange
-from .base import BaseForm
+from pcf_flask_helper.form.base import BaseForm
 
 
 class GroupQueryForm(BaseForm):

@@ -1,10 +1,9 @@
-from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, TextAreaField
 from wtforms.validators import DataRequired, Length, NumberRange, Optional, ValidationError
-from psychological.models.review import Review
-from psychological.models.order import Order
-from psychological.models.counselor import Counselor
-from .base import BaseForm
+from psychological.appointment.models.review import Review
+from psychological.appointment.models.order import Order
+from psychological.appointment.models.counselor import Counselor
+from pcf_flask_helper.form.base import BaseForm
 
 
 class ReviewCreateForm(BaseForm):

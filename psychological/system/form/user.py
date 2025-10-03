@@ -1,8 +1,6 @@
-from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, SelectField, DateField, TextAreaField
+from wtforms import StringField, IntegerField, DateField, TextAreaField
 from wtforms.validators import DataRequired, Length, Email, Optional, Regexp, NumberRange
-from .base import BaseForm
-from psychological.models.user import User
+from pcf_flask_helper.form.base import BaseForm
 
 
 class UserCreateForm(BaseForm):

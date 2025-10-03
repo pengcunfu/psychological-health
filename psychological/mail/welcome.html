@@ -12,307 +12,181 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background-color: #f8f9fa;
-            line-height: 1.6;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background-color: #f5f5f5;
+            line-height: 1.5;
             color: #333;
+            padding: 10px;
         }
 
-        .email-container {
-            max-width: 600px;
-            margin: 40px auto;
-            background-color: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-            overflow: hidden;
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border: 1px solid #ddd;
         }
 
-        .email-header {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            padding: 40px 30px;
+        .header {
             text-align: center;
-            color: white;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .email-header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="80" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="60" r="1" fill="rgba(255,255,255,0.05)"/><circle cx="60" cy="40" r="1" fill="rgba(255,255,255,0.05)"/></svg>');
-            animation: float 8s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-15px) rotate(3deg); }
-        }
-
-        .email-header h1 {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .email-header p {
-            font-size: 18px;
-            opacity: 0.9;
-            position: relative;
-            z-index: 1;
-        }
-
-        .email-body {
-            padding: 40px 30px;
-        }
-
-        .welcome-message {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .welcome-title {
-            font-size: 24px;
-            color: #2c3e50;
-            font-weight: 600;
-            margin-bottom: 15px;
-        }
-
-        .welcome-subtitle {
-            font-size: 16px;
-            color: #5a6c7d;
-            line-height: 1.8;
-        }
-
-        .username-highlight {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-weight: 600;
-        }
-
-        .features-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 12px;
-            padding: 30px;
-            margin: 30px 0;
-            color: white;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .features-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 100px;
-            height: 100px;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="rgba(255,255,255,0.1)"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>');
-            background-size: contain;
-            opacity: 0.2;
-        }
-
-        .features-title {
-            font-size: 20px;
-            font-weight: 600;
             margin-bottom: 20px;
-            position: relative;
-            z-index: 1;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
         }
 
-        .features-list {
-            list-style: none;
-            position: relative;
-            z-index: 1;
-        }
-
-        .features-list li {
-            margin-bottom: 12px;
-            padding-left: 30px;
-            position: relative;
-            font-size: 15px;
-            line-height: 1.6;
-        }
-
-        .features-list li::before {
-            content: '✨';
-            position: absolute;
-            left: 0;
-            top: 0;
-            font-size: 16px;
-        }
-
-        .cta-section {
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            padding: 25px;
-            text-align: center;
-            margin: 30px 0;
-            border: 1px solid #e9ecef;
-        }
-
-        .cta-title {
+        .title {
             font-size: 18px;
-            color: #2c3e50;
             font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .welcome-text {
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .username {
+            color: #333;
+            font-weight: 700;
+        }
+
+        .content {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .feature-item {
             margin-bottom: 15px;
+        }
+
+        .feature-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .feature-desc {
+            font-size: 13px;
+            color: #666;
+            margin-top: 3px;
         }
 
         .cta-button {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            text-decoration: none;
-            padding: 12px 30px;
-            border-radius: 6px;
+            display: block;
+            background-color: #333 !important;
+            color: white !important;
+            padding: 12px 20px;
+            text-decoration: none !important;
+            font-size: 14px;
             font-weight: 500;
-            font-size: 16px;
-            transition: transform 0.2s ease;
+            text-align: center;
+            margin: 20px 0;
+            border: none !important;
+            -webkit-text-fill-color: white !important;
         }
 
         .cta-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            background-color: #555 !important;
+            color: white !important;
         }
 
-        .support-section {
-            background-color: #e8f4fd;
-            border: 1px solid #bee5eb;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 25px 0;
-        }
-
-        .support-title {
-            color: #0c5460;
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-        }
-
-        .support-title::before {
-            content: '💬';
-            margin-right: 8px;
-        }
-
-        .support-text {
-            color: #0c5460;
-            font-size: 14px;
-            line-height: 1.6;
-            margin: 0;
-        }
-
-        .email-footer {
-            background-color: #f8f9fa;
-            padding: 30px;
+        .footer {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            font-size: 12px;
+            color: #999;
             text-align: center;
-            border-top: 1px solid #e9ecef;
         }
 
-        .footer-text {
-            color: #6c757d;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        .footer-text strong {
-            color: #495057;
-        }
-
-        .divider {
-            height: 1px;
-            background: linear-gradient(to right, transparent, #e9ecef, transparent);
-            margin: 30px 0;
-        }
-
-        @media only screen and (max-width: 600px) {
-            .email-container {
-                margin: 20px;
-                border-radius: 8px;
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            .title {
+                font-size: 16px;
             }
 
-            .email-header, .email-body, .email-footer {
-                padding: 25px 20px;
-            }
-
-            .email-header h1 {
-                font-size: 28px;
-            }
-
-            .welcome-title {
-                font-size: 20px;
-            }
-
-            .features-section {
-                padding: 20px;
+            .welcome-text {
+                font-size: 15px;
             }
         }
     </style>
 </head>
 <body>
-<div class="email-container">
-    <div class="email-header">
-        <h1>🎉 欢迎加入</h1>
-        <p>心理健康平台大家庭</p>
-    </div>
-
-    <div class="email-body">
-        <div class="welcome-message">
-            <div class="welcome-title">
-                亲爱的 <span class="username-highlight">{username}</span>，欢迎您！
-            </div>
-            <div class="welcome-subtitle">
-                感谢您选择我们的心理健康平台。我们很荣幸能够陪伴您踏上心理健康之旅，为您提供专业、贴心的服务。
-            </div>
+    <div class="container">
+        <div class="header">
+            <div class="title">心理健康平台</div>
+            <div class="subtitle">欢迎加入</div>
         </div>
 
-        <div class="features-section">
-            <div class="features-title">🌟 在这里，您可以享受到：</div>
-            <ul class="features-list">
-                <li><strong>专业心理咨询</strong> - 经验丰富的持证咨询师为您提供一对一服务</li>
-                <li><strong>科学测评工具</strong> - 多维度了解您的心理健康状况</li>
-                <li><strong>精品课程学习</strong> - 系统性心理健康知识和技能培训</li>
-                <li><strong>社区交流互动</strong> - 与志同道合的朋友分享心得体验</li>
-                <li><strong>24/7在线支持</strong> - 随时随地获得我们的专业帮助</li>
-            </ul>
+        <div class="welcome-text">
+            亲爱的 <span class="username">{{username}}</span>，欢迎您！
         </div>
 
-        <div class="cta-section">
-            <div class="cta-title">现在就开始您的心理健康之旅吧！</div>
-            <a href="#" class="cta-button">立即探索平台</a>
+        <div class="content">
+            感谢您选择我们的心理健康平台。我们很荣幸能够陪伴您踏上心理健康之旅，为您提供专业、贴心的服务。
         </div>
 
-        <div class="support-section">
-            <div class="support-title">需要帮助？</div>
-            <p class="support-text">
-                如果您在使用过程中遇到任何问题，或者需要专业的心理健康建议，
-                请随时联系我们的客服团队。我们将竭诚为您服务，确保您获得最佳的使用体验。
-            </p>
+        <div class="section-title">平台特色服务</div>
+
+        <div class="feature-item">
+            <div class="feature-name">专业咨询</div>
+            <div class="feature-desc">经验丰富的心理咨询师团队，为您提供一对一的专业心理咨询服务，帮助您解决心理困扰。</div>
         </div>
 
-        <div class="divider"></div>
-
-        <div style="text-align: center; color: #5a6c7d; font-size: 16px;">
-            再次欢迎您的加入，祝您身心健康，生活愉快！
+        <div class="feature-item">
+            <div class="feature-name">课程学习</div>
+            <div class="feature-desc">精心设计的心理健康课程，涵盖情绪管理、压力缓解、人际关系等多个方面的实用技能。</div>
         </div>
-    </div>
 
-    <div class="email-footer">
-        <div class="footer-text">
+        <div class="feature-item">
+            <div class="feature-name">社区交流</div>
+            <div class="feature-desc">与志同道合的朋友分享经验，在温暖的社区环境中获得支持和鼓励。</div>
+        </div>
+
+        <div class="section-title">接下来您可以</div>
+
+        <div class="content">
+            • 完善您的个人资料，获得更个性化的服务推荐<br>
+            • 浏览我们的专业咨询师，预约适合您的心理咨询<br>
+            • 参加心理健康课程，学习实用的心理调节技巧<br>
+            • 加入社区讨论，与其他用户分享心得体会<br>
+            • 关注平台动态，获取最新的心理健康资讯
+        </div>
+
+        <a href="#" class="cta-button">立即开始体验</a>
+
+        <div class="content">
+            我们致力于为您创造一个安全、温暖、专业的心理健康服务环境。如有任何疑问，请随时联系我们的客服团队。
+        </div>
+
+        <div class="footer">
             <strong>心理健康平台团队</strong><br>
-            专注于为每一位用户提供优质的心理健康服务<br><br>
-            <em>此邮件由系统自动发送，请勿直接回复</em>
+            此邮件由系统自动发送，请勿直接回复
         </div>
     </div>
-</div>
 </body>
 </html>

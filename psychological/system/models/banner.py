@@ -1,5 +1,5 @@
-from .base import BaseModel
-from sqlalchemy import Column, String, Integer, DateTime, func
+from pcf_flask_helper.model.base import BaseModel
+from sqlalchemy import Column, String, Integer
 
 
 class Banner(BaseModel):

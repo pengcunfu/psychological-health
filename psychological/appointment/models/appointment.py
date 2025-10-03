@@ -1,9 +1,6 @@
-from datetime import datetime
-
 from sqlalchemy import Column, String, DateTime, Integer, ForeignKey
 from sqlalchemy.orm import relationship
-
-from .base import BaseModel
+from pcf_flask_helper.model.base import BaseModel
 
 
 class Appointment(BaseModel):

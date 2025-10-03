@@ -1,6 +1,5 @@
-from datetime import datetime
-from sqlalchemy import Column, String, Integer, DateTime, Float, func
-from .base import BaseModel
+from sqlalchemy import Column, String, Integer, Float
+from pcf_flask_helper.model.base import BaseModel
 
 
 class Order(BaseModel):

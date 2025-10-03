@@ -2,7 +2,7 @@ from wtforms import StringField, IntegerField, BooleanField, DateField, TextArea
 from wtforms.validators import Optional, NumberRange, Length, DataRequired, Email, Regexp
 from wtforms.fields import FieldList
 
-from .base import BaseForm
+from pcf_flask_helper.form.base import BaseForm
 
 
 class LoginForm(BaseForm):

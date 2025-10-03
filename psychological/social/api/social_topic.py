@@ -2,13 +2,13 @@
 社交话题
 """
 import uuid
-from flask import Blueprint, request, g
-from sqlalchemy import and_, or_, func
-from psychological.models.social_topic import SocialTopic
-from psychological.models.base import db
-from psychological.form.social import SocialTopicQueryForm, SocialTopicCreateForm, SocialTopicUpdateForm
+from flask import Blueprint, request
+from sqlalchemy import or_
+from ..models import SocialTopic
+from pcf_flask_helper.model.base import db
+from ..form import SocialTopicQueryForm, SocialTopicCreateForm, SocialTopicUpdateForm
 from pcf_flask_helper.common import json_success, json_error
-from psychological.utils.validate import validate_args
+from pcf_flask_helper.form.validate import validate_args
 from psychological.utils.auth_helper import is_manager_user, assert_current_user_id
 
 social_topic_bp = Blueprint('social_topic', __name__, url_prefix='/social-topic')

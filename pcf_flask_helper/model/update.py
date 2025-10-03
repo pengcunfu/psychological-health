@@ -3,7 +3,7 @@
 提供简化的模型属性更新功能，避免重复的if判断
 """
 from typing import Any, Dict, Optional
-from pcf_flask_helper.models.base import db
+from pcf_flask_helper.model.base import db
 
 
 class UpdateBuilder:

@@ -7,3 +7,5 @@ venv/
 mysql/
 tst_*.py
 __pycache__/
+
+config.yaml

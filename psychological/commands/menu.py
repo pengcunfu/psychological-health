@@ -3,22 +3,18 @@
 创建菜单系统数据
 """
 import click
-import uuid
-from ..models.base import db
-from ..models.menu import Menu
-from ..utils.logger_client import get_logger
-
-logger = get_logger(__name__)
+from pcf_flask_helper.model.base import db
+from psychological.system.models import Menu
 
 
-def create_menus():
+def create_menus() -> None:
     """创建完整的菜单系统"""
     # 检查是否已有菜单数据，如果有则跳过
     existing_count = db.session.query(Menu).count()
     if existing_count > 0:
-        click.echo(f'   ⚠️  系统中已存在 {existing_count} 个菜单，跳过菜单创建')
-        return []
-    
+        click.echo(f'   警告: 系统中已存在 {existing_count} 个菜单，跳过菜单创建')
+        return
+
     menus_data = [
         # 一级菜单
         {
@@ -36,7 +32,7 @@ def create_menus():
             'status': 1,
             'remark': '系统仪表板'
         },
-        
+
         # 用户管理模块
         {
             'id': 'user_management',
@@ -113,7 +109,7 @@ def create_menus():
             'status': 1,
             'remark': '删除用户按钮'
         },
-        
+
         # 角色管理
         {
             'id': 'role_list',
@@ -175,7 +171,7 @@ def create_menus():
             'status': 1,
             'remark': '删除角色按钮'
         },
-        
+
         # 咨询师管理
         {
             'id': 'counselor_management',
@@ -252,7 +248,7 @@ def create_menus():
             'status': 1,
             'remark': '删除咨询师按钮'
         },
-        
+
         # 咨询人管理
         {
             'id': 'consultant_list',
@@ -314,7 +310,7 @@ def create_menus():
             'status': 1,
             'remark': '删除咨询人按钮'
         },
-        
+
         # 预约管理
         {
             'id': 'appointment_management',
@@ -391,7 +387,7 @@ def create_menus():
             'status': 1,
             'remark': '删除预约按钮'
         },
-        
+
         # 课程管理
         {
             'id': 'course_management',
@@ -468,7 +464,7 @@ def create_menus():
             'status': 1,
             'remark': '删除课程按钮'
         },
-        
+
         # 测评管理
         {
             'id': 'assessment_management',
@@ -545,7 +541,7 @@ def create_menus():
             'status': 1,
             'remark': '删除测评按钮'
         },
-        
+
         # 订单管理
         {
             'id': 'order_management',
@@ -577,7 +573,7 @@ def create_menus():
             'status': 1,
             'remark': '订单列表页面'
         },
-        
+
         # 内容管理
         {
             'id': 'content_management',
@@ -639,7 +635,7 @@ def create_menus():
             'status': 1,
             'remark': '分类管理页面'
         },
-        
+
         # 系统管理
         {
             'id': 'system_management',
@@ -717,15 +713,15 @@ def create_menus():
             'remark': '删除菜单按钮'
         }
     ]
-    
+
     created_menus = []
     for menu_data in menus_data:
         # 检查是否已存在
         existing = db.session.query(Menu).filter_by(id=menu_data['id']).first()
         if existing:
-            click.echo(f'   ⚠️  菜单 "{menu_data["name"]}" 已存在，跳过创建')
+            click.echo(f'   警告: 菜单 "{menu_data["name"]}" 已存在，跳过创建')
             continue
-            
+
         menu = Menu(
             id=menu_data['id'],
             name=menu_data['name'],
@@ -743,9 +739,13 @@ def create_menus():
             status=menu_data['status'],
             remark=menu_data['remark']
         )
-        
+
         db.session.add(menu)
         created_menus.append(menu)
-        click.echo(f'   ✅ 创建菜单: {menu_data["name"]} (Level {menu_data["level"]})')
+        click.echo(f'   创建菜单: {menu_data["name"]} (Level {menu_data["level"]})')
+
+    click.echo(f'\n菜单系统创建完成！')
+    click.echo(f'菜单项: {len(created_menus)} 个')
+    click.echo(f'菜单系统已创建，包含完整的权限管理结构')
+    click.echo('提示: 可通过菜单管理页面查看和编辑菜单结构')
     
-    return created_menus

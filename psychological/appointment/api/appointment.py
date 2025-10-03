@@ -4,15 +4,15 @@
 """
 from datetime import datetime
 from flask import Blueprint
-from psychological.models.appointment import Appointment
-from psychological.models.base import db
+from ..models import Appointment
+from pcf_flask_helper.model.base import db
 from pcf_flask_helper.common import json_success, json_error
-from psychological.form.appointment import AppointmentCreateForm, AppointmentUpdateForm, AppointmentQueryForm
-from psychological.utils.validate import assert_id_exists
+from ..form import AppointmentCreateForm, AppointmentUpdateForm, AppointmentQueryForm
+from pcf_flask_helper.form.validate import assert_id_exists
 from psychological.utils.auth_helper import is_manager_user, assert_current_user_id
 from psychological.decorator.form import validate_form
 from psychological.decorator.permission import role_required, permission_required
-from psychological.utils.query import create_query_builder, assert_exists, assert_not_exists
+from pcf_flask_helper.model.query import create_query_builder, assert_exists, assert_not_exists
 
 appointment_bp = Blueprint('appointment', __name__, url_prefix='/appointment')
 

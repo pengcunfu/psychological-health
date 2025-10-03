@@ -3,12 +3,12 @@
 """
 import uuid
 from flask import Blueprint, request
-from psychological.models.social_follow import SocialFollow, UserSocialStats
-from psychological.models.user import User
-from psychological.models.base import db
-from psychological.form.social import SocialFollowCreateForm
+from ..models import SocialFollow, UserSocialStats
+from psychological.system.models import User
+from pcf_flask_helper.model.base import db
+from ..form import SocialFollowCreateForm
 from pcf_flask_helper.common import json_success, json_error
-from psychological.utils.validate import validate_args
+from pcf_flask_helper.form.validate import validate_args
 from psychological.utils.auth_helper import assert_current_user_id
 
 social_follow_bp = Blueprint('social_follow', __name__, url_prefix='/social-follow')

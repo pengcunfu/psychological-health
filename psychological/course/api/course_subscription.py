@@ -2,15 +2,14 @@
 课程订阅
 """
 from flask import Blueprint
-from psychological.models.course_subscription import CourseSubscription
-from psychological.models.course import Course
-from psychological.models.user import User
-from psychological.models.base import db
+from ..models import CourseSubscription, Course
+from psychological.system.models import User
+from pcf_flask_helper.model.base import db
 from pcf_flask_helper.common import json_success, json_error
-from psychological.utils.validate import assert_id_exists
-from psychological.utils.query import create_query_builder
+from pcf_flask_helper.form.validate import assert_id_exists
+from pcf_flask_helper.model.query import create_query_builder
 from psychological.utils.auth_helper import get_roles, assert_current_user_id, is_manager_user
-from psychological.form.course_subscription import (
+from ..form import (
     CourseSubscriptionCreateForm,
     CourseSubscriptionUpdateForm,
     CourseSubscriptionListForm,

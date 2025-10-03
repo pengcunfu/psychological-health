@@ -11,7 +11,7 @@ from loguru import logger
 class VerifyCodeCache:
     """验证码缓存管理类"""
 
-    def __init__(self, redis_client: RedisClient = None, verify_code_prefix: str = "verify_code:", 
+    def __init__(self, redis_client: RedisClient = None, verify_code_prefix: str = "verify_code:",
                  expire_time: int = 300):
         """
         初始化验证码缓存
@@ -48,7 +48,7 @@ class VerifyCodeCache:
             raise ValueError("标识符不能为空")
         if not code:
             raise ValueError("验证码不能为空")
-        
+
         try:
             key = self._get_verify_code_key(identifier)
             return self.redis_client.set(key, code, ex=self.expire_time)
@@ -71,7 +71,7 @@ class VerifyCodeCache:
         """
         if not identifier:
             raise ValueError("标识符不能为空")
-        
+
         try:
             key = self._get_verify_code_key(identifier)
             return self.redis_client.get(key)
@@ -94,7 +94,7 @@ class VerifyCodeCache:
         """
         if not identifier:
             raise ValueError("标识符不能为空")
-        
+
         try:
             key = self._get_verify_code_key(identifier)
             return self.redis_client.delete(key) > 0
@@ -136,3 +136,6 @@ class VerifyCodeCache:
             return is_valid
         except Exception as e:
             raise Exception(f"验证验证码失败: {str(e)}") from e
+
+
+verify_code_cache = VerifyCodeCache()

@@ -2,32 +2,34 @@
 查询构造器工具类
 提供简化的查询条件构建功能
 """
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union, Callable, Tuple, Type
 from sqlalchemy.orm import Query
 from sqlalchemy import and_
-from pcf_flask_helper.model.base import db
+from sqlalchemy.sql.elements import BinaryExpression, UnaryExpression
+from sqlalchemy.sql.functions import Function
+from pcf_flask_helper.model.base import db, BaseModel
 from pcf_flask_helper.common import json_error
 
 
 class QueryBuilder:
     """查询构造器类"""
 
-    def __init__(self, model_class):
+    def __init__(self, model_class: Type[BaseModel]) -> None:
         """
         初始化查询构造器
         
         Args:
             model_class: SQLAlchemy模型类
         """
-        self.model_class = model_class
-        self.query = model_class.query
-        self._conditions = []
-        self._joins = []
-        self._order_by = []
-        self._group_by = []
-        self._having = []
+        self.model_class: Type[BaseModel] = model_class
+        self.query: Query = model_class.query
+        self._conditions: List[Union[BinaryExpression, UnaryExpression]] = []
+        self._joins: List[Tuple[str, Any]] = []
+        self._order_by: List[Any] = []
+        self._group_by: List[Any] = []
+        self._having: List[Union[BinaryExpression, UnaryExpression, Function]] = []
 
-    def filter(self, *conditions) -> 'QueryBuilder':
+    def filter(self, *conditions: Union[BinaryExpression, UnaryExpression]) -> 'QueryBuilder':
         """
         添加一个或多个过滤条件（SQLAlchemy条件表达式）
         
@@ -44,7 +46,7 @@ class QueryBuilder:
                 self._conditions.append(condition)
         return self
 
-    def filter_if(self, condition, check: bool = True) -> 'QueryBuilder':
+    def filter_if(self, condition: Union[BinaryExpression, UnaryExpression], check: bool = True) -> 'QueryBuilder':
         """
         条件性过滤
         
@@ -59,7 +61,7 @@ class QueryBuilder:
             self._conditions.append(condition)
         return self
 
-    def when(self, condition: bool, *sql_conditions) -> 'QueryBuilder':
+    def when(self, condition: bool, *sql_conditions: Union[BinaryExpression, UnaryExpression, Callable[['QueryBuilder'], None]]) -> 'QueryBuilder':
         """
         条件性执行 - 支持直接传递条件或回调函数
         
@@ -85,7 +87,7 @@ class QueryBuilder:
                     self._conditions.append(sql_condition)
         return self
 
-    def unless(self, condition: bool, *sql_conditions) -> 'QueryBuilder':
+    def unless(self, condition: bool, *sql_conditions: Union[BinaryExpression, UnaryExpression, Callable[['QueryBuilder'], None]]) -> 'QueryBuilder':
         """
         条件性执行（条件为False时执行）
         
@@ -126,7 +128,7 @@ class QueryBuilder:
         self.order_by(field_to_use, direction_to_use)
         return self
 
-    def join(self, *models) -> 'QueryBuilder':
+    def join(self, *models: Any) -> 'QueryBuilder':
         """
         添加INNER JOIN
         
@@ -141,7 +143,7 @@ class QueryBuilder:
             self._joins.append(('join', model))
         return self
     
-    def outerjoin(self, *models) -> 'QueryBuilder':
+    def outerjoin(self, *models: Any) -> 'QueryBuilder':
         """
         添加LEFT OUTER JOIN
         
@@ -156,7 +158,7 @@ class QueryBuilder:
             self._joins.append(('outerjoin', model))
         return self
     
-    def leftjoin(self, *models) -> 'QueryBuilder':
+    def leftjoin(self, *models: Any) -> 'QueryBuilder':
         """
         添加LEFT JOIN（outerjoin的别名）
         
@@ -169,7 +171,7 @@ class QueryBuilder:
         """
         return self.outerjoin(*models)
 
-    def order_by(self, *order_expressions) -> 'QueryBuilder':
+    def order_by(self, *order_expressions: Any) -> 'QueryBuilder':
         """
         添加排序表达式
         
@@ -185,7 +187,7 @@ class QueryBuilder:
                 self._order_by.append(expr)
         return self
 
-    def group_by(self, *group_expressions) -> 'QueryBuilder':
+    def group_by(self, *group_expressions: Any) -> 'QueryBuilder':
         """
         添加GROUP BY表达式
         
@@ -201,7 +203,7 @@ class QueryBuilder:
                 self._group_by.append(expr)
         return self
 
-    def having(self, *having_expressions) -> 'QueryBuilder':
+    def having(self, *having_expressions: Union[BinaryExpression, UnaryExpression, Function]) -> 'QueryBuilder':
         """
         添加HAVING条件
         
@@ -250,7 +252,7 @@ class QueryBuilder:
 
         return query
 
-    def paginate(self, page: int = 1, per_page: int = 10, max_per_page: int = 100) -> dict:
+    def paginate(self, page: int = 1, per_page: int = 10, max_per_page: int = 100) -> Dict[str, Any]:
         """
         分页查询
         
@@ -280,11 +282,11 @@ class QueryBuilder:
         """获取记录数量"""
         return self.build().count()
 
-    def first(self):
+    def first(self) -> Optional[BaseModel]:
         """获取第一条记录"""
         return self.build().first()
 
-    def all(self) -> List:
+    def all(self) -> List[BaseModel]:
         """获取所有记录"""
         return self.build().all()
 
@@ -293,12 +295,15 @@ class QueryBuilder:
         return db.session.query(self.build().exists()).scalar()
 
 
-def create_query_builder(model_class) -> QueryBuilder:
+def create_query_builder(model_class: Type[BaseModel]) -> QueryBuilder:
     """创建查询构造器的快捷函数"""
     return QueryBuilder(model_class)
 
 
-def check_exists(model_class, conditions, error_message: str = "记录不存在", error_code: int = 404):
+def check_exists(model_class: Type[BaseModel], 
+                 conditions: Union[BinaryExpression, UnaryExpression, List[Union[BinaryExpression, UnaryExpression]], Tuple[Union[BinaryExpression, UnaryExpression], ...]], 
+                 error_message: str = "记录不存在", 
+                 error_code: int = 404) -> Union[BaseModel, Any]:
     """
     检查记录是否存在的快捷方法
     
@@ -340,7 +345,10 @@ def check_exists(model_class, conditions, error_message: str = "记录不存在"
     return record
 
 
-def check_not_exists(model_class, conditions, error_message: str = "记录已存在", error_code: int = 400):
+def check_not_exists(model_class: Type[BaseModel], 
+                     conditions: Union[BinaryExpression, UnaryExpression, List[Union[BinaryExpression, UnaryExpression]], Tuple[Union[BinaryExpression, UnaryExpression], ...]], 
+                     error_message: str = "记录已存在", 
+                     error_code: int = 400) -> Optional[Any]:
     """
     检查记录不存在的快捷方法（用于注册、创建等场景）
     
@@ -381,7 +389,10 @@ def check_not_exists(model_class, conditions, error_message: str = "记录已存
     return None  # 记录不存在，返回None表示检查通过
 
 
-def assert_not_exists(model_class, conditions, error_message: str = "记录已存在", error_code: int = 400):
+def assert_not_exists(model_class: Type[BaseModel], 
+                      conditions: Union[BinaryExpression, UnaryExpression, List[Union[BinaryExpression, UnaryExpression]], Tuple[Union[BinaryExpression, UnaryExpression], ...]], 
+                      error_message: str = "记录已存在", 
+                      error_code: int = 400) -> None:
     """
     当记录存在时抛出异常
     
@@ -414,11 +425,14 @@ def assert_not_exists(model_class, conditions, error_message: str = "记录已�
     if record:
         # 创建一个包含错误代码的异常
         exception = ValueError(error_message)
-        exception.error_code = error_code
+        exception.error_code = error_code  # type: ignore
         raise exception
 
 
-def assert_exists(model_class, conditions, error_message: str = "记录不存在", error_code: int = 404):
+def assert_exists(model_class: Type[BaseModel], 
+                  conditions: Union[BinaryExpression, UnaryExpression, List[Union[BinaryExpression, UnaryExpression]], Tuple[Union[BinaryExpression, UnaryExpression], ...]], 
+                  error_message: str = "记录不存在", 
+                  error_code: int = 404) -> BaseModel:
     """
     当记录不存在时抛出异常，存在时返回记录对象
     
@@ -454,7 +468,7 @@ def assert_exists(model_class, conditions, error_message: str = "记录不存在
     if not record:
         # 创建一个包含错误代码的异常
         exception = ValueError(error_message)
-        exception.error_code = error_code
+        exception.error_code = error_code  # type: ignore
         raise exception
 
     return record

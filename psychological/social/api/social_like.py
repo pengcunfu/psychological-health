@@ -2,16 +2,13 @@
 社交点赞
 """
 import uuid
-from flask import Blueprint, request, g
-from sqlalchemy import and_, or_
-from psychological.models.social_like import SocialLike
-from psychological.models.social_post import SocialPost
-from psychological.models.social_comment import SocialComment
-from psychological.models.social_follow import UserSocialStats
-from psychological.models.base import db
-from psychological.form.social import SocialLikeCreateForm
+from flask import Blueprint, request
+from ..models import SocialLike, SocialPost, SocialComment, UserSocialStats
+from psychological.system.models import User
+from pcf_flask_helper.model.base import db
+from ..form import SocialLikeCreateForm
 from pcf_flask_helper.common import json_success, json_error
-from psychological.utils.validate import validate_args
+from pcf_flask_helper.form.validate import validate_args
 from psychological.utils.auth_helper import assert_current_user_id
 
 social_like_bp = Blueprint('social_like', __name__, url_prefix='/social-like')
@@ -271,7 +268,6 @@ def get_received_likes():
         like_data = like.to_dict()
         
         # 添加点赞用户信息
-        from models.user import User
         liker = User.query.filter_by(id=like.user_id).first()
         if liker:
             like_data['liker_info'] = {
@@ -341,7 +337,6 @@ def get_target_likes(target_type, target_id):
         like_data = like.to_dict()
         
         # 添加用户信息
-        from models.user import User
         user = User.query.filter_by(id=like.user_id).first()
         if user:
             like_data['user_info'] = {

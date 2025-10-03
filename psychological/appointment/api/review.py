@@ -5,13 +5,13 @@
 from flask import Blueprint
 import uuid
 
-from psychological.models.review import Review
-from psychological.models.base import db
+from ..models import Review
+from pcf_flask_helper.model.base import db
 from pcf_flask_helper.common import json_success, json_error
-from psychological.utils.validate import assert_id_exists
-from psychological.utils.query import create_query_builder
+from pcf_flask_helper.form.validate import assert_id_exists
+from pcf_flask_helper.model.query import create_query_builder
 from psychological.utils.model_helper import update_model_fields
-from psychological.form.review import ReviewCreateForm, ReviewUpdateForm, ReviewQueryForm
+from ..form import ReviewCreateForm, ReviewUpdateForm, ReviewQueryForm
 from psychological.decorator.form import validate_form
 from psychological.decorator.permission import role_required, permission_required
 

@@ -1,6 +1,5 @@
-from datetime import datetime
-from sqlalchemy import Column, String, DateTime, func
-from .base import BaseModel
+from sqlalchemy import Column, String
+from pcf_flask_helper.model.base import BaseModel
 
 
 class DiseaseTags(BaseModel):

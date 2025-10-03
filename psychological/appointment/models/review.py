@@ -1,6 +1,5 @@
-from datetime import datetime
-from sqlalchemy import Column, String, Integer, DateTime, Text, func
-from .base import BaseModel
+from sqlalchemy import Column, String, Integer, Text
+from pcf_flask_helper.model.base import BaseModel
 
 
 class Review(BaseModel):

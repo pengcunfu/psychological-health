@@ -1,7 +1,7 @@
 from wtforms import StringField, IntegerField
 from wtforms.validators import DataRequired, Length, Optional
 
-from .base import BaseForm
+from pcf_flask_helper.form.base import BaseForm
 
 
 class UserFavoriteCreateForm(BaseForm):

@@ -1,5 +1,5 @@
-from sqlalchemy import Column, String, Integer, DateTime, func
-from .base import BaseModel
+from sqlalchemy import Column, String, Integer
+from pcf_flask_helper.model.base import BaseModel
 
 
 class Category(BaseModel):

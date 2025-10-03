@@ -11,7 +11,7 @@ from functools import wraps
 from typing import List, Union, Callable
 from psychological.utils.auth_helper import get_roles, assert_current_user_id, get_role_objects
 from psychological.utils.exceptions import UnauthorizedError, PermissionDeniedError
-from psychological.utils.json_result import JsonResult
+from pcf_flask_helper.common import json_success, json_error
 
 
 def role_required(required_roles: Union[str, List[str]]) -> Callable:
@@ -41,12 +41,12 @@ def role_required(required_roles: Union[str, List[str]]) -> Callable:
                 # 检查用户是否登录
                 user_id = assert_current_user_id()
                 if not user_id:
-                    return JsonResult.error('用户未登录', 401)
+                    return json_error('用户未登录', 401)
                 
                 # 获取用户角色
                 user_roles = get_roles()
                 if not user_roles:
-                    return JsonResult.error('用户未分配角色，权限不足', 403)
+                    return json_error('用户未分配角色，权限不足', 403)
                 
                 # 标准化required_roles为列表
                 if isinstance(required_roles, str):
@@ -63,17 +63,17 @@ def role_required(required_roles: Union[str, List[str]]) -> Callable:
                 
                 if not has_required_role:
                     roles_str = ', '.join(roles_to_check)
-                    return JsonResult.error(f'权限不足，需要以下角色之一: {roles_str}', 403)
+                    return json_error(f'权限不足，需要以下角色之一: {roles_str}', 403)
                 
                 # 角色检查通过，执行原函数
                 return func(*args, **kwargs)
                 
             except UnauthorizedError as e:
-                return JsonResult.error(str(e), 401)
+                return json_error(str(e), 401)
             except PermissionDeniedError as e:
-                return JsonResult.error(str(e), 403)
+                return json_error(str(e), 403)
             except Exception as e:
-                return JsonResult.error(f'角色验证失败: {str(e)}', 500)
+                return json_error(f'角色验证失败: {str(e)}', 500)
         
         return wrapper
     return decorator
@@ -112,12 +112,12 @@ def permission_required(required_permissions: Union[str, List[str]]) -> Callable
                 # 检查用户是否登录
                 user_id = assert_current_user_id()
                 if not user_id:
-                    return JsonResult.error('用户未登录', 401)
+                    return json_error('用户未登录', 401)
                 
                 # 获取用户角色
                 user_roles = get_roles()
                 if not user_roles:
-                    return JsonResult.error('用户未分配角色，无法获取权限', 403)
+                    return json_error('用户未分配角色，无法获取权限', 403)
                 
                 # 检查是否为admin角色，如果是则跳过权限检查
                 user_roles_lower = [role.lower() for role in user_roles]
@@ -128,7 +128,7 @@ def permission_required(required_permissions: Union[str, List[str]]) -> Callable
                 # 获取用户角色对象（包含权限信息）
                 role_objects = get_role_objects()
                 if not role_objects:
-                    return JsonResult.error('用户未分配角色，无法获取权限', 403)
+                    return json_error('用户未分配角色，无法获取权限', 403)
                 
                 # 标准化required_permissions为列表
                 if isinstance(required_permissions, str):
@@ -152,17 +152,17 @@ def permission_required(required_permissions: Union[str, List[str]]) -> Callable
                 
                 if not has_required_permission:
                     permissions_str = ', '.join(permissions_to_check)
-                    return JsonResult.error(f'权限不足，需要以下权限之一: {permissions_str}', 403)
+                    return json_error(f'权限不足，需要以下权限之一: {permissions_str}', 403)
                 
                 # 权限检查通过，执行原函数
                 return func(*args, **kwargs)
                 
             except UnauthorizedError as e:
-                return JsonResult.error(str(e), 401)
+                return json_error(str(e), 401)
             except PermissionDeniedError as e:
-                return JsonResult.error(str(e), 403)
+                return json_error(str(e), 403)
             except Exception as e:
-                return JsonResult.error(f'权限验证失败: {str(e)}', 500)
+                return json_error(f'权限验证失败: {str(e)}', 500)
         
         return wrapper
     return decorator

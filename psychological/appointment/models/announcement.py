@@ -1,5 +1,5 @@
-from sqlalchemy import Column, String, Integer, Text, DateTime, Boolean
-from .base import BaseModel
+from sqlalchemy import Column, String, Text, DateTime, Boolean
+from pcf_flask_helper.model.base import BaseModel
 
 
 class Announcement(BaseModel):

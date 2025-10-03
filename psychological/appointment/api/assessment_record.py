@@ -2,17 +2,18 @@
 测评记录
 """
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import Blueprint
 from sqlalchemy import func
-from psychological.models import AssessmentRecord, Assessment, User, AssessmentAnswer
-from psychological.models.base import db
-from psychological.form.assessment import AssessmentRecordQueryForm, AssessmentRecordCreateForm, AssessmentRecordUpdateForm
+from ..models import AssessmentRecord, Assessment, AssessmentAnswer
+from psychological.system.models import User
+from pcf_flask_helper.model.base import db
+from ..form import AssessmentRecordQueryForm, AssessmentRecordCreateForm, AssessmentRecordUpdateForm
 from pcf_flask_helper.common import json_success, json_error
 from psychological.utils.auth_helper import is_manager_user, assert_current_user_id
 from psychological.decorator.form import validate_form
 from psychological.decorator.permission import role_required, permission_required
-from psychological.utils.query import create_query_builder
+from pcf_flask_helper.model.query import create_query_builder
 
 assessment_record_bp = Blueprint(
     'assessment_record', __name__, url_prefix='/assessment-record')
@@ -73,7 +74,8 @@ def get_assessment_records(form):
     sort_order = form.sort_order.data or 'desc'
 
     if sort_by in valid_sort_fields:
-        sort_expr = valid_sort_fields[sort_by].desc() if sort_order.lower() == 'desc' else valid_sort_fields[sort_by].asc()
+        sort_expr = valid_sort_fields[sort_by].desc() if sort_order.lower() == 'desc' else valid_sort_fields[
+            sort_by].asc()
         builder.order_by(sort_expr)
 
     # 分页查询
@@ -326,7 +328,6 @@ def get_assessment_record_stats():
     average_score = round(avg_score_result, 1) if avg_score_result else 0
 
     # 最近7天新增记录
-    from datetime import timedelta
     week_ago = datetime.now() - timedelta(days=7)
     recent_records = AssessmentRecord.query.filter(
         AssessmentRecord.create_time >= week_ago

@@ -1,7 +1,7 @@
 from typing import List
 import json
-from sqlalchemy import Column, String, Integer, DateTime, Float, Text, func
-from .base import BaseModel
+from sqlalchemy import Column, String, Integer, Float, Text
+from pcf_flask_helper.model.base import BaseModel
 
 
 class Workspace(BaseModel):

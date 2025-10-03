@@ -1,11 +1,9 @@
 from functools import wraps
 from flask import request
 from typing import List, Optional
-from psychological.utils.json_result import JsonResult
-from psychological.utils.cache.redis_client import session_manager
-from psychological.utils.logger_client import get_logger
-
-logger = get_logger(__name__)
+from pcf_flask_helper.common import json_success, json_error
+from psychological.utils.session import get_session_manager, is_redis_available
+from loguru import logger
 
 
 class AuthManager:
@@ -20,19 +18,19 @@ class AuthManager:
             # 从请求头获取token
             token = request.headers.get('Authorization')
             if not token:
-                return JsonResult.error("未提供认证令牌", code=401)
+                return json_error("未提供认证令牌", code=401)
 
             # 移除Bearer前缀
             if token.startswith('Bearer '):
                 token = token[7:]
 
             # 从Redis验证token并获取用户信息
-            user_info = session_manager.get_session(token)
+            user_info = get_session_manager().get_session(token)
             if not user_info:
-                return JsonResult.error("认证令牌无效或已过期", code=401)
+                return json_error("认证令牌无效或已过期", code=401)
 
             # 延长会话有效期（每次访问都刷新）
-            session_manager.extend_session(token)
+            get_session_manager().extend_session(token)
 
             return f(*args, **kwargs)
 
@@ -48,15 +46,15 @@ class AuthManager:
                 # 先检查登录状态
                 token = request.headers.get('Authorization')
                 if not token:
-                    return JsonResult.error("未提供认证令牌", code=401)
+                    return json_error("未提供认证令牌", code=401)
 
                 if token.startswith('Bearer '):
                     token = token[7:]
 
                 # 从Redis获取用户信息
-                user_info = session_manager.get_session(token)
+                user_info = get_session_manager().get_session(token)
                 if not user_info:
-                    return JsonResult.error("认证令牌无效或已过期", code=401)
+                    return json_error("认证令牌无效或已过期", code=401)
 
                 # 从Redis用户信息中获取用户ID
                 user_id = user_info.get('user_id')
@@ -66,14 +64,14 @@ class AuthManager:
                     user_id = user_data.get('id')
 
                 if not user_id:
-                    return JsonResult.error("用户信息不完整", code=401)
+                    return json_error("用户信息不完整", code=401)
 
                 # 检查权限
                 if not AuthManager._check_user_permission(user_id, permission):
-                    return JsonResult.error("权限不足", code=403)
+                    return json_error("权限不足", code=403)
 
                 # 延长会话有效期
-                session_manager.extend_session(token)
+                get_session_manager().extend_session(token)
 
                 return f(*args, **kwargs)
 
@@ -91,15 +89,15 @@ class AuthManager:
                 # 先检查登录状态
                 token = request.headers.get('Authorization')
                 if not token:
-                    return JsonResult.error("未提供认证令牌", code=401)
+                    return json_error("未提供认证令牌", code=401)
 
                 if token.startswith('Bearer '):
                     token = token[7:]
 
                 # 从Redis获取用户信息
-                user_info = session_manager.get_session(token)
+                user_info = get_session_manager().get_session(token)
                 if not user_info:
-                    return JsonResult.error("认证令牌无效或已过期", code=401)
+                    return json_error("认证令牌无效或已过期", code=401)
 
                 # 从Redis用户信息中获取用户ID
                 user_id = user_info.get('user_id')
@@ -109,14 +107,14 @@ class AuthManager:
                     user_id = user_data.get('id')
 
                 if not user_id:
-                    return JsonResult.error("用户信息不完整", code=401)
+                    return json_error("用户信息不完整", code=401)
 
                 # 检查角色
                 if not AuthManager._check_user_roles_from_redis(user_info, roles):
-                    return JsonResult.error("角色权限不足", code=403)
+                    return json_error("角色权限不足", code=403)
 
                 # 延长会话有效期
-                session_manager.extend_session(token)
+                get_session_manager().extend_session(token)
 
                 return f(*args, **kwargs)
 
@@ -217,7 +215,7 @@ class AuthManager:
             'login_ip': request.remote_addr
         }
 
-        success = session_manager.create_session(token, session_data)
+        success = get_session_manager().create_session(token, session_data)
         if success:
             logger.info(f"用户 {user_id} 登录成功，会话已创建")
         else:
@@ -228,7 +226,7 @@ class AuthManager:
     @staticmethod
     def destroy_session(token: str):
         """销毁用户会话"""
-        success = session_manager.destroy_session(token)
+        success = get_session_manager().destroy_session(token)
         if success:
             logger.info(f"会话已销毁: {token[:8]}...")
         else:
@@ -250,10 +248,10 @@ class AuthManager:
                 token = token[7:]
 
             # 从Redis获取会话信息
-            user_info = session_manager.get_session(token)
+            user_info = get_session_manager().get_session(token)
             if user_info:
                 # 延长会话有效期
-                session_manager.extend_session(token)
+                get_session_manager().extend_session(token)
                 return user_info
 
             return None
@@ -266,7 +264,7 @@ class AuthManager:
         """更新用户会话中的用户数据"""
         try:
             # 获取当前会话信息
-            current_session = session_manager.get_session(token)
+            current_session = get_session_manager().get_session(token)
             if not current_session:
                 logger.warning(f"尝试更新不存在的会话: {token[:8]}...")
                 return False
@@ -280,7 +278,7 @@ class AuthManager:
                 'login_ip': current_session.get('login_ip', '')
             }
 
-            success = session_manager.update_session(token, updated_session)
+            success = get_session_manager().update_session(token, updated_session)
             if success:
                 logger.info(f"用户会话数据已更新: {token[:8]}...")
             else:
@@ -295,10 +293,10 @@ class AuthManager:
     def get_session_stats() -> dict:
         """获取会话统计信息"""
         try:
-            total_sessions = session_manager.get_session_count()
+            total_sessions = get_session_manager().get_session_count()
             return {
                 'total_sessions': total_sessions,
-                'redis_available': session_manager.redis_client.is_available()
+                'redis_available': is_redis_available()
             }
         except Exception as e:
             logger.error(f"获取会话统计失败: {e}")

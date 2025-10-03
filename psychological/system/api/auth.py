@@ -4,20 +4,18 @@
 """
 from flask import Blueprint, request, send_file, make_response
 import uuid
-from psychological.models.user import User
-from psychological.models.role import Role
-from psychological.models.user_role import UserRole
-from psychological.models.base import db
+from ..models import User, Role, UserRole
+from pcf_flask_helper.model.base import db
 from pcf_flask_helper.common import json_success, json_error
 from psychological.utils.auth_manager import AuthManager
-from psychological.utils.query import create_query_builder, assert_not_exists, assert_exists
+from pcf_flask_helper.model.query import create_query_builder, assert_not_exists, assert_exists
 from psychological.utils.model_helper import update_model_fields
 from pcf_flask_helper.verify_code import VerifyCodeGenerator
 from psychological.utils.auth import hash_password, generate_token, verify_password
 from psychological.utils.image import process_image_url
-from psychological.utils.cache.verify_code_cache import verify_code_cache
+from psychological.utils.verify_code_cache import verify_code_cache
 from psychological.utils.auth_helper import assert_current_user_id
-from psychological.form.auth import LoginForm, UserLoginForm, RegisterForm, UpdateProfileForm, ChangePasswordForm
+from ..form import LoginForm, UserLoginForm, RegisterForm, UpdateProfileForm, ChangePasswordForm
 from psychological.decorator.form import validate_form
 from psychological.decorator.permission import role_required, permission_required
 
@@ -43,7 +41,6 @@ def login(form):
 
     # 查找用户
     user = assert_exists(User, User.username == username, "用户不存在")
-
     if not verify_password(password, user.password_hash):
         return json_error("用户名或密码错误", 401)
 

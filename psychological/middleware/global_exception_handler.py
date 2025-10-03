@@ -1,9 +1,9 @@
 from flask import Flask, request, g
 from sqlalchemy.exc import SQLAlchemyError
-from psychological.utils.json_result import JsonResult
-from psychological.utils.logger_client import get_logger
+from pcf_flask_helper.common import json_error
+from loguru import logger
 from psychological.utils.exceptions import UnauthorizedError, PermissionDeniedError, ValidationError, ResourceNotFoundError
-from psychological.models.base import db
+from pcf_flask_helper.model.base import db
 import traceback
 
 
@@ -12,7 +12,7 @@ class GlobalExceptionHandler:
     
     def __init__(self, app: Flask = None):
         self.app = app
-        self.logger = get_logger(__name__)
+        self.logger = logger
         if app is not None:
             self.init_app(app)
     
@@ -50,47 +50,47 @@ class GlobalExceptionHandler:
         """处理SQLAlchemy数据库异常"""
         db.session.rollback()
         self._log_error(error, "数据库操作异常")
-        return JsonResult.error(f'数据库操作失败: {str(error)}', 500)
+        return json_error(f'数据库操作失败: {str(error)}', 500)
     
     def handle_value_error(self, error: ValueError):
         """处理参数验证异常"""
         self._log_error(error, "参数验证异常")
-        return JsonResult.error(f'参数验证失败: {str(error)}', 400)
+        return json_error(f'参数验证失败: {str(error)}', 400)
     
     def handle_key_error(self, error: KeyError):
         """处理缺少必要参数异常"""
         self._log_error(error, "缺少必要参数")
-        return JsonResult.error(f'缺少必要参数: {str(error)}', 400)
+        return json_error(f'缺少必要参数: {str(error)}', 400)
     
     def handle_permission_error(self, error: PermissionError):
         """处理权限异常"""
         self._log_error(error, "权限不足")
-        return JsonResult.error(f'权限不足: {str(error)}', 403)
+        return json_error(f'权限不足: {str(error)}', 403)
     
     def handle_not_found_error(self, error: FileNotFoundError):
         """处理资源不存在异常"""
         self._log_error(error, "资源不存在")
-        return JsonResult.error(f'资源不存在: {str(error)}', 404)
+        return json_error(f'资源不存在: {str(error)}', 404)
     
     def handle_unauthorized_error(self, error: UnauthorizedError):
         """处理用户未登录异常"""
         self._log_error(error, "用户未登录")
-        return JsonResult.error(error.message, error.code)
+        return json_error(error.message, error.code)
     
     def handle_permission_denied_error(self, error: PermissionDeniedError):
         """处理权限不足异常"""
         self._log_error(error, "权限不足")
-        return JsonResult.error(error.message, error.code)
+        return json_error(error.message, error.code)
     
     def handle_validation_error(self, error: ValidationError):
         """处理数据验证异常"""
         self._log_error(error, "数据验证异常")
-        return JsonResult.error(error.message, error.code)
+        return json_error(error.message, error.code)
     
     def handle_resource_not_found_error(self, error: ResourceNotFoundError):
         """处理资源不存在异常"""
         self._log_error(error, "资源不存在")
-        return JsonResult.error(error.message, error.code)
+        return json_error(error.message, error.code)
     
     def handle_general_error(self, error: Exception):
         """处理通用异常"""
@@ -105,7 +105,7 @@ class GlobalExceptionHandler:
         
         # 根据请求路径生成更友好的错误消息
         operation_name = self._get_operation_name_from_path()
-        return JsonResult.error(f'{operation_name}失败: {str(error)}', 500)
+        return json_error(f'{operation_name}失败: {str(error)}', 500)
     
     def _log_error(self, error: Exception, error_type: str):
         """记录错误日志"""

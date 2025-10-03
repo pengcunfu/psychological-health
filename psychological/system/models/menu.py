@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String, Integer
-from .base import BaseModel
+from pcf_flask_helper.model.base import BaseModel
 
 
 class Menu(BaseModel):

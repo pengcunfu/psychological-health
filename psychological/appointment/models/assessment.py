@@ -2,7 +2,7 @@ from typing import List
 import json
 from sqlalchemy import Column, String, Integer, DateTime, Float, Text, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
-from .base import BaseModel
+from pcf_flask_helper.model.base import BaseModel
 
 
 class Assessment(BaseModel):

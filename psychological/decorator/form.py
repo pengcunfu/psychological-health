@@ -11,10 +11,9 @@
 
 from functools import wraps
 from typing import Type, Callable
-from flask import request
-from psychological.form.base import BaseForm
-from psychological.utils.validate import validate_form as _validate_form, ValidationError
-from psychological.utils.json_result import JsonResult
+from pcf_flask_helper.form.base import BaseForm
+from pcf_flask_helper.form.validate import validate_form as _validate_form, ValidationError
+from pcf_flask_helper.common import json_error
 
 
 def validate_form(form_class: Type[BaseForm], 
@@ -37,13 +36,13 @@ def validate_form(form_class: Type[BaseForm],
         def create_user(form):
             # GET请求时验证查询参数，POST/PUT等验证JSON数据
             user = User(name=form.name.data)
-            return JsonResult.success(user.to_dict())
+            return json_success(user.to_dict())
         
         @validate_form(UserCreateForm, inject_form=False)
         def create_user():
             # 不注入form，但会验证数据
             data = request.get_json()
-            return JsonResult.success(data)
+            return json_success(data)
     """
     def decorator(func: Callable) -> Callable:
         @wraps(func)
@@ -59,9 +58,9 @@ def validate_form(form_class: Type[BaseForm],
                 return func(*args, **kwargs)
                 
             except ValidationError as e:
-                return JsonResult.error(e.message, e.status_code)
+                return json_error(e.message, e.status_code)
             except Exception as e:
-                return JsonResult.error(f'表单验证失败: {str(e)}', 500)
+                return json_error(f'表单验证失败: {str(e)}', 500)
         
         return wrapper
     return decorator

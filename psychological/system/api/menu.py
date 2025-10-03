@@ -3,16 +3,13 @@
 提供系统菜单的增删改查功能
 """
 from flask import Blueprint
-from psychological.models.base import db
-from psychological.models.menu import Menu
-from psychological.models.role import Role
-from psychological.models.user import User
-from psychological.models.user_role import UserRole
+from pcf_flask_helper.model.base import db
+from ..models import Menu, Role, User, UserRole
 from pcf_flask_helper.common import json_success, json_error
-from psychological.utils.validate import assert_id_exists
-from psychological.utils.query import create_query_builder
+from pcf_flask_helper.form.validate import assert_id_exists
+from pcf_flask_helper.model.query import create_query_builder
 from psychological.utils.model_helper import update_model_fields
-from psychological.form.menu import MenuQueryForm, MenuCreateForm, MenuUpdateForm
+from ..form import SystemMenuQueryForm as MenuQueryForm, SystemMenuCreateForm as MenuCreateForm, SystemMenuUpdateForm as MenuUpdateForm
 from psychological.decorator.form import validate_form
 from psychological.decorator.permission import role_required, permission_required
 from datetime import datetime

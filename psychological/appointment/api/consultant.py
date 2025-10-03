@@ -3,15 +3,15 @@
 """
 from flask import Blueprint
 from sqlalchemy import or_
-from psychological.models.consultant import Consultant, GenderEnum, RelationshipEnum
-from psychological.models.user import User
-from psychological.models.base import db
+from ..models import Consultant, GenderEnum, RelationshipEnum, Appointment
+from psychological.system.models.user import User
+from pcf_flask_helper.model.base import db
 from pcf_flask_helper.common import json_success, json_error
-from psychological.utils.validate import assert_id_exists
-from psychological.utils.query import create_query_builder, assert_exists, assert_not_exists
+from pcf_flask_helper.form.validate import assert_id_exists
+from pcf_flask_helper.model.query import create_query_builder, assert_exists, assert_not_exists
 from psychological.utils.model_helper import update_model_fields
 from psychological.utils.auth_helper import get_roles, assert_current_user_id, is_manager_user
-from psychological.form.consultant import ConsultantCreateForm, ConsultantUpdateForm, ConsultantListForm
+from ..form import ConsultantCreateForm, ConsultantUpdateForm, ConsultantListForm
 from psychological.decorator.form import validate_form
 from psychological.decorator.permission import role_required, permission_required
 import uuid
@@ -286,7 +286,6 @@ def delete_consultant(consultant_id):
     # 检查是否有关联的预约记录
     try:
         # 使用直接查询而不是关系，避免potential schema issues
-        from models.appointment import Appointment
         appointment_count = db.session.query(Appointment).filter_by(consultant_id=consultant_id).count()
         if appointment_count > 0:
             raise ValueError('该咨询人存在预约记录，无法删除')

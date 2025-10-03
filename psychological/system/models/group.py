@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String, Integer, Float, Text
-from .base import BaseModel
+from pcf_flask_helper.model.base import BaseModel
 
 
 class Group(BaseModel):

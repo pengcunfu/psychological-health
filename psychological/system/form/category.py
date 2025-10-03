@@ -1,8 +1,7 @@
-from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, validators
+from wtforms import StringField, IntegerField
 from wtforms.validators import DataRequired, Length, Optional, NumberRange
 
-from .base import BaseForm
+from pcf_flask_helper.form.base import BaseForm
 
 
 class CategoryCreateForm(BaseForm):

@@ -1,8 +1,7 @@
-from wtforms import Form, StringField, IntegerField
 from wtforms import StringField, IntegerField, BooleanField, TextAreaField
 from wtforms.validators import DataRequired, Optional, Length, NumberRange, ValidationError
-from psychological.models.role import Role
-from .base import BaseForm
+from psychological.system.models.role import Role
+from pcf_flask_helper.form.base import BaseForm
 
 
 class RoleQueryForm(BaseForm):

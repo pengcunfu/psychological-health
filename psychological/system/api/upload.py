@@ -5,7 +5,7 @@ import os
 import uuid
 from flask import Blueprint, request, current_app
 from werkzeug.exceptions import RequestEntityTooLarge
-from pcf_flask_helper.file_upload.file_upload import FileUploader
+from pcf_flask_helper.file_upload import FileUploader
 from pcf_flask_helper.common import json_success, json_error
 
 # 创建蓝图

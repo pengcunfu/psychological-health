@@ -1,6 +1,6 @@
 from flask import request
 from typing import List, Optional, Dict, Any
-from psychological.utils.cache.redis_client import session_manager
+from psychological.utils.session import get_session_manager
 from psychological.utils.exceptions import UnauthorizedError
 
 
@@ -21,10 +21,10 @@ def _get_current_user_from_redis() -> Optional[Dict[Any, Any]]:
             token = token[7:]
 
         # 从Redis获取会话信息
-        user_info = session_manager.get_session(token)
+        user_info = get_session_manager().get_session(token)
         if user_info:
             # 延长会话有效期
-            session_manager.extend_session(token)
+            get_session_manager().extend_session(token)
             return user_info
 
         return None

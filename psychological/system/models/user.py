@@ -1,7 +1,7 @@
 from sqlalchemy import String, Column, Integer, Date, Text
 from sqlalchemy.orm import relationship
 
-from .base import BaseModel
+from pcf_flask_helper.model.base import BaseModel
 
 
 class User(BaseModel):

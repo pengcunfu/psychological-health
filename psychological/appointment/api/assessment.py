@@ -6,15 +6,15 @@ import uuid
 from datetime import datetime
 from flask import Blueprint, request
 from sqlalchemy import or_
-from psychological.models import Assessment, AssessmentQuestion, AssessmentOption, AssessmentRecord, AssessmentAnswer
-from psychological.models.base import db
+from ..models import Assessment, AssessmentQuestion, AssessmentOption, AssessmentRecord, AssessmentAnswer
+from pcf_flask_helper.model.base import db
 from pcf_flask_helper.common import json_success, json_error
-from psychological.utils.validate import assert_id_exists
-from psychological.utils.query import create_query_builder
+from pcf_flask_helper.form.validate import assert_id_exists
+from pcf_flask_helper.model.query import create_query_builder
 from psychological.utils.model_helper import update_model_fields
 from psychological.utils.image import process_assessment_images
 from psychological.utils.auth_helper import is_manager_user, assert_current_user_id
-from psychological.form.assessment import (
+from ..form import (
     AssessmentQueryForm, AssessmentCreateForm, AssessmentUpdateForm,
     AssessmentQuestionCreateForm, AssessmentQuestionUpdateForm,
     AssessmentStartForm, AssessmentSubmitForm, AssessmentRecordQueryForm

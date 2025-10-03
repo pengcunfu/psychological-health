@@ -1,6 +1,6 @@
 from wtforms import StringField, IntegerField, FloatField, TextAreaField, BooleanField, SelectField, FieldList, FormField
-from wtforms.validators import DataRequired, Optional, Length, NumberRange, ValidationError
-from .base import BaseForm
+from wtforms.validators import DataRequired, Optional, Length, NumberRange
+from pcf_flask_helper.form.base import BaseForm
 
 
 class AssessmentQueryForm(BaseForm):

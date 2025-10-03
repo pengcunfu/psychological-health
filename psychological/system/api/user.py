@@ -3,22 +3,19 @@
 提供用户的增删改查功能
 """
 from flask import Blueprint, request
-from sqlalchemy import or_
 import uuid
 
-from psychological.models import db
-from psychological.models.user import User
-from psychological.models.role import Role
-from psychological.models.user_role import UserRole
-from psychological.form.user import UserCreateForm, UserUpdateForm, UserQueryForm
+from pcf_flask_helper.model.base import db
+from ..models import User, Role, UserRole
+from ..form import UserCreateForm, UserUpdateForm, SystemUserQueryForm as UserQueryForm
 from pcf_flask_helper.common import json_success, json_error
 from psychological.utils.auth_helper import assert_current_user_id, is_manager_user
 from psychological.utils.model_helper import update_model_fields
 from psychological.utils.auth import hash_password
-from psychological.utils.query import create_query_builder, assert_exists, assert_not_exists
+from pcf_flask_helper.model.query import create_query_builder, assert_exists, assert_not_exists
 from psychological.decorator.form import validate_form
 from psychological.decorator.permission import role_required, permission_required
-from psychological.utils.validate import assert_id_exists
+from pcf_flask_helper.form.validate import assert_id_exists
 
 user_bp = Blueprint('user', __name__, url_prefix='/user')
 

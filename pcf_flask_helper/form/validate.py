@@ -1,6 +1,6 @@
 from flask import request
 from typing import Type, TypeVar
-from pcf_flask_helper.form.base import BaseForm
+from .base import BaseForm
 
 T = TypeVar('T', bound=BaseForm)
 

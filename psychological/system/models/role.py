@@ -2,7 +2,7 @@ from typing import List
 
 from sqlalchemy import Column, String, Integer, Text, Boolean
 
-from .base import BaseModel
+from pcf_flask_helper.model.base import BaseModel
 import json
 
 

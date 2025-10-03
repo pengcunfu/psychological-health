@@ -4,22 +4,19 @@
 """
 import click
 import uuid
-from ..models.base import db
-from ..models.counselor import Counselor
-from ..models.consultant import Consultant, GenderEnum, RelationshipEnum
-from ..models.user import User
-from ..utils.logger_client import get_logger
-
-logger = get_logger(__name__)
+from pcf_flask_helper.model.base import db
+from psychological.appointment.models.counselor import Counselor
+from psychological.appointment.models.consultant import Consultant, GenderEnum, RelationshipEnum
+from psychological.system.models.user import User
 
 
-def create_counselors():
+def create_counselors() -> None:
     """创建示例咨询师数据"""
     # 检查是否已有咨询师数据，如果有则跳过
     existing_count = db.session.query(Counselor).count()
     if existing_count > 0:
-        click.echo(f'   ⚠️  系统中已存在 {existing_count} 个咨询师，跳过咨询师创建')
-        return []
+        click.echo(f'   警告: 系统中已存在 {existing_count} 个咨询师，跳过咨询师创建')
+        return
     
     counselors_data = [
         {
@@ -99,7 +96,7 @@ def create_counselors():
         # 检查是否已存在
         existing = db.session.query(Counselor).filter_by(name=counselor_data['name']).first()
         if existing:
-            click.echo(f'   ⚠️  咨询师 "{counselor_data["name"]}" 已存在，跳过创建')
+            click.echo(f'   警告: 咨询师 "{counselor_data["name"]}" 已存在，跳过创建')
             continue
             
         counselor = Counselor(
@@ -120,18 +117,26 @@ def create_counselors():
         
         db.session.add(counselor)
         created_counselors.append(counselor)
-        click.echo(f'   ✅ 创建咨询师: {counselor_data["name"]} ({counselor_data["title"]})')
+        click.echo(f'   创建咨询师: {counselor_data["name"]} ({counselor_data["title"]})')
     
-    return created_counselors
+    click.echo(f'\n咨询师创建完成！')
+    click.echo(f'咨询师: {len(created_counselors)} 个')
+    
+    # 显示咨询师信息
+    if created_counselors:
+        click.echo('\n咨询师列表:')
+        for counselor in created_counselors:
+            click.echo(f'   • {counselor.name} - {counselor.title} (¥{counselor.price}/小时)')
+    
 
 
-def create_consultants():
+def create_consultants() -> None:
     """创建示例咨询人数据"""
     # 检查是否已有咨询人数据，如果有则跳过
     existing_count = db.session.query(Consultant).count()
     if existing_count > 0:
-        click.echo(f'   ⚠️  系统中已存在 {existing_count} 个咨询人，跳过咨询人创建')
-        return []
+        click.echo(f'   警告: 系统中已存在 {existing_count} 个咨询人，跳过咨询人创建')
+        return
     
     # 获取一些用户ID作为关联
     users = db.session.query(User).limit(3).all()
@@ -204,7 +209,7 @@ def create_consultants():
             phone=consultant_data['phone']
         ).first()
         if existing:
-            click.echo(f'   ⚠️  咨询人 "{consultant_data["real_name"]}" 已存在，跳过创建')
+            click.echo(f'   警告: 咨询人 "{consultant_data["real_name"]}" 已存在，跳过创建')
             continue
             
         consultant = Consultant(
@@ -225,6 +230,14 @@ def create_consultants():
         
         db.session.add(consultant)
         created_consultants.append(consultant)
-        click.echo(f'   ✅ 创建咨询人: {consultant_data["real_name"]} ({consultant_data["gender"].value})')
+        click.echo(f'   创建咨询人: {consultant_data["real_name"]} ({consultant_data["gender"].value})')
     
-    return created_consultants
+    click.echo(f'\n咨询人创建完成！')
+    click.echo(f'咨询人: {len(created_consultants)} 个')
+    
+    # 显示咨询人信息
+    if created_consultants:
+        click.echo('\n咨询人列表:')
+        for consultant in created_consultants:
+            click.echo(f'   • {consultant.real_name} - {consultant.gender.value} ({consultant.phone})')
+    

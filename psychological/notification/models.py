@@ -5,8 +5,8 @@ import uuid
 from datetime import datetime
 from sqlalchemy import Column, String, Text, Boolean, DateTime, Integer, JSON, Index
 from sqlalchemy.dialects.mysql import ENUM
-from ..models.base import BaseModel
-from .types import NotificationType, NotificationPriority, NotificationStatus, NotificationChannel, NotificationAction
+from pcf_flask_helper.model.base import BaseModel
+from .types import NotificationType, NotificationPriority, NotificationStatus, NotificationAction
 
 
 class Notification(BaseModel):

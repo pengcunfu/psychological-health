@@ -1,4 +1,4 @@
-from .base import BaseModel
+from pcf_flask_helper.model.base import BaseModel
 from sqlalchemy import Column, String, Integer, DateTime, Text, func
 
 

@@ -1,7 +1,6 @@
-from flask_wtf import FlaskForm
 from wtforms import StringField, FloatField, IntegerField, SelectField
 from wtforms.validators import DataRequired, Optional, NumberRange, Length
-from .base import BaseForm
+from pcf_flask_helper.form.base import BaseForm
 
 
 class OrderQueryForm(BaseForm):

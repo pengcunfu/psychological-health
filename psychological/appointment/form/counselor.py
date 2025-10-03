@@ -1,6 +1,6 @@
 from wtforms import StringField, IntegerField, FloatField, TextAreaField
 from wtforms.validators import DataRequired, Optional, Length, NumberRange, Email, Regexp
-from .base import BaseForm
+from pcf_flask_helper.form.base import BaseForm
 
 
 class CounselorQueryForm(BaseForm):

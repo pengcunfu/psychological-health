@@ -1,14 +1,18 @@
-debug: true
-secret_key: dev-secret-key
-database_uri: mysql+pymysql://root:Bing2003@8.155.40.179:3306/psychological_health?charset=utf8mb4
-cors_origins: '*'
-domain: ""
+app:
+  debug: true
+  secret_key: dev-secret-key
+  cors_origins: '*'
+  domain: ""
+
+mysql:
+  uri: mysql+pymysql://root:Bing2003@8.155.40.179:3306/psychological_health?charset=utf8mb4
 
 # 邮箱配置
 email:
   smtp_server: smtp.qq.com  # 邮箱服务器地址
   smtp_port: 587            # SMTP端口号
   use_tls: true            # 是否使用TLS加密
+  use_ssl: false
   sender_email: "huaqiwill@qq.com"         # 发送方邮箱地址
   sender_password: "anbdmjgjzdnrdced"      # 发送方邮箱密码或授权码
   sender_name: "心理健康平台"  # 发送方显示名称

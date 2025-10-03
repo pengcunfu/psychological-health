@@ -27,7 +27,7 @@ processed_counselors = process_counselor_images(counselors_list)
 
 from flask import request
 from typing import List, Dict, Any, Union, Optional
-from .config import get_config
+from psychological.config import cfg
 
 
 def get_base_url() -> str:
@@ -37,8 +37,7 @@ def get_base_url() -> str:
     Returns:
         str: 基础URL，例如 'http://localhost:5000'
     """
-    config = get_config()
-    domain = config.get('domain', '')
+    domain = cfg.get("app.domain", "")
 
     if domain:
         return domain.rstrip('/')

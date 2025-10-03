@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 import uuid
 import enum
 
-from psychological.models import BaseModel
+from pcf_flask_helper.model.base import BaseModel
 
 
 class GenderEnum(enum.Enum):

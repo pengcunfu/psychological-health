@@ -1,7 +1,6 @@
-from .base import BaseForm
+from pcf_flask_helper.form.base import BaseForm
 from wtforms import StringField, IntegerField
-from wtforms.validators import DataRequired, Length, Optional, NumberRange, URL, Regexp
-import re
+from wtforms.validators import DataRequired, Length, Optional, NumberRange, URL
 
 
 class BannerQueryForm(BaseForm):

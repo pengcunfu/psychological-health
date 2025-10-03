@@ -5,14 +5,14 @@
 from flask import Blueprint
 import uuid
 
-from psychological.models.counselor import Counselor
-from psychological.models.base import db
+from ..models import Counselor
+from pcf_flask_helper.model.base import db
 from pcf_flask_helper.common import json_success, json_error
-from psychological.utils.validate import assert_id_exists
-from psychological.utils.query import create_query_builder
+from pcf_flask_helper.form.validate import assert_id_exists
+from pcf_flask_helper.model.query import create_query_builder
 from psychological.utils.image import process_counselor_images
 from psychological.utils.model_helper import update_model_fields
-from psychological.form.counselor import CounselorCreateForm, CounselorUpdateForm, CounselorQueryForm
+from ..form import CounselorCreateForm, CounselorUpdateForm, CounselorQueryForm
 from psychological.decorator.form import validate_form
 from psychological.decorator.permission import role_required, permission_required
 
@@ -52,7 +52,7 @@ def get_counselors(form):
         .when(form.title.data, Counselor.title.like(f'%{form.title.data}%')) \
         .when(form.status.data is not None, Counselor.status == form.status.data) \
         .order_by(order_column)
-    
+
     # 处理关键词搜索
     if form.keyword.data:
         keyword = f'%{form.keyword.data}%'
@@ -61,7 +61,7 @@ def get_counselors(form):
             (Counselor.title.like(keyword)) |
             (Counselor.introduction.like(keyword))
         )
-    
+
     result = builder.paginate(form.page.data, form.per_page.data, 100)
 
     # 处理咨询师数据中的图片URL
@@ -85,7 +85,7 @@ def get_counselors(form):
 def get_counselor(counselor_id):
     """获取单个咨询师详情"""
     assert_id_exists(counselor_id, "咨询师ID不能为空")
-    
+
     counselor = Counselor.query.filter_by(id=counselor_id).first()
     if not counselor:
         return json_error('咨询师不存在', 404)
@@ -131,7 +131,7 @@ def create_counselor(form):
 def update_counselor(counselor_id, form):
     """更新咨询师信息"""
     assert_id_exists(counselor_id, "咨询师ID不能为空")
-    
+
     counselor = Counselor.query.filter_by(id=counselor_id).first()
     if not counselor:
         return json_error('咨询师不存在', 404)
@@ -149,7 +149,7 @@ def update_counselor(counselor_id, form):
 def delete_counselor(counselor_id):
     """删除咨询师"""
     assert_id_exists(counselor_id, "咨询师ID不能为空")
-    
+
     counselor = Counselor.query.filter_by(id=counselor_id).first()
     if not counselor:
         return json_error('咨询师不存在', 404)

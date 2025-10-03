@@ -1,6 +1,6 @@
 from wtforms import StringField, IntegerField, SelectField, TextAreaField
 from wtforms.validators import DataRequired, Length, Optional, NumberRange, Regexp
-from .base import BaseForm
+from pcf_flask_helper.form.base import BaseForm
 import re
 
 

@@ -1,7 +1,6 @@
-from datetime import datetime
 from typing import List
-from sqlalchemy import Column, String, DateTime, Integer, Float, Text
-from .base import BaseModel
+from sqlalchemy import Column, String, Integer, Float, Text
+from pcf_flask_helper.model.base import BaseModel
 import json
 
 

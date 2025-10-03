@@ -1,13 +1,13 @@
 from typing import List
 import json
 from sqlalchemy import Column, String, Integer, DateTime, Float, Text, func
-from .base import BaseModel
+from pcf_flask_helper.model.base import BaseModel
 
 
 class Course(BaseModel):
     """课程信息实体"""
     __tablename__ = 'courses'
-    
+
     id = Column(String(50), primary_key=True)  # 课程ID
     title = Column(String(200), nullable=False)  # 课程标题
     subtitle = Column(String(300))  # 课程副标题
@@ -32,12 +32,12 @@ class Course(BaseModel):
         if self._tags:
             return json.loads(self._tags)
         return []
-    
+
     @tags.setter
     def tags(self, value: List[str]):
         """设置标签列表"""
         self._tags = json.dumps(value) if value else None
-    
+
     def to_dict(self):
         """转换为字典"""
         return {

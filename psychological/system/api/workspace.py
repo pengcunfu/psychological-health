@@ -3,13 +3,13 @@
 提供工作室的增删改查功能
 """
 from flask import Blueprint
-from psychological.models import db
-from psychological.models.workspace import Workspace
-from psychological.form.workspace import WorkspaceQueryForm, WorkspaceCreateForm, WorkspaceUpdateForm
+from pcf_flask_helper.model.base import db
+from ..models import Workspace
+from ..form import WorkspaceQueryForm, WorkspaceCreateForm, WorkspaceUpdateForm
 from pcf_flask_helper.common import json_success, json_error
-from psychological.utils.validate import assert_id_exists
+from pcf_flask_helper.form.validate import assert_id_exists
 from psychological.utils.model_helper import update_model_fields
-from psychological.utils.query import create_query_builder
+from pcf_flask_helper.model.query import create_query_builder
 from psychological.decorator.form import validate_form
 from psychological.decorator.permission import role_required, permission_required
 import uuid

@@ -3,14 +3,14 @@
 提供系统横幅的增删改查功能
 """
 from flask import Blueprint
-from psychological.models.banner import Banner
-from psychological.models.base import db
-from pcf_flask_helper.common import json_success, json_error
-from psychological.utils.validate import assert_id_exists
-from psychological.utils.query import create_query_builder, assert_exists
+from ..models import Banner
+from pcf_flask_helper.model.base import db
+from pcf_flask_helper.common import json_success
+from pcf_flask_helper.form.validate import assert_id_exists
+from pcf_flask_helper.model.query import create_query_builder, assert_exists
 from psychological.utils.model_helper import update_model_fields
 from psychological.utils.image import process_banner_images
-from psychological.form.banner import BannerQueryForm, BannerCreateForm, BannerUpdateForm
+from ..form import BannerQueryForm, BannerCreateForm, BannerUpdateForm
 from psychological.decorator.form import validate_form
 from psychological.decorator.permission import role_required, permission_required
 import uuid
@@ -43,7 +43,7 @@ def get_banners(form):
 @permission_required("banner:get_banner")
 def get_banner(banner_id):
     assert_id_exists(banner_id, "横幅ID不能为空")
-    
+
     banner = assert_exists(Banner, Banner.id == banner_id, "横幅不存在")
     # 处理轮播图数据中的图片URL
     return json_success(process_banner_images(banner.to_dict()))
@@ -76,7 +76,7 @@ def create_banner(form):
 def update_banner(banner_id, form):
     """更新横幅 - 使用JSON验证和权限装饰器"""
     assert_id_exists(banner_id, "横幅ID不能为空")
-    
+
     banner = assert_exists(Banner, Banner.id == banner_id, "横幅不存在")
 
     # 更新字段
@@ -92,7 +92,7 @@ def update_banner(banner_id, form):
 def delete_banner(banner_id):
     """删除横幅 - 需要管理员权限"""
     assert_id_exists(banner_id, "横幅ID不能为空")
-    
+
     banner = assert_exists(Banner, Banner.id == banner_id, "横幅不存在")
 
     db.session.delete(banner)

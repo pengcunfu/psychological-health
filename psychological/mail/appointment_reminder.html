@@ -12,401 +12,198 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background-color: #f8f9fa;
-            line-height: 1.6;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background-color: #f5f5f5;
+            line-height: 1.5;
             color: #333;
+            padding: 10px;
         }
 
-        .email-container {
-            max-width: 600px;
-            margin: 40px auto;
-            background-color: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-            overflow: hidden;
-        }
-
-        .email-header {
-            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-            padding: 40px 30px;
-            text-align: center;
-            color: #2c3e50;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .email-header::before {
-            content: '';
-            position: absolute;
-            top: -20%;
-            left: -20%;
-            width: 40%;
-            height: 40%;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="rgba(255,255,255,0.3)"><path d="M19,3H18V1H16V3H8V1H6V3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M19,19H5V8H19V19Z"/></svg>');
-            background-size: contain;
-            background-repeat: no-repeat;
-            animation: gentle-bounce 3s ease-in-out infinite;
-        }
-
-        @keyframes gentle-bounce {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-5px); }
-        }
-
-        .email-header h1 {
-            font-size: 28px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .email-header p {
-            font-size: 16px;
-            opacity: 0.8;
-            position: relative;
-            z-index: 1;
-        }
-
-        .email-body {
-            padding: 40px 30px;
-        }
-
-        .greeting {
-            font-size: 18px;
-            color: #2c3e50;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .appointment-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 12px;
-            padding: 30px;
-            margin: 30px 0;
-            color: white;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .appointment-card::before {
-            content: '';
-            position: absolute;
-            top: -30px;
-            right: -30px;
-            width: 80px;
-            height: 80px;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="rgba(255,255,255,0.1)"><path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M12.5,7V12.25L17,14.92L16.25,16.15L11,13V7H12.5Z"/></svg>');
-            background-size: contain;
-            background-repeat: no-repeat;
-            animation: slow-rotate 20s linear infinite;
-        }
-
-        @keyframes slow-rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .appointment-title {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            text-align: center;
-            position: relative;
-            z-index: 1;
-        }
-
-        .appointment-details {
-            background-color: rgba(255, 255, 255, 0.15);
-            border-radius: 8px;
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: #fff;
             padding: 20px;
-            position: relative;
-            z-index: 1;
-            backdrop-filter: blur(10px);
+            border: 1px solid #ddd;
         }
 
-        .detail-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            font-size: 16px;
-        }
-
-        .detail-row:last-child {
-            margin-bottom: 0;
-        }
-
-        .detail-icon {
-            font-size: 18px;
-            margin-right: 12px;
-            width: 24px;
+        .header {
             text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
         }
 
-        .detail-label {
+        .title {
+            font-size: 18px;
             font-weight: 600;
-            margin-right: 8px;
-            min-width: 80px;
-        }
-
-        .detail-value {
-            font-weight: 500;
-        }
-
-        .reminder-notice {
-            background-color: #d1ecf1;
-            border: 1px solid #bee5eb;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 25px 0;
-        }
-
-        .reminder-title {
-            color: #0c5460;
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-        }
-
-        .reminder-title::before {
-            content: '💡';
-            margin-right: 8px;
-        }
-
-        .reminder-list {
-            color: #0c5460;
-            font-size: 14px;
-            line-height: 1.8;
-            margin: 0;
-            padding-left: 20px;
-        }
-
-        .reminder-list li {
+            color: #333;
             margin-bottom: 5px;
         }
 
-        .action-section {
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            padding: 25px;
-            text-align: center;
-            margin: 30px 0;
-            border: 1px solid #e9ecef;
+        .subtitle {
+            font-size: 12px;
+            color: #666;
         }
 
-        .action-title {
-            font-size: 18px;
-            color: #2c3e50;
-            font-weight: 600;
-            margin-bottom: 15px;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .action-button {
-            display: inline-block;
-            padding: 12px 24px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 500;
+        .content {
             font-size: 14px;
-            transition: transform 0.2s ease;
-            min-width: 120px;
+            color: #666;
+            margin-bottom: 20px;
         }
 
-        .action-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .confirm-button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .reschedule-button {
-            background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%);
-            color: #2d3436;
-        }
-
-        .cancel-button {
-            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
-            color: white;
-        }
-
-        .contact-section {
-            background-color: #e8f4fd;
-            border: 1px solid #bee5eb;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 25px 0;
-        }
-
-        .contact-title {
-            color: #0c5460;
-            font-size: 16px;
+        .section-title {
+            font-size: 14px;
             font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .appointment-info {
+            margin-bottom: 20px;
+        }
+
+        .info-row {
+            font-size: 14px;
             margin-bottom: 8px;
-            display: flex;
-            align-items: center;
         }
 
-        .contact-title::before {
-            content: '📞';
-            margin-right: 8px;
+        .info-label {
+            color: #333;
+            font-weight: 500;
         }
 
-        .contact-text {
-            color: #0c5460;
-            font-size: 14px;
-            line-height: 1.6;
-            margin: 0;
+        .info-value {
+            color: #666;
         }
 
-        .email-footer {
-            background-color: #f8f9fa;
-            padding: 30px;
+        .buttons {
             text-align: center;
-            border-top: 1px solid #e9ecef;
+            margin: 20px 0;
         }
 
-        .footer-text {
-            color: #6c757d;
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 0 5px;
+            text-decoration: none !important;
             font-size: 14px;
-            line-height: 1.6;
+            font-weight: 500;
+            border: 1px solid #333 !important;
         }
 
-        .footer-text strong {
-            color: #495057;
+        .button-primary {
+            background-color: #333 !important;
+            color: white !important;
+            -webkit-text-fill-color: white !important;
         }
 
-        .divider {
-            height: 1px;
-            background: linear-gradient(to right, transparent, #e9ecef, transparent);
-            margin: 30px 0;
+        .button-primary:hover {
+            background-color: #555 !important;
+            color: white !important;
         }
 
-        @media only screen and (max-width: 600px) {
-            .email-container {
-                margin: 20px;
-                border-radius: 8px;
+        .button-secondary {
+            background-color: white !important;
+            color: #333 !important;
+            -webkit-text-fill-color: #333 !important;
+        }
+
+        .button-secondary:hover {
+            background-color: #f8f8f8 !important;
+            color: #333 !important;
+        }
+
+        .footer {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            font-size: 12px;
+            color: #999;
+            text-align: center;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            .title {
+                font-size: 16px;
             }
 
-            .email-header, .email-body, .email-footer {
-                padding: 25px 20px;
-            }
-
-            .email-header h1 {
-                font-size: 24px;
-            }
-
-            .appointment-card {
-                padding: 20px;
-            }
-
-            .action-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .action-button {
+            .button {
+                display: block;
+                margin: 8px 0;
                 width: 100%;
-                max-width: 200px;
-            }
-
-            .detail-row {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 5px;
             }
         }
     </style>
 </head>
 <body>
-<div class="email-container">
-    <div class="email-header">
-        <h1>📅 预约提醒</h1>
-        <p>即将到来的心理咨询预约</p>
-    </div>
-
-    <div class="email-body">
-        <div class="greeting">
-            您好！这是一份重要的预约提醒通知
+    <div class="container">
+        <div class="header">
+            <div class="title">心理健康平台</div>
+            <div class="subtitle">预约提醒</div>
         </div>
 
-        <div class="appointment-card">
-            <div class="appointment-title">🌟 您的预约详情</div>
-            <div class="appointment-details">
-                <div class="detail-row">
-                    <span class="detail-icon">⏰</span>
-                    <span class="detail-label">预约时间：</span>
-                    <span class="detail-value">{appointment_time}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-icon">👨‍⚕️</span>
-                    <span class="detail-label">咨询师：</span>
-                    <span class="detail-value">{doctor_name}</span>
-                </div>
-                {location_row}
-                <div class="detail-row">
-                    <span class="detail-icon">💚</span>
-                    <span class="detail-label">服务类型：</span>
-                    <span class="detail-value">心理健康咨询</span>
-                </div>
+        <div class="content">
+            您好！这是您在心理健康平台的预约提醒。请查看以下预约详情，并按时参加咨询。
+        </div>
+
+        <div class="section-title">您的预约详情</div>
+
+        <div class="appointment-info">
+            <div class="info-row">
+                <span class="info-label">预约时间：</span><span class="info-value">{{appointment_time}}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">咨询师：</span><span class="info-value">{{doctor_name}}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">地点：</span><span class="info-value">{{location}}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">服务类型：</span><span class="info-value">心理健康咨询</span>
             </div>
         </div>
 
-        <div class="reminder-notice">
-            <div class="reminder-title">温馨提醒</div>
-            <ul class="reminder-list">
-                <li>请提前10-15分钟到达咨询地点或准备好在线咨询环境</li>
-                <li>建议您提前整理想要讨论的问题和近期的心理状态</li>
-                <li>如需取消或调整预约时间，请至少提前24小时联系我们</li>
-                <li>咨询过程中请保持开放和诚实的沟通态度</li>
-                <li>如有紧急情况，请随时联系我们的客服团队</li>
-            </ul>
+        <div class="section-title">温馨提醒</div>
+
+        <div class="content">
+            • 请提前10-15分钟到达咨询地点<br>
+            • 建议携带身份证件以便确认身份<br>
+            • 如需调整预约时间，请提前24小时联系我们<br>
+            • 保持放松的心态，准备好与咨询师开诚布公地交流<br>
+            • 如有紧急情况无法按时到达，请及时联系客服
         </div>
 
-        <div class="action-section">
-            <div class="action-title">预约管理</div>
-            <div class="action-buttons">
-                <a href="#" class="action-button confirm-button">确认预约</a>
-                <a href="#" class="action-button reschedule-button">调整时间</a>
-                <a href="#" class="action-button cancel-button">取消预约</a>
-            </div>
+        <div class="section-title">联系我们</div>
+
+        <div class="content">
+            如果您需要调整预约时间或有任何疑问，请通过以下方式联系我们：<br>
+            客服热线：400-123-4567<br>
+            工作时间：周一至周日 9:00-21:00<br>
+            在线客服：登录平台后点击右下角客服图标
         </div>
 
-        <div class="contact-section">
-            <div class="contact-title">需要帮助？</div>
-            <p class="contact-text">
-                如果您对预约有任何疑问，或需要调整预约安排，
-                请随时联系我们的客服团队。我们将竭诚为您提供帮助，
-                确保您获得最优质的心理健康服务体验。
-            </p>
+        <div class="buttons">
+            <a href="#" class="button button-primary">查看预约详情</a>
+            <a href="#" class="button button-secondary">调整预约时间</a>
         </div>
 
-        <div class="divider"></div>
+        <div class="content">
+            感谢您选择我们的心理健康服务。我们期待为您提供专业、贴心的咨询体验。
+        </div>
 
-        <div style="text-align: center; color: #5a6c7d; font-size: 16px;">
-            期待与您的见面，愿这次咨询为您带来积极的改变！
+        <div class="footer">
+            <strong>心理健康平台团队</strong><br>
+            此邮件由系统自动发送，请勿直接回复
         </div>
     </div>
-
-    <div class="email-footer">
-        <div class="footer-text">
-            <strong>心理健康平台 - 预约服务团队</strong><br>
-            专业、贴心、值得信赖的心理健康服务<br><br>
-            <em>此邮件由系统自动发送，请勿直接回复</em>
-        </div>
-    </div>
-</div>
 </body>
 </html>

@@ -1,16 +1,16 @@
 from flask import Flask
 from flask_cors import CORS
 
-from .appointment.api import register_appointment_blueprints
-from .course.api import register_course_blueprints
-from .system.api import register_system_blueprints
-from .social.api import register_social_blueprints
-from .index import register_index_blueprints
+from psychological.appointment.api import register_appointment_blueprints
+from psychological.course.api import register_course_blueprints
+from psychological.system.api import register_system_blueprints
+from psychological.social.api import register_social_blueprints
+from psychological.index import register_index_blueprints
 
 from pcf_flask_helper.model.base import db
-from .middleware.global_exception_handler import GlobalExceptionHandler
-from .commands.data_init import register_init_command
-from .config import cfg
+from psychological.middleware.global_exception_handler import GlobalExceptionHandler
+from psychological.commands.data_init import register_init_command
+from psychological.config import cfg
 
 app = Flask(__name__, static_folder=None)  # 禁用Flask内置静态文件处理
 CORS(app)

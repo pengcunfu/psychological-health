@@ -3,16 +3,14 @@
 """
 import uuid
 from datetime import datetime, timedelta
-from flask import Blueprint, request, g
-from sqlalchemy import and_, or_, func
-from psychological.models.social_post import SocialPost
-from psychological.models.social_topic import SocialTopic
-from psychological.models.social_follow import UserSocialStats
-from psychological.models.user import User
-from psychological.models.base import db
-from psychological.form.social import SocialPostQueryForm, SocialPostCreateForm, SocialPostUpdateForm
+from flask import Blueprint, request
+from sqlalchemy import or_, func
+from ..models import SocialPost, SocialTopic, UserSocialStats, SocialLike, SocialFollow, SocialComment
+from psychological.system.models import User
+from pcf_flask_helper.model.base import db
+from ..form import SocialPostQueryForm, SocialPostCreateForm, SocialPostUpdateForm
 from pcf_flask_helper.common import json_success, json_error
-from psychological.utils.validate import validate_args
+from pcf_flask_helper.form.validate import validate_args
 from psychological.utils.auth_helper import is_manager_user, assert_current_user_id
 
 social_post_bp = Blueprint('social_post', __name__, url_prefix='/social-post')
@@ -134,7 +132,6 @@ def get_social_posts():
 
         # 检查当前用户是否点赞了这个帖子
         if current_user_id:
-            from models.social_like import SocialLike
             like = SocialLike.query.filter_by(
                 user_id=current_user_id,
                 target_id=post.id,
@@ -214,7 +211,6 @@ def get_following_posts():
     form = validate_args(SocialPostQueryForm)
 
     # 获取关注的用户ID列表
-    from models.social_follow import SocialFollow
     following_users = db.session.query(SocialFollow.following_id).filter(
         SocialFollow.follower_id == current_user_id,
         SocialFollow.status == 'active'
@@ -305,10 +301,9 @@ def get_social_post_detail(post_id):
             'avatar': None
         }
 
-    # 检查当前用户是否点赞了这个帖子
-    if current_user_id:
-        from models.social_like import SocialLike
-        like = SocialLike.query.filter_by(
+        # 检查当前用户是否点赞了这个帖子
+        if current_user_id:
+            like = SocialLike.query.filter_by(
             user_id=current_user_id,
             target_id=post.id,
             target_type='post',
@@ -486,8 +481,6 @@ def delete_social_post(post_id):
                 topic.post_count = max((topic.post_count or 0) - 1, 0)
 
         # 删除相关的评论和点赞
-        from models.social_comment import SocialComment
-        from models.social_like import SocialLike
 
         SocialComment.query.filter_by(post_id=post_id).delete()
         SocialLike.query.filter_by(target_id=post_id, target_type='post').delete()

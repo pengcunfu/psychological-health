@@ -5,13 +5,13 @@
 from flask import Blueprint
 import uuid
 
-from psychological.models.category import Category
-from psychological.models.base import db
-from pcf_flask_helper.common import json_success, json_error
-from psychological.utils.validate import assert_id_exists
-from psychological.utils.query import create_query_builder, assert_exists
+from ..models import Category
+from pcf_flask_helper.model.base import db
+from pcf_flask_helper.common import json_success
+from pcf_flask_helper.form.validate import assert_id_exists
+from pcf_flask_helper.model.query import create_query_builder, assert_exists
 from psychological.utils.model_helper import update_model_fields
-from psychological.form.category import CategoryCreateForm, CategoryUpdateForm, CategoryQueryForm, CategoryStatusUpdateForm
+from ..form import CategoryCreateForm, CategoryUpdateForm, CategoryQueryForm, CategoryStatusUpdateForm
 from psychological.decorator.form import validate_form
 from psychological.decorator.permission import role_required, permission_required
 
@@ -47,7 +47,7 @@ def get_categories(form):
 def get_category(category_id):
     """获取单个分类详情"""
     assert_id_exists(category_id, "分类ID不能为空")
-    
+
     category = assert_exists(Category, Category.id == category_id, "分类不存在")
 
     return json_success(category.to_dict())
@@ -84,7 +84,7 @@ def create_category(form):
 def update_category(category_id, form):
     """更新分类"""
     assert_id_exists(category_id, "分类ID不能为空")
-    
+
     category = assert_exists(Category, Category.id == category_id, "分类不存在")
 
     # 使用统一的更新函数
@@ -101,7 +101,7 @@ def update_category(category_id, form):
 def delete_category(category_id):
     """删除分类"""
     assert_id_exists(category_id, "分类ID不能为空")
-    
+
     category = assert_exists(Category, Category.id == category_id, "分类不存在")
 
     # 这里可以添加检查是否有关联数据的逻辑
@@ -121,7 +121,7 @@ def delete_category(category_id):
 def update_category_status(category_id, form):
     """更新分类状态（启用/禁用）"""
     assert_id_exists(category_id, "分类ID不能为空")
-    
+
     category = assert_exists(Category, Category.id == category_id, "分类不存在")
 
     category.status = form.status.data

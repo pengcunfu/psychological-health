@@ -3,18 +3,18 @@
 """
 import uuid
 from datetime import datetime, timedelta
-from typing import List, Dict, Optional, Union
-from sqlalchemy import and_, or_, desc, asc
+from typing import List, Dict, Union
+from sqlalchemy import and_, or_, desc
 from sqlalchemy.orm import Session
 
-from ..models.base import db
-from ..utils.logger_client import get_logger
-from ..utils.json_result import success_result, error_result
+from pcf_flask_helper.model.base import db
+from loguru import logger
+from pcf_flask_helper.common import success_result, error_result
 from .models import Notification, NotificationTemplate, NotificationConfig
 from .types import NotificationType, NotificationPriority, NotificationStatus, NotificationAction
 from .config import NotificationConfig as Config, NOTIFICATION_TEMPLATES
 
-logger = get_logger(__name__)
+
 
 
 class NotificationService:

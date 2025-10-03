@@ -5,14 +5,13 @@
 from flask import Blueprint
 import uuid
 
-from psychological.models.role import Role
-from psychological.models.user_role import UserRole
-from psychological.models.base import db
-from psychological.form.role import RoleQueryForm, RoleCreateForm, RoleUpdateForm
+from ..models import Role, UserRole
+from pcf_flask_helper.model.base import db
+from ..form import SystemRoleQueryForm as RoleQueryForm, SystemRoleCreateForm as RoleCreateForm, SystemRoleUpdateForm as RoleUpdateForm
 from pcf_flask_helper.common import json_success, json_error
 from psychological.utils.model_helper import update_model_fields
-from psychological.utils.query import create_query_builder
-from psychological.utils.validate import assert_id_exists
+from pcf_flask_helper.model.query import create_query_builder
+from pcf_flask_helper.form.validate import assert_id_exists
 from psychological.decorator.form import validate_form
 from psychological.decorator.permission import role_required, permission_required
 

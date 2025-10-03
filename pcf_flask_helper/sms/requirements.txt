@@ -1,5 +1,0 @@
-# 阿里云短信服务SDK依赖
-alibabacloud_dysmsapi20170525>=2.0.24
-alibabacloud_tea_openapi>=0.3.7
-alibabacloud_tea_util>=0.3.11
-alibabacloud_credentials>=0.3.2

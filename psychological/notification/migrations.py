@@ -2,13 +2,13 @@
 通知系统数据库迁移脚本
 """
 from sqlalchemy import text
-from ..models.base import db
-from ..utils.logger_client import get_logger
+from pcf_flask_helper.model.base import db
+from loguru import logger
 from .models import Notification, NotificationTemplate, NotificationConfig
 from .config import NOTIFICATION_TEMPLATES
 from .types import NotificationType, NotificationPriority, NotificationAction
 
-logger = get_logger(__name__)
+
 
 
 def create_notification_tables():
