@@ -118,10 +118,11 @@ def get_social_posts():
         # 添加用户信息
         user = User.query.filter_by(id=post.user_id).first()
         if user and not post.is_anonymous:
+            user_dict = user.to_dict()
             post_data['user_info'] = {
-                'id': user.id,
-                'username': user.username,
-                'avatar': user.avatar
+                'id': user_dict['id'],
+                'username': user_dict['username'],
+                'avatar': user_dict['avatar']
             }
         elif post.is_anonymous:
             post_data['user_info'] = {
@@ -184,10 +185,11 @@ def get_recommend_posts():
         # 添加用户信息
         user = User.query.filter_by(id=post.user_id).first()
         if user and not post.is_anonymous:
+            user_dict = user.to_dict()
             post_data['user_info'] = {
-                'id': user.id,
-                'username': user.username,
-                'avatar': user.avatar
+                'id': user_dict['id'],
+                'username': user_dict['username'],
+                'avatar': user_dict['avatar']
             }
         elif post.is_anonymous:
             post_data['user_info'] = {
@@ -238,10 +240,11 @@ def get_following_posts():
         # 添加用户信息
         user = User.query.filter_by(id=post.user_id).first()
         if user:
+            user_dict = user.to_dict()
             post_data['user_info'] = {
-                'id': user.id,
-                'username': user.username,
-                'avatar': user.avatar
+                'id': user_dict['id'],
+                'username': user_dict['username'],
+                'avatar': user_dict['avatar']
             }
 
         posts.append(post_data)
@@ -289,10 +292,11 @@ def get_social_post_detail(post_id):
     # 添加用户信息
     user = User.query.filter_by(id=post.user_id).first()
     if user and not post.is_anonymous:
+        user_dict = user.to_dict()
         post_data['user_info'] = {
-            'id': user.id,
-            'username': user.username,
-            'avatar': user.avatar
+            'id': user_dict['id'],
+            'username': user_dict['username'],
+            'avatar': user_dict['avatar']
         }
     elif post.is_anonymous:
         post_data['user_info'] = {

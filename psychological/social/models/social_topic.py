@@ -2,6 +2,7 @@ import uuid
 from datetime import datetime
 from sqlalchemy import Column, String, Integer, DateTime, Text, Boolean
 from pcf_flask_helper.model.base import BaseModel
+from pcf_flask_helper.common import process_image_url
 
 
 class SocialTopic(BaseModel):
@@ -32,7 +33,7 @@ class SocialTopic(BaseModel):
             'id': self.id,
             'name': self.name,
             'description': self.description,
-            'cover_image': self.cover_image,
+            'cover_image': process_image_url(self.cover_image),
             'color': self.color,
             'sort_order': self.sort_order,
             'is_hot': self.is_hot,

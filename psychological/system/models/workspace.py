@@ -2,6 +2,7 @@ from typing import List
 import json
 from sqlalchemy import Column, String, Integer, Float, Text
 from pcf_flask_helper.model.base import BaseModel
+from pcf_flask_helper.common import process_image_url
 
 
 class Workspace(BaseModel):
@@ -39,11 +40,11 @@ class Workspace(BaseModel):
         return {
             'id': self.id,
             'name': self.name,
-            'cover_image': self.cover_image,
+            'cover_image': process_image_url(self.cover_image),
             'address': self.address,
             'distance': self.distance,
             'business_hours': self.business_hours,
-            'environment_images': self.environment_images,
+            'environment_images': [process_image_url(img) for img in self.environment_images] if self.environment_images else [],
             'introduction': self.introduction,
             'slogan': self.slogan,
             'latitude': self.latitude,

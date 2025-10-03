@@ -1,13 +1,13 @@
-from .announcement import announcements_bp
+from psychological.system.api.announcement import announcements_bp
 from .appointment import appointment_bp
-from .assessment import assessment_bp
-from .assessment_record import assessment_record_bp
+from psychological.assessment.api.assessment import assessment_bp
+from psychological.assessment.api.assessment_record import assessment_record_bp
 from .consultant import consultant_bp
 from .counselor import counselor_bp
 from .disease_tags import disease_tags_bp
 from .order import order_bp
 from .review import review_bp
-from .user_favorite import user_favorite_bp
+from psychological.system.api.user_favorite import user_favorite_bp
 from flask import current_app
 
 

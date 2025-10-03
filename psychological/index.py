@@ -25,12 +25,12 @@ def static_files(filename):
     # Flask应用在psychological目录下，静态文件在项目根目录的static文件夹
     project_root = os.path.dirname(current_app.root_path)
     static_dir = os.path.join(project_root, 'static')
-    
+
     # 检查文件是否存在
     file_path = os.path.join(static_dir, filename)
     if not os.path.exists(file_path):
         return json_error(f'静态文件不存在: {filename}', code=404)
-    
+
     return send_from_directory(static_dir, filename)
 
 
@@ -41,7 +41,7 @@ def favicon():
     project_root = os.path.dirname(current_app.root_path)
     static_dir = os.path.join(project_root, 'static')
     favicon_path = os.path.join(static_dir, 'favicon.png')
-    
+
     if os.path.exists(favicon_path):
         return send_from_directory(static_dir, 'favicon.png')
     else:

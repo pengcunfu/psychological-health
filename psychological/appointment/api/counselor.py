@@ -10,11 +10,10 @@ from pcf_flask_helper.model.base import db
 from pcf_flask_helper.common import json_success, json_error
 from pcf_flask_helper.form.validate import assert_id_exists
 from pcf_flask_helper.model.query import create_query_builder
-from psychological.utils.image import process_counselor_images
 from psychological.utils.model_helper import update_model_fields
 from ..form import CounselorCreateForm, CounselorUpdateForm, CounselorQueryForm
-from psychological.decorator.form import validate_form
-from psychological.decorator.permission import role_required, permission_required
+from psychological.utils.decorator import validate_form
+from psychological.utils.decorator.permission import role_required, permission_required
 
 counselor_bp = Blueprint('counselor', __name__, url_prefix='/counselor')
 
@@ -64,12 +63,10 @@ def get_counselors(form):
 
     result = builder.paginate(form.page.data, form.per_page.data, 100)
 
-    # 处理咨询师数据中的图片URL
     counselors_data = [counselor.to_dict() for counselor in result['items']]
-    processed_counselors = process_counselor_images(counselors_data)
 
     return json_success({
-        'list': processed_counselors,
+        'list': counselors_data,
         'total': result['total'],
         'page': result['page'],
         'per_page': result['per_page'],
@@ -90,9 +87,7 @@ def get_counselor(counselor_id):
     if not counselor:
         return json_error('咨询师不存在', 404)
 
-    # 处理咨询师数据中的图片URL
-    counselor_data = process_counselor_images(counselor.to_dict())
-    return json_success(counselor_data)
+    return json_success(counselor.to_dict())
 
 
 @counselor_bp.route('', methods=['POST'])

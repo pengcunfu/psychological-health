@@ -2,6 +2,7 @@ from sqlalchemy import String, Column, Integer, Date, Text
 from sqlalchemy.orm import relationship
 
 from pcf_flask_helper.model.base import BaseModel
+from pcf_flask_helper.common import process_image_url
 
 
 class User(BaseModel):
@@ -21,7 +22,6 @@ class User(BaseModel):
     brief_introduction = Column(Text)  # 个人简介
     status = Column(Integer, default=1)  # 状态 1:正常 0:禁用
 
-
     # 关系
     consultants = relationship("Consultant", back_populates="user")
 
@@ -30,7 +30,7 @@ class User(BaseModel):
         return {
             'id': self.id,
             'username': self.username,
-            'avatar': self.avatar,
+            'avatar': process_image_url(self.avatar),
             'phone': self.phone,
             'code': self.email,
             'real_name': self.real_name,

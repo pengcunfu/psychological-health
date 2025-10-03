@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import List
 from sqlalchemy import Column, String, Integer, DateTime, Text, Boolean, Float
 from pcf_flask_helper.model.base import BaseModel
+from pcf_flask_helper.common import process_image_url
 
 
 class SocialPost(BaseModel):
@@ -93,7 +94,7 @@ class SocialPost(BaseModel):
             'content': self.content,
             'category': self.category,
             'topics': self.topics,
-            'images': self.images,
+            'images': [process_image_url(img) for img in self.images] if self.images else [],
             'videos': self.videos,
             'status': self.status,
             'is_top': self.is_top,
@@ -123,7 +124,7 @@ class SocialPost(BaseModel):
             'content': self.content[:200] + '...' if len(self.content or '') > 200 else self.content,  # 截取前200字符
             'category': self.category,
             'topics': self.topics,
-            'images': self.images[:3],  # 最多显示3张图片
+            'images': [process_image_url(img) for img in self.images[:3]] if self.images else [],  # 最多显示3张图片
             'is_top': self.is_top,
             'is_featured': self.is_featured,
             'is_anonymous': self.is_anonymous,

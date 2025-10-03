@@ -12,12 +12,11 @@ from pcf_flask_helper.model.query import create_query_builder, assert_not_exists
 from psychological.utils.model_helper import update_model_fields
 from pcf_flask_helper.verify_code import VerifyCodeGenerator
 from psychological.utils.auth import hash_password, generate_token, verify_password
-from psychological.utils.image import process_image_url
 from psychological.utils.verify_code_cache import verify_code_cache
 from psychological.utils.auth_helper import assert_current_user_id
 from ..form import LoginForm, UserLoginForm, RegisterForm, UpdateProfileForm, ChangePasswordForm
-from psychological.decorator.form import validate_form
-from psychological.decorator.permission import role_required, permission_required
+from psychological.utils.decorator import validate_form
+from psychological.utils.decorator.permission import role_required, permission_required
 
 login_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -54,9 +53,7 @@ def login(form):
         .all()
 
     # 创建会话 - user_data包含User模型的所有数据（除了密码）
-    user_data = user.to_dict()  # 使用User模型的to_dict方法
-    # 处理头像URL
-    user_data['avatar'] = process_image_url(user.avatar)
+    user_data = user.to_dict()  # 使用User模型的to_dict方法，已包含头像处理
 
     # 角色信息
     roles_data = [{
@@ -120,9 +117,7 @@ def user_login(form):
     token = generate_token()
 
     # 创建会话 - user_data包含User模型的所有数据（除了密码）
-    user_data = user.to_dict()  # 使用User模型的to_dict方法
-    # 处理头像URL
-    user_data['avatar'] = process_image_url(user.avatar)
+    user_data = user.to_dict()  # 使用User模型的to_dict方法，已包含头像处理
 
     # 角色信息
     roles_data = [{
@@ -184,8 +179,7 @@ def register(form):
     new_user = User(
         id=user_id,
         username=form.username.data,
-        avatar=form.avatar.data or process_image_url(
-            '/static/images/default_avatar.png'),
+        avatar=form.avatar.data or '/static/images/default_avatar.png',
         phone=form.phone.data or '',
         email=form.email.data or '',
         password_hash=hash_password(form.password.data)
@@ -211,12 +205,13 @@ def register(form):
         db.session.rollback()
         return json_error(f"注册失败: {str(e)}", 500)
 
+    user_dict = new_user.to_dict()
     return json_success({
-        'id': new_user.id,
-        'username': new_user.username,
-        'avatar': new_user.avatar,
-        'phone': new_user.phone,
-        'code': new_user.email
+        'id': user_dict['id'],
+        'username': user_dict['username'],
+        'avatar': user_dict['avatar'],
+        'phone': user_dict['phone'],
+        'code': user_dict['code']
     }, "注册成功", 201)
 
 
@@ -265,8 +260,7 @@ def update_profile(form):
         return json_error(f"更新失败: {str(e)}", 500)
 
     # 更新Redis中的用户会话信息
-    updated_user_data = user.to_dict()
-    updated_user_data['avatar'] = user.avatar
+    updated_user_data = user.to_dict()  # 已包含头像处理
 
     # 获取用户角色信息
     user_roles = create_query_builder(Role) \
@@ -356,8 +350,7 @@ def refresh_token():
         .all()
 
     # 创建最新的用户数据
-    user_data = user.to_dict()
-    user_data['avatar'] = process_image_url(user.avatar)
+    user_data = user.to_dict()  # 已包含头像处理
 
     # 角色信息
     roles_data = [{

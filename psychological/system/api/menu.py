@@ -10,8 +10,8 @@ from pcf_flask_helper.form.validate import assert_id_exists
 from pcf_flask_helper.model.query import create_query_builder
 from psychological.utils.model_helper import update_model_fields
 from ..form import SystemMenuQueryForm as MenuQueryForm, SystemMenuCreateForm as MenuCreateForm, SystemMenuUpdateForm as MenuUpdateForm
-from psychological.decorator.form import validate_form
-from psychological.decorator.permission import role_required, permission_required
+from psychological.utils.decorator import validate_form
+from psychological.utils.decorator.permission import role_required, permission_required
 from datetime import datetime
 import uuid
 

@@ -11,10 +11,9 @@ from pcf_flask_helper.common import json_success, json_error
 from pcf_flask_helper.form.validate import assert_id_exists
 from pcf_flask_helper.model.query import create_query_builder
 from psychological.utils.model_helper import update_model_fields
-from psychological.utils.image import process_course_images
 from ..form import CourseQueryForm, CourseCreateForm, CourseUpdateForm
-from psychological.decorator.form import validate_form
-from psychological.decorator.permission import role_required, permission_required
+from psychological.utils.decorator import validate_form
+from psychological.utils.decorator.permission import role_required, permission_required
 
 course_bp = Blueprint('course', __name__, url_prefix='/course')
 
@@ -32,12 +31,10 @@ def get_courses(form):
         .order_by(Course.create_time.desc()) \
         .paginate(form.page.data, form.per_page.data, 100)
 
-    # 处理课程数据中的图片URL
     courses = [course.to_dict() for course in result['items']]
-    processed_courses = process_course_images(courses)
 
     return json_success({
-        'list': processed_courses,
+        'list': courses,
         'total': result['total'],
         'page': result['page'],
         'per_page': result['per_page'],
@@ -56,9 +53,7 @@ def get_course(course_id):
     if not course:
         return json_error('课程不存在', 404)
 
-    # 处理课程数据中的图片URL
-    course_data = process_course_images(course.to_dict())
-    return json_success(course_data)
+    return json_success(course.to_dict())
 
 
 @course_bp.route('', methods=['POST'])

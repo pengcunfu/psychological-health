@@ -13,8 +13,8 @@ from psychological.utils.auth_helper import assert_current_user_id, is_manager_u
 from psychological.utils.model_helper import update_model_fields
 from psychological.utils.auth import hash_password
 from pcf_flask_helper.model.query import create_query_builder, assert_exists, assert_not_exists
-from psychological.decorator.form import validate_form
-from psychological.decorator.permission import role_required, permission_required
+from psychological.utils.decorator import validate_form
+from psychological.utils.decorator.permission import role_required, permission_required
 from pcf_flask_helper.form.validate import assert_id_exists
 
 user_bp = Blueprint('user', __name__, url_prefix='/user')

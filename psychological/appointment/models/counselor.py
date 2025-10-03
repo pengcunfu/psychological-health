@@ -1,6 +1,7 @@
 from typing import List
 from sqlalchemy import Column, String, Integer, Float, Text
 from pcf_flask_helper.model.base import BaseModel
+from pcf_flask_helper.common import process_image_url
 import json
 
 
@@ -40,7 +41,7 @@ class Counselor(BaseModel):
         return {
             'id': self.id,
             'name': self.name,
-            'avatar': self.avatar,
+            'avatar': process_image_url(self.avatar),
             'title': self.title,
             'phone': self.phone,
             'code': self.email,

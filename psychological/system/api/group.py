@@ -12,8 +12,8 @@ from pcf_flask_helper.form.validate import assert_id_exists
 from pcf_flask_helper.model.query import create_query_builder
 from psychological.utils.model_helper import update_model_fields
 from ..form import GroupQueryForm, GroupCreateForm, GroupUpdateForm
-from psychological.decorator.form import validate_form
-from psychological.decorator.permission import role_required, permission_required
+from psychological.utils.decorator import validate_form
+from psychological.utils.decorator.permission import role_required, permission_required
 
 group_bp = Blueprint('group', __name__, url_prefix='/group')
 

@@ -1,5 +1,6 @@
 from pcf_flask_helper.model.base import BaseModel
 from sqlalchemy import Column, String, Integer
+from pcf_flask_helper.common import process_image_url
 
 
 class Banner(BaseModel):
@@ -17,7 +18,7 @@ class Banner(BaseModel):
         return {
             'id': self.id,
             'title': self.title,
-            'image_url': self.image_url,
+            'image_url': process_image_url(self.image_url),
             'link_url': self.link_url,
             'sort_order': self.sort_order,
             'status': self.status,

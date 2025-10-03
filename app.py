@@ -8,8 +8,8 @@ from psychological.social.api import register_social_blueprints
 from psychological.index import register_index_blueprints
 
 from pcf_flask_helper.model.base import db
-from psychological.middleware.global_exception_handler import GlobalExceptionHandler
-from psychological.commands.data_init import register_init_command
+from psychological.utils.middleware.global_exception_handler import GlobalExceptionHandler
+from psychological.utils.commands.data_init import register_init_command
 from psychological.config import cfg
 
 app = Flask(__name__, static_folder=None)  # 禁用Flask内置静态文件处理

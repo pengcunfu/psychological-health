@@ -9,10 +9,9 @@ from pcf_flask_helper.common import json_success
 from pcf_flask_helper.form.validate import assert_id_exists
 from pcf_flask_helper.model.query import create_query_builder, assert_exists
 from psychological.utils.model_helper import update_model_fields
-from psychological.utils.image import process_banner_images
 from ..form import BannerQueryForm, BannerCreateForm, BannerUpdateForm
-from psychological.decorator.form import validate_form
-from psychological.decorator.permission import role_required, permission_required
+from psychological.utils.decorator import validate_form
+from psychological.utils.decorator.permission import role_required, permission_required
 import uuid
 
 banner_bp = Blueprint("banner", __name__, url_prefix="/banner")
@@ -31,7 +30,7 @@ def get_banners(form):
         .paginate(form.page.data, form.per_page.data, 100)
 
     return json_success({
-        'list': process_banner_images([banner.to_dict() for banner in result['items']]),
+        'list': [banner.to_dict() for banner in result['items']],
         'total': result['total'],
         'page': result['page'],
         'per_page': result['per_page']
@@ -45,8 +44,8 @@ def get_banner(banner_id):
     assert_id_exists(banner_id, "横幅ID不能为空")
 
     banner = assert_exists(Banner, Banner.id == banner_id, "横幅不存在")
-    # 处理轮播图数据中的图片URL
-    return json_success(process_banner_images(banner.to_dict()))
+    
+    return json_success(banner.to_dict())
 
 
 @banner_bp.route("", methods=['POST'])

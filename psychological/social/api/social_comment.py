@@ -75,10 +75,11 @@ def get_social_comments():
         if not comment.is_anonymous:
             user = User.query.filter_by(id=comment.user_id).first()
             if user:
+                user_dict = user.to_dict()
                 comment_data['user_info'] = {
-                    'id': user.id,
-                    'username': user.username,
-                    'avatar': user.avatar
+                    'id': user_dict['id'],
+                    'username': user_dict['username'],
+                    'avatar': user_dict['avatar']
                 }
         else:
             comment_data['user_info'] = {

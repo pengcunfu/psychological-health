@@ -13,8 +13,8 @@ from psychological.utils.model_helper import update_model_fields
 from psychological.utils.auth_helper import assert_current_user_id, is_manager_user
 from pcf_flask_helper.model.base import db
 from ..form import OrderQueryForm, OrderCreateForm, OrderUpdateForm
-from psychological.decorator.form import validate_form
-from psychological.decorator.permission import role_required, permission_required
+from psychological.utils.decorator import validate_form
+from psychological.utils.decorator.permission import role_required, permission_required
 
 order_bp = Blueprint('order', __name__, url_prefix='/order')
 

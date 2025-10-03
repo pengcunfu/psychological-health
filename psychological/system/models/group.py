@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, Integer, Float, Text
 from pcf_flask_helper.model.base import BaseModel
-
+from pcf_flask_helper.common import process_image_url
 
 class Group(BaseModel):
     """团体小组实体"""
@@ -36,7 +36,7 @@ class Group(BaseModel):
         return {
             'id': self.id,
             'title': self.title,
-            'cover_image': self.cover_image,
+            'cover_image': process_image_url(self.cover_image),
             'counselor_id': self.counselor_id,
             'counselor_name': self.counselor_name,
             'price': self.price,

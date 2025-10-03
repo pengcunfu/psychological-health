@@ -12,8 +12,8 @@ from pcf_flask_helper.model.query import create_query_builder, assert_exists, as
 from psychological.utils.model_helper import update_model_fields
 from psychological.utils.auth_helper import get_roles, assert_current_user_id, is_manager_user
 from ..form import ConsultantCreateForm, ConsultantUpdateForm, ConsultantListForm
-from psychological.decorator.form import validate_form
-from psychological.decorator.permission import role_required, permission_required
+from psychological.utils.decorator import validate_form
+from psychological.utils.decorator.permission import role_required, permission_required
 import uuid
 
 consultant_bp = Blueprint('consultant', __name__, url_prefix='/consultant')

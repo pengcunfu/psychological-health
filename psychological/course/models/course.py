@@ -2,6 +2,7 @@ from typing import List
 import json
 from sqlalchemy import Column, String, Integer, DateTime, Float, Text, func
 from pcf_flask_helper.model.base import BaseModel
+from pcf_flask_helper.common import process_image_url
 
 
 class Course(BaseModel):
@@ -44,10 +45,10 @@ class Course(BaseModel):
             'id': self.id,
             'title': self.title,
             'subtitle': self.subtitle,
-            'cover_image': self.cover_image,
+            'cover_image': process_image_url(self.cover_image),
             'teacher': self.teacher,
             'teacher_title': self.teacher_title,
-            'teacher_avatar': self.teacher_avatar,
+            'teacher_avatar': process_image_url(self.teacher_avatar),
             'price': self.price,
             'original_price': self.original_price,
             'lesson_count': self.lesson_count,

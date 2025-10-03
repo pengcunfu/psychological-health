@@ -5,15 +5,15 @@
 import uuid
 
 from flask import Blueprint
-from ..models import UserFavorite
+from psychological.appointment.models import UserFavorite
 from pcf_flask_helper.model.base import db
 from pcf_flask_helper.common import json_success
 from pcf_flask_helper.form.validate import assert_id_exists
 from pcf_flask_helper.model.query import create_query_builder, assert_exists, assert_not_exists
 from psychological.utils.auth_helper import assert_current_user_id
-from ..form import UserFavoriteCreateForm, UserFavoriteQueryForm
-from psychological.decorator.form import validate_form
-from psychological.decorator.permission import role_required, permission_required
+from psychological.appointment.form import UserFavoriteCreateForm, UserFavoriteQueryForm
+from psychological.utils.decorator.form import validate_form
+from psychological.utils.decorator.permission import role_required, permission_required
 
 user_favorite_bp = Blueprint('user_favorite', __name__, url_prefix='/user-favorite')
 

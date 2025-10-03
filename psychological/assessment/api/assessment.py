@@ -6,20 +6,20 @@ import uuid
 from datetime import datetime
 from flask import Blueprint, request
 from sqlalchemy import or_
-from ..models import Assessment, AssessmentQuestion, AssessmentOption, AssessmentRecord, AssessmentAnswer
+from psychological.appointment.models import Assessment, AssessmentQuestion, AssessmentOption, AssessmentRecord, AssessmentAnswer
 from pcf_flask_helper.model.base import db
 from pcf_flask_helper.common import json_success, json_error
 from pcf_flask_helper.form.validate import assert_id_exists
 from pcf_flask_helper.model.query import create_query_builder
 from psychological.utils.model_helper import update_model_fields
 from psychological.utils.auth_helper import is_manager_user, assert_current_user_id
-from ..form import (
+from psychological.appointment.form import (
     AssessmentQueryForm, AssessmentCreateForm, AssessmentUpdateForm,
     AssessmentQuestionCreateForm, AssessmentQuestionUpdateForm,
     AssessmentStartForm, AssessmentSubmitForm, AssessmentRecordQueryForm
 )
-from psychological.decorator.form import validate_form
-from psychological.decorator.permission import role_required, permission_required
+from psychological.utils.decorator.form import validate_form
+from psychological.utils.decorator.permission import role_required, permission_required
 import json
 
 assessment_bp = Blueprint('assessment', __name__, url_prefix='/assessment')

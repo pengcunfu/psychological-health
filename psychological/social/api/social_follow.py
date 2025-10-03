@@ -172,10 +172,11 @@ def get_followers():
         # 添加粉丝用户信息
         user = User.query.filter_by(id=follow.follower_id).first()
         if user:
+            user_dict = user.to_dict()
             follow_data['user_info'] = {
-                'id': user.id,
-                'username': user.username,
-                'avatar': user.avatar
+                'id': user_dict['id'],
+                'username': user_dict['username'],
+                'avatar': user_dict['avatar']
             }
 
         followers.append(follow_data)
@@ -216,10 +217,11 @@ def get_following():
         # 添加被关注用户信息
         user = User.query.filter_by(id=follow.following_id).first()
         if user:
+            user_dict = user.to_dict()
             follow_data['user_info'] = {
-                'id': user.id,
-                'username': user.username,
-                'avatar': user.avatar
+                'id': user_dict['id'],
+                'username': user_dict['username'],
+                'avatar': user_dict['avatar']
             }
 
         following.append(follow_data)
@@ -251,10 +253,11 @@ def get_user_social_stats(user_id):
         db.session.commit()
 
     stats_data = stats.to_dict()
+    user_dict = user.to_dict()
     stats_data['user_info'] = {
-        'id': user.id,
-        'username': user.username,
-        'avatar': user.avatar
+        'id': user_dict['id'],
+        'username': user_dict['username'],
+        'avatar': user_dict['avatar']
     }
 
     return json_success(stats_data)

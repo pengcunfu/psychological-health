@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import List
 from sqlalchemy import Column, String, Integer, DateTime, Text, Boolean
 from pcf_flask_helper.model.base import BaseModel
+from pcf_flask_helper.common import process_image_url
 
 
 class SocialComment(BaseModel):
@@ -59,7 +60,7 @@ class SocialComment(BaseModel):
             'parent_id': self.parent_id,
             'reply_to_user_id': self.reply_to_user_id,
             'content': self.content,
-            'images': self.images,
+            'images': [process_image_url(img) for img in self.images] if self.images else [],
             'status': self.status,
             'is_anonymous': self.is_anonymous,
             'like_count': self.like_count,
@@ -82,7 +83,7 @@ class SocialComment(BaseModel):
             'parent_id': self.parent_id,
             'reply_to_user_id': self.reply_to_user_id,
             'content': self.content,
-            'images': self.images,
+            'images': [process_image_url(img) for img in self.images] if self.images else [],
             'is_anonymous': self.is_anonymous,
             'like_count': self.like_count,
             'reply_count': self.reply_count,

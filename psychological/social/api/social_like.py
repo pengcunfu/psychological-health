@@ -270,10 +270,11 @@ def get_received_likes():
         # 添加点赞用户信息
         liker = User.query.filter_by(id=like.user_id).first()
         if liker:
+            liker_dict = liker.to_dict()
             like_data['liker_info'] = {
-                'id': liker.id,
-                'username': liker.username,
-                'avatar': liker.avatar
+                'id': liker_dict['id'],
+                'username': liker_dict['username'],
+                'avatar': liker_dict['avatar']
             }
         
         # 添加目标信息
@@ -339,10 +340,11 @@ def get_target_likes(target_type, target_id):
         # 添加用户信息
         user = User.query.filter_by(id=like.user_id).first()
         if user:
+            user_dict = user.to_dict()
             like_data['user_info'] = {
-                'id': user.id,
-                'username': user.username,
-                'avatar': user.avatar
+                'id': user_dict['id'],
+                'username': user_dict['username'],
+                'avatar': user_dict['avatar']
             }
         
         likes.append(like_data)

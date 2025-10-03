@@ -5,14 +5,14 @@ import uuid
 from datetime import datetime, timedelta
 from flask import Blueprint
 from sqlalchemy import func
-from ..models import AssessmentRecord, Assessment, AssessmentAnswer
+from psychological.appointment.models import AssessmentRecord, Assessment, AssessmentAnswer
 from psychological.system.models import User
 from pcf_flask_helper.model.base import db
-from ..form import AssessmentRecordQueryForm, AssessmentRecordCreateForm, AssessmentRecordUpdateForm
+from psychological.appointment.form import AssessmentRecordQueryForm, AssessmentRecordCreateForm, AssessmentRecordUpdateForm
 from pcf_flask_helper.common import json_success, json_error
 from psychological.utils.auth_helper import is_manager_user, assert_current_user_id
-from psychological.decorator.form import validate_form
-from psychological.decorator.permission import role_required, permission_required
+from psychological.utils.decorator.form import validate_form
+from psychological.utils.decorator.permission import role_required, permission_required
 from pcf_flask_helper.model.query import create_query_builder
 
 assessment_record_bp = Blueprint(

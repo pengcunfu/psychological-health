@@ -1,6 +1,6 @@
-from .announcement import AnnouncementCreateForm, AnnouncementUpdateForm, AnnouncementQueryForm
+from psychological.system.form.announcement import AnnouncementCreateForm, AnnouncementUpdateForm, AnnouncementQueryForm
 from .appointment import AppointmentCreateForm, AppointmentUpdateForm, AppointmentQueryForm
-from .assessment import (
+from psychological.assessment.form.assessment import (
     AssessmentQueryForm, AssessmentCreateForm, AssessmentUpdateForm,
     AssessmentOptionForm, AssessmentQuestionForm, AssessmentQuestionCreateForm,
     AssessmentQuestionUpdateForm, AssessmentAnswerForm, AssessmentSubmitForm,
@@ -12,7 +12,7 @@ from .counselor import CounselorQueryForm, CounselorCreateForm, CounselorUpdateF
 from .disease_tags import DiseaseTagsQueryForm, DiseaseTagsCreateForm
 from .order import OrderQueryForm, OrderCreateForm, OrderUpdateForm
 from .review import ReviewCreateForm, ReviewUpdateForm, ReviewQueryForm
-from .user_favorite import UserFavoriteCreateForm, UserFavoriteQueryForm
+from psychological.system.form.user_favorite import UserFavoriteCreateForm, UserFavoriteQueryForm
 
 __all__ = [
     # Announcement forms

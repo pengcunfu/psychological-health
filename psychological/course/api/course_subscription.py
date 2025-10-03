@@ -17,8 +17,8 @@ from ..form import (
     SubscriptionExtendForm,
     SubscriptionCancelForm
 )
-from psychological.decorator.form import validate_form
-from psychological.decorator.permission import role_required, permission_required
+from psychological.utils.decorator import validate_form
+from psychological.utils.decorator.permission import role_required, permission_required
 import uuid
 
 course_subscription_bp = Blueprint('course_subscription', __name__, url_prefix='/course-subscription')
